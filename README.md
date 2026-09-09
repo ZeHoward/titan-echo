@@ -2,6 +2,18 @@
 
 以 Tap Titans 公開玩法為參考，自行重建的繁體中文點擊放置 RPG。不是官方遊戲、沒有反編譯或取得原版原始碼；角色、美術、數值與程式均為此專案重新製作，因此並非逐像素或完整內容的一比一移植。
 
+## GitHub Pages
+
+**[直接開始遊戲](https://zehoward.github.io/titan-echo/)** · [GitHub 原始碼](https://github.com/ZeHoward/titan-echo)
+
+GitHub Pages 是公開靜態版：不需登入，遊戲每 3 秒自動儲存在此瀏覽器的 IndexedDB。重新整理與關閉後重開會恢復進度，並結算離線收益。右上角可以修改本機冒險者名稱，設定可匯出 JSON 紀錄。
+
+Pages 不會執行後端程式，所以這個網址沒有多人帳號、跨裝置同步或全球排行榜；「本機紀錄」只顯示這個瀏覽器的進度。清除網站資料會刪除本機存檔。多人版本仍可使用下面的 SQLite 自架服務，程式及測試皆保留。
+
+推送至 `main` 後，`.github/workflows/pages.yml` 會執行測試、檢查型別、建置並部署 GitHub Pages。網站子目錄由 Pages 設定自動取得，圖片、樣式及 JavaScript 都支援專案路徑。
+
+手動產生 Pages 版時，設定 `VITE_PAGES_MODE=true`、`PAGES_BASE_PATH=/titan-echo/`，再執行 `npm run build:static`。未設定這兩個值時維持自架版的伺服器存檔行為。
+
 ## 直接遊玩（Windows 可攜版）
 
 1. 解壓縮 `Titan-Echo-Web.zip`。
@@ -22,7 +34,7 @@
 ## 靜態網頁與雲端版
 
 - `dist-static/` 是可直接上傳的靜態 HTML、CSS、JavaScript 和圖片。
-- 只有靜態空間時可以試玩；持久化多人帳號需要共用服務，不能僅靠每位玩家各自的瀏覽器檔案完成。
+- Pages 建置可以使用瀏覽器本機存檔；持久化多人帳號仍需要共用服務，不能僅靠每位玩家各自的瀏覽器檔案完成。
 - 可攜版的 Node 服務負責提供靜態檔案與 `/api/*`，不必修改網頁。
 - Sites 線上版使用 ChatGPT 登入與 Cloudflare D1，程式位於 `app/api/`。目前 Sites 發佈遵循擁有者私有權限；其他人須先獲得網站存取權限。自架版則可直接建立多個帳號。
 - Sites 和自架版是不同存檔空間，不會互相同步。
