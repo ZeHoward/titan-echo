@@ -1,4 +1,4 @@
-import { advance, apply, fresh, type Action, type State } from './engine.ts';
+import { advance, apply, fresh, hydrate, type Action, type State } from './engine.ts';
 
 type Save = { id: string; name: string; state: State; revision: number };
 let connection: Promise<IDBDatabase> | undefined;
@@ -26,6 +26,7 @@ export async function browserRequest(url: string, init?: RequestInit): Promise<R
     read.onsuccess = () => {
       try {
         const saved: Save = read.result || { id: 'player', name: '本機冒險者', state: fresh(now), revision: 0 };
+        hydrate(saved.state);
         if (!read.result) store.put(saved);
         if (url === '/api/leaderboard') {
           response = Response.json({ rows: [{ name: saved.name, best: saved.state.best, prestiges: saved.state.prestiges, mine: true }] });
