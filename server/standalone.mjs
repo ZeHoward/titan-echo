@@ -4,7 +4,7 @@ import {DatabaseSync} from 'node:sqlite';
 import {scryptSync,randomBytes,timingSafeEqual,createHash} from 'node:crypto';
 import {readFile,mkdir} from 'node:fs/promises';
 import {resolve,extname,sep} from 'node:path';
-import {fresh,advance,apply} from '../lib/engine.ts';
+import {fresh,advance,apply,ACTION_TYPES} from '../lib/engine.ts';
 const root=resolve(import.meta.dirname,'..');
 const dataDir=resolve(process.env.DATA_DIR||resolve(root,'data'));
 await mkdir(dataDir,{recursive:true});
@@ -41,8 +41,8 @@ const server=createServer(async(req,res)=>{try{
   if(path==='/api/game'&&req.method==='GET'){db.prepare('INSERT OR IGNORE INTO players(id,name,state,updated) VALUES (?,?,?,?)').run(id,id,JSON.stringify(fresh(now)),now);const row=db.prepare('SELECT * FROM players WHERE id=?').get(id);const s=JSON.parse(row.state),old=s.gold;advance(s,now);return send(res,200,{state:s,name:row.name,revision:row.revision,now,offlineGold:s.gold-old});}
   if(path==='/api/profile'&&req.method==='POST'){const b=JSON.parse(await body(req));if(typeof b?.name!=='string'||!b.name.trim()||b.name.length>24||/[\x00-\x1f]/.test(b.name))return send(res,400,{error:'Invalid name'});db.prepare('UPDATE players SET name=? WHERE id=?').run(b.name.trim(),id);return send(res,200,{ok:true});}
   if(path==='/api/game'&&req.method==='POST'){
-   const b=JSON.parse(await body(req));const types=['tap','upgrade','hero','skill','artifact','prestige','boss','fairy'];
-   if(!b||!Number.isSafeInteger(b.revision)||!Array.isArray(b.actions)||b.actions.length>250||b.actions.some(a=>!a||!types.includes(a.type)||!Number.isFinite(a.at)||(a.index!==undefined&&!Number.isInteger(a.index))||(a.amount!==undefined&&![1,10,25].includes(a.amount))))return send(res,400,{error:'Invalid actions'});
+   const b=JSON.parse(await body(req));const types=ACTION_TYPES;
+   if(!b||!Number.isSafeInteger(b.revision)||!Array.isArray(b.actions)||b.actions.length>250||b.actions.some(a=>!a||!types.includes(a.type)||!Number.isFinite(a.at)||(a.index!==undefined&&!Number.isInteger(a.index))||(a.amount!==undefined&&![0,1,10,25,100,1000].includes(a.amount))))return send(res,400,{error:'Invalid actions'});
    const row=db.prepare('SELECT * FROM players WHERE id=?').get(id);if(!row)return send(res,404,{error:'Load game first'});if(row.revision!==b.revision)return send(res,409,{state:JSON.parse(row.state),revision:row.revision});
    let state=JSON.parse(row.state);for(const a of b.actions)state=apply(state,{...a,at:Math.max(state.last,Math.min(now,a.at))});advance(state,now);
    const result=db.prepare('UPDATE players SET state=?,revision=revision+1,best=?,prestiges=?,updated=? WHERE id=? AND revision=?').run(JSON.stringify(state),state.best,state.prestiges,now,id,b.revision);
@@ -56,4 +56,3 @@ const server=createServer(async(req,res)=>{try{
  try{const bytes=await readFile(file);res.writeHead(200,{'Content-Type':({'.html':'text/html; charset=utf-8','.js':'text/javascript','.css':'text/css','.png':'image/png','.svg':'image/svg+xml','.webp':'image/webp'})[extname(file)]||'application/octet-stream','X-Content-Type-Options':'nosniff','Cache-Control':path.startsWith('/assets/')?'public, max-age=31536000, immutable':'no-cache'});res.end(req.method==='HEAD'?undefined:bytes);}catch{return send(res,404,'找不到頁面。請先執行 npm run build:static。','text/plain');}
  }catch(error){console.error('Request failed:',error.message);send(res,error.message==='too_large'?413:400,{error:'Invalid request'});}});
 server.listen(port,process.env.HOST||'0.0.0.0',()=>console.log(`Titan Echo multiplayer: http://localhost:${port} — SQLite: data/game.sqlite`));
-

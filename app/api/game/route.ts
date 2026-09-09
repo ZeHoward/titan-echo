@@ -1,6 +1,6 @@
 import { getChatGPTUser } from '../../chatgpt-auth';
 import { database } from '../../../lib/storage';
-import { fresh, advance, apply, type State, type Action } from '../../../lib/engine';
+import { fresh, advance, apply, ACTION_TYPES, type State, type Action } from '../../../lib/engine';
 export const dynamic='force-dynamic';
 type Player={state:string;name:string;revision:number};
 const json=(body:unknown,status=200)=>Response.json(body,{status,headers:{'Cache-Control':'no-store'}});
@@ -19,8 +19,8 @@ export async function POST(request:Request){
  const raw=await request.text();if(raw.length>48000)return json({error:'Request too large'},413);
  let body:{revision:number;actions:Action[]};try{body=JSON.parse(raw);}catch{return json({error:'Invalid JSON'},400);}
  if(!body||!Number.isSafeInteger(body.revision)||!Array.isArray(body.actions)||body.actions.length>250)return json({error:'Invalid actions'},400);
- const types=['tap','upgrade','hero','skill','artifact','prestige','boss','fairy'];
- if(body.actions.some(a=>!a||!types.includes(a.type)||!Number.isFinite(a.at)||(a.index!==undefined&&!Number.isInteger(a.index))||(a.amount!==undefined&&![1,10,25].includes(a.amount))))return json({error:'Invalid action'},400);
+ const types=ACTION_TYPES;
+ if(body.actions.some(a=>!a||!types.includes(a.type)||!Number.isFinite(a.at)||(a.index!==undefined&&!Number.isInteger(a.index))||(a.amount!==undefined&&![0,1,10,25,100,1000].includes(a.amount))))return json({error:'Invalid action'},400);
  const db=database();const row=await db.prepare('SELECT state,name,revision FROM players WHERE id=?').bind(user.userId).first<Player>();if(!row)return json({error:'Load your adventure first'},404);
  if(row.revision!==body.revision)return json({state:JSON.parse(row.state),revision:row.revision},409);
  const now=Date.now();let state:State=JSON.parse(row.state);
@@ -31,4 +31,3 @@ export async function POST(request:Request){
  if(result.meta.changes!==1){const latest=await db.prepare('SELECT state,revision FROM players WHERE id=?').bind(user.userId).first<Player>();return json({state:JSON.parse(latest!.state),revision:latest!.revision},409);}
  return json({state,revision:row.revision+1,now});
 }
-
