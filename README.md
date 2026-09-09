@@ -87,3 +87,5 @@ npm run db:generate
 - [公開遊戲說明](https://tap-titans.fandom.com/wiki/In-game_help)：30 秒頭目戰、農場模式與轉生循環。
 
 本作重新設計成長数值與角色美術，完整實作與差異見 [CONTENT-COVERAGE.md](CONTENT-COVERAGE.md)。没有真實付費、連線錦標賽或好友聊天；個人週試煉不冒充全球排名。伺服器驗證操作與時間、限制點擊頻率，但不宣稱能阻止所有自動點擊工具。
+
+Optional Google Sheets cloud snapshots are available under Settings. The administrator must first deploy Apps Script and configure its URL; setup is documented in [GOOGLE-SHEETS.md](GOOGLE-SHEETS.md). Until then, Pages continues using local IndexedDB saves.

@@ -32,3 +32,14 @@ test('Pages invalid profile leaves the persisted name unchanged',async()=>{
   const after=await (await browserRequest('/api/game')).json();
   assert.equal(after.name,before.name);
 });
+
+// Restore changes the revision atomically and preserves the previous snapshot.
+test('cloud restore backs up local progress and rejects stale tabs',async()=>{
+ const {readBrowserSave,restoreBrowserSave}=await import('../lib/browser-storage.ts');
+ const before=await readBrowserSave();const state=structuredClone(before.state);state.best=123;
+ await restoreBrowserSave({name:'雲端勇者',state},before.revision);
+ const restored=await readBrowserSave();assert.equal(restored.state.best,123);assert.equal(restored.revision,before.revision+1);assert.equal(restored.instanceId,before.instanceId);
+ const backup=await readBrowserSave('before-cloud-restore');assert.equal(backup.state.best,before.state.best);
+ await assert.rejects(restoreBrowserSave({name:'stale',state},before.revision),/本機進度已變更/);
+ assert.equal((await readBrowserSave()).name,'雲端勇者');
+});
