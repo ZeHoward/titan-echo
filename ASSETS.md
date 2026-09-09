@@ -16,3 +16,5 @@ Use case: stylized-concept. Asset type: original mobile tapping fantasy RPG enem
 
 ### swordsman.png
 Original fantasy tapping mobile RPG sword master sprite. Single full-body chibi young adult male hero viewed from behind in three quarter view, facing right towards an enemy. Spiky brown hair, teal-blue tunic, leather boots, long bright red scarf flowing left, oversized shining silver sword held diagonally upward to the right, ready to slash. Clean stylized 2D cel-shaded mobile game illustration, bold dark outline, chunky simple shapes. Whole body visible, isolated centered on genuinely transparent background, no scenery, no UI, no words, no border. Square canvas.
+
+Performance derivatives: monsters*.webp and worlds-atlas.webp are generated from the corresponding original PNGs with Pillow WebP quality 85, method 6. Dimensions and transparency are preserved.
