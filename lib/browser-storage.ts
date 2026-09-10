@@ -1,7 +1,7 @@
 import { advance, apply, fresh, hydrate, type Action, type State } from './engine.ts';
 import {validateSnapshot} from './sheets-cloud.ts';
 
-export type Save = { id: string; name: string; state: State; revision: number; instanceId?:string };
+export type Save = { id: string; name: string; state: State; revision: number; instanceId?:string; lastWriteId?:string };
 let connection: Promise<IDBDatabase> | undefined;
 function database() {
   connection ??= new Promise((resolve, reject) => {
@@ -67,6 +67,23 @@ export async function browserRequest(url: string, init?: RequestInit): Promise<R
 export async function readBrowserSave(id='player'):Promise<Save> {
   const db=await database();
   return new Promise((resolve,reject)=>{const tx=db.transaction('saves','readonly');const read=tx.objectStore('saves').get(id);read.onsuccess=()=>read.result?resolve(read.result):reject(Error('尚無這份本機備份'));read.onerror=()=>reject(read.error);});
+}
+
+// The browser is the simulation authority on Pages. Replaying actions from an
+// older snapshot partitions idle combat differently and visibly rewinds kills.
+// Persist a detached live snapshot; CAS still protects against other tabs.
+export async function saveBrowserSnapshot(state:State,expectedRevision:number,writeId:string):Promise<Save>{
+ const snapshot=structuredClone(state);validateSnapshot({name:'冒險者',state:snapshot});
+ const db=await database();
+ return new Promise((resolve,reject)=>{
+  const tx=db.transaction('saves','readwrite'),store=tx.objectStore('saves'),read=store.get('player');let result:Save;
+  read.onsuccess=()=>{const old=read.result as Save;
+   if(old?.lastWriteId===writeId){result=old;return;}
+   if(!old||old.revision!==expectedRevision){tx.abort();return;}
+   result={...old,state:snapshot,revision:old.revision+1,lastWriteId:writeId};store.put(result);
+  };
+  tx.oncomplete=()=>resolve(result);tx.onerror=()=>reject(tx.error);tx.onabort=()=>reject(Error('LOCAL_CONFLICT'));
+ });
 }
 
 // Keep a pre-restore backup and change the revision atomically. Stale tabs will

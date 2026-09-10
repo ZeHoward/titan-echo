@@ -1,10 +1,11 @@
+import {HERO_NAMES,PET_NAMES} from './zh-tw.ts';
 import {advanceEggs,awardPet,dropGear,craftSet} from './tt2-collection.ts';
 import {TT2_PETS,TT2_GEAR,TT2_DAILY,TT2_HEROES,TT2_HERO_MILESTONES} from './tt2-data.ts';
 import {freshTT2,TT2_RULESET,TT2_ARTIFACTS,TT2_ACTIVE,TT2_TREE,effect,artifactAllDamage,buildMultiplier,upgradeArtifactCost,discoveryCost,drawArtifact,canBuyTalent,spentPoints,tt2Random, type TT2State, type Build} from './tt2-rules.ts';
 export {TT2_ARTIFACTS,TT2_TREE,discoveryCost};
 import { EXTRA_HEROES, ARTIFACTS, MONSTERS, DAILY_TASKS, ACHIEVEMENTS, PERKS, ACTION_TYPES, type Effect } from './content.ts';
 export { ARTIFACTS, MONSTERS, DAILY_TASKS, ACHIEVEMENTS, PERKS, ACTION_TYPES } from './content.ts';
-export const HEROES=TT2_HEROES.map(h=>({name:h.name,title:h.kind,icon:'⚔️',base:h.base,power:h.power}));
+export const HEROES=TT2_HEROES.map(h=>({name:HERO_NAMES[h.name],title:h.kind,icon:'⚔️',base:h.base,power:h.power}));
 // Save indices remain stable: clone, deadly, war cry, fire sword, midas, strike.
 export const SKILL_DATA=[5,1,4,3,2,0].map(i=>TT2_ACTIVE[i]);
 export const SKILL_ORDER=[5,1,4,3,2,0];
@@ -23,7 +24,7 @@ export function hydrate(s:State):State{if(s.ruleset===TT2_RULESET&&s.tt2){if(!s.
  s.tt2.legacyArtifacts=[...s.artifacts];s.tt2.legacySpent=[...s.artifactSpent];s.relics=limit(s.relics+s.artifactSpent.reduce((a,b)=>a+b,0));
  s.artifacts.fill(0);s.artifactSpent.fill(0);s.active.fill(0);s.cooldowns.fill(0);s.skillLevels.fill(0);s.trial=null;s.world=0;s.evolutions.fill(0);s.wounded.fill(0);s.kills=0;s.hp=health(s);s.bossEnd=0;
  s.tt2.earnedPoints=Math.max(0,Math.floor(s.best/50)-1);s.tt2.points=s.tt2.earnedPoints;
- note(s,'已切換 TT2 7.5 規則：舊神器投入退回聖物，舊收藏保留在備份；技能與神器效果重新校正。');return s;}
+ note(s,'已切換點擊泰坦二代 7.5 規則：舊神器投入退回聖物，舊收藏保留在備份；技能與神器效果重新校正。');return s;}
 export function note(s:State,message:string){s.log=[message,...s.log].slice(0,15);}
 export function bonus(_s:State,_effect:Effect){return 0;}
 export function gearBonus(_s:State,_slot:number){return 1;}
@@ -60,9 +61,9 @@ function damage(s:State,amount:number){if(!Number.isFinite(amount)||amount<=0)re
 export function advance(s:State,to:number){hydrate(s);if(!Number.isFinite(to))return s;to=Math.max(s.last,to);const gap=to-s.last;advanceEggs(s.tt2!,to);
  if(dayAt(to)>s.daily.day)s.daily={...s.daily,day:dayAt(to),claimed:[],taps:0,kills:0,upgrades:0,skills:0,fairies:0,login:false,dungeons:[]};
  if(gap>30000){const seconds=Math.min(gap/1000,8*3600);s.tt2!.mana=Math.min(manaMax(s),s.tt2!.mana+manaRegen(s)*seconds);const offline={...s,last:to,active:Array(6).fill(0)};s.gold=limit(s.gold+Math.min(dps(offline)/Math.max(1,health({...offline,farming:true})),2)*reward(offline)*seconds*.5);s.last=to;s.active.fill(0);if(isBoss(s)){s.farming=true;s.kills=0;spawn(s);}return s;}
- while(s.last<to){const step=Math.min(100,to-s.last);s.last+=step;s.tt2!.mana=Math.min(manaMax(s),s.tt2!.mana+manaRegen(s)*step/1000);
+ while(s.last<to){const boundary=(Math.floor(s.last/100)+1)*100;const step=Math.min(boundary-s.last,to-s.last);s.last+=step;s.tt2!.mana=Math.min(manaMax(s),s.tt2!.mana+manaRegen(s)*step/1000);
  if(isBoss(s)&&s.bossEnd&&s.last>=s.bossEnd){s.farming=true;s.kills=0;spawn(s);note(s,'頭目時間結束，切換金幣農場。');}
- damage(s,(dps(s)+(s.active[0]>s.last?buildDamage(s,'clone'):0))*step/1000);
+ if(s.last===boundary)damage(s,(dps(s)+(s.active[0]>s.last?buildDamage(s,'clone'):0))*.1);
  }return s;
 }
 export function apply(s:State,a:Action){advance(s,a.at);const i=a.index??0,t=s.tt2!;
@@ -83,7 +84,7 @@ export function apply(s:State,a:Action){advance(s,a.at);const i=a.index??0,t=s.t
  if(a.type==='fairy'&&s.last-s.lastFairy>=60000){s.lastFairy=s.last;s.daily.fairies++;s.gold=limit(s.gold+goldReward(s,'fairy'));note(s,'已領取妖精金幣。');}
  if(a.type==='equip'){const item=t.inventory.find(g=>g.id===i);if(item)t.equipped[TT2_GEAR[item.definition].slot]=i;}
  if(a.type==='petEquip'&&Number.isInteger(i)&&TT2_PETS[i]&&t.petLevels[i]>0)t.activePets[TT2_PETS[i].slot==='Damage'?0:1]=i;
- if(a.type==='egg'&&t.eggs>0){const pet=awardPet(t,s.best);if(pet>=0){t.eggs--;note(s,`獲得 ${TT2_PETS[pet].name}，目前 Lv.${t.petLevels[pet]}。`);}}
+ if(a.type==='egg'&&t.eggs>0){const pet=awardPet(t,s.best);if(pet>=0){t.eggs--;note(s,`獲得 ${PET_NAMES[TT2_PETS[pet].name]}，目前等級 ${t.petLevels[pet]}。`);}}
  if(a.type==='craft'&&Number.isInteger(i)&&craftSet(t,i,s.best))note(s,'製作完成；集齊五個部位後保留套裝效果。');
  if(a.type==='gearDiscard'&&Number.isInteger(i)&&!t.equipped.includes(i))t.inventory=t.inventory.filter(g=>g.id!==i);
  if(a.type==='daily'&&t.loginAt!==dayAt(s.last)){
@@ -104,7 +105,7 @@ export function apply(s:State,a:Action){advance(s,a.at);const i=a.index??0,t=s.t
  // remain archived rather than paying invented rewards in the TT2 economy.
  return s;
 }
-export function fmt(n:number){if(n<1000)return Math.floor(n).toLocaleString('en-US');const units=['','K','M','B','T','Qa','Qi','Sx','Sp','Oc','No'];const e=Math.floor(Math.log10(Math.max(1,n))/3);return e<units.length?(n/Math.pow(1000,e)).toFixed(1)+units[e]:n.toExponential(1);}
+export function fmt(n:number){if(n<10000)return Math.floor(n).toLocaleString('zh-TW');const units=['','萬','億','兆','京','垓','秭','穰','溝','澗','正','載'];const e=Math.floor(Math.log10(Math.max(1,n))/4);return e<units.length?(n/10**(4*e)).toFixed(1)+units[e]:`${(n/10**Math.floor(Math.log10(n))).toFixed(1)}×10^${Math.floor(Math.log10(n))}`;}
 
 export function heroLevel(s:State,i:number){return i<33?s.heroes[i]:s.tt2!.extraHeroes[i-33];}
 function setHeroLevel(s:State,i:number,n:number){if(i<33)s.heroes[i]=n;else s.tt2!.extraHeroes[i-33]=n;}
