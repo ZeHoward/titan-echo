@@ -8,13 +8,13 @@ export function recoveryKey() {
   return Array.from(crypto.getRandomValues(new Uint8Array(32)),b=>b.toString(16).padStart(2,'0')).join('');
 }
 export async function cloudCall(endpoint:string,body:Record<string,unknown>):Promise<CloudResult> {
-  if (!validEndpoint(endpoint)) throw Error('請使用 Apps Script 正式部署的 /exec 網址');
+  if (!validEndpoint(endpoint)) throw Error('請使用雲端儲存服務的正式部署網址');
   const controller=new AbortController();const timer=setTimeout(()=>controller.abort(),25000);
   try {
     // Simple POST avoids an unsupported Apps Script OPTIONS preflight. Never
     // use no-cors: an opaque response cannot confirm a save was accepted.
     const response=await fetch(endpoint,{method:'POST',credentials:'omit',redirect:'follow',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(body),signal:controller.signal});
-    if(!response.ok)throw Error('Google 服務暫時無法連線');
+    if(!response.ok)throw Error('雲端服務暫時無法連線');
     const data=await response.json() as CloudResult;
     if(!data.ok)throw Error(data.error||'雲端存檔失敗');
     if(!Number.isSafeInteger(data.revision)||data.revision<1)throw Error('雲端回應格式錯誤');
