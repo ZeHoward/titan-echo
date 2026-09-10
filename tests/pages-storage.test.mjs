@@ -43,3 +43,13 @@ test('cloud restore backs up local progress and rejects stale tabs',async()=>{
  await assert.rejects(restoreBrowserSave({name:'stale',state},before.revision),/本機進度已變更/);
  assert.equal((await readBrowserSave()).name,'雲端勇者');
 });
+
+test('TT2 migration keeps a complete original backup and increments revision only once',async()=>{
+ const {readBrowserSave}=await import('../lib/browser-storage.ts');
+ const old=await readBrowserSave();delete old.state.ruleset;delete old.state.tt2;old.state.artifacts[0]=7;old.state.artifactSpent[0]=49;
+ const db=await new Promise((resolve,reject)=>{const r=indexedDB.open('titan-echo-pages-v1',1);r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error);});
+ await new Promise((resolve,reject)=>{const tx=db.transaction('saves','readwrite');tx.objectStore('saves').put(old);tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error);});
+ await browserRequest('/api/game');const backup=await readBrowserSave('before-tt2-migration'),current=await readBrowserSave();
+ assert.deepEqual(backup.state,old.state);assert.equal(current.revision,old.revision+1);assert.equal(current.state.relics,old.state.relics+49);
+ await browserRequest('/api/game');assert.equal((await readBrowserSave()).revision,current.revision);assert.deepEqual((await readBrowserSave('before-tt2-migration')).state,old.state);db.close();
+});
