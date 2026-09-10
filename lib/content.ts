@@ -49,4 +49,5 @@ export const ACHIEVEMENTS=[
  ...[3,15,30].map((target,i)=>({name:`收集 ${target} 件神器`,metric:'artifacts',target,reward:40*(i+1)})),
 ];
 export const PERKS=[{name:'金幣雨',icon:'💰',price:30,desc:'立即獲得 100 隻普通巨獸的金幣'},{name:'時間扭曲',icon:'⏱️',price:40,desc:'立刻結束全部技能冷卻'},{name:'守護祝福',icon:'🛡️',price:25,desc:'10 分鐘內英雄不會負傷'},{name:'末日審判',icon:'☄️',price:50,desc:'立即擊敗當前一隻巨獸（試煉不可用）'},{name:'全員復甦',icon:'💚',price:20,desc:'立刻復活所有負傷英雄'}];
-export const ACTION_TYPES=['tap','upgrade','hero','skill','artifact','prestige','boss','fairy','evolve','skillUp','equip','salvage','craft','daily','quest','achievement','perk','revive','trial','leaveTrial','trialReward','world','artifactSalvage'] as const;
+export const ACTION_TYPES=['petEquip','egg','gearDiscard','discover','talent','resetTalents','build','tap','upgrade','hero','skill','artifact','prestige','boss','fairy','evolve','skillUp','equip','salvage','craft','daily','quest','achievement','perk','revive','trial','leaveTrial','trialReward','world','artifactSalvage'] as const;
+

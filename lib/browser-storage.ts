@@ -27,7 +27,10 @@ export async function browserRequest(url: string, init?: RequestInit): Promise<R
     read.onsuccess = () => {
       try {
         const saved: Save = read.result || { id: 'player', name: '本機冒險者', state: fresh(now), revision: 0 };
+        const migrating=!!read.result&&saved.state.ruleset!=='tt2-7.5.0';
+        if(migrating)store.put({...structuredClone(saved),id:'before-tt2-migration'});
         hydrate(saved.state);
+        if(migrating){saved.revision++;store.put(saved);}
         if(!saved.instanceId){saved.instanceId=crypto.randomUUID();store.put(saved);}
         if (!read.result) store.put(saved);
         if (url === '/api/leaderboard') {
