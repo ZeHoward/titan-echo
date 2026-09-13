@@ -1,4 +1,5 @@
 import {heroPassiveTotals,heroPowerBoost} from './tt2-hero-passives.ts';
+import {playerMilestone} from './tt2-player.ts';
 import {chargePet,petDamageFactor} from './tt2-pet-combat.ts';
 import {RESOURCE_PERKS,perkValue,activatePerk,manaSeconds} from './tt2-perks.ts';
 import {HERO_NAMES,PET_NAMES} from './zh-tw.ts';
@@ -125,6 +126,9 @@ export function skillMana(s:State,i:number){return Math.max(0,SKILL_DATA[i].mana
 export function critChance(s:State){return Math.min(1,.02+stateEffect(s,'CritChance'));}
 export function buildDamage(s:State,build:Build){const t=s.tt2!,active=s.active.filter(n=>n>s.last).length,c={tap:0,pet:.5,ship:1,clone:.5,dagger:.5,heavenly:.5,goldGun:.9}[build];
  let base=(1+2*(s.level-1))*1.025**(s.level-1);
+ // Verified milestone table layered on the still-approximate base curve.
+ // Route through the existing tap reduction; ships receive no tap multiplier.
+ base*=playerMilestone(s.level)**({tap:1,pet:1,ship:0,clone:.6,dagger:1,heavenly:1,goldGun:.45}[build]);
  if(c)base*=Math.max(1,rawHeroDps(s))**c;
  let n=base*buildMultiplier(t,build,active,isBoss(s),id=>stateEffect(s,id))*gearBonus(s,0);
  if(s.active[3]>s.last)n*=skillPower(s,3)**({tap:1,pet:1,ship:0,clone:.6,dagger:1,heavenly:1,goldGun:.45}[build]);
