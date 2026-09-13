@@ -1,0 +1,45 @@
+import {test} from 'node:test';
+import assert from 'node:assert/strict';
+import {fresh,apply,hydrate,stateEffect,manaMax,critChance,tapDamage} from '../lib/engine.ts';
+import {TT2_TREE} from '../lib/tt2-data.ts';
+const insight=TT2_TREE.findIndex(k=>k.id==='HelperBoost');
+const commander=TT2_TREE.findIndex(k=>k.id==='AllHelperDmg');
+const near=(a,b)=>assert.ok(Math.abs(a-b)<1e-10,`${a} != ${b}`);
+
+test('Tactical Insight affects individual unlocked powers, not base player stats',()=>{
+ const s=fresh(1000);s.tt2.tree[insight]=1;
+ assert.equal(manaMax(s),200);assert.equal(critChance(s),.02);assert.equal(stateEffect(s,'CritDamage'),1);
+ s.heroes[0]=500;
+ near(manaMax(s),203.06);near(critChance(s),.02102);
+ near(stateEffect(s,'CritDamage'),1.1*1.0032);
+ near(tapDamage(s),1.1*1.0032);
+ s.heroes[1]=100;
+ near(stateEffect(s,'CritDamage'),(1.1*1.0032)**2);
+});
+
+test('buy and reset invalidate warm passive caches and clamp current mana',()=>{
+ const s=fresh(1000);s.best=300;s.heroes[0]=500;s.tt2.points=20;s.tt2.tree[commander]=2;
+ near(stateEffect(s,'CritDamage'),1.1);
+ apply(s,{type:'talent',index:insight,at:1000});
+ assert.equal(s.tt2.tree[insight],1);assert.equal(s.tt2.points,19);
+ near(stateEffect(s,'CritDamage'),1.10352);
+ s.tt2.mana=manaMax(s);apply(s,{type:'resetTalents',at:1000});
+ near(stateEffect(s,'CritDamage'),1.1);near(s.tt2.mana,203);
+ assert.equal(s.tt2.points,23);
+});
+
+test('loading keeps TI, prestige keeps its level but requires hero powers again',()=>{
+ const s=fresh(1000);s.heroes[0]=500;s.best=60;s.tt2.tree[insight]=1;
+ const loaded=hydrate(JSON.parse(JSON.stringify(s)));near(manaMax(loaded),203.06);
+ const reset=apply(loaded,{type:'prestige',at:1000});
+ assert.equal(reset.tt2.tree[insight],1);assert.equal(manaMax(reset),200);
+ assert.equal(stateEffect(reset,'CritDamage'),1);
+ reset.heroes[0]=20;near(stateEffect(reset,'CritDamage'),1.10352);
+});
+
+test('unimplemented effects are not activated by high-level Tactical Insight',()=>{
+ const s=fresh(1000);s.heroes.fill(2000);s.tt2.extraHeroes.fill(2000);s.tt2.tree[insight]=30;
+ assert.equal(stateEffect(s,'TapDamageFromHelpers'),0);
+ const independent=fresh(1000);assert.equal(stateEffect(independent,'CritDamage'),1);
+ assert.ok(Number.isFinite(tapDamage(s)));
+});
