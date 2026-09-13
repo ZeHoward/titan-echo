@@ -1,9 +1,10 @@
+import {heroPassiveTotals} from './tt2-hero-passives.ts';
 import {chargePet,petDamageFactor} from './tt2-pet-combat.ts';
 import {RESOURCE_PERKS,perkValue,activatePerk,manaSeconds} from './tt2-perks.ts';
 import {HERO_NAMES,PET_NAMES} from './zh-tw.ts';
 import {advanceEggs,awardPet,dropGear,craftSet} from './tt2-collection.ts';
 import {TT2_PETS,TT2_GEAR,TT2_DAILY,TT2_HEROES,TT2_HERO_MILESTONES} from './tt2-data.ts';
-import {freshTT2,TT2_RULESET,TT2_ARTIFACTS,TT2_ACTIVE,TT2_TREE,effect,artifactAllDamage,buildMultiplier,upgradeArtifactCost,discoveryCost,drawArtifact,canBuyTalent,spentPoints,tt2Random, type TT2State, type Build} from './tt2-rules.ts';
+import {freshTT2,TT2_RULESET,TT2_ARTIFACTS,TT2_ACTIVE,TT2_TREE,effect,artifactAllDamage,buildMultiplier,upgradeArtifactCost,discoveryCost,drawArtifact,canBuyTalent,spentPoints,tt2Random,bonusDefinitions, type TT2State, type Build} from './tt2-rules.ts';
 export {TT2_ARTIFACTS,TT2_TREE,discoveryCost};
 import { EXTRA_HEROES, ARTIFACTS, MONSTERS, DAILY_TASKS, ACHIEVEMENTS, PERKS, ACTION_TYPES, type Effect } from './content.ts';
 export { ARTIFACTS, MONSTERS, DAILY_TASKS, ACHIEVEMENTS, PERKS, ACTION_TYPES } from './content.ts';
@@ -31,29 +32,29 @@ export function note(s:State,message:string){s.log=[message,...s.log].slice(0,15
 export function bonus(_s:State,_effect:Effect){return 0;}
 export function gearBonus(_s:State,_slot:number){return 1;}
 export function passive(_s:State,_kind:number){return 0;}
-export function skillPower(s:State,i:number){return SKILL_DATA[i].amount[Math.max(0,s.skillLevels[i]-1)]*effect(s.tt2!,SKILL_DATA[i].effect)*effect(s.tt2!,'AllActiveSkillAmount');}
-export function skillDuration(s:State,i:number){return SKILLS[i].duration+effect(s.tt2!,SKILL_DATA[i].id+'SkillDuration')+effect(s.tt2!,'AllActiveSkillDuration');}
-export function skillCooldown(s:State,i:number){return SKILLS[i].cooldown*(1-Math.min(.9,effect(s.tt2!,'AllActiveSkillCooldownRate')));}
-export function critMultiplier(s:State){return 10*effect(s.tt2!,'CritDamage');}
+export function skillPower(s:State,i:number){return SKILL_DATA[i].amount[Math.max(0,s.skillLevels[i]-1)]*stateEffect(s,SKILL_DATA[i].effect)*stateEffect(s,'AllActiveSkillAmount');}
+export function skillDuration(s:State,i:number){return SKILLS[i].duration+stateEffect(s,SKILL_DATA[i].id+'SkillDuration')+stateEffect(s,'AllActiveSkillDuration');}
+export function skillCooldown(s:State,i:number){return SKILLS[i].cooldown*(1-Math.min(.9,stateEffect(s,'AllActiveSkillCooldownRate')));}
+export function critMultiplier(s:State){return 10*stateEffect(s,'CritDamage');}
 export function tapDamage(s:State){return buildDamage(s,'tap');}
 export function weaponSets(s:State){return Math.min(...s.weapons,...s.tt2!.extraWeapons);}
-export function heroDps(s:State,i:number){const n=heroLevel(s,i),kind=TT2_HEROES[i].kind as 'Melee'|'Ranged'|'Spell';const milestone=TT2_HERO_MILESTONES.findLast(m=>m.level<=n)?.[kind]||1;return limit(HEROES[i].power*n*1.035**Math.max(0,n-1)*milestone*(1+((i<33?s.weapons[i]:s.tt2!.extraWeapons[i-33])||0)*.5*effect(s.tt2!,'HelperWeaponBoost'))*effect(s.tt2!,kind+'HelperDamage')*effect(s.tt2!,TT2_HEROES[i].spatial));}
-export function dps(s:State){return limit(rawHeroDps(s)*effect(s.tt2!,'AllHelperDamage')*artifactAllDamage(s.tt2!)*effect(s.tt2!,'AllDamage')*(s.active[2]>s.last?skillPower(s,2):1)*gearBonus(s,1));}
+export function heroDps(s:State,i:number){const n=heroLevel(s,i),kind=TT2_HEROES[i].kind as 'Melee'|'Ranged'|'Spell';const milestone=TT2_HERO_MILESTONES.findLast(m=>m.level<=n)?.[kind]||1;return limit(HEROES[i].power*n*1.035**Math.max(0,n-1)*milestone*(1+((i<33?s.weapons[i]:s.tt2!.extraWeapons[i-33])||0)*.5*stateEffect(s,'HelperWeaponBoost'))*stateEffect(s,kind+'HelperDamage')*stateEffect(s,TT2_HEROES[i].spatial));}
+export function dps(s:State){return limit(rawHeroDps(s)*stateEffect(s,'AllHelperDamage')*artifactAllDamage(s.tt2!)*stateEffect(s,'AllDamage')*(s.active[2]>s.last?skillPower(s,2):1)*gearBonus(s,1));}
 export function monsterIndex(s:State){return s.trial?(s.trial.wave*7+s.trial.tier*12)%60:((s.stage-1)*6+s.kills)%60;}
 export function monsterCount(_s:State){return 10;}
-export function bossDuration(s:State){return 30+effect(s.tt2!,'BossTimerDuration');}
-export function health(s:State){return limit(18*1.32**(s.stage-1)*(isBoss(s)?[2,3,4,5,8][(s.stage-1)%5]:1)*(1-Math.min(.9,effect(s.tt2!,'MonsterHP'))));}
+export function bossDuration(s:State){return 30+stateEffect(s,'BossTimerDuration');}
+export function health(s:State){return limit(18*1.32**(s.stage-1)*(isBoss(s)?[2,3,4,5,8][(s.stage-1)%5]:1)*(1-Math.min(.9,stateEffect(s,'MonsterHP'))));}
 export function isBoss(s:State){return !s.trial&&!s.farming&&s.kills>=monsterCount(s);}
 export function reward(s:State){return goldReward(s,'monster');}
-export function cost(s:State,index=-1,amount=1){const n=index<0?s.level:heroLevel(s,index),base=index<0?8:HEROES[index].base,rate=index<0?1.12:1.075;return Math.ceil(limit(base*rate**(index<0?n-1:n)*(rate**amount-1)/(rate-1)*(1-Math.min(.9,effect(s.tt2!,'AllUpgradeCost')))*(index<0?1:1-Math.min(.9,effect(s.tt2!,'HelperUpgradeCost')))));}
-export function relicGain(s:State){return s.best>=60?Math.max(1,Math.floor(s.stage**1.7/100*effect(s.tt2!,'PrestigeRelic'))):0;}
+export function cost(s:State,index=-1,amount=1){const n=index<0?s.level:heroLevel(s,index),base=index<0?8:HEROES[index].base,rate=index<0?1.12:1.075;return Math.ceil(limit(base*rate**(index<0?n-1:n)*(rate**amount-1)/(rate-1)*(1-Math.min(.9,stateEffect(s,'AllUpgradeCost')))*(index<0?1:1-Math.min(.9,stateEffect(s,'HelperUpgradeCost')))));}
+export function relicGain(s:State){return s.best>=60?Math.max(1,Math.floor(s.stage**1.7/100*stateEffect(s,'PrestigeRelic'))):0;}
 export function artifactCost(s:State,i:number){return s.tt2!.artifacts[i]?upgradeArtifactCost(s.tt2!,i):discoveryCost(s.tt2!);}
 export function evolveCost(s:State,i:number){return limit(HEROES[i].base*1e4**s.evolutions[i]*1e6);}
 export function skillCost(s:State,i:number){return SKILL_DATA[i].cost[Math.min(34,s.skillLevels[i])];}
 export function achievementProgress(s:State,i:number){const a=ACHIEVEMENTS[i];if(!a)return 0;if(a.metric==='hired')return s.heroes.filter((n,j)=>n>0||s.evolutions[j]>0).length;if(a.metric==='artifacts')return s.artifacts.filter(n=>n>0).length;return s[a.metric as 'taps'|'totalKills'|'best'|'prestiges'];}
 function spawn(s:State){s.hp=health(s);s.bossEnd=isBoss(s)?s.last+bossDuration(s)*1000:0;s.bossWounded=false;const id=monsterIndex(s);if(!s.seen.includes(id))s.seen.push(id);}
 function damage(s:State,amount:number){if(!Number.isFinite(amount)||amount<=0)return;s.hp-=amount;if(s.hp>0)return;
- const boss=isBoss(s),chest=!boss&&tt2Random(s.tt2!)<Math.min(1,.02+effect(s.tt2!,'ChestChance'));
+ const boss=isBoss(s),chest=!boss&&tt2Random(s.tt2!)<Math.min(1,.02+stateEffect(s,'ChestChance'));
  s.gold=limit(s.gold+goldReward(s,boss?'boss':chest?'chest':'monster'));s.totalKills++;s.daily.kills++;
  if(boss){if(s.stage>=16&&(s.stage-16)%20===0&&s.stage> s.tt2!.gearMilestone&&dropGear(s.tt2!,s.best))s.tt2!.gearMilestone=s.stage;s.bossKills++;s.stage=Math.min(1800,s.stage+1);s.best=Math.max(s.best,s.stage);s.kills=0;
   const points=Math.max(0,Math.floor(s.best/50)-1);if(points>s.tt2!.earnedPoints){s.tt2!.points+=points-s.tt2!.earnedPoints;s.tt2!.earnedPoints=points;}
@@ -117,15 +118,15 @@ export function fmt(n:number){if(n<10000)return Math.floor(n).toLocaleString('zh
 export function heroLevel(s:State,i:number){return i<33?s.heroes[i]:s.tt2!.extraHeroes[i-33];}
 function setHeroLevel(s:State,i:number,n:number){if(i<33)s.heroes[i]=n;else s.tt2!.extraHeroes[i-33]=n;}
 function rawHeroDps(s:State){return limit(HEROES.reduce((n,_,i)=>n+heroDps(s,i),0));}
-export function manaMax(s:State){return 200+effect(s.tt2!,'ManaPoolCap');}
-function baseManaRegen(s:State){return (2+effect(s.tt2!,'ManaRegen'))/60*effect(s.tt2!,'ManaRegenMult');}
+export function manaMax(s:State){return 200+stateEffect(s,'ManaPoolCap');}
+function baseManaRegen(s:State){return (2+stateEffect(s,'ManaRegen'))/60*stateEffect(s,'ManaRegenMult');}
 export function manaRegen(s:State){return baseManaRegen(s)*perkValue(s.tt2!,0,s.last);}
-export function skillMana(s:State,i:number){return Math.max(0,SKILL_DATA[i].mana[Math.max(0,s.skillLevels[i]-1)]-effect(s.tt2!,SKILL_DATA[i].id+'SkillMana'));}
-export function critChance(s:State){return Math.min(1,.02+effect(s.tt2!,'CritChance'));}
+export function skillMana(s:State,i:number){return Math.max(0,SKILL_DATA[i].mana[Math.max(0,s.skillLevels[i]-1)]-stateEffect(s,SKILL_DATA[i].id+'SkillMana'));}
+export function critChance(s:State){return Math.min(1,.02+stateEffect(s,'CritChance'));}
 export function buildDamage(s:State,build:Build){const t=s.tt2!,active=s.active.filter(n=>n>s.last).length,c={tap:0,pet:.5,ship:1,clone:.5,dagger:.5,heavenly:.5,goldGun:.9}[build];
  let base=(1+2*(s.level-1))*1.025**(s.level-1);
  if(c)base*=Math.max(1,rawHeroDps(s))**c;
- let n=base*buildMultiplier(t,build,active,isBoss(s))*gearBonus(s,0);
+ let n=base*buildMultiplier(t,build,active,isBoss(s),id=>stateEffect(s,id))*gearBonus(s,0);
  if(s.active[3]>s.last)n*=skillPower(s,3)**({tap:1,pet:1,ship:0,clone:.6,dagger:1,heavenly:1,goldGun:.45}[build]);
  if(s.active[2]>s.last)n*=skillPower(s,2)**c;
  if(build==='clone')n*=SKILL_DATA[0].amount[s.skillLevels[0]-1];
@@ -134,11 +135,11 @@ export function buildDamage(s:State,build:Build){const t=s.tt2!,active=s.active.
 }
 export function goldReward(s:State,source:'monster'|'boss'|'fairy'|'chest'|'pet'|'multi'){
  const t=s.tt2!,running=Math.min(4,s.active.filter(n=>n>s.last).length);
- let n=5*1.27**(s.stage-1)*effect(t,'GoldAll')*effect(t,'JackpotGold')*effect(t,'GoldPerRunningActiveSkill')**running*(1+effect(t,'GoldPerOwnedCardLevel')*t.cards)*gearBonus(s,2);
- if(source==='boss'||source==='pet')n*=10*effect(t,'GoldBoss');
- if(source==='chest'||source==='fairy'||source==='multi')n*=10*effect(t,'ChestAmount');
- if(source==='fairy'||source==='pet')n*=effect(t,'GoldSpecialty');
- if(source==='fairy')n*=effect(t,'FairyGold');if(source==='pet')n*=effect(t,'PetGoldQTEAmount');if(source==='multi')n*=effect(t,'MultiMonstersGold');
+ let n=5*1.27**(s.stage-1)*stateEffect(s,'GoldAll')*stateEffect(s,'JackpotGold')*stateEffect(s,'GoldPerRunningActiveSkill')**running*(1+stateEffect(s,'GoldPerOwnedCardLevel')*t.cards)*gearBonus(s,2);
+ if(source==='boss'||source==='pet')n*=10*stateEffect(s,'GoldBoss');
+ if(source==='chest'||source==='fairy'||source==='multi')n*=10*stateEffect(s,'ChestAmount');
+ if(source==='fairy'||source==='pet')n*=stateEffect(s,'GoldSpecialty');
+ if(source==='fairy')n*=stateEffect(s,'FairyGold');if(source==='pet')n*=stateEffect(s,'PetGoldQTEAmount');if(source==='multi')n*=stateEffect(s,'MultiMonstersGold');
  if(s.active[4]>s.last)n*=skillPower(s,4)**(['fairy','pet'].includes(source)?.7:1);
  return limit(n);
 }
@@ -153,3 +154,13 @@ function buyAffordableHeroes(s:State){
 function autoBuyHeroes(s:State){const interval=perkValue(s.tt2!,1,s.last);if(interval&&s.last-s.tt2!.rainLast>=interval*1000){s.tt2!.rainLast=s.last;buyAffordableHeroes(s);}}
 
 export function petAttackDamage(s:State){return limit(buildDamage(s,'pet')*petDamageFactor(s.tt2!));}
+
+// Derived only; no duplicated levels or passive multipliers enter cloud saves.
+const heroPassiveCache=new WeakMap<State,{signature:string;totals:Record<string,number>}>();
+export function stateEffect(s:State,target:string){
+ const levels=[...s.heroes,...s.tt2!.extraHeroes],signature=levels.join(',');
+ let cached=heroPassiveCache.get(s);
+ if(!cached||cached.signature!==signature){cached={signature,totals:heroPassiveTotals(levels)};heroPassiveCache.set(s,cached);}
+ const additive=bonusDefinitions[target]?.additive,base=effect(s.tt2!,target),hero=cached.totals[target]??(additive?0:1);
+ return additive?base+hero:limit(base*hero);
+}
