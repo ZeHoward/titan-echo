@@ -1,3 +1,4 @@
+import {chargePet,petDamageFactor} from './tt2-pet-combat.ts';
 import {RESOURCE_PERKS,perkValue,activatePerk,manaSeconds} from './tt2-perks.ts';
 import {HERO_NAMES,PET_NAMES} from './zh-tw.ts';
 import {advanceEggs,awardPet,dropGear,craftSet} from './tt2-collection.ts';
@@ -21,7 +22,7 @@ export const dayAt=(time:number)=>Math.floor(time/86400000);
 export const weekAt=(time:number)=>Math.floor((dayAt(time)+3)/7);
 function newDaily(day:number):State['daily']{return {day,claimed:[],taps:0,kills:0,upgrades:0,skills:0,fairies:0,login:false,dungeons:[]};}
 export function fresh(now=Date.now()):State {return {version:2,ruleset:TT2_RULESET,tt2:freshTT2(now),stage:1,best:1,kills:0,hp:18,gold:0,level:1,heroes:Array(33).fill(0),relics:0,artifacts:ARTIFACTS.map(()=>0),prestiges:0,taps:0,totalKills:0,cooldowns:SKILLS.map(()=>0),active:SKILLS.map(()=>0),bossEnd:0,farming:false,last:now,lastTap:0,lastFairy:now,diamonds:0,weapons:Array(33).fill(0),evolutions:Array(33).fill(0),wounded:Array(33).fill(0),skillLevels:SKILLS.map(()=>0),gear:[],equipped:[-1,-1,-1,-1,-1],dust:0,lootCounter:0,bossKills:0,bossWounded:false,protection:0,seen:[0],achievements:[],daily:newDaily(dayAt(now)),loginDay:-1,streak:0,trial:null,weekly:{week:weekAt(now),best:0,claimed:[]},world:0,worldBest:[1,1],artifactSpent:ARTIFACTS.map(()=>0),log:[]};}
-export function hydrate(s:State):State{if(s.ruleset===TT2_RULESET&&s.tt2){if(!s.tt2.inventory)s.tt2={...freshTT2(s.last),...s.tt2};s.tt2.perkEnds??=[[],[]];s.tt2.rainLast??=s.last;return s;}const base=fresh(s.last||Date.now());const original={...s};Object.assign(s,base,original,{version:2});for(const key of ['heroes','weapons','evolutions','wounded','artifacts','artifactSpent','skillLevels'] as const){const length=key==='artifacts'||key==='artifactSpent'?30:key==='skillLevels'?6:33;const old=original[key]||[];s[key]=Array.from({length},(_,i)=>Number.isFinite(old[i])?old[i]:key==='skillLevels'?1:0);}if(!original.artifactSpent)s.artifactSpent=s.artifacts.map((n,i)=>i<3?n*n:0);s.worldBest[0]=s.best;s.tt2=freshTT2(s.last);s.ruleset=TT2_RULESET;
+export function hydrate(s:State):State{if(s.ruleset===TT2_RULESET&&s.tt2){if(!s.tt2.inventory)s.tt2={...freshTT2(s.last),...s.tt2};s.tt2.perkEnds??=[[],[]];s.tt2.rainLast??=s.last;s.tt2.petCharge??=0;s.tt2.petAttacks??=0;s.tt2.lastPetHit??=0;return s;}const base=fresh(s.last||Date.now());const original={...s};Object.assign(s,base,original,{version:2});for(const key of ['heroes','weapons','evolutions','wounded','artifacts','artifactSpent','skillLevels'] as const){const length=key==='artifacts'||key==='artifactSpent'?30:key==='skillLevels'?6:33;const old=original[key]||[];s[key]=Array.from({length},(_,i)=>Number.isFinite(old[i])?old[i]:key==='skillLevels'?1:0);}if(!original.artifactSpent)s.artifactSpent=s.artifacts.map((n,i)=>i<3?n*n:0);s.worldBest[0]=s.best;s.tt2=freshTT2(s.last);s.ruleset=TT2_RULESET;
  s.tt2.legacyArtifacts=[...s.artifacts];s.tt2.legacySpent=[...s.artifactSpent];s.relics=limit(s.relics+s.artifactSpent.reduce((a,b)=>a+b,0));
  s.artifacts.fill(0);s.artifactSpent.fill(0);s.active.fill(0);s.cooldowns.fill(0);s.skillLevels.fill(0);s.trial=null;s.world=0;s.evolutions.fill(0);s.wounded.fill(0);s.kills=0;s.hp=health(s);s.bossEnd=0;
  s.tt2.earnedPoints=Math.max(0,Math.floor(s.best/50)-1);s.tt2.points=s.tt2.earnedPoints;
@@ -73,7 +74,7 @@ export function apply(s:State,a:Action){advance(s,a.at);const i=a.index??0,t=s.t
   const token=a.amount===1,price=RESOURCE_PERKS[i].cost;
   if((token?t.perkTokens>0:s.diamonds>=price)&&activatePerk(t,i,s.last)){if(token)t.perkTokens--;else s.diamonds-=price;if(i===0)t.mana=manaMax(s);if(i===1){t.rainLast=s.last;buyAffordableHeroes(s);}note(s,`已使用${RESOURCE_PERKS[i].name}，每層持續十二小時。`);}
  }
- if(a.type==='tap'&&s.last-s.lastTap>=45){s.lastTap=s.last;s.taps++;s.daily.taps++;t.lastCrit=tt2Random(t)<critChance(s);let n=tapDamage(s)*(t.lastCrit?10:1);if(s.active[1]>s.last&&tt2Random(t)<SKILL_DATA[1].second[s.skillLevels[1]-1])n*=skillPower(s,1);t.lastHit=n;damage(s,n);}
+ if(a.type==='tap'&&s.last-s.lastTap>=45){s.lastTap=s.last;s.taps++;s.daily.taps++;t.lastCrit=tt2Random(t)<critChance(s);let n=tapDamage(s)*(t.lastCrit?10:1);if(s.active[1]>s.last&&tt2Random(t)<SKILL_DATA[1].second[s.skillLevels[1]-1])n*=skillPower(s,1);t.lastHit=n;damage(s,n);if(chargePet(t)){t.lastPetHit=petAttackDamage(s);t.petAttacks++;damage(s,t.lastPetHit);}}
  if(a.type==='upgrade'||a.type==='hero'){const id=a.type==='upgrade'?-1:i;if(id<-1||id>=HEROES.length||!Number.isInteger(id))return s;let count=a.amount??1;if(count===0){while(count<1000&&s.gold>=cost(s,id,count+1)&&(id<0?s.level:heroLevel(s,id))+count<2000)count++;}if(![1,10,25,100,1000,0].includes(a.amount??1)||!count)return s;const price=cost(s,id,count);if(s.gold>=price&&(id<0?s.level:heroLevel(s,id))+count<=2000){s.gold-=price;if(id<0)s.level+=count;else setHeroLevel(s,id,heroLevel(s,id)+count);}}
  if(a.type==='skill'&&Number.isInteger(i)&&i>=0&&i<6&&s.skillLevels[i]>0&&s.level>=SKILLS[i].level&&s.cooldowns[i]<=s.last&&t.mana>=skillMana(s,i)){
   t.mana-=skillMana(s,i);s.active[i]=s.last+skillDuration(s,i)*1000;s.cooldowns[i]=s.active[i]+skillCooldown(s,i)*1000;s.daily.skills++;
@@ -85,7 +86,7 @@ export function apply(s:State,a:Action){advance(s,a.at);const i=a.index??0,t=s.t
  if(a.type==='talent'&&Number.isInteger(i)&&i>=0&&i<TT2_TREE.length&&canBuyTalent(t,i,s.best)){t.points-=TT2_TREE[i].cost[t.tree[i]];t.tree[i]++;}
  if(a.type==='resetTalents'){t.points+=spentPoints(t);t.tree.fill(0);note(s,'技能點已返還。網頁版目前提供免費重配。');}
  if(a.type==='build'&&Number.isInteger(i)&&i>=0&&i<7)t.build=(['tap','pet','ship','clone','dagger','heavenly','goldGun'] as Build[])[i];
- if(a.type==='prestige'&&s.best>=60&&!s.trial){const gain=relicGain(s),reset=fresh(s.last);for(const key of ['best','prestiges','taps','totalKills','diamonds','weapons','gear','equipped','dust','lootCounter','bossKills','seen','achievements','daily','loginDay','streak','weekly','worldBest','log'] as const)Object.assign(reset,{[key]:structuredClone(s[key])});reset.tt2=structuredClone(t);reset.tt2.extraHeroes.fill(0);reset.tt2.mana=manaMax(reset);reset.prestiges++;reset.relics=s.relics+gain;reset.hp=health(reset);note(reset,`蛻變完成，獲得 ${gain} 聖物。`);return reset;}
+ if(a.type==='prestige'&&s.best>=60&&!s.trial){const gain=relicGain(s),reset=fresh(s.last);for(const key of ['best','prestiges','taps','totalKills','diamonds','weapons','gear','equipped','dust','lootCounter','bossKills','seen','achievements','daily','loginDay','streak','weekly','worldBest','log'] as const)Object.assign(reset,{[key]:structuredClone(s[key])});reset.tt2=structuredClone(t);reset.tt2.extraHeroes.fill(0);reset.tt2.petCharge=0;reset.tt2.lastPetHit=0;reset.tt2.mana=manaMax(reset);reset.prestiges++;reset.relics=s.relics+gain;reset.hp=health(reset);note(reset,`蛻變完成，獲得 ${gain} 聖物。`);return reset;}
  if(a.type==='boss'&&s.farming){s.farming=false;s.kills=monsterCount(s);spawn(s);}
  if(a.type==='fairy'&&s.last-s.lastFairy>=60000){s.lastFairy=s.last;s.daily.fairies++;s.gold=limit(s.gold+goldReward(s,'fairy'));note(s,'已領取妖精金幣。');}
  if(a.type==='equip'){const item=t.inventory.find(g=>g.id===i);if(item)t.equipped[TT2_GEAR[item.definition].slot]=i;}
@@ -150,3 +151,5 @@ function buyAffordableHeroes(s:State){
  }
 }
 function autoBuyHeroes(s:State){const interval=perkValue(s.tt2!,1,s.last);if(interval&&s.last-s.tt2!.rainLast>=interval*1000){s.tt2!.rainLast=s.last;buyAffordableHeroes(s);}}
+
+export function petAttackDamage(s:State){return limit(buildDamage(s,'pet')*petDamageFactor(s.tt2!));}
