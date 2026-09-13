@@ -1,5 +1,6 @@
 'use client';
 import {useState} from 'react';
+import {RESOURCE_PERKS,perkLevel,perkLimit,perkValue} from '../lib/tt2-perks';
 import {PET_NAMES,TALENT_NAMES,SET_NAMES,RARITY_NAMES} from '../lib/zh-tw';
 import {TT2_PETS,TT2_GEAR,TT2_DAILY} from '../lib/tt2-data';
 import {petBonus,equipmentEffect} from '../lib/tt2-rules';
@@ -49,10 +50,13 @@ export default function TT2Panels({s,tab,ready,basePath,act,onPrestige}:Props){
   :collection==='sets'?<><h3>套裝效果資料 · {TT2_SETS.length} 組</h3><p className="panel-note">已收齊套裝會標示完成。可使用碎片依序製作缺少部位。基礎數值加成已接入；工藝力量、每日成長與特殊行為仍待還原。</p>{TT2_SETS.map((set,i)=><article className="feature-card" key={set.id}><h3>{SET_NAMES[set.id]}<small>{RARITY_NAMES[set.rarity]} · {t.sets.includes(i)?'已收齊':`${t.pieces.filter(p=>p.set===i).length} / 5`}</small></h3>{set.effects.map(e=><p key={e.type}>{effectLabel(e.type)} · {e.amount}{e.perDay?'／天（有上限）':''}</p>)}<small>五件製作費：{set.cost.join(' + ')} 工藝碎片</small><button className="buy-button" disabled={t.sets.includes(i)||s.best<set.stage||t.shards<craftPrice(t,i)||!['Rare','Legendary','Mythic'].includes(set.rarity)||t.inventory.length>=100} onClick={()=>act({type:'craft',index:i})}>{s.best<set.stage?`第 ${set.stage} 關開放`:t.sets.includes(i)?'已完成':`製作缺少部位 · ${Number.isFinite(craftPrice(t,i))?craftPrice(t,i):'—'} 碎片`}</button></article>)}</>
   :<><div className="content-heading"><h3>流派加成核對</h3><p>這是計算預覽。公會飛船、匕首、金槍與寵物完整戰鬥尚待還原。</p></div><div className="collection-tabs">{builds.map(([id,name])=><button key={id} className={selected===id?'chosen':''} onClick={()=>setSelected(id)}>{name}</button>)}</div><article className="feature-card"><h3>{builds.find(b=>b[0]===selected)?.[1]}</h3><p>點擊加成指數 {BUILD_COEFFICIENTS[selected].tap}</p><p>英雄加成指數 {BUILD_COEFFICIENTS[selected].hero}</p><p>目前預估傷害 {fmt(buildDamage(s,selected))}</p><p>例如點擊倍率 十的一百次方，影分身只取得 十的六十次方，飛船取得 ×1。</p></article></>}
  </>:tab==='shop'?<>
+  <div className="content-heading"><h3>增益道具</h3><p>💎{fmt(s.diamonds)} 鑽石 · 登入兌換次數 {t.perkTokens}</p></div>
+  {RESOURCE_PERKS.map((p,i)=>{const level=perkLevel(t,i,s.last),full=level>=perkLimit(t);return <article className="feature-card" key={p.id}><h3>{p.icon} {p.name}<small>{level} / {perkLimit(t)} 層</small></h3><p>{p.description}</p>{level>0&&<p>{i===0?`目前回復倍率 ×${perkValue(t,i,s.last)}`:`每 ${perkValue(t,i,s.last)} 秒自動升級`}</p>}{t.perkEnds[i].filter(end=>end>s.last).map((end,j)=><p key={j}>第 {j+1} 層剩餘 {Math.ceil((end-s.last)/60000)} 分鐘</p>)}<div className="feature-actions"><button className="buy-button" disabled={full||s.diamonds<p.cost} onClick={()=>act({type:'resourcePerk',index:i})}>使用 · 💎{p.cost}</button><button className="outline-button" disabled={full||t.perkTokens<1} onClick={()=>act({type:'resourcePerk',index:i,amount:1})}>使用登入兌換次數</button></div></article>;})}
+  <p className="panel-note">每層各計時十二小時，蛻變不重置。登入獎勵暫可自選這兩種增益；原版隨機配發、黃金雨立即金幣及離線自動升級仍待核實。</p>
   <div className="content-heading"><h3>每日登入</h3><p>💎{fmt(s.diamonds)} 鑽石 · ◆{fmt(s.relics)} 聖物 · {t.shards} 工藝碎片</p></div>
   <button className="buy-button" disabled={t.loginAt===Math.floor(s.last/86400000)} onClick={()=>act({type:'daily'})}>{t.loginAt===Math.floor(s.last/86400000)?'今日已領取':`領取第 ${t.loginIndex%14+1} 天`}</button>
   {TT2_DAILY.map((d,i)=><article className="feature-card" key={d.day}><h3>第 {d.day} 天 {i===t.loginIndex%14?'· 下次獎勵':''}</h3><p>{({MonsterGold:'普通泰坦金幣',Diamonds:'鑽石',Equipment:'裝備',Pet:'寵物等級',Perk:'增益兌換次數',EquipmentShards:'工藝碎片',HelperWeapon:'英雄武器',SkillPoint:'技能點'} as Record<string,string>)[d.reward]} ×{d.amount}</p></article>)}
-  <p className="panel-note">依 7.5 的 14 日表循環，每日世界標準時間零時（臺灣時間上午八時） 重置。增益待領 {t.perkTokens} 次、活動幣 {t.eventCurrency} 已保留，對應商店尚未開放；不會換成自訂獎勵。</p>{s.log.map((x,i)=><p className="event-log" key={i}>{x}</p>)}
+  <p className="panel-note">依 7.5 的 14 日表循環，每日世界標準時間零時（臺灣時間上午八時） 重置。增益待領 {t.perkTokens} 次、活動幣 {t.eventCurrency} 已保留。增益可在上方兌換；活動商店尚未開放。</p>{s.log.map((x,i)=><p className="event-log" key={i}>{x}</p>)}
  </>:<div className="prestige-card"><div className="prestige-orb">✦</div><h2>蛻變</h2><p>最高第 60 關開放。重置金幣、當前關卡及英雄，保留神器、鑽石、技能樹與收藏。</p><div className="prestige-reward"><span>預計獲得聖物</span><strong>◆{fmt(relicGain(s))}</strong></div><button className="primary-button" disabled={s.best<60} onClick={onPrestige}>蛻變</button><p className="panel-note">紅書倍率已接上。基礎聖物曲線、進階起始關卡及里程碑尚未完整還原。</p></div>}
  </fieldset>;
 }
