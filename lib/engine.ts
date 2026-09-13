@@ -1,5 +1,5 @@
 import {heroPassiveTotals,heroPowerBoost} from './tt2-hero-passives.ts';
-import {playerMilestone} from './tt2-player.ts';
+import {playerBaseDamage,playerUpgradeCost} from './tt2-player.ts';
 import {chargePet,petDamageFactor} from './tt2-pet-combat.ts';
 import {RESOURCE_PERKS,perkValue,activatePerk,manaSeconds} from './tt2-perks.ts';
 import {HERO_NAMES,PET_NAMES} from './zh-tw.ts';
@@ -47,7 +47,11 @@ export function bossDuration(s:State){return 30+stateEffect(s,'BossTimerDuration
 export function health(s:State){return limit(18*1.32**(s.stage-1)*(isBoss(s)?[2,3,4,5,8][(s.stage-1)%5]:1)*(1-Math.min(.9,stateEffect(s,'MonsterHP'))));}
 export function isBoss(s:State){return !s.trial&&!s.farming&&s.kills>=monsterCount(s);}
 export function reward(s:State){return goldReward(s,'monster');}
-export function cost(s:State,index=-1,amount=1){const n=index<0?s.level:heroLevel(s,index),base=index<0?8:HEROES[index].base,rate=index<0?1.12:1.075;return Math.ceil(limit(base*rate**(index<0?n-1:n)*(rate**amount-1)/(rate-1)*(1-Math.min(.9,stateEffect(s,'AllUpgradeCost')))*(index<0?1:1-Math.min(.9,stateEffect(s,'HelperUpgradeCost')))));}
+export function cost(s:State,index=-1,amount=1){
+ if(index<0)return limit(playerUpgradeCost(s.level,amount)*['SwordMasterUpgradeCost','AllUpgradeCost','AllUpgradeCostFairy'].reduce((n,id)=>n*Math.max(0,1-stateEffect(s,id)),1));
+ const n=heroLevel(s,index),rate=1.075;
+ return Math.ceil(limit(HEROES[index].base*rate**n*(rate**amount-1)/(rate-1)*(1-Math.min(.9,stateEffect(s,'AllUpgradeCost')))*(1-Math.min(.9,stateEffect(s,'HelperUpgradeCost')))));
+}
 export function relicGain(s:State){return s.best>=60?Math.max(1,Math.floor(s.stage**1.7/100*stateEffect(s,'PrestigeRelic'))):0;}
 export function artifactCost(s:State,i:number){return s.tt2!.artifacts[i]?upgradeArtifactCost(s.tt2!,i):discoveryCost(s.tt2!);}
 export function evolveCost(s:State,i:number){return limit(HEROES[i].base*1e4**s.evolutions[i]*1e6);}
@@ -125,10 +129,10 @@ export function manaRegen(s:State){return baseManaRegen(s)*perkValue(s.tt2!,0,s.
 export function skillMana(s:State,i:number){return Math.max(0,SKILL_DATA[i].mana[Math.max(0,s.skillLevels[i]-1)]-stateEffect(s,SKILL_DATA[i].id+'SkillMana'));}
 export function critChance(s:State){return Math.min(1,.02+stateEffect(s,'CritChance'));}
 export function buildDamage(s:State,build:Build){const t=s.tt2!,active=s.active.filter(n=>n>s.last).length,c={tap:0,pet:.5,ship:1,clone:.5,dagger:.5,heavenly:.5,goldGun:.9}[build];
- let base=(1+2*(s.level-1))*1.025**(s.level-1);
- // Verified milestone table layered on the still-approximate base curve.
- // Route through the existing tap reduction; ships receive no tap multiplier.
- base*=playerMilestone(s.level)**({tap:1,pet:1,ship:0,clone:.6,dagger:1,heavenly:1,goldGun:.45}[build]);
+ // The intrinsic Sword Master curve is native-verified. Other build models
+ // still use the existing reduction coefficients pending full reconstruction.
+ const tapCoefficient={tap:1,pet:1,ship:0,clone:.6,dagger:1,heavenly:1,goldGun:.45}[build];
+ let base=swordMasterBaseDamage(s)**tapCoefficient;
  if(c)base*=Math.max(1,rawHeroDps(s))**c;
  let n=base*buildMultiplier(t,build,active,isBoss(s),id=>stateEffect(s,id))*gearBonus(s,0);
  if(s.active[3]>s.last)n*=skillPower(s,3)**({tap:1,pet:1,ship:0,clone:.6,dagger:1,heavenly:1,goldGun:.45}[build]);
@@ -168,3 +172,5 @@ export function stateEffect(s:State,target:string){
  const additive=bonusDefinitions[target]?.additive,base=effect(s.tt2!,target),hero=cached.totals[target]??(additive?0:1);
  return additive?base+hero:limit(base*hero);
 }
+
+export function swordMasterBaseDamage(s:State){return limit(playerBaseDamage(s.level)*stateEffect(s,'SwordMasterDamage'));}
