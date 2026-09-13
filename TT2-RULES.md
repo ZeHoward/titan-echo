@@ -1,5 +1,7 @@
 # TT2 compatibility audit
 
+Current work order and completion status: [ROADMAP.md](ROADMAP.md). Entries below are chronological research history; later entries supersede earlier limitations. The target is 8.2.0; the current numerical catalog remains a 7.5 transition baseline until R02/R03 complete.
+
 The user's supplied Bahamut guide refers to **Tap Titans 2**, not TT1. The unpublished TT1 draft was archived outside the source tree. Do not reintroduce TT1 formulas.
 
 - Behavior reference: https://m.gamer.com.tw/forum/C.php?bsn=27714&snA=6761

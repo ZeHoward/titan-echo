@@ -1,0 +1,355 @@
+{
+  "auditedAt": "2026-09-14",
+  "targetClientVersion": "8.2.0",
+  "targetScope": "Bundled client data and verifiable native behavior; live server overrides unknown",
+  "currentApplicationVersion": "2.6.0",
+  "currentNumericBaseline": "7.5.0",
+  "baselineCommit": "a959d19790af28d994d96bd8a315ca7185c04dfe",
+  "package": {
+    "sha256": "8d78c9aa877e6c0b291ee2116cab855bd26c59c1d080bc654f88ecf1ff268b5f",
+    "bytes": 296675819,
+    "signerIndependentlyVerified": false
+  },
+  "currentGeneratedCatalogCounts": {
+    "TT2_ARTIFACTS": 103,
+    "TT2_ACTIVE": 6,
+    "TT2_TREE": 66,
+    "TT2_SETS": 181,
+    "TT2_HEROES": 37,
+    "TT2_DISCOVERY": 194,
+    "TT2_BONUSES": 640,
+    "TT2_HERO_MILESTONES": 145,
+    "TT2_PETS": 30,
+    "TT2_GEAR": 983,
+    "TT2_DAILY": 14
+  },
+  "tableComparisonMethod": "Trimmed shared-column strings; distinct from semantic numeric equality or enabled gameplay counts",
+  "tables": [
+    {
+      "table": "ArtifactInfo",
+      "key": [
+        "ArtifactID"
+      ],
+      "baselineRows": 103,
+      "apkRows": 103,
+      "addedRows": 0,
+      "removedRows": 0,
+      "changedSharedRows": 10,
+      "addedColumns": [],
+      "baselineSha256": "dc93385e3c7410c85126da6250594ee3e3a73a9798c77c7f5fc34d55741bffcf",
+      "apkTextSha256": "6627d23a8b55dddea2cf1bfebd4b12b0644646716db51a63103af839937e5f2b"
+    },
+    {
+      "table": "ArtifactCostInfo",
+      "key": [
+        "Count"
+      ],
+      "baselineRows": 194,
+      "apkRows": 194,
+      "addedRows": 0,
+      "removedRows": 0,
+      "changedSharedRows": 0,
+      "addedColumns": [],
+      "baselineSha256": "1a4a86cd0be268bb8d9f41cdac1f4f4ae93c6171268bded6f257919ddecf82dc",
+      "apkTextSha256": "1a4a86cd0be268bb8d9f41cdac1f4f4ae93c6171268bded6f257919ddecf82dc"
+    },
+    {
+      "table": "PetInfo",
+      "key": [
+        "PetID"
+      ],
+      "baselineRows": 30,
+      "apkRows": 30,
+      "addedRows": 0,
+      "removedRows": 0,
+      "changedSharedRows": 0,
+      "addedColumns": [],
+      "baselineSha256": "0e86cd5c1125981c73db2a50780530937e431a6bfaa4591b082842de97745c51",
+      "apkTextSha256": "0e86cd5c1125981c73db2a50780530937e431a6bfaa4591b082842de97745c51"
+    },
+    {
+      "table": "HelperInfo",
+      "key": [
+        "HelperID"
+      ],
+      "baselineRows": 37,
+      "apkRows": 37,
+      "addedRows": 0,
+      "removedRows": 0,
+      "changedSharedRows": 0,
+      "addedColumns": [],
+      "baselineSha256": "03eb66e09e0bd1e1556f4cfd6a8d45e12702c3afdcba6a9985d02122a12d8259",
+      "apkTextSha256": "03eb66e09e0bd1e1556f4cfd6a8d45e12702c3afdcba6a9985d02122a12d8259"
+    },
+    {
+      "table": "HelperSkillInfo",
+      "key": [
+        "HelperSkillID"
+      ],
+      "baselineRows": 370,
+      "apkRows": 370,
+      "addedRows": 0,
+      "removedRows": 0,
+      "changedSharedRows": 0,
+      "addedColumns": [],
+      "baselineSha256": "5a712cb4d7e985e5447e7641b4454b61700d9eebf28599903532d3cc0d40fcbc",
+      "apkTextSha256": "5a712cb4d7e985e5447e7641b4454b61700d9eebf28599903532d3cc0d40fcbc"
+    },
+    {
+      "table": "ActiveSkillInfo",
+      "key": [
+        "ActiveSkillID"
+      ],
+      "baselineRows": 14,
+      "apkRows": 14,
+      "addedRows": 0,
+      "removedRows": 0,
+      "changedSharedRows": 2,
+      "addedColumns": [
+        "A35",
+        "A36",
+        "A37",
+        "A38",
+        "A39",
+        "B35",
+        "B36",
+        "B37",
+        "B38",
+        "B39",
+        "C35",
+        "C36",
+        "C37",
+        "C38",
+        "C39",
+        "M35",
+        "M36",
+        "M37",
+        "M38",
+        "M39"
+      ],
+      "baselineSha256": "95ecaec145ee0d995e4d876592c4de967075f17c613c957d8c59ddefd785f438",
+      "apkTextSha256": "7eccdce065d96658142a2f1f3962d7a233083ceacb3781c11f6979599c9fcba8"
+    },
+    {
+      "table": "SkillTreeInfo2.0",
+      "key": [
+        "TalentID"
+      ],
+      "baselineRows": 66,
+      "apkRows": 72,
+      "addedRows": 6,
+      "removedRows": 0,
+      "changedSharedRows": 56,
+      "addedColumns": [
+        "A46",
+        "A47",
+        "A48",
+        "A49",
+        "A50",
+        "A51",
+        "A52",
+        "A53",
+        "A54",
+        "A55",
+        "A56",
+        "A57",
+        "A58",
+        "A59",
+        "A60",
+        "A61",
+        "A62",
+        "A63",
+        "A64",
+        "A65",
+        "B46",
+        "B47",
+        "B48",
+        "B49",
+        "B50",
+        "B51",
+        "B52",
+        "B53",
+        "B54",
+        "B55",
+        "B56",
+        "B57",
+        "B58",
+        "B59",
+        "B60",
+        "B61",
+        "B62",
+        "B63",
+        "B64",
+        "B65",
+        "C46",
+        "C47",
+        "C48",
+        "C49",
+        "C50",
+        "C51",
+        "C52",
+        "C53",
+        "C54",
+        "C55",
+        "C56",
+        "C57",
+        "C58",
+        "C59",
+        "C60",
+        "C61",
+        "C62",
+        "C63",
+        "C64",
+        "C65",
+        "Co46",
+        "Co47",
+        "Co48",
+        "Co49",
+        "Co50",
+        "Co51",
+        "Co52",
+        "Co53",
+        "Co54",
+        "Co55",
+        "Co56",
+        "Co57",
+        "Co58",
+        "Co59",
+        "Co60",
+        "Co61",
+        "Co62",
+        "Co63",
+        "Co64",
+        "Co65",
+        "S46",
+        "S47",
+        "S48",
+        "S49",
+        "S50",
+        "S51",
+        "S52",
+        "S53",
+        "S54",
+        "S55",
+        "S56",
+        "S57",
+        "S58",
+        "S59",
+        "S60",
+        "S61",
+        "S62",
+        "S63",
+        "S64",
+        "S65"
+      ],
+      "baselineSha256": "09b34eacad580ad07b5ed6a0196624101f42102983d595d018222193ed58cac4",
+      "apkTextSha256": "a44b77b01564f140ae8753d1cbd102a862ed054e35e643217c5f6c88b1bdaf4c"
+    },
+    {
+      "table": "EquipmentSetInfo",
+      "key": [
+        "EquipmentSet"
+      ],
+      "baselineRows": 181,
+      "apkRows": 209,
+      "addedRows": 28,
+      "removedRows": 0,
+      "changedSharedRows": 11,
+      "addedColumns": [],
+      "baselineSha256": "f13cc80bdf534a34c1c9b1449abe48413f05a31f6aebfe4f3a4dacc5db4fea63",
+      "apkTextSha256": "22e581bbfd4b374300699d7d114a06b8bb2ce84d82dcf0555e05039c4076c3e6"
+    },
+    {
+      "table": "C_EquipmentInfo",
+      "key": [
+        "EquipmentID"
+      ],
+      "baselineRows": 983,
+      "apkRows": 1118,
+      "addedRows": 135,
+      "removedRows": 0,
+      "changedSharedRows": 5,
+      "addedColumns": [],
+      "baselineSha256": "4835372179b851425a6034e92eefb55a0dea4b7a3c7890640474ace458fcc188",
+      "apkTextSha256": "3434c63fe880bafbe6d87439041ebfee0af174e635ba733ace1179b83e8fa655"
+    },
+    {
+      "table": "PerkInfo",
+      "key": [
+        "PerkID"
+      ],
+      "baselineRows": 7,
+      "apkRows": 19,
+      "addedRows": 12,
+      "removedRows": 0,
+      "changedSharedRows": 0,
+      "addedColumns": [],
+      "baselineSha256": "03e45470f8843d0e8ac225ef9946c082dfd5103dac90d705ed0b2dc14e2dc4a8",
+      "apkTextSha256": "f202b113e8741e1f5b3222f2e9d2a569fb04a7ec85f6f51a4cfa773e8cb610e8"
+    },
+    {
+      "table": "DailyRewardsInfo",
+      "key": [
+        "Day"
+      ],
+      "baselineRows": 14,
+      "apkRows": 14,
+      "addedRows": 0,
+      "removedRows": 0,
+      "changedSharedRows": 14,
+      "addedColumns": [
+        "AnniversaryMinigameCurrency"
+      ],
+      "baselineSha256": "18932d591f8ccd964e493c5bbbf2e9eb8913dd56a899c8d2b3e0a846e027fcb6",
+      "apkTextSha256": "403c909635025bddd189b8d061f271398dfdbcecc55fc34cd294b9fec199fba8"
+    },
+    {
+      "table": "PlayerImprovementsInfo",
+      "key": [
+        "Level"
+      ],
+      "baselineRows": 234,
+      "apkRows": 234,
+      "addedRows": 0,
+      "removedRows": 0,
+      "changedSharedRows": 0,
+      "addedColumns": [],
+      "baselineSha256": "5291480ec18430081281132a3a207a7fd38ae64d9c78d65546b8109abcdabfea",
+      "apkTextSha256": "5291480ec18430081281132a3a207a7fd38ae64d9c78d65546b8109abcdabfea"
+    },
+    {
+      "table": "HelperImprovementsInfo",
+      "key": [
+        "Ascension",
+        "Level"
+      ],
+      "baselineRows": 1015,
+      "apkRows": 1015,
+      "addedRows": 0,
+      "removedRows": 0,
+      "changedSharedRows": 0,
+      "addedColumns": [],
+      "baselineSha256": "f5211ec85af7cd2665380d7000706a393eea6f358a78ffa799a1729b46b22d7d",
+      "apkTextSha256": "f5211ec85af7cd2665380d7000706a393eea6f358a78ffa799a1729b46b22d7d"
+    },
+    {
+      "table": "TitanCardInfo",
+      "key": [
+        "TitanID"
+      ],
+      "baselineRows": 120,
+      "apkRows": 120,
+      "addedRows": 0,
+      "removedRows": 0,
+      "changedSharedRows": 0,
+      "addedColumns": [],
+      "baselineSha256": "a59ce2eadb8b1f90ff9a3a6834277a3017a0b97094e624057992111db3e22e2f",
+      "apkTextSha256": "a59ce2eadb8b1f90ff9a3a6834277a3017a0b97094e624057992111db3e22e2f"
+    }
+  ],
+  "invariants": [
+    "Stable source IDs, not row positions, govern migrations",
+    "Keep existing saves backed up; test idempotent migration and cloud CAS conflicts",
+    "Static package defaults are not verified live server configuration"
+  ]
+}
