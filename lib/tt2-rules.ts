@@ -65,14 +65,14 @@ export function spentPoints(t:TT2State,branch?:string){return TT2_TREE.reduce((n
 export function canBuyTalent(t:TT2State,i:number,best:number){const k=TT2_TREE[i],level=t.tree[i]||0;if(!k||level>=k.max||t.points<k.cost[level]||best<k.stage[level]||spentPoints(t,k.branch)<k.required)return false;const prerequisite=TT2_TREE.findIndex(n=>n.id===k.prerequisite);return prerequisite<0||t.tree[prerequisite]>0;}
 // Exponents are damage-reduction coefficients, not a linear percentage discount.
 export const BUILD_COEFFICIENTS:Record<Build,{tap:number;hero:number}>={tap:{tap:1,hero:0},pet:{tap:1,hero:.5},ship:{tap:0,hero:1},clone:{tap:.6,hero:.5},dagger:{tap:1,hero:.5},heavenly:{tap:1,hero:.5},goldGun:{tap:.45,hero:.9}};
-export function buildMultiplier(t:TT2State,build:Build,active:number,boss=false){const c=BUILD_COEFFICIENTS[build];let n=artifactAllDamage(t)*effect(t,'AllDamage')*effect(t,'CritDamage')*effect(t,'TapDamage')**c.tap*effect(t,'AllHelperDamage')**c.hero;
- n*=effect(t,'DamagePerRunningActiveSkill')**Math.min(4,active);
- n*=1+(effect(t,'DamagePerOwnedCardLevel')-1)*t.cards;
- n*=1+(effect(t,'DamagePerOwnedArtifact')-1)*t.artifacts.filter(n=>n>0).length;
- if(['pet','ship','clone'].includes(build))n*=effect(t,'CompanionDamage');
- if(['heavenly','clone','dagger','goldGun'].includes(build))n*=effect(t,'SwordAttackDamage');
- n*=effect(t,boss?'BossDamage':'TitanDamage');
+export function buildMultiplier(t:TT2State,build:Build,active:number,boss=false,resolve=(id:string)=>effect(t,id)){const c=BUILD_COEFFICIENTS[build];let n=artifactAllDamage(t)*resolve('AllDamage')*resolve('CritDamage')*resolve('TapDamage')**c.tap*resolve('AllHelperDamage')**c.hero;
+ n*=resolve('DamagePerRunningActiveSkill')**Math.min(4,active);
+ n*=1+(resolve('DamagePerOwnedCardLevel')-1)*t.cards;
+ n*=1+(resolve('DamagePerOwnedArtifact')-1)*t.artifacts.filter(n=>n>0).length;
+ if(['pet','ship','clone'].includes(build))n*=resolve('CompanionDamage');
+ if(['heavenly','clone','dagger','goldGun'].includes(build))n*=resolve('SwordAttackDamage');
+ n*=resolve(boss?'BossDamage':'TitanDamage');
  const own={tap:'TapDamage',pet:'PetDamage',ship:'ClanShipDamage',clone:'ShadowCloneSkillAmount',dagger:'UltraDaggerDamage',heavenly:'BurstDamageSkillAmount',goldGun:'GoldGunDamage'}[build];
- if(build!=='tap')n*=effect(t,own);
+ if(build!=='tap')n*=resolve(own);
  return cap(n);
 }
