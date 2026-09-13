@@ -1,4 +1,4 @@
-import {heroPassiveTotals} from './tt2-hero-passives.ts';
+import {heroPassiveTotals,heroPowerBoost} from './tt2-hero-passives.ts';
 import {chargePet,petDamageFactor} from './tt2-pet-combat.ts';
 import {RESOURCE_PERKS,perkValue,activatePerk,manaSeconds} from './tt2-perks.ts';
 import {HERO_NAMES,PET_NAMES} from './zh-tw.ts';
@@ -85,7 +85,7 @@ export function apply(s:State,a:Action){advance(s,a.at);const i=a.index??0,t=s.t
  if(a.type==='discover'&&s.best>=60){const found=drawArtifact(t,s.relics);if(found){s.relics-=found.cost;note(s,`獲得神器：${TT2_ARTIFACTS[found.index].name}`);}}
  if(a.type==='artifact'&&Number.isInteger(i)&&i>=0&&i<103&&t.artifacts[i]>0){const price=artifactCost(s,i),max=TT2_ARTIFACTS[i].max||1e6;if(s.relics>=price&&t.artifacts[i]<max){s.relics-=price;t.spent[i]+=price;t.artifacts[i]++;}}
  if(a.type==='talent'&&Number.isInteger(i)&&i>=0&&i<TT2_TREE.length&&canBuyTalent(t,i,s.best)){t.points-=TT2_TREE[i].cost[t.tree[i]];t.tree[i]++;}
- if(a.type==='resetTalents'){t.points+=spentPoints(t);t.tree.fill(0);note(s,'技能點已返還。網頁版目前提供免費重配。');}
+ if(a.type==='resetTalents'){t.points+=spentPoints(t);t.tree.fill(0);t.mana=Math.min(t.mana,manaMax(s));note(s,'技能點已返還。網頁版目前提供免費重配。');}
  if(a.type==='build'&&Number.isInteger(i)&&i>=0&&i<7)t.build=(['tap','pet','ship','clone','dagger','heavenly','goldGun'] as Build[])[i];
  if(a.type==='prestige'&&s.best>=60&&!s.trial){const gain=relicGain(s),reset=fresh(s.last);for(const key of ['best','prestiges','taps','totalKills','diamonds','weapons','gear','equipped','dust','lootCounter','bossKills','seen','achievements','daily','loginDay','streak','weekly','worldBest','log'] as const)Object.assign(reset,{[key]:structuredClone(s[key])});reset.tt2=structuredClone(t);reset.tt2.extraHeroes.fill(0);reset.tt2.petCharge=0;reset.tt2.lastPetHit=0;reset.tt2.mana=manaMax(reset);reset.prestiges++;reset.relics=s.relics+gain;reset.hp=health(reset);note(reset,`蛻變完成，獲得 ${gain} 聖物。`);return reset;}
  if(a.type==='boss'&&s.farming){s.farming=false;s.kills=monsterCount(s);spawn(s);}
@@ -158,9 +158,9 @@ export function petAttackDamage(s:State){return limit(buildDamage(s,'pet')*petDa
 // Derived only; no duplicated levels or passive multipliers enter cloud saves.
 const heroPassiveCache=new WeakMap<State,{signature:string;totals:Record<string,number>}>();
 export function stateEffect(s:State,target:string){
- const levels=[...s.heroes,...s.tt2!.extraHeroes],signature=levels.join(',');
+ const levels=[...s.heroes,...s.tt2!.extraHeroes],boost=heroPowerBoost(s.tt2!),signature=levels.join(',')+'|'+boost.multiplicative+'|'+boost.additive;
  let cached=heroPassiveCache.get(s);
- if(!cached||cached.signature!==signature){cached={signature,totals:heroPassiveTotals(levels)};heroPassiveCache.set(s,cached);}
+ if(!cached||cached.signature!==signature){cached={signature,totals:heroPassiveTotals(levels,boost)};heroPassiveCache.set(s,cached);}
  const additive=bonusDefinitions[target]?.additive,base=effect(s.tt2!,target),hero=cached.totals[target]??(additive?0:1);
  return additive?base+hero:limit(base*hero);
 }

@@ -1,7 +1,7 @@
 'use client';
 import {useState} from 'react';
 import {petAttackDamage} from '../lib/engine';
-import {heroSkills,PENDING_HERO_EFFECTS} from '../lib/tt2-hero-passives';
+import {heroSkills,heroSkillValue,heroPowerBoost,PENDING_HERO_EFFECTS} from '../lib/tt2-hero-passives';
 import {petRequiredTaps} from '../lib/tt2-pet-combat';
 import {RESOURCE_PERKS,perkLevel,perkLimit,perkValue} from '../lib/tt2-perks';
 import {PET_NAMES,TALENT_NAMES,SET_NAMES,RARITY_NAMES} from '../lib/zh-tw';
@@ -16,7 +16,7 @@ const branchNames=['騎士','召喚師','督軍','術士','盜賊','煉金術士
 const builds:[Build,string][]=[['tap','手動點擊'],['pet','寵物'],['ship','公會飛船'],['clone','影分身'],['dagger','匕首'],['heavenly','天堂'],['goldGun','金槍']];
 export default function TT2Panels({s,tab,ready,basePath,act,onPrestige}:Props){
  const [qty,setQty]=useState(1),[search,setSearch]=useState(''),[branch,setBranch]=useState('Knight'),[selected,setSelected]=useState<Build>('clone'),[detail,setDetail]=useState(-1),[collection,setCollection]=useState('pets');
- const t=s.tt2!;
+ const t=s.tt2!,powerBoost=heroPowerBoost(t);
  const price=(i:number)=>cost(s,i,qty||1);
  return <fieldset className="content-fieldset" disabled={!ready}>
  <p className="panel-note">點擊泰坦二代 7.5 規則校正版 · <a href={`${basePath}rules.html`} target="_blank" rel="noreferrer">已還原／仍待完成 ↗</a></p>
@@ -24,8 +24,8 @@ export default function TT2Panels({s,tab,ready,basePath,act,onPrestige}:Props){
   <div className="buy-toolbar"><span>升級數量</span><div>{[1,10,25,100,0].map(n=><button key={n} className={qty===n?'chosen':''} onClick={()=>setQty(n)}>{n?`×${n}`:'最多'}</button>)}</div></div>
   <div className="sword-master"><div className="hero-top"><span className="avatar master">⚔️</span><div><h3>劍術大師</h3><p>等級 {s.level} · 點擊 {fmt(tapDamage(s))}</p></div><button className="buy-button" disabled={s.level>=2000||s.gold<price(-1)} onClick={()=>act({type:'upgrade',amount:qty})}>升級<small>●{fmt(price(-1))}{qty===0?' 起':''}</small></button></div></div>
   <div className="list-heading"><h3>英雄 {HEROES.filter((_,i)=>heroLevel(s,i)>0).length} / {HEROES.length}</h3><span>總每秒傷害 {fmt(dps(s))}</span></div>
-  <p className="panel-note">英雄名稱、初始價格及初始傷害依二代資料表。等級里程碑與基礎被動已接入；英雄轉點擊、十倍金幣機率、米達斯之心與多重泰坦金源、卷軸增幅、逐級成長與昇華仍待還原。</p>
-  {HEROES.map((h,i)=><div className="hero-card" key={h.name}><span className={`avatar hero-${i%4}`}>{h.icon}</span><div className="hero-info"><h3>{h.name}<small>等級 {heroLevel(s,i)}</small></h3><p>{({Melee:'近戰',Ranged:'遠程',Spell:'咒術'} as Record<string,string>)[h.title]||h.title}</p><details><summary>等級被動 · 已解鎖 {heroSkills(i).filter(k=>k.level<=heroLevel(s,i)&&!PENDING_HERO_EFFECTS.has(k.effect)).length} 項</summary>{heroSkills(i).map(k=><p key={k.id}>等級 {k.level} · {k.effect==='Goldx10Chance'?'十倍金幣機率':effectLabel(k.effect)} {effectText(k.effect,k.value)} · {PENDING_HERO_EFFECTS.has(k.effect)?'待還原':k.level>2000?'待開放昇階':heroLevel(s,i)>=k.level?'已生效':'未解鎖'}</p>)}</details></div><button className="buy-button" disabled={heroLevel(s,i)>=2000||s.gold<price(i)} onClick={()=>act({type:'hero',index:i,amount:qty})}>{heroLevel(s,i)?'升級':'招募'}<small>●{fmt(price(i))}{qty===0?' 起':''}</small></button></div>)}
+  <p className="panel-note">英雄名稱、初始價格及初始傷害依二代資料表。等級里程碑、基礎被動與戰術洞察已接入；英雄轉點擊、十倍金幣機率、米達斯之心與多重泰坦金源、卷軸增幅、逐級成長與昇華仍待還原。</p>
+  {HEROES.map((h,i)=><div className="hero-card" key={h.name}><span className={`avatar hero-${i%4}`}>{h.icon}</span><div className="hero-info"><h3>{h.name}<small>等級 {heroLevel(s,i)}</small></h3><p>{({Melee:'近戰',Ranged:'遠程',Spell:'咒術'} as Record<string,string>)[h.title]||h.title}</p><details><summary>等級被動 · 已解鎖 {heroSkills(i).filter(k=>k.level<=heroLevel(s,i)&&!PENDING_HERO_EFFECTS.has(k.effect)).length} 項</summary>{heroSkills(i).map(k=><p key={k.id}>等級 {k.level} · {k.effect==='Goldx10Chance'?'十倍金幣機率':effectLabel(k.effect)} {effectText(k.effect,heroSkillValue(k,powerBoost))} · {PENDING_HERO_EFFECTS.has(k.effect)?'待還原':k.level>2000?'待開放昇階':heroLevel(s,i)>=k.level?'已生效':'未解鎖'}</p>)}</details></div><button className="buy-button" disabled={heroLevel(s,i)>=2000||s.gold<price(i)} onClick={()=>act({type:'hero',index:i,amount:qty})}>{heroLevel(s,i)?'升級':'招募'}<small>●{fmt(price(i))}{qty===0?' 起':''}</small></button></div>)}
  </>:tab==='artifacts'?<>
   <div className="intro-card"><span className="large-symbol">💠</span><h3>神器</h3><p>{t.artifacts.filter(n=>n>0).length} / 103 · ◆{fmt(s.relics)} 聖物</p><button className="buy-button" disabled={s.best<60||!canDiscover(t)||s.relics<discoveryCost(t)} onClick={()=>act({type:'discover'})}>{s.best<60?'第 60 關開放':canDiscover(t)?`隨機發現 · ◆${fmt(discoveryCost(t))}`:'神器已收齊'}</button></div>
   <p className="panel-note">傷害與效果分開計算；只增強指定流派、金源或裝備。涉及尚未完成系統的神器，會保留數值但尚無對應收益。附魔與拆解暫未開放。</p>
