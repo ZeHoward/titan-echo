@@ -45,7 +45,7 @@ def index(rows, keys):
     return result
 
 def write(name, value):
-    (OUT / name).write_text(json.dumps(value, ensure_ascii=False, separators=(',', ':')) + '\n', encoding='utf-8')
+    (OUT / name).write_text(json.dumps(value, ensure_ascii=False, separators=(',', ':')) + '\n', encoding='utf-8', newline='\n')
 
 def main():
     audit = json.loads((ROOT / 'docs/reference-baseline.json').read_text())
