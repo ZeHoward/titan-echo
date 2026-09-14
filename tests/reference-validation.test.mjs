@@ -19,6 +19,9 @@ test('reference audit is reproducible and native-only bonus identities remain di
     'EquipmentSetInfo/MultiCast/BonusType2/AllMultiCastManaCosts',
     'PerkInfo/Doom/BonusTypeA/DoomBonusDamageMax',
     'PerkInfo/Doom/BonusTypeB/DoomBonusTimeUntilMaxDamage',
+    'RaidSkillInfo/LimbBurst/BonusTypeA/LimbBurstDamage',
+    'RaidSkillInfo/LimbBurst/BonusTypeC/LimbBurstMult',
+    'RaidSkillInfo/DecayingAttack/BonusTypeE/DecayHealthCap',
     ...['1', '6', '40', '60'].map(id => `TitanScalingInfo/${id}/BonusTypeA/MonsterHPScaling`),
   ].sort());
 });
@@ -28,7 +31,7 @@ test('unknown effect IDs fail reference resolution even when other native-only I
   broken.ArtifactInfo.records[0].values.BonusType = 'InventedDamage';
   assert.ok(auditCatalogs(broken).unresolved.some(r => r.value === 'InventedDamage'));
   const withoutNative = auditCatalogs(catalogs, {});
-  assert.equal(withoutNative.unresolved.length, 9);
+  assert.equal(withoutNative.unresolved.length, 12);
 });
 
 test('schema validation rejects corrupted decimals, flags, IDs and achievement tiers', () => {
