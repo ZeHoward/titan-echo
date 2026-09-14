@@ -17,8 +17,10 @@ TABLES = ['ArtifactInfo', 'ArtifactCostInfo', 'ActiveSkillInfo', 'ActiveSkillMul
           'AchievementInfo', 'DailyAchievementInfo', 'PetQuestLevelInfo',
           'TitanResearchInfo', 'TitanCardInfo',
           'TitanCardUpgradeCostInfo', 'GemstoneResearchInfo', 'HolidayEventTypeInfo',
-          'ChallengeTournamentInfo', ENHANCEMENT_TABLE]
-OMIT = {'Name', 'Note', 'Notes', 'Description', 'PetName', 'NameColor', 'BonusIcon', 'TextSpriteIndex'}
+          'ChallengeTournamentInfo', ENHANCEMENT_TABLE, 'RaidSkillInfo', 'RaidSkillCardCostInfo',
+          'RaidPlayerInfo', 'RaidEnemyInfo', 'RaidEnemyPartInfo']
+OMIT = {'Name', 'Note', 'Notes', 'Description', 'PetName', 'NameColor', 'BonusIcon', 'TextSpriteIndex',
+        'Color', 'EnchantColor', 'BestAgainst'}
 DECIMAL = re.compile(r'[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?\Z')
 
 def sha(path):

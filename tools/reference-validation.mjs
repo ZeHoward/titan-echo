@@ -27,6 +27,10 @@ export function classify(table, row, catalogs) {
     }
   }
   let scope = 'unclassified';
+  if (['RaidSkillInfo', 'RaidSkillCardCostInfo', 'RaidPlayerInfo', 'RaidEnemyInfo', 'RaidEnemyPartInfo'].includes(table)) {
+    scope = 'raid';
+    evidence.push(`table=${table}`);
+  }
   if (['Maingame', 'Raid'].includes(v.Type)) {
     scope = v.Type === 'Raid' ? 'raid' : 'main-game';
     evidence.push(`Type=${v.Type}`);
@@ -72,7 +76,7 @@ export function loadNativeBonuses() {
 }
 
 export function auditCatalogs(catalogs, nativeBonuses = loadNativeBonuses()) {
-  const errors = [], unresolved = [], nativeOnly = [], classifications = {}, referenceCounts = {};
+  const errors = [], unresolved = [], nativeOnly = [], deferredReferences = [], classifications = {}, referenceCounts = {};
   const ids = Object.fromEntries(Object.entries(catalogs).map(([name, data]) => [name, new Set(data.records.map(r => r.id))]));
   function ref(table, row, field, target, multiple = false) {
     const raw = row.values[field];
@@ -111,7 +115,52 @@ export function auditCatalogs(catalogs, nativeBonuses = loadNativeBonuses()) {
       }
       if (row.values.MaxLevel !== undefined && !/^\d+$/.test(row.values.MaxLevel)) errors.push(`${label}: invalid MaxLevel`);
       for (const field of Object.keys(row.values)) {
-        if (/^(BonusType(?:[A-D]|[1-3])?|ClassBonusType|SpatialBonusType)$/.test(field)) ref(table, row, field, 'BonusInfo');
+        if (/^(BonusType(?:[A-H]|[1-3])?|ClassBonusType|SpatialBonusType)$/.test(field)) ref(table, row, field, 'BonusInfo');
+      }
+      if (table === 'RaidEnemyPartInfo') {
+        for (const field of ['ProtectingPart', 'ProtectedPart', 'OppositePart', 'LinkedParts']) {
+          ref(table, row, field, table, field === 'LinkedParts');
+        }
+        for (const field of ['IsDestructible', 'HasHealth']) {
+          if (!bool(row.values[field])) errors.push(`${label}.${field}: invalid flag`);
+        }
+      }
+      if (table === 'RaidSkillInfo') {
+        const max = Number(row.values.MaxLevel);
+        if (!Number.isInteger(max) || max < 1 || max > 150) errors.push(`${label}: unsupported card level range`);
+        else for (let level = 1; level <= max; level++) {
+          for (const prefix of ['A', 'B']) {
+            const value = row.values[prefix + level];
+            if (typeof value !== 'string' || !decimal.test(value)) errors.push(`${label}.${prefix}${level}: missing card level value`);
+          }
+          const costLink = 'RaidSkillInfo.MaxLevel -> RaidSkillCardCostInfo';
+          referenceCounts[costLink] = (referenceCounts[costLink] ?? 0) + 1;
+          if (!ids.RaidSkillCardCostInfo?.has(String(level))) unresolved.push({ table, id: row.id,
+            field: 'MaxLevel', value: String(level), target: 'RaidSkillCardCostInfo' });
+        }
+        for (const field of ['Chance', 'MaxChance']) {
+          const value = Number(row.values[field]);
+          if (missing(row.values[field]) || !Number.isFinite(value) || value < 0 || value > 1) errors.push(`${label}.${field}: invalid probability`);
+        }
+      }
+      if (table === 'RaidSkillCardCostInfo' || table === 'RaidPlayerInfo') {
+        const fields = table === 'RaidSkillCardCostInfo' ? ['Level', 'Cost'] : ['PlayerLevel', 'ExperienceCost', 'DecksAvailable', 'SkillsPerDeck', 'ShopTier'];
+        for (const field of fields) {
+          if (!/^\d+$/.test(row.values[field])) errors.push(`${label}.${field}: invalid nonnegative integer`);
+        }
+        if (table === 'RaidPlayerInfo' && !none(row.values.PlayerRaidProgressionBundle)) {
+          deferredReferences.push({ table, id: row.id, field: 'PlayerRaidProgressionBundle',
+            value: row.values.PlayerRaidProgressionBundle, reason: 'shop bundle catalog not yet imported' });
+        }
+      }
+      if (table === 'RaidEnemyInfo') {
+        for (const [field, value] of Object.entries(row.values)) {
+          const match = /^Is(Armor\w+)(?:PriorityEnchant|BattleScarEffect)$/.exec(field);
+          if (!match) continue;
+          if (!bool(value)) errors.push(`${label}.${field}: invalid flag`);
+          if (!ids.RaidEnemyPartInfo?.has(match[1])) unresolved.push({ table, id: row.id,
+            field, value: match[1], target: 'RaidEnemyPartInfo' });
+        }
       }
       if (table === 'BonusInfo') ref(table, row, 'Combos', 'BonusInfo', true);
       if (table === 'HelperSkillInfo') ref(table, row, 'Owner', 'HelperInfo');
@@ -140,7 +189,7 @@ export function auditCatalogs(catalogs, nativeBonuses = loadNativeBonuses()) {
     active.delete(id); finished.add(id);
   }
   for (const id of tree.keys()) visit(id);
-  return { version: '8.2.0', runtimeEnabled: false, errors, unresolved, nativeOnly, referenceCounts, classifications };
+  return { version: '8.2.0', runtimeEnabled: false, errors, unresolved, nativeOnly, deferredReferences, referenceCounts, classifications };
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {

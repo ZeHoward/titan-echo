@@ -9,7 +9,7 @@ const manifest = read('manifest');
 
 test('8.2 reference catalogs are complete against their manifest and uniquely keyed', () => {
   assert.equal(manifest.runtimeEnabled, false);
-  assert.equal(manifest.tables.length, 28);
+  assert.equal(manifest.tables.length, 33);
   assert.equal(manifest.resourceIndex.length, 372);
   for (const entry of manifest.tables) {
     const bytes = readFileSync(new URL(entry.table + '.json', base));
