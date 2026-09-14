@@ -16,7 +16,8 @@ test('raid catalogs preserve card levels, cost boundaries and player deck progre
   assert.equal(catalogs.RaidPlayerInfo.records.find(r => r.id === '4').values.SkillsPerDeck, '2');
   const report = auditCatalogs(catalogs);
   assert.deepEqual(report.unresolved, []);
-  assert.ok(report.deferredReferences.some(r => r.id === '10' && r.value === 'RaidProgressionBundle0'));
+  assert.ok(report.referenceCounts['RaidPlayerInfo.PlayerRaidProgressionBundle -> ShopBundleInfo'] > 0);
+  assert.ok(!report.deferredReferences.some(r => r.table === 'RaidPlayerInfo'));
   assert.ok(report.classifications.RaidSkillInfo.every(r => r.scope === 'raid' && r.activation === 'unverified'));
 });
 

@@ -18,9 +18,12 @@ TABLES = ['ArtifactInfo', 'ArtifactCostInfo', 'ActiveSkillInfo', 'ActiveSkillMul
           'TitanResearchInfo', 'TitanCardInfo',
           'TitanCardUpgradeCostInfo', 'GemstoneResearchInfo', 'HolidayEventTypeInfo',
           'ChallengeTournamentInfo', ENHANCEMENT_TABLE, 'RaidSkillInfo', 'RaidSkillCardCostInfo',
-          'RaidPlayerInfo', 'RaidEnemyInfo', 'RaidEnemyPartInfo']
+          'RaidPlayerInfo', 'RaidEnemyInfo', 'RaidEnemyPartInfo', 'ShopBundleInfo', 'RaidLevelInfo', 'RaidAreaInfo']
 OMIT = {'Name', 'Note', 'Notes', 'Description', 'PetName', 'NameColor', 'BonusIcon', 'TextSpriteIndex',
-        'Color', 'EnchantColor', 'BestAgainst'}
+        'Color', 'EnchantColor', 'BestAgainst', 'Title', 'LongDescription', 'CatchDescription',
+        'MissedDescription', 'BundleImageOverride', 'BgColor', 'BgColorSecondary', 'BannerPrefabPath',
+        'CatchDescColor', 'GlowColor', 'BorderColor', 'OverlayColor', 'FogBackMin', 'FogBackMax',
+        'FogFrontMin', 'FogFrontMax'}
 DECIMAL = re.compile(r'[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?\Z')
 
 def sha(path):
@@ -81,7 +84,7 @@ def main():
         if table in pinned and sha(path) != pinned[table]:
             raise ValueError(f'{table}: source hash mismatch')
         fields, rows = parse(path)
-        keys = ['Ascension', 'Level'] if table == 'HelperImprovementsInfo' else [fields[0]]
+        keys = ['Ascension', 'Level'] if table == 'HelperImprovementsInfo' else ['TierID', 'LevelID'] if table == 'RaidLevelInfo' else [fields[0]]
         resolution = None
         if table == ENHANCEMENT_TABLE:
             if sha(path) != evidence['sourceSha256']:
@@ -156,6 +159,15 @@ def main():
     write('manifest.json', dict(version='8.2.0', packageSha256=audit['package']['sha256'], runtimeEnabled=False,
                                tables=manifest, resourceIndex=[dict(name=p.name, sha256=sha(p), bytes=p.stat().st_size,
                                parsed=any(p.name.endswith('_'+t+'.txt') for t in TABLES)) for p in sorted(ASSETS.glob('*.txt'))]))
+    layout_path = next(ASSETS.glob('*_RaidEnemyLayout.txt'))
+    if sha(layout_path) != resource_pins[layout_path.name]:
+        raise ValueError('raid atlas source changed')
+    layout = json.loads(layout_path.read_text(encoding='utf-8'))
+    if not isinstance(layout.get('frames'), dict) or not isinstance(layout.get('meta'), dict):
+        raise ValueError('raid atlas schema changed')
+    write('raid-layout-index.json', dict(sourceSha256=sha(layout_path), sourceFormat='sprite-atlas-json',
+          role='visual-resource-not-raid-level-data', frameIds=sorted(layout['frames']),
+          omitted='images, coordinates and other atlas content', runtimeEnabled=False))
     print(f'Imported {len(manifest)} tables, {sum(t["rows"] for t in manifest)} records; runtime unchanged')
 
 if __name__ == '__main__':
