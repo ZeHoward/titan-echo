@@ -18,12 +18,16 @@
 
 證據位於 [enhancement-parser-evidence.json](enhancement-parser-evidence.json)。`python tools/audit-enhancement-parser.py` 可用本機 Capstone／pyelftools 重核：逐位元組比對 APK 中的原生程式庫、11 處指令、方法名稱、6 個字串引用及 OverwriteExisting 列舉值。匯入器不模擬全部 .NET 字串解析；遇到不支援的數值、未知 ID 或欄位變更會停止，避免靜默遺漏。`quarantine.json` 保留已解決記錄；其他表仍不允許覆寫重複 ID。
 
-R02 尚餘：其餘支援表 schema，以及缺少來源證據的模式／可用性分類；已完成突襲技能、卡片費用、玩家、敵人及部位表；商店禮包、突襲關卡與區域已匯入，下一批為配送與複合獎勵語法。完成後才進入 R03 存檔遷移。本目錄的逐 ID pending 記錄是核對清單，不是玩法完成證據。
+R02 尚餘：其餘支援表 schema，以及缺少來源證據的模式／可用性分類；已完成突襲技能、卡片費用、玩家、敵人及部位表；商店禮包、突襲關卡與區域已匯入，配送與複合獎勵格式已整理；下一批核對原生解析與選擇槽行為。完成後才進入 R03 存檔遷移。本目錄的逐 ID pending 記錄是核對清單，不是玩法完成證據。
 
 突襲資料範圍：44 張卡、150 級費用、3,000 級玩家資料、10 種敵人、66 筆部位定義（含 None 哨兵）。目前只檢查資料完整性與 ID 引用，未實作突襲戰鬥、傷害公式或合作事件。IsActive 全為 TRUE 也不代表已確認線上可用性。驗證器檢查 BonusTypeA 至 H，不漏掉後段效果；保留負值加成，避免把減益錯誤當作壞資料。
 
-玩家資料的 PlayerRaidProgressionBundle 已連到 ShopBundleInfo；後者的配送／複合獎勵仍有 513 個欄位列在 deferredReferences，不能宣稱所有引用已完成。unresolved=0 只適用於目前已涵蓋的引用範圍。None 部位及保護／相對／連動關係依原表保留，不把 66 筆資料等同於 66 個可攻擊部位。
+玩家資料的 PlayerRaidProgressionBundle 已連到 ShopBundleInfo；後者的 510 個複合獎勵欄位已列在 rewardReferences，剩下 3 個配送 ID 列在 deferredReferences，不能宣稱所有引用已完成。unresolved=0 只適用於目前已涵蓋的引用範圍。None 部位及保護／相對／連動關係依原表保留，不把 66 筆資料等同於 66 個可攻擊部位。
 
 商店與關卡：639 筆禮包、140 個 TierID／LevelID 複合鍵、7 個區域。檢查禮包解鎖鏈、裝備列表、卡片 ID:數量及敵人池／區域引用；敵人池長度不等於 TitanCount。禮包資料含歷史日期、實驗分組及條件限制，不能把安裝包中的價格或存在性當成現行販售狀態，也未接入任何付款功能。
 
 raid-layout-index.json 僅保存 RaidEnemyLayout 圖集 JSON 的來源雜湊與 65 個 frame ID，不包含原圖或圖集座標；測試核對這些 ID 與非 None 部位一致。它不是 RaidLevelInfo 的替代資料。
+
+獎勵解析器僅處理目前來源中觀察到的格式，使用 native-reward-types.json 確認 RewardID 身分，並核對 RaidCard／Pet／EquipmentSet 的指定 ID。一般數量與物品數量保留十進位字串；EquipmentSet:ID 的數量留空，選擇槽的選取數留空，避免自行假定。重複資源保持順序與個別項目，不預先合併。未知類型、未知物品、負數、非整數或不支援格式使檢查失敗。
+
+510 個欄位格式已通過，但 interpretation=observed-bundled-syntax、deliveryRules=unverified；這是格式盤點，不是原生發獎邏輯完成。DailyDelivery_STARTER／MEDIUM／LARGE 的配送表尚未取得。dump.cs 的 DailyDeliveryModel.UpdateFromShopListResponse（RVA 0x2134b40）、UpdateDailyBundlesFromResponse（0x2134c84）及 DailyDeliveryBundleInfo.ParseScheduleDict 顯示相關商店回應介面；僅方法簽章尚不足以確認完整資料流程。FakeDailyDeliveryBundleJson 不作正式來源。下一步核對 RewardClass 建構式（0x243335c）及選擇槽邏輯，缺少配送資料時保留待證據。

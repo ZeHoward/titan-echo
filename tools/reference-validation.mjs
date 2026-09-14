@@ -1,6 +1,7 @@
 // Validation only. This module must not be imported by the game or choose live rules.
 import { readFileSync, writeFileSync } from 'node:fs';
 import { pathToFileURL } from 'node:url';
+import { parseRewardReference } from './reward-reference.mjs';
 
 export const referenceRoot = new URL('../reference/tt2/8.2.0/', import.meta.url);
 export function loadCatalogs() {
@@ -83,7 +84,8 @@ export function loadNativeBonuses() {
 }
 
 export function auditCatalogs(catalogs, nativeBonuses = loadNativeBonuses()) {
-  const errors = [], unresolved = [], nativeOnly = [], deferredReferences = [], classifications = {}, referenceCounts = {};
+  const nativeRewards = JSON.parse(readFileSync(new URL('native-reward-types.json', referenceRoot), 'utf8')).values;
+  const errors = [], unresolved = [], nativeOnly = [], deferredReferences = [], rewardReferences = [], classifications = {}, referenceCounts = {};
   const ids = Object.fromEntries(Object.entries(catalogs).map(([name, data]) => [name, new Set(data.records.map(r => r.id))]));
   function ref(table, row, field, target, multiple = false, quantities = false) {
     const raw = row.values[field];
@@ -142,8 +144,16 @@ export function auditCatalogs(catalogs, nativeBonuses = loadNativeBonuses()) {
         ref(table, row, 'EquipmentID', 'C_EquipmentInfo', true);
         ref(table, row, 'RaidCardID', 'RaidSkillInfo', true, true);
         for (const field of ['DailyDeliveryID', 'RewardString', 'SelectionSlotContents1', 'SelectionSlotContents2', 'SelectionSlotContents3', 'SelectionSlotContents4', 'ClanGift']) {
-          if (!none(row.values[field])) deferredReferences.push({ table, id: row.id, field,
-            value: row.values[field], reason: 'delivery or reward grammar not yet verified' });
+          if (none(row.values[field])) continue;
+          if (field === 'DailyDeliveryID') {
+            deferredReferences.push({ table, id: row.id, field, value: row.values[field],
+              reason: 'delivery schedule unavailable; client has shop-response schedule parsing methods' });
+          } else {
+            try {
+              rewardReferences.push({ table, id: row.id, field,
+                ...parseRewardReference(row.values[field], field, catalogs, nativeRewards) });
+            } catch (error) { errors.push(`${label}.${field}: ${error.message}`); }
+          }
         }
       }
       if (table === 'RaidEnemyPartInfo') {
@@ -217,7 +227,7 @@ export function auditCatalogs(catalogs, nativeBonuses = loadNativeBonuses()) {
     active.delete(id); finished.add(id);
   }
   for (const id of tree.keys()) visit(id);
-  return { version: '8.2.0', runtimeEnabled: false, errors, unresolved, nativeOnly, deferredReferences, referenceCounts, classifications };
+  return { version: '8.2.0', runtimeEnabled: false, errors, unresolved, nativeOnly, deferredReferences, rewardReferences, referenceCounts, classifications };
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {

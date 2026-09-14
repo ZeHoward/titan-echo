@@ -24,7 +24,7 @@ test('bundle chains, equipment lists and card quantities resolve without activat
   assert.deepEqual(report.unresolved, []);
   assert.ok(report.classifications.ShopBundleInfo.every(r => r.activation === 'unverified' && r.liveAvailability === 'unknown'));
   assert.ok(report.deferredReferences.some(r => r.field === 'DailyDeliveryID'));
-  assert.ok(report.deferredReferences.some(r => r.field === 'RewardString'));
+  assert.ok(report.rewardReferences.some(r => r.field === 'RewardString'));
   assert.equal(report.deferredReferences.filter(r => r.table === 'RaidPlayerInfo').length, 0);
 });
 
