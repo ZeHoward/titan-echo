@@ -27,9 +27,16 @@ export function classify(table, row, catalogs) {
     }
   }
   let scope = 'unclassified';
-  if (['RaidSkillInfo', 'RaidSkillCardCostInfo', 'RaidPlayerInfo', 'RaidEnemyInfo', 'RaidEnemyPartInfo'].includes(table)) {
+  if (['RaidSkillInfo', 'RaidSkillCardCostInfo', 'RaidPlayerInfo', 'RaidEnemyInfo', 'RaidEnemyPartInfo', 'RaidLevelInfo', 'RaidAreaInfo'].includes(table)) {
     scope = 'raid';
     evidence.push(`table=${table}`);
+  }
+  if (table === 'ShopBundleInfo') {
+    scope = /^true$/i.test(v.HideIfHolidayEventIsNotActive) ? 'event-gated-bundle' : 'shop-bundle';
+    evidence.push(`HideIfHolidayEventIsNotActive=${v.HideIfHolidayEventIsNotActive}`);
+    for (const field of ['StartDate', 'StartDateNoTime', 'EndDateNoTime', 'TestGroup', 'TestGroupName', 'Country']) {
+      if (v[field] && v[field] !== '-') evidence.push(`${field}=${v[field]}`);
+    }
   }
   if (['Maingame', 'Raid'].includes(v.Type)) {
     scope = v.Type === 'Raid' ? 'raid' : 'main-game';
@@ -78,10 +85,15 @@ export function loadNativeBonuses() {
 export function auditCatalogs(catalogs, nativeBonuses = loadNativeBonuses()) {
   const errors = [], unresolved = [], nativeOnly = [], deferredReferences = [], classifications = {}, referenceCounts = {};
   const ids = Object.fromEntries(Object.entries(catalogs).map(([name, data]) => [name, new Set(data.records.map(r => r.id))]));
-  function ref(table, row, field, target, multiple = false) {
+  function ref(table, row, field, target, multiple = false, quantities = false) {
     const raw = row.values[field];
     if (raw === undefined || none(raw)) return;
-    const values = multiple ? list(raw) : [raw];
+    let values = multiple ? list(raw) : [raw];
+    if (quantities) values = values.map(token => {
+      const match = /^([^:]+):(\d+)$/.exec(token);
+      if (!match) { errors.push(`${table}/${row.id}.${field}: invalid ID quantity`); return token; }
+      return match[1];
+    });
     for (const value of values) {
       const label = `${table}.${field} -> ${target}`;
       referenceCounts[label] = (referenceCounts[label] ?? 0) + 1;
@@ -115,7 +127,24 @@ export function auditCatalogs(catalogs, nativeBonuses = loadNativeBonuses()) {
       }
       if (row.values.MaxLevel !== undefined && !/^\d+$/.test(row.values.MaxLevel)) errors.push(`${label}: invalid MaxLevel`);
       for (const field of Object.keys(row.values)) {
-        if (/^(BonusType(?:[A-H]|[1-3])?|ClassBonusType|SpatialBonusType)$/.test(field)) ref(table, row, field, 'BonusInfo');
+        if (/^(BonusType(?:[A-J]|[1-3])?|ClassBonusType|SpatialBonusType)$/.test(field)) ref(table, row, field, 'BonusInfo');
+      }
+      if (table === 'RaidLevelInfo') {
+        ref(table, row, 'EnemyIDs', 'RaidEnemyInfo', true);
+        ref(table, row, 'AreaID', 'RaidAreaInfo');
+        if (!bool(row.values.HasArmor)) errors.push(`${label}.HasArmor: invalid flag`);
+        for (const field of ['TierID', 'LevelID', 'TitanCount', 'AttacksPerReset']) {
+          if (!/^[1-9]\d*$/.test(row.values[field])) errors.push(`${label}.${field}: invalid positive integer`);
+        }
+      }
+      if (table === 'ShopBundleInfo') {
+        ref(table, row, 'UnlockNextBundle', table);
+        ref(table, row, 'EquipmentID', 'C_EquipmentInfo', true);
+        ref(table, row, 'RaidCardID', 'RaidSkillInfo', true, true);
+        for (const field of ['DailyDeliveryID', 'RewardString', 'SelectionSlotContents1', 'SelectionSlotContents2', 'SelectionSlotContents3', 'SelectionSlotContents4', 'ClanGift']) {
+          if (!none(row.values[field])) deferredReferences.push({ table, id: row.id, field,
+            value: row.values[field], reason: 'delivery or reward grammar not yet verified' });
+        }
       }
       if (table === 'RaidEnemyPartInfo') {
         for (const field of ['ProtectingPart', 'ProtectedPart', 'OppositePart', 'LinkedParts']) {
@@ -149,8 +178,7 @@ export function auditCatalogs(catalogs, nativeBonuses = loadNativeBonuses()) {
           if (!/^\d+$/.test(row.values[field])) errors.push(`${label}.${field}: invalid nonnegative integer`);
         }
         if (table === 'RaidPlayerInfo' && !none(row.values.PlayerRaidProgressionBundle)) {
-          deferredReferences.push({ table, id: row.id, field: 'PlayerRaidProgressionBundle',
-            value: row.values.PlayerRaidProgressionBundle, reason: 'shop bundle catalog not yet imported' });
+          ref(table, row, 'PlayerRaidProgressionBundle', 'ShopBundleInfo');
         }
       }
       if (table === 'RaidEnemyInfo') {
