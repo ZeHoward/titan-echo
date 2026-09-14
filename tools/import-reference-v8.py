@@ -5,6 +5,7 @@ import io
 import json
 import pathlib
 import re
+from enhancement_reference import TABLE as ENHANCEMENT_TABLE, resolve_enhancements
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 ASSETS = ROOT / 'work/apk-analysis/text-assets'
@@ -16,7 +17,7 @@ TABLES = ['ArtifactInfo', 'ArtifactCostInfo', 'ActiveSkillInfo', 'ActiveSkillMul
           'AchievementInfo', 'DailyAchievementInfo', 'PetQuestLevelInfo',
           'TitanResearchInfo', 'TitanCardInfo',
           'TitanCardUpgradeCostInfo', 'GemstoneResearchInfo', 'HolidayEventTypeInfo',
-          'ChallengeTournamentInfo']
+          'ChallengeTournamentInfo', ENHANCEMENT_TABLE]
 OMIT = {'Name', 'Note', 'Notes', 'Description', 'PetName', 'NameColor', 'BonusIcon', 'TextSpriteIndex'}
 DECIMAL = re.compile(r'[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?\Z')
 
@@ -60,6 +61,12 @@ def main():
     inventory_path = OUT / 'manifest.json'
     inventory = json.loads(inventory_path.read_text()) if inventory_path.exists() else {}
     resource_pins = {r['name']: r['sha256'] for r in inventory.get('resourceIndex', [])}
+    evidence = json.loads((OUT/'enhancement-parser-evidence.json').read_text())
+    if (evidence['packageSha256'] != audit['package']['sha256'] or
+        evidence['policy'] != 'last-successfully-parsed-row-wins' or
+        evidence['binarySha256'] != sha(ROOT/'work/apk-analysis/libil2cpp.so')):
+        raise ValueError('enhancement parser evidence mismatch')
+    known_bonuses = json.loads((OUT/'native-bonus-types.json').read_text())['values']
     OUT.mkdir(parents=True, exist_ok=True)
     manifest, catalogs = [], {}
     for table in TABLES:
@@ -73,7 +80,16 @@ def main():
             raise ValueError(f'{table}: source hash mismatch')
         fields, rows = parse(path)
         keys = ['Ascension', 'Level'] if table == 'HelperImprovementsInfo' else [fields[0]]
-        indexed = index(rows, keys)
+        resolution = None
+        if table == ENHANCEMENT_TABLE:
+            if sha(path) != evidence['sourceSha256']:
+                raise ValueError('enhancement source differs from verified parser evidence')
+            indexed, source_ordinals, duplicate_history = resolve_enhancements(table, rows, known_bonuses)
+            resolution = dict(policy=evidence['policy'], evidence='enhancement-parser-evidence.json',
+                sourceRows=len(rows), effectiveRows=len(indexed), duplicateHistory=duplicate_history)
+        else:
+            indexed = index(rows, keys)
+            source_ordinals = {identity: ordinal for ordinal, identity in enumerate(indexed)}
         retained = [f for f in fields if f not in OMIT]
         schema = {}
         for field in retained:
@@ -85,11 +101,11 @@ def main():
             # Preserve missing-cell distinctions and every decimal lexeme, even > 1e308.
             values = {f: row[f] for f in retained}
             flags = {f: row[f] for f in ('Enabled', 'IsInGame', 'IsActive', 'LimitedTime', 'SkillType', 'SetType', 'Type') if f in row}
-            records.append(dict(id=identity, sourceOrdinal=ordinal, values=values,
+            records.append(dict(id=identity, sourceOrdinal=source_ordinals[identity], values=values,
                                 availabilityEvidence=flags, activation='unverified', verification='pending'))
         old = ROOT / 'work/tt2-csv/csv' / (table + '.csv')
         diff = None
-        if old.exists():
+        if old.exists() and table != ENHANCEMENT_TABLE:
             old_fields, old_rows = parse(old)
             before = index(old_rows, keys)
             shared = set(fields) & set(old_fields) - OMIT
@@ -98,9 +114,12 @@ def main():
                         addedColumns=sorted(set(fields)-set(old_fields)), removedColumns=sorted(set(old_fields)-set(fields)))
         data = dict(version='8.2.0', table=table, keys=keys, schema=schema, omittedColumns=sorted(set(fields)&OMIT),
                     missingValues=['', '-'], records=records, differenceFrom75=diff)
+        if resolution:
+            data['rowResolution'] = resolution
+            data['differenceFrom75Status'] = 'not-compared: historical parser duplicate policy not verified'
         write(table + '.json', data)
         catalogs[table] = indexed
-        manifest.append(dict(table=table, rows=len(rows), sourceSha256=sha(path), catalogSha256=sha(OUT/(table+'.json'))))
+        manifest.append(dict(table=table, rows=len(indexed), sourceSha256=sha(path), catalogSha256=sha(OUT/(table+'.json'))))
     legacy = {}
     source = (ROOT / 'lib/tt2-data.ts').read_text(encoding='utf-8')
     mapping = dict(TT2_ARTIFACTS='ArtifactInfo', TT2_ACTIVE='ActiveSkillInfo', TT2_TREE='SkillTreeInfo2.0',
@@ -115,19 +134,9 @@ def main():
         target = catalogs[mapping[name]]
         legacy[name] = dict(table=mapping[name], entries=[dict(legacyIndex=i, id=v, targetId=v if v in target else None) for i,v in enumerate(ids)])
     write('legacy-2.6.json', dict(runtimeSourceSha256=sha(ROOT/'lib/tt2-data.ts'), catalogs=legacy))
-    # This table has conflicting rows for one key. Preserve evidence, never choose a winner.
-    conflict_path = next(ASSETS.glob('*_C_EquipmentEnhancementScalingInfo.txt'))
-    if conflict_path.name in resource_pins and sha(conflict_path) != resource_pins[conflict_path.name]:
-        raise ValueError('equipment enhancement resource hash mismatch')
-    conflict_fields, conflict_rows = parse(conflict_path)
-    groups = {}
-    for row in conflict_rows:
-        groups.setdefault(row['BonusType'], []).append(row)
-    conflicts = {k: v for k, v in groups.items() if len(v) > 1}
-    write('quarantine.json', dict(tables=[dict(table='C_EquipmentEnhancementScalingInfo',
-          sourceSha256=sha(conflict_path), sourceRows=len(conflict_rows), columns=conflict_fields,
-          key=['BonusType'], reason='duplicate-key-requires-native-parser-evidence',
-          conflicts=conflicts, runtimeEnabled=False)]))
+    write('quarantine.json', dict(tables=[], resolved=[dict(table=ENHANCEMENT_TABLE,
+          reason='native-overwrite-policy-verified', evidence='enhancement-parser-evidence.json',
+          historyLocation=ENHANCEMENT_TABLE+'.json#rowResolution', runtimeEnabled=False)]))
     dump_path = ROOT / 'work/apk-analysis/dump/dump.cs'
     native_path = OUT / 'native-bonus-types.json'
     if native_path.exists():
