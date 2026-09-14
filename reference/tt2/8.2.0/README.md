@@ -2,7 +2,7 @@
 
 這是資料準備成果，尚未接入遊戲或改寫存檔。現行遊戲仍為 2.6.0／7.5 數值基準。
 
-`manifest.json` 記錄安裝包、36 張已解析表（9,693 個有效 ID）的 SHA-256，以及 372 個 TextAsset 的大小與雜湊。未解析的資源只列索引，不宣稱它們皆為 CSV 或已完成 schema。
+`manifest.json` 記錄安裝包、47 張已解析表（15,956 個表內有效 ID）的 SHA-256，以及 372 個 TextAsset 的大小與雜湊。未解析的資源只列索引，不宣稱它們皆為 CSV 或已完成 schema。
 
 每張表以來源 ID 為鍵；英雄里程碑使用 `[Ascension,Level]` 複合鍵。`sourceOrdinal` 僅作來源定位，不能用來覆蓋玩家陣列。`legacy-2.6.json` 固定目前七組核心陣列的原始 ID 順序；不存在於目標表的 ID 映射為 null，後續遷移必須保留及處理，不能改配其他內容。
 
@@ -12,7 +12,7 @@
 
 重建：使用本機已忽略的原始資料執行 `python tools/import-reference-v8.py`，再執行 `node tools/reference-validation.mjs`。工具驗證安裝包、既有全資源索引、原生列舉與解析器證據雜湊。除了下列已確認的單表例外，拒絕重複鍵；不完整 CSV 列一律拒絕。CI 透過 `npm test` 驗證提交資料完整性、舊 ID 對照、換序、超大數值、跨表引用與活動證據，並執行 `python3 -m unittest discover -s tests -p '*_test.py'` 驗證實際 Python 匯入規則。未知效果 ID、壞掉的前置引用、循環技能前置、非法數字及不成對的成就階段皆有反例測試。
 
-本次檢查 17,336 處引用；其中 12 處不在 BonusInfo，但在原生 BonusType 列舉中存在，記錄在 `nativeOnly`。`native-bonus-types.json` 僅保存列舉 ID／數字與來源雜湊，不能用來推定效果公式。沒有未解析的引用 ID，不代表所有公式或所有資源都已驗證。
+本次檢查 17,531 處引用；其中 12 處不在 BonusInfo，但在原生 BonusType 列舉中存在，記錄在 `nativeOnly`。`native-bonus-types.json` 僅保存列舉 ID／數字與來源雜湊，不能用來推定效果公式。沒有未解析的引用 ID，不代表所有公式或所有資源都已驗證。
 
 裝備副屬性表已解除隔離：原生 `ParseEquipmentEnhancementScalingInfo`（RVA 0x218994c）按遞增列號讀取；五個 TryGetCell 都成功才呼叫字典 set_Item，後者使用 OverwriteExisting。故同 ID 最後成功解析的列生效。59 筆來源列整理為 58 個 ID，AllActiveSkillAmount 的 PowerExp 從第 9 列的 0.4 被第 57 列的 1.002 覆寫（列號從 0 起）。兩筆都保留在表內 rowResolution.duplicateHistory，sourceOrdinal 指向最後生效列。這項結論只適用於目前安裝包資料，不推定歷史 7.5 解析器或線上覆蓋值。
 
@@ -35,3 +35,9 @@ raid-layout-index.json 僅保存 RaidEnemyLayout 圖集 JSON 的來源雜湊與 
 原生解析證據：[reward-parser-evidence.json](reward-parser-evidence.json)，可執行 `python tools/audit-reward-parser.py` 重核。工具以已逐位元組比對 APK 的程式庫雜湊為基準，檢查 12 處指令、3 個字串引用及 4 個方法範圍。一般獎勵支援逗號與分號；選擇槽先按逗號切候選，再用 RewardClass 解析候選內的分號獎勵。candidates 保留群組，entries 僅為展開的索引，不能全部發放。
 
 nativeType／nativeValue／nativeItemId 保存原生欄位對應：Equipment:Rare:3 的 nativeType 是 EquipmentRare；RaidCard:MoonBeam:20 的 nativeItemId 是 MoonBeam；EquipmentSet:Jade 的 nativeValue 是 Jade，數量仍未知。ShopModel 使用每槽一個 int，缺少選擇返回 -1，新增空槽也以 -1 初始化。selectRewardCandidate 僅用於參考資料選取，不修改存檔、資源或執行購買；越界索引會拒絕。嚴格驗證器仍拒絕未支援或損壞格式，未模仿原生所有錯誤恢復行為。
+
+寶石與終局新增 11 張表：GemstoneLevelCost 的 5,000 列與 GemstoneLevelSummonRateInfo 的 1,000 列是不同資料範圍，未做超出表範圍的延伸。首列權重合計 99,998，百分比是來源註記，兩者都原樣保存。EndgamePetInfo／EndgameSeasonArtifactInfo／EndgameSeasonRewardInfo 的 _1 資源是獨立來源變體，同名 ID 的旗標與數值可能不同；未選用任何一組作線上規則。
+
+PetQuestLevelInfo 的 DifficultyChancePerLevel 每格為 10 個機率，驗證長度、範圍及合計；其他三列仍按數值驗證。此表是等級進度，並非完整任務模板。EndgameSeasonRewardInfo 兩組合計 8 筆外觀獎勵加入 deferredReferences，另有既有 3 筆每日配送；缺少線上季節時程時不啟用。
+
+完整資源路由見 [reference-coverage.md](../../../docs/reference-coverage.md)（從儲存庫 docs 目錄開啟）；由 `node tools/reference-coverage.mjs` 產生，依檔名分派工作項目，不能當成來源格式或玩法已驗證。

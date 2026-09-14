@@ -66,8 +66,9 @@ test('all 510 bundled reward fields parse but delivery schedules remain explicit
   const report = auditCatalogs(catalogs);
   assert.deepEqual(report.errors, []);
   assert.equal(report.rewardReferences.length, 510);
-  assert.equal(report.deferredReferences.length, 3);
-  assert.ok(report.deferredReferences.every(r => r.field === 'DailyDeliveryID'));
+  const shopDeferred = report.deferredReferences.filter(r => r.table === 'ShopBundleInfo');
+  assert.equal(shopDeferred.length, 3);
+  assert.ok(shopDeferred.every(r => r.field === 'DailyDeliveryID'));
   assert.ok(report.rewardReferences.every(r => r.deliveryRules === 'unverified' && r.runtimeEnabled === false));
   const broken = structuredClone(catalogs);
   broken.ShopBundleInfo.records[0].values.RewardString = 'EquipmentSet:Missing';

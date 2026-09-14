@@ -28,6 +28,16 @@ export function classify(table, row, catalogs) {
     }
   }
   let scope = 'unclassified';
+  if (table.startsWith('Endgame')) {
+    scope = 'endgame-source-variant';
+    evidence.push(`source-table=${table}`, 'live-variant-selection=unknown');
+  } else if (table.startsWith('Gemstone')) {
+    scope = 'gemstone';
+    evidence.push(`source-table=${table}`);
+  } else if (table === 'PetQuestLevelInfo') {
+    scope = 'pet-quest-progression';
+    evidence.push('table=PetQuestLevelInfo');
+  }
   if (['RaidSkillInfo', 'RaidSkillCardCostInfo', 'RaidPlayerInfo', 'RaidEnemyInfo', 'RaidEnemyPartInfo', 'RaidLevelInfo', 'RaidAreaInfo'].includes(table)) {
     scope = 'raid';
     evidence.push(`table=${table}`);
@@ -138,6 +148,32 @@ export function auditCatalogs(catalogs, nativeBonuses = loadNativeBonuses()) {
         for (const field of ['TierID', 'LevelID', 'TitanCount', 'AttacksPerReset']) {
           if (!/^[1-9]\d*$/.test(row.values[field])) errors.push(`${label}.${field}: invalid positive integer`);
         }
+      }
+      if (table === 'GemstoneLevelCost') ref(table, row, 'GemstoneProgressionBundle', 'ShopBundleInfo');
+      if (table === 'GemstoneLevelSummonRateInfo') {
+        for (let rarity = 0; rarity <= 4; rarity++) {
+          const field = `Rarity${rarity}`;
+          if (!/^\d+$/.test(row.values[field])) errors.push(`${label}.${field}: invalid nonnegative weight`);
+          if (!ids.GemstoneRarityInfo?.has(String(rarity))) unresolved.push({ table, id: row.id,
+            field, value: String(rarity), target: 'GemstoneRarityInfo' });
+        }
+        if (![0,1,2,3,4].some(r => Number(row.values[`Rarity${r}`]) > 0)) errors.push(`${label}: empty rarity weight pool`);
+      }
+      if (table === 'PetQuestLevelInfo') {
+        for (let level = 1; level <= 120; level++) {
+          const value = row.values[`LVL${level}`];
+          if (row.id === 'DifficultyChancePerLevel') {
+            const probabilities = typeof value === 'string' ? value.split(',') : [];
+            if (probabilities.length !== 10 || probabilities.some(p => !decimal.test(p) || Number(p) < 0 || Number(p) > 1) ||
+                Math.abs(probabilities.reduce((sum,p) => sum + Number(p), 0) - 1) > 0.00001) {
+              errors.push(`${label}.LVL${level}: invalid difficulty probability vector`);
+            }
+          } else if (typeof value !== 'string' || !decimal.test(value)) errors.push(`${label}.LVL${level}: missing quest progression value`);
+        }
+      }
+      if (table === 'EndgameSeasonRewardInfo' || table === 'EndgameSeasonRewardInfo_1') {
+        deferredReferences.push({ table, id: row.id, field: 'RankReward', value: row.values.RankReward,
+          reason: 'cosmetic reward targets and season activation not yet verified' });
       }
       if (table === 'ShopBundleInfo') {
         ref(table, row, 'UnlockNextBundle', table);
