@@ -1,0 +1,62 @@
+{
+  "version": "8.2.0",
+  "packageSha256": "8d78c9aa877e6c0b291ee2116cab855bd26c59c1d080bc654f88ecf1ff268b5f",
+  "binarySha256": "c13fc44321b1214c71ab0277a134fc3401fd7392c74a0bbb3935671c55a8713a",
+  "scriptSha256": "62c2eeb8472bb107de516e4b6ae69d3dcdf5013fb1caa87223d82a54dd203f8b",
+  "methods": [
+    {
+      "name": "RewardClass$$.ctor",
+      "rva": "0x243335c",
+      "bytes": 2340,
+      "sha256": "49051f6408619cf88d7919db9b212bcc6be96acc37daf386bfc024ce15039a79"
+    },
+    {
+      "name": "ParsedShopBundleInfo$$TryParse",
+      "rva": "0x24e6fe4",
+      "bytes": 3276,
+      "sha256": "c792fae1f225c767b1a04d6e1f807a63f75ffa34d229cb2208dc9127e3e6433c"
+    },
+    {
+      "name": "ShopModel$$GetSelectionIndexForBundleIdSlot",
+      "rva": "0x24f2da8",
+      "bytes": 152,
+      "sha256": "0dbf8b5a7289887e4fd1529819385d28c2bfc407c53ad88f1e6f0247b427c786"
+    },
+    {
+      "name": "ShopModel$$SetSelectionIndexForBundleId",
+      "rva": "0x24f2e40",
+      "bytes": 528,
+      "sha256": "feb66ee6a1c8a0bbbb2aa36feb7ed341cd81399bc513b9de00d30e056d6eddc8"
+    }
+  ],
+  "checkedInstructionAddresses": [
+    "0x2433480",
+    "0x2433490",
+    "0x2433560",
+    "0x24335d0",
+    "0x2433bbc",
+    "0x2433bc4",
+    "0x2433b6c",
+    "0x24e7b74",
+    "0x24e7bb8",
+    "0x24f2e30",
+    "0x24f2f54",
+    "0x24f2fd8"
+  ],
+  "rules": {
+    "rewardSeparators": [
+      ",",
+      ";"
+    ],
+    "selectionCandidateSeparator": ",",
+    "selectedIndicesPerSlot": 1,
+    "unselectedIndex": -1,
+    "equipmentQualifier": "concatenate type and qualifier before RewardID lookup",
+    "twoFieldValue": "preserve substring after first colon; no inferred default quantity"
+  },
+  "limitations": [
+    "Valid bundled dialect only; strict validation intentionally rejects malformed input",
+    "Single stored selection index is confirmed; purchase, grant and server validation remain unimplemented",
+    "No live delivery schedule or inferred equipment-set quantity"
+  ]
+}
