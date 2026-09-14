@@ -21,12 +21,13 @@ TABLES = ['ArtifactInfo', 'ArtifactCostInfo', 'ActiveSkillInfo', 'ActiveSkillMul
           'RaidPlayerInfo', 'RaidEnemyInfo', 'RaidEnemyPartInfo', 'ShopBundleInfo', 'RaidLevelInfo', 'RaidAreaInfo',
           'GemstoneLevelCost', 'GemstoneRarityInfo', 'GemstoneBonusTypeScalingInfo', 'GemstoneLevelSummonRateInfo',
           'EndgamePetInfo', 'EndgamePetInfo_1', 'EndgameSeasonArtifactInfo', 'EndgameSeasonArtifactInfo_1',
-          'EndgameSeasonArtifactCostInfo', 'EndgameSeasonRewardInfo', 'EndgameSeasonRewardInfo_1']
+          'EndgameSeasonArtifactCostInfo', 'EndgameSeasonRewardInfo', 'EndgameSeasonRewardInfo_1',
+          'AvatarInfo', 'AvatarFrameInfo', 'PlayerTitleInfo']
 OMIT = {'Name', 'Note', 'Notes', 'Description', 'PetName', 'NameColor', 'BonusIcon', 'TextSpriteIndex',
         'Color', 'EnchantColor', 'BestAgainst', 'Title', 'LongDescription', 'CatchDescription',
         'MissedDescription', 'BundleImageOverride', 'BgColor', 'BgColorSecondary', 'BannerPrefabPath',
         'CatchDescColor', 'GlowColor', 'BorderColor', 'OverlayColor', 'FogBackMin', 'FogBackMax',
-        'FogFrontMin', 'FogFrontMax', 'LeaderboardPosition'}
+        'FogFrontMin', 'FogFrontMax', 'LeaderboardPosition', 'IncrementBgColor', 'TextColor'}
 DECIMAL = re.compile(r'[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?\Z')
 
 def sha(path):

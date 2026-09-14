@@ -2,7 +2,7 @@
 
 這是資料準備成果，尚未接入遊戲或改寫存檔。現行遊戲仍為 2.6.0／7.5 數值基準。
 
-`manifest.json` 記錄安裝包、47 張已解析表（15,956 個表內有效 ID）的 SHA-256，以及 372 個 TextAsset 的大小與雜湊。未解析的資源只列索引，不宣稱它們皆為 CSV 或已完成 schema。
+`manifest.json` 記錄安裝包、50 張已解析表（16,867 個表內有效 ID）的 SHA-256，以及 372 個 TextAsset 的大小與雜湊。未解析的資源只列索引，不宣稱它們皆為 CSV 或已完成 schema。
 
 每張表以來源 ID 為鍵；英雄里程碑使用 `[Ascension,Level]` 複合鍵。`sourceOrdinal` 僅作來源定位，不能用來覆蓋玩家陣列。`legacy-2.6.json` 固定目前七組核心陣列的原始 ID 順序；不存在於目標表的 ID 映射為 null，後續遷移必須保留及處理，不能改配其他內容。
 
@@ -38,6 +38,8 @@ nativeType／nativeValue／nativeItemId 保存原生欄位對應：Equipment:Rar
 
 寶石與終局新增 11 張表：GemstoneLevelCost 的 5,000 列與 GemstoneLevelSummonRateInfo 的 1,000 列是不同資料範圍，未做超出表範圍的延伸。首列權重合計 99,998，百分比是來源註記，兩者都原樣保存。EndgamePetInfo／EndgameSeasonArtifactInfo／EndgameSeasonRewardInfo 的 _1 資源是獨立來源變體，同名 ID 的旗標與數值可能不同；未選用任何一組作線上規則。
 
-PetQuestLevelInfo 的 DifficultyChancePerLevel 每格為 10 個機率，驗證長度、範圍及合計；其他三列仍按數值驗證。此表是等級進度，並非完整任務模板。EndgameSeasonRewardInfo 兩組合計 8 筆外觀獎勵加入 deferredReferences，另有既有 3 筆每日配送；缺少線上季節時程時不啟用。
+PetQuestLevelInfo 的 DifficultyChancePerLevel 每格為 10 個機率，驗證長度、範圍及合計；其他三列仍按數值驗證。此表是等級進度，並非完整任務模板。EndgameSeasonRewardInfo 兩組合計 8 筆外觀獎勵已連到外觀目錄並列入 rewardReferences，deferredReferences 剩下既有 3 筆每日配送；缺少線上季節時程時不啟用。
 
 完整資源路由見 [reference-coverage.md](../../../docs/reference-coverage.md)（從儲存庫 docs 目錄開啟）；由 `node tools/reference-coverage.mjs` 產生，依檔名分派工作項目，不能當成來源格式或玩法已驗證。
+
+外觀目錄包含 583 個 AvatarID、65 個 AvatarFrameID、263 個 TitleID。RankReward 的 Avatar／Frame／Title 雙欄格式均視為 ID 參照，quantity=null，nativeValue 保留 ID 字串（包含數字型稱號 ID）；不得把數字 ID 當成發放數量。8 個排名獎勵已驗證目標存在，仍標記 activation=unverified，沒有實作賽季啟用或發獎。稱號 633 在目錄中存在但不在目前排名獎勵列，驗證器不自行插入它。頭像、外框與稱號的解鎖類型和值原樣保留，未把它們轉成購買或領取功能。
