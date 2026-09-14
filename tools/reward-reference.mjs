@@ -11,8 +11,12 @@ export function parseRewardReference(text, field, catalogs, nativeRewardIds) {
   if (!['RewardString', 'ClanGift', 'SelectionSlotContents1', 'SelectionSlotContents2',
     'SelectionSlotContents3', 'SelectionSlotContents4'].includes(field)) throw new Error('unsupported reward field');
   const mode = field.startsWith('SelectionSlotContents') ? 'choice-candidates' : field === 'ClanGift' ? 'clan-gift-list' : 'reward-list';
-  const entries = [];
-  if (text !== '' && text !== 'None' && text !== '-') for (const token of text.split(',')) {
+  const entries = [], candidates = [];
+  const populated = text !== '' && text !== 'None' && text !== '-';
+  const groups = !populated ? [] : mode === 'choice-candidates' ? text.split(',') : [text];
+  for (const [candidateIndex, group] of groups.entries()) {
+    const candidateEntries = [];
+    for (const token of group.split(mode === 'choice-candidates' ? /;/ : /[;,]/)) {
     const parts = token.trim().split(':').map(v => v.trim());
     const [type, arg, count] = parts;
     if (!Object.hasOwn(nativeRewardIds, type)) throw new Error(`unknown reward type: ${type}`);
@@ -29,8 +33,25 @@ export function parseRewardReference(text, field, catalogs, nativeRewardIds) {
     if (entry.target && !catalogs[entry.target]?.records.some(r => r.id === entry.itemId)) {
       throw new Error(`unknown ${entry.target} ID: ${entry.itemId}`);
     }
-    entries.push({ ...entry, raw: token });
+    const nativeType = entry.qualifier ? type + entry.qualifier : type;
+    if (!Object.hasOwn(nativeRewardIds, nativeType)) throw new Error(`unknown native reward type: ${nativeType}`);
+    const parsed = { ...entry, raw: token, nativeType, nativeValue: parts.length === 2 ? arg : count,
+      nativeItemId: parts.length === 3 && entry.target ? arg : '' };
+    entries.push(parsed);
+    candidateEntries.push(parsed);
+    }
+    if (mode === 'choice-candidates') candidates.push({ index: candidateIndex, entries: candidateEntries });
   }
-  return { mode, entries, interpretation: 'observed-bundled-syntax',
-    choiceCount: null, deliveryRules: 'unverified', runtimeEnabled: false };
+  return { mode, entries, candidates, interpretation: 'native-verified-valid-dialect',
+    evidence: 'reward-parser-evidence.json', choiceCount: mode === 'choice-candidates' ? 1 : null,
+    unselectedIndex: mode === 'choice-candidates' ? -1 : null,
+    deliveryRules: 'unverified', runtimeEnabled: false };
+}
+
+// Reference selection only: no balance updates, persistence or purchase handling.
+export function selectRewardCandidate(parsed, index) {
+  if (parsed.mode !== 'choice-candidates' || !Number.isInteger(index) || index < -1 || index >= parsed.candidates.length) {
+    throw new Error('invalid reward selection');
+  }
+  return index === -1 ? [] : structuredClone(parsed.candidates[index].entries);
 }
