@@ -11,7 +11,8 @@ test('endgame source variants preserve matching IDs with different activation an
   assert.equal(get('EndgameSeasonArtifactInfo_1', 'SeasonalArtifact1').GrowthExpo, '6.685');
   const report = auditCatalogs(catalogs);
   assert.ok(report.classifications.EndgamePetInfo.every(r => r.liveAvailability === 'unknown'));
-  assert.equal(report.deferredReferences.filter(r => r.field === 'RankReward').length, 8);
+  assert.equal(report.deferredReferences.filter(r => r.field === 'RankReward').length, 0);
+  assert.equal(report.rewardReferences.filter(r => r.field === 'RankReward').length, 8);
 });
 
 test('gemstone source weights retain their original sum and separate progression ranges', () => {

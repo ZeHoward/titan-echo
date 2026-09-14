@@ -348,7 +348,7 @@
     {
       "name": "AvatarInfo",
       "sourceSha256": "f7ebf5228672f19df1385f687d9c266f81be9cf71386e1d4382316e3d8255c8c",
-      "status": "not-imported",
+      "status": "imported",
       "route": "V03"
     },
     {
@@ -1680,7 +1680,7 @@
     {
       "name": "PlayerTitleInfo",
       "sourceSha256": "cf241bc88197191d563c2409de9373a455f4fa9b528d0ccdb9626bfa17bd45bc",
-      "status": "not-imported",
+      "status": "imported",
       "route": "V03"
     },
     {
@@ -1890,7 +1890,7 @@
     {
       "name": "AvatarFrameInfo",
       "sourceSha256": "e0a3596ba10541b46465688c4a40d19061667c89456058e139289a61a07aa7e3",
-      "status": "not-imported",
+      "status": "imported",
       "route": "V03"
     },
     {

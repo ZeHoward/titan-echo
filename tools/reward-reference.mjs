@@ -4,11 +4,12 @@ const scalarTypes = new Set(['Equipment', 'RaidWildcard', 'SeasonalPetsLvl1', 'R
   'SkillPoint', 'PerkTicket', 'PetParadiseCurrency', 'PetsLvl1', 'Diamonds', 'BombGameCurrency',
   'MinigameQuestCurrency', 'MinigameFishingCurrency', 'MinigameDigsiteCurrency', 'MinigameHuntingCurrency',
   'MinigameBallDropPrestigeCurrency', 'TitanSouls', 'GemstoneCurrency', 'PetsLvl5', 'Alchemy', 'EquipmentShards']);
-const itemTables = { RaidCard: 'RaidSkillInfo', Pet: 'PetInfo', EquipmentSet: 'EquipmentSetInfo' };
+const itemTables = { RaidCard: 'RaidSkillInfo', Pet: 'PetInfo', EquipmentSet: 'EquipmentSetInfo',
+  Avatar: 'AvatarInfo', Frame: 'AvatarFrameInfo', Title: 'PlayerTitleInfo' };
 
 export function parseRewardReference(text, field, catalogs, nativeRewardIds) {
   if (typeof text !== 'string') throw new Error('reward must be a string');
-  if (!['RewardString', 'ClanGift', 'SelectionSlotContents1', 'SelectionSlotContents2',
+  if (!['RewardString', 'RankReward', 'ClanGift', 'SelectionSlotContents1', 'SelectionSlotContents2',
     'SelectionSlotContents3', 'SelectionSlotContents4'].includes(field)) throw new Error('unsupported reward field');
   const mode = field.startsWith('SelectionSlotContents') ? 'choice-candidates' : field === 'ClanGift' ? 'clan-gift-list' : 'reward-list';
   const entries = [], candidates = [];
@@ -21,7 +22,7 @@ export function parseRewardReference(text, field, catalogs, nativeRewardIds) {
     const [type, arg, count] = parts;
     if (!Object.hasOwn(nativeRewardIds, type)) throw new Error(`unknown reward type: ${type}`);
     let entry;
-    if (parts.length === 2 && type === 'EquipmentSet') {
+    if (parts.length === 2 && ['EquipmentSet', 'Avatar', 'Frame', 'Title'].includes(type)) {
       entry = { type, itemId: arg, quantity: null, target: itemTables[type] };
     } else if (parts.length === 2 && scalarTypes.has(type) && quantity.test(arg)) {
       entry = { type, quantity: arg, itemId: null, target: null };

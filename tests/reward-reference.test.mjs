@@ -65,7 +65,7 @@ test('unsupported grammar and missing item IDs fail instead of dropping or guess
 test('all 510 bundled reward fields parse but delivery schedules remain explicitly unresolved', () => {
   const report = auditCatalogs(catalogs);
   assert.deepEqual(report.errors, []);
-  assert.equal(report.rewardReferences.length, 510);
+  assert.equal(report.rewardReferences.filter(r => r.table === 'ShopBundleInfo').length, 510);
   const shopDeferred = report.deferredReferences.filter(r => r.table === 'ShopBundleInfo');
   assert.equal(shopDeferred.length, 3);
   assert.ok(shopDeferred.every(r => r.field === 'DailyDeliveryID'));

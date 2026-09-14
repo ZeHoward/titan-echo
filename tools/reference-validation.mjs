@@ -28,6 +28,12 @@ export function classify(table, row, catalogs) {
     }
   }
   let scope = 'unclassified';
+  if (['AvatarInfo', 'AvatarFrameInfo', 'PlayerTitleInfo'].includes(table)) {
+    scope = 'cosmetic-unlock-definition';
+    for (const field of ['AvatarUnlockType', 'TitleUnlockType', 'UnlockType', 'UnlockValue', 'CollectionName']) {
+      if (v[field] !== undefined) evidence.push(`${field}=${v[field]}`);
+    }
+  }
   if (table.startsWith('Endgame')) {
     scope = 'endgame-source-variant';
     evidence.push(`source-table=${table}`, 'live-variant-selection=unknown');
@@ -172,8 +178,10 @@ export function auditCatalogs(catalogs, nativeBonuses = loadNativeBonuses()) {
         }
       }
       if (table === 'EndgameSeasonRewardInfo' || table === 'EndgameSeasonRewardInfo_1') {
-        deferredReferences.push({ table, id: row.id, field: 'RankReward', value: row.values.RankReward,
-          reason: 'cosmetic reward targets and season activation not yet verified' });
+        try {
+          rewardReferences.push({ table, id: row.id, field: 'RankReward', season: row.values.SEASON,
+            activation: 'unverified', ...parseRewardReference(row.values.RankReward, 'RankReward', catalogs, nativeRewards) });
+        } catch (error) { errors.push(`${label}.RankReward: ${error.message}`); }
       }
       if (table === 'ShopBundleInfo') {
         ref(table, row, 'UnlockNextBundle', table);
