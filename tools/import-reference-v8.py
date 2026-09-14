@@ -156,6 +156,10 @@ def main():
           dumpSha256=sha(dump_path), packageSha256=audit['package']['sha256'],
           type='BonusType', values=dict(enum_rows),
           evidenceScope='Enum identity only; not a formula, enabled flag or live server value'))
+    reward_ids = dict(re.findall(r'public const RewardID (\w+) = (-?\d+);', dump_path.read_text(encoding='utf-8')))
+    write('native-reward-types.json', dict(version='8.2.0', values=reward_ids,
+          dumpSha256=sha(dump_path), metadataSha256=sha(ROOT/'work/apk-analysis/global-metadata.dat'),
+          evidenceScope='RewardID identity only; reward grammar and delivery behavior require separate verification'))
     write('manifest.json', dict(version='8.2.0', packageSha256=audit['package']['sha256'], runtimeEnabled=False,
                                tables=manifest, resourceIndex=[dict(name=p.name, sha256=sha(p), bytes=p.stat().st_size,
                                parsed=any(p.name.endswith('_'+t+'.txt') for t in TABLES)) for p in sorted(ASSETS.glob('*.txt'))]))
