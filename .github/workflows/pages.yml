@@ -27,6 +27,8 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm test
+      - name: Test reference import policies
+        run: python3 -m unittest discover -s tests -p '*_test.py'
       - run: npx tsc --noEmit
       - name: Configure Pages
         id: pages

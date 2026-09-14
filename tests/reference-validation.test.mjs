@@ -75,10 +75,16 @@ test('missing or conflicting availability flags never imply that content is enab
   assert.equal(make({ Enabled: 'TRUE' }).liveAvailability, 'unknown');
 });
 
-test('conflicting enhancement exponents are quarantined instead of overwriting by key', () => {
-  const conflict = load('quarantine').tables[0];
-  assert.equal(conflict.table, 'C_EquipmentEnhancementScalingInfo');
-  assert.equal(conflict.runtimeEnabled, false);
-  assert.deepEqual(conflict.conflicts.AllActiveSkillAmount.map(r => r.PowerExp), ['0.4', '1.002']);
-  assert.equal(catalogs.C_EquipmentEnhancementScalingInfo, undefined);
+test('enhancement duplicate resolution retains both source rows and the native last-write result', () => {
+  const data = catalogs.C_EquipmentEnhancementScalingInfo;
+  const result = data.records.find(r => r.id === 'AllActiveSkillAmount');
+  assert.equal(data.records.length, 58);
+  assert.equal(data.rowResolution.sourceRows, 59);
+  assert.equal(result.values.PowerExp, '1.002');
+  assert.equal(result.sourceOrdinal, 57);
+  assert.deepEqual(data.rowResolution.duplicateHistory.AllActiveSkillAmount.map(r =>
+    [r.sourceOrdinal, r.values.PowerExp]), [[9, '0.4'], [57, '1.002']]);
+  assert.equal(load('enhancement-parser-evidence').policy, data.rowResolution.policy);
+  assert.deepEqual(load('quarantine').tables, []);
+  assert.equal(result.activation, 'unverified');
 });

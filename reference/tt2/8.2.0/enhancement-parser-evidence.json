@@ -1,0 +1,46 @@
+{
+  "version": "8.2.0",
+  "table": "C_EquipmentEnhancementScalingInfo",
+  "packageSha256": "8d78c9aa877e6c0b291ee2116cab855bd26c59c1d080bc654f88ecf1ff268b5f",
+  "binarySha256": "c13fc44321b1214c71ab0277a134fc3401fd7392c74a0bbb3935671c55a8713a",
+  "sourceSha256": "86de81cd381c8fe2fcebed0252c608c5eaeb074c9e9ad32d8f6d319dd6b1b667",
+  "metadataSha256": "2d93f9e3f58a17cfb1bbd20ccd9fcbb26b3b9497afc4ecc6b94b0bfb2c460d97",
+  "scriptSha256": "62c2eeb8472bb107de516e4b6ae69d3dcdf5013fb1caa87223d82a54dd203f8b",
+  "policy": "last-successfully-parsed-row-wins",
+  "parserRva": "0x218994c",
+  "parserBytesSha256": "458741afcd6637aa4ea43ad89e1772e1a008db17df8016bb93c412f91a587589",
+  "evidence": {
+    "rowOrder": "ascending zero-based row index",
+    "parseGuard": "all five TryGetCell results must succeed before assignment",
+    "assignmentCallRva": "0x2189bd0",
+    "assignmentTarget": "Dictionary<BonusType, object>.set_Item",
+    "insertionBehavior": "OverwriteExisting",
+    "insertionBehaviorValue": 1,
+    "checkedInstructionAddresses": [
+      "0x2189a6c",
+      "0x2189b24",
+      "0x2189b28",
+      "0x2189b2c",
+      "0x2189b30",
+      "0x2189b34",
+      "0x2189bd0",
+      "0x2189bdc",
+      "0x2189be8",
+      "0x3481b78",
+      "0x3481b84"
+    ],
+    "verifiedStringReferences": {
+      "0x4c18588": "C_EquipmentEnhancementScalingInfo",
+      "0x4c0f130": "BonusType",
+      "0x4c185b8": "AttributeBase",
+      "0x4c185a0": "PowerBase",
+      "0x4c185b0": "PowerInc",
+      "0x4c185a8": "PowerExp"
+    }
+  },
+  "limits": [
+    "Bundled table only; server replacement data unknown",
+    "Import rejects unsupported or invalid cells rather than emulating every .NET parsing case",
+    "This confirms row resolution, not the equipment effect formula or activation"
+  ]
+}
