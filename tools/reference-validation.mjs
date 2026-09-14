@@ -1,0 +1,152 @@
+// Validation only. This module must not be imported by the game or choose live rules.
+import { readFileSync, writeFileSync } from 'node:fs';
+import { pathToFileURL } from 'node:url';
+
+export const referenceRoot = new URL('../reference/tt2/8.2.0/', import.meta.url);
+export function loadCatalogs() {
+  const manifest = JSON.parse(readFileSync(new URL('manifest.json', referenceRoot), 'utf8'));
+  return Object.fromEntries(manifest.tables.map(({ table }) => [table,
+    JSON.parse(readFileSync(new URL(table + '.json', referenceRoot), 'utf8'))]));
+}
+const missing = value => value === '' || value === '-';
+const none = value => missing(value) || value === 'None';
+const decimal = /^[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?$/;
+const bool = value => /^(true|false)$/i.test(value);
+const list = value => none(value) ? [] : value.split(',').map(s => s.trim());
+const isFalse = value => value === '0' || /^false$/i.test(value ?? '');
+
+export function classify(table, row, catalogs) {
+  const v = row.values;
+  const evidence = [];
+  let bundledState = 'unspecified';
+  for (const field of ['Enabled', 'IsActive', 'IsInGame']) {
+    if (v[field] !== undefined) {
+      evidence.push(`${field}=${v[field]}`);
+      if (isFalse(v[field])) bundledState = 'disabled';
+      else if (bundledState !== 'disabled' && /^(true|1)$/i.test(v[field])) bundledState = 'enabled';
+    }
+  }
+  let scope = 'unclassified';
+  if (['Maingame', 'Raid'].includes(v.Type)) {
+    scope = v.Type === 'Raid' ? 'raid' : 'main-game';
+    evidence.push(`Type=${v.Type}`);
+  }
+  if (table === 'ActiveSkillInfo') {
+    scope = v.SkillType === 'Fairy' ? 'fairy-effect' : v.SkillType === 'ActiveSkill' ? 'active-skill' : 'unclassified';
+    evidence.push(`SkillType=${v.SkillType}`);
+  }
+  if (table === 'EquipmentSetInfo') {
+    scope = v.SetType === 'Event' ? 'event-set' : 'non-event-set';
+    evidence.push(`SetType=${v.SetType}`);
+  }
+  if (table === 'C_EquipmentInfo') {
+    const set = catalogs.EquipmentSetInfo?.records.find(r => r.id === v.EquipmentSet);
+    evidence.push(`LimitedTime=${v.LimitedTime}`, `EquipmentSet=${v.EquipmentSet}`);
+    if (/^true$/i.test(v.LimitedTime) || set?.values.SetType === 'Event') {
+      scope = 'event-or-limited-equipment';
+      if (set?.values.SetType === 'Event') evidence.push('EquipmentSet.SetType=Event');
+    } else if (/^false$/i.test(v.LimitedTime) && (v.EquipmentSet === 'None' || set)) {
+      scope = 'non-event-equipment';
+    }
+  }
+  const rewards = [v.Reward, v.RewardString].filter(Boolean).join(',');
+  const eventTokens = [...new Set(rewards.split(',').map(t => t.split(':')[0])
+    .filter(t => /^(HolidayCurrency|AnniversaryMinigameCurrency|Alchemy)$/.test(t)))];
+  if (eventTokens.length) {
+    scope = 'mixed-event-rewards';
+    evidence.push(...eventTokens.map(t => `reward-token=${t}`));
+  }
+  if (table === 'HolidayEventTypeInfo') {
+    scope = 'event-configuration';
+    evidence.push('table=HolidayEventTypeInfo');
+  }
+  if (table === 'ChallengeTournamentInfo') {
+    scope = 'challenge-configuration';
+    evidence.push('table=ChallengeTournamentInfo');
+  }
+  return { id: row.id, bundledState, scope, liveAvailability: 'unknown', activation: 'unverified', evidence };
+}
+
+export function loadNativeBonuses() {
+  return JSON.parse(readFileSync(new URL('native-bonus-types.json', referenceRoot), 'utf8')).values;
+}
+
+export function auditCatalogs(catalogs, nativeBonuses = loadNativeBonuses()) {
+  const errors = [], unresolved = [], nativeOnly = [], classifications = {}, referenceCounts = {};
+  const ids = Object.fromEntries(Object.entries(catalogs).map(([name, data]) => [name, new Set(data.records.map(r => r.id))]));
+  function ref(table, row, field, target, multiple = false) {
+    const raw = row.values[field];
+    if (raw === undefined || none(raw)) return;
+    const values = multiple ? list(raw) : [raw];
+    for (const value of values) {
+      const label = `${table}.${field} -> ${target}`;
+      referenceCounts[label] = (referenceCounts[label] ?? 0) + 1;
+      if (!ids[target]?.has(value)) {
+        const issue = { table, id: row.id, field, value, target };
+        if (target === 'BonusInfo' && Object.hasOwn(nativeBonuses, value)) {
+          nativeOnly.push({ ...issue, enumValue: nativeBonuses[value], formulaStatus: 'unverified' });
+        } else unresolved.push(issue);
+      }
+    }
+  }
+  for (const [table, data] of Object.entries(catalogs)) {
+    if (ids[table].size !== data.records.length) errors.push(`${table}: duplicate IDs`);
+    classifications[table] = [];
+    for (const row of data.records) {
+      const label = `${table}/${row.id}`;
+      const parts = data.keys.map(k => row.values[k]);
+      if (parts.some(p => typeof p !== 'string' || missing(p)) ||
+          row.id !== (parts.length === 1 ? parts[0] : JSON.stringify(parts))) errors.push(`${label}: key mismatch`);
+      if (Object.keys(row.values).sort().join('\0') !== Object.keys(data.schema).sort().join('\0')) errors.push(`${label}: schema columns differ`);
+      for (const [field, kind] of Object.entries(data.schema)) {
+        const value = row.values[field];
+        if (typeof value !== 'string') { errors.push(`${label}.${field}: expected string`); continue; }
+        if (missing(value)) continue;
+        if (kind === 'decimal' && !decimal.test(value)) errors.push(`${label}.${field}: invalid decimal`);
+        if (kind === 'boolean' && !bool(value)) errors.push(`${label}.${field}: invalid boolean`);
+        if (!['decimal', 'boolean', 'identifier', 'token'].includes(kind)) errors.push(`${label}.${field}: unknown schema kind`);
+      }
+      for (const field of ['Enabled', 'IsActive', 'LimitedTime', 'RunWhileInactive', 'CanFairyRandomDrop', 'IsFlying']) {
+        if (row.values[field] !== undefined && !bool(row.values[field])) errors.push(`${label}.${field}: invalid flag`);
+      }
+      if (row.values.MaxLevel !== undefined && !/^\d+$/.test(row.values.MaxLevel)) errors.push(`${label}: invalid MaxLevel`);
+      for (const field of Object.keys(row.values)) {
+        if (/^(BonusType(?:[A-D]|[1-3])?|ClassBonusType|SpatialBonusType)$/.test(field)) ref(table, row, field, 'BonusInfo');
+      }
+      if (table === 'BonusInfo') ref(table, row, 'Combos', 'BonusInfo', true);
+      if (table === 'HelperSkillInfo') ref(table, row, 'Owner', 'HelperInfo');
+      if (table === 'ClanScrollInfo') ref(table, row, 'ImageMap', 'HelperInfo');
+      if (table === 'C_EquipmentInfo') ref(table, row, 'EquipmentSet', 'EquipmentSetInfo');
+      if (table === 'ActiveSkillMultiCastInfo') ref(table, row, 'SkillID', 'ActiveSkillInfo');
+      if (table === 'ActiveSkillInfo') ref(table, row, 'RequiredTalentID', 'SkillTreeInfo2.0');
+      if (table === 'SkillTreeInfo2.0') ref(table, row, 'TalentReq', table);
+      if (['TitanResearchInfo', 'GemstoneResearchInfo'].includes(table)) ref(table, row, 'RequiredResearchID', table, true);
+      if (table === 'AchievementInfo') {
+        const requirements = list(row.values.Requirement), rewards = list(row.values.Reward);
+        if (requirements.length !== rewards.length || !requirements.length ||
+            [...requirements, ...rewards].some(v => !decimal.test(v))) errors.push(`${label}: achievement tiers mismatch`);
+      }
+      classifications[table].push(classify(table, row, catalogs));
+    }
+  }
+  // Talent prerequisites are a directed tree. Research adjacency is not treated as a tree.
+  const tree = new Map((catalogs['SkillTreeInfo2.0']?.records ?? []).map(r => [r.id, r.values.TalentReq]));
+  const finished = new Set(), active = new Set();
+  function visit(id) {
+    if (active.has(id)) { errors.push(`SkillTreeInfo2.0/${id}: prerequisite cycle`); return; }
+    if (finished.has(id) || !tree.has(id)) return;
+    active.add(id);
+    if (!none(tree.get(id))) visit(tree.get(id));
+    active.delete(id); finished.add(id);
+  }
+  for (const id of tree.keys()) visit(id);
+  return { version: '8.2.0', runtimeEnabled: false, errors, unresolved, nativeOnly, referenceCounts, classifications };
+}
+
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  const report = auditCatalogs(loadCatalogs());
+  writeFileSync(new URL('validation.json', referenceRoot), JSON.stringify(report) + '\n');
+  console.log(JSON.stringify({ errors: report.errors, unresolved: report.unresolved.length, nativeOnly: report.nativeOnly.length,
+    checkedReferences: Object.values(report.referenceCounts).reduce((a,b) => a+b, 0) }, null, 2));
+  if (report.errors.length || report.unresolved.length) process.exitCode = 1;
+}
