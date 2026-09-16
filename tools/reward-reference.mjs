@@ -4,7 +4,8 @@ const scalarTypes = new Set(['Equipment', 'RaidWildcard', 'SeasonalPetsLvl1', 'R
   'SkillPoint', 'PerkTicket', 'PetParadiseCurrency', 'PetsLvl1', 'Diamonds', 'BombGameCurrency',
   'MinigameQuestCurrency', 'MinigameFishingCurrency', 'MinigameDigsiteCurrency', 'MinigameHuntingCurrency',
   'MinigameBallDropPrestigeCurrency', 'TitanSouls', 'GemstoneCurrency', 'PetsLvl5', 'Alchemy', 'EquipmentShards',
-  'FortuneRaidCard', 'PlayerRaidXP', 'AnniversaryMinigameCurrency', 'MinigameMazeKeys']);
+  'FortuneRaidCard', 'PlayerRaidXP', 'AnniversaryMinigameCurrency', 'MinigameMazeKeys',
+  'HelperWeapon', 'Perk', 'HolidayCurrency']);
 const itemTables = { RaidCard: 'RaidSkillInfo', Pet: 'PetInfo', EquipmentSet: 'EquipmentSetInfo',
   Avatar: 'AvatarInfo', Frame: 'AvatarFrameInfo', Title: 'PlayerTitleInfo', RewardedBonus: 'BonusInfo' };
 // RewardedBonus names a bonus and a fractional amount, so its quantity is not an item count.
@@ -13,7 +14,7 @@ const decimalAmount = /^[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?$/;
 export function parseRewardReference(text, field, catalogs, nativeRewardIds, options = {}) {
   if (typeof text !== 'string') throw new Error('reward must be a string');
   if (!['RewardString', 'RankReward', 'ClanGift', 'Reward', 'NewPlayerReward', 'CompletionRewardString',
-    'RewardTier', 'RewardStringForRarity4', 'SelectionSlotContents1', 'SelectionSlotContents2',
+    'RewardTier', 'RewardStringForRarity4', 'HolidayReward', 'SelectionSlotContents1', 'SelectionSlotContents2',
     'SelectionSlotContents3', 'SelectionSlotContents4'].includes(field)) throw new Error('unsupported reward field');
   const mode = field.startsWith('SelectionSlotContents') ? 'choice-candidates' : field === 'ClanGift' ? 'clan-gift-list' : 'reward-list';
   const entries = [], candidates = [], missingTargets = [];

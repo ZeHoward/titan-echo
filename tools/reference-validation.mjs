@@ -2,7 +2,7 @@
 import { readFileSync, writeFileSync } from 'node:fs';
 import { pathToFileURL } from 'node:url';
 import { parseRewardReference } from './reward-reference.mjs';
-import { REWARD_FIELDS, compareRewardColumns, parseTournamentRewardList } from './tournament-reference.mjs';
+import { REWARD_FIELDS, compareRewardColumns, parseSheetRewardList } from './sheet-reward-reference.mjs';
 
 export const referenceRoot = new URL('../reference/tt2/8.2.0/', import.meta.url);
 export function loadCatalogs() {
@@ -151,7 +151,7 @@ export function loadNativeCosmetics() {
 export function auditCatalogs(catalogs, nativeBonuses = loadNativeBonuses(), nativeCosmetics = loadNativeCosmetics()) {
   const nativeRewards = JSON.parse(readFileSync(new URL('native-reward-types.json', referenceRoot), 'utf8')).values;
   const errors = [], unresolved = [], nativeOnly = [], deferredReferences = [], rewardReferences = [], classifications = {}, referenceCounts = {};
-  const tournamentRewards = [], tournamentColumnChecks = [];
+  const sheetRewards = [], sheetColumnChecks = [];
   const cosmeticTypes = nativeCosmetics.types ?? {}, cosmeticTables = nativeCosmetics.tableTypes ?? {};
   const serverVarFields = loadNativeServerVarFields(), serverVarBinding = [];
   const challengeStartingChecks = [];
@@ -258,8 +258,8 @@ export function auditCatalogs(catalogs, nativeBonuses = loadNativeBonuses(), nat
         for (const field of REWARD_FIELDS[table]) {
           if (none(row.values[field])) continue;
           try {
-            const entries = parseTournamentRewardList(row.values[field], nativeRewards);
-            tournamentRewards.push({ table, id: row.id, field, entries,
+            const entries = parseSheetRewardList(row.values[field], nativeRewards);
+            sheetRewards.push({ table, id: row.id, field, entries,
               interpretation: 'sheet-token-list-not-native-reward-grammar',
               deliveryRules: 'unverified', activation: 'unverified', runtimeEnabled: false });
             for (const entry of entries) {
@@ -274,12 +274,13 @@ export function auditCatalogs(catalogs, nativeBonuses = loadNativeBonuses(), nat
           } catch (error) { errors.push(`${label}.${field}: ${error.message}`); }
         }
         const comparison = compareRewardColumns(table, row, nativeRewards);
-        if (comparison) tournamentColumnChecks.push({ table, id: row.id, ...comparison });
+        if (comparison) sheetColumnChecks.push({ table, id: row.id, ...comparison });
       }
       // Minigame and event sheets reuse the native RewardID grammar, unlike the tournament sheets.
       const nativeRewardFields = table === 'AdChestInfo' ? ['RewardTier']
-        : /^(Minigame|AnniversaryTournament)/.test(table) || table === 'PetParadiseLevelInfo'
-          ? ['RankReward', 'RewardString', 'CompletionRewardString', 'RewardStringForRarity4'] : [];
+        : REWARD_FIELDS[table] ? []
+        : /^(Minigame|AnniversaryTournament|HolidayEvent)/.test(table) || table === 'PetParadiseLevelInfo'
+          ? ['RankReward', 'RewardString', 'CompletionRewardString', 'RewardStringForRarity4', 'HolidayReward'] : [];
       for (const field of nativeRewardFields) {
         if (row.values[field] === undefined || none(row.values[field])) continue;
         try {
@@ -293,6 +294,23 @@ export function auditCatalogs(catalogs, nativeBonuses = loadNativeBonuses(), nat
             } else errors.push(`${label}.${field}: unknown ${miss.target} ID: ${miss.itemId}`);
           }
         } catch (error) { errors.push(`${label}.${field}: ${error.message}`); }
+      }
+      if (table === 'HolidayEventGlobalRaidLevelInfo') {
+        // Unlike the raid level sheet, this one lists several areas in one cell.
+        ref(table, row, 'AreaID', 'RaidAreaInfo', true);
+        ref(table, row, 'EnemyIDs', 'RaidEnemyInfo', true);
+        if (!bool(row.values.HasArmor)) errors.push(`${label}.HasArmor: invalid flag`);
+      }
+      if (table === 'HolidayEventGlobalRaidPartDestroyOrder') {
+        ref(table, row, 'Part', 'RaidEnemyPartInfo');
+        const destroyed = Number(row.values.DestroyedOn);
+        if (!Number.isFinite(destroyed) || destroyed < 0 || destroyed > 1) errors.push(`${label}.DestroyedOn: invalid fraction`);
+      }
+      if (table === 'GlobalEventInfo') {
+        ref(table, row, 'TaskNames', 'GlobalEventTasksInfo', true);
+        for (const field of ['InEffect']) {
+          if (!bool(row.values[field])) errors.push(`${label}.${field}: invalid flag`);
+        }
       }
       if (table === 'MinigameEventQuestInfo') {
         // Requirement and Reward are paired tier lists of plain numbers, not a reward grammar.
@@ -535,6 +553,13 @@ export function auditCatalogs(catalogs, nativeBonuses = loadNativeBonuses(), nat
     active.delete(id); finished.add(id);
   }
   for (const id of tree.keys()) visit(id);
+  // The holiday global raid boss uses its own body part names, which are not the raid part catalog.
+  const holidayRaidParts = catalogs.HolidayEventGlobalRaidTargetZoneInfo ? (() => {
+    const used = [...new Set(catalogs.HolidayEventGlobalRaidTargetZoneInfo.records.map(r => r.values.TargetPartID))].sort();
+    return { field: 'TargetPartID', parts: used,
+      inRaidPartCatalog: used.filter(part => ids.RaidEnemyPartInfo?.has(part)),
+      note: 'holiday global raid target zones name their own boss parts, separate from RaidEnemyPartInfo' };
+  })() : null;
   // Sheet keys with no matching client field cannot bind; that is recorded, not silently dropped.
   const unboundServerVars = serverVarBinding.filter(entry => !entry.boundToNativeField);
   const serverVarBindingSummary = { checked: serverVarBinding.length, bound: serverVarBinding.length - unboundServerVars.length,
@@ -554,7 +579,7 @@ export function auditCatalogs(catalogs, nativeBonuses = loadNativeBonuses(), nat
     excluded: poolRows.filter(row => ['A', 'B', 'C', 'D', 'E'].every(p => row.values[p] === '0')).map(row => row.id).sort(),
     activation: 'unverified', runtimeEnabled: false }]);
   // The sheet vocabulary is published as-is; a token without a native RewardID is recorded, never renamed.
-  const tournamentVocabulary = Object.entries(tournamentRewards.reduce((tally, row) => {
+  const sheetRewardVocabulary = Object.entries(sheetRewards.reduce((tally, row) => {
     for (const entry of row.entries) {
       const key = entry.type;
       (tally[key] ??= { type: key, nativeRewardId: entry.nativeRewardId, uses: 0, tables: new Set() });
@@ -563,7 +588,7 @@ export function auditCatalogs(catalogs, nativeBonuses = loadNativeBonuses(), nat
     }
     return tally;
   }, {})).map(([, value]) => ({ ...value, tables: [...value.tables].sort() })).sort((a, b) => a.type < b.type ? -1 : 1);
-  const tournamentColumnAgreement = Object.entries(tournamentColumnChecks.reduce((tally, row) => {
+  const sheetColumnAgreement = Object.entries(sheetColumnChecks.reduce((tally, row) => {
     const entry = (tally[row.table] ??= { table: row.table, field: row.field, rows: 0, agreed: 0, divergedRows: 0, divergedColumns: {} });
     entry.rows += 1;
     entry.agreed += row.agreed.length;
@@ -590,7 +615,7 @@ export function auditCatalogs(catalogs, nativeBonuses = loadNativeBonuses(), nat
       unlockTypes: tally(spec.unlockColumn), categories: tally(spec.categoryColumn),
       activation: 'unverified', runtimeEnabled: false };
   });
-  return { version: '8.2.0', runtimeEnabled: false, errors, unresolved, nativeOnly, deferredReferences, rewardReferences, referenceCounts, classifications, cosmeticCoverage, sourceVariants, tournamentRewards, tournamentVocabulary, tournamentColumnAgreement, challengeArtifactPools, serverVarBinding: serverVarBindingSummary, challengeStartingChecks };
+  return { version: '8.2.0', runtimeEnabled: false, errors, unresolved, nativeOnly, deferredReferences, rewardReferences, referenceCounts, classifications, cosmeticCoverage, sourceVariants, sheetRewards, sheetRewardVocabulary, sheetColumnAgreement, holidayRaidParts, challengeArtifactPools, serverVarBinding: serverVarBindingSummary, challengeStartingChecks };
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {

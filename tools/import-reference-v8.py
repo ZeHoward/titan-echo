@@ -46,7 +46,12 @@ TABLES = ['ArtifactInfo', 'ArtifactCostInfo', 'ActiveSkillInfo', 'ActiveSkillMul
           'MinigameFishingDerbyRewardInfo', 'MinigameFishingDerbySoloContributionRewards',
           'MinigameFishingDerbyUpgradeInfo', 'MinigameFishingDerbyXPInfo', 'MinigameHuntingBeastInfo',
           'MinigameHuntingRarityInfo', 'MinigameHuntingRewardInfo', 'MinigameHuntingSoloContributionRewards',
-          'MinigameHuntingUpgradeInfo', 'MinigameMazeRewardInfo', 'MinigameSoloPrestigeGameRewardInfo']
+          'MinigameHuntingUpgradeInfo', 'MinigameMazeRewardInfo', 'MinigameSoloPrestigeGameRewardInfo',
+          'GlobalEventInfo', 'GlobalEventTasksInfo', 'HolidayEventCurrencyAmounts',
+          'HolidayEventBombGameLevelInfo', 'HolidayEventBombGameRewardInfo',
+          'HolidayEventGlobalRaidLevelInfo', 'HolidayEventGlobalRaidRewardInfo',
+          'HolidayEventGlobalRaidPartDestroyOrder', 'HolidayEventGlobalRaidSoloContributionRewards',
+          'HolidayEventGlobalRaidTargetZoneInfo']
 # Shop server-response samples: not gameplay tables, so only their shape is indexed.
 SHOP_SAMPLES = ['ShopInfo', 'ShopInfoServerTest', 'ShopInfoServerTest_all_dailyDeals', 'ShopInfoServerTest_copy']
 # Composite stable keys where a single source column repeats across rows.
@@ -58,7 +63,10 @@ KEYS = {'HelperImprovementsInfo': ['Ascension', 'Level'], 'RaidLevelInfo': ['Tie
         'SuperChallengeTournamentRewardInfo': ['StartRank', 'PrizeType'],
         'ChallengeTournamentProgressionRewardInfo': ['TourneyID', 'RewardStage'],
         'NewPrizeInfoDoc': ['PrizeID', 'TierID', 'StartRank', 'PrizeType'],
-        'AdChestInfo': ['ChestType', 'Tier', 'RewardCategoryTier', 'RewardTier']}
+        'AdChestInfo': ['ChestType', 'Tier', 'RewardCategoryTier', 'RewardTier'],
+        'HolidayEventGlobalRaidLevelInfo': ['HolidayEventID', 'Phase'],
+        'HolidayEventGlobalRaidRewardInfo': ['HolidayEventID', 'Phase'],
+        'HolidayEventGlobalRaidTargetZoneInfo': ['AttackNumber', 'Time', 'TargetPartID']}
 # Sheets whose header repeats a column name. Allowed only with the verified InfoDoc column policy.
 DUPLICATE_COLUMN_TABLES = {'RaidTicketBoostInfo', 'RaidResearchInfo'}
 # Same-shaped alternate sources for a base table. Kept separate; the live choice is not in the package.

@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { auditCatalogs, loadCatalogs, referenceRoot } from '../tools/reference-validation.mjs';
-import { REWARD_FIELDS, compareRewardColumns, parseTournamentRewardList } from '../tools/tournament-reference.mjs';
+import { REWARD_FIELDS, compareRewardColumns, parseSheetRewardList } from '../tools/sheet-reward-reference.mjs';
 const catalogs = loadCatalogs();
 const report = auditCatalogs(catalogs);
 const load = name => JSON.parse(readFileSync(new URL(name + '.json', referenceRoot), 'utf8'));
@@ -30,17 +30,17 @@ test('tournament reward tables import with the composite keys their rank rows ne
 });
 
 test('two tournament reward tokens have no native RewardID and are recorded, not renamed', () => {
-  const vocabulary = Object.fromEntries(report.tournamentVocabulary.map(entry => [entry.type, entry]));
-  assert.equal(report.tournamentVocabulary.length, 14);
+  const vocabulary = Object.fromEntries(report.sheetRewardVocabulary.map(entry => [entry.type, entry]));
   assert.equal(vocabulary.FortuneHelperWeapon.nativeRewardId, null);
   assert.equal(vocabulary.RandomLevelPet.nativeRewardId, null);
-  assert.equal(vocabulary.FortuneHelperWeapon.uses, 485);
+  // The tournament sheets account for 485 of the FortuneHelperWeapon uses; the bomb game adds the rest.
+  assert.equal(vocabulary.FortuneHelperWeapon.tables.filter(t => /Tournament/.test(t)).length, 3);
   assert.equal(vocabulary.RandomLevelPet.uses, 96);
-  for (const entry of report.tournamentVocabulary) {
+  for (const entry of report.sheetRewardVocabulary) {
     if (entry.nativeRewardId === null) continue;
     assert.equal(entry.nativeRewardId, native[entry.type], entry.type);
   }
-  assert.ok(report.tournamentRewards.every(row =>
+  assert.ok(report.sheetRewards.every(row =>
     row.interpretation === 'sheet-token-list-not-native-reward-grammar'
     && row.deliveryRules === 'unverified' && row.runtimeEnabled === false));
   // The sheet vocabulary is deliberately not routed through the RewardID grammar.
@@ -48,7 +48,7 @@ test('two tournament reward tokens have no native RewardID and are recorded, not
 });
 
 test('the reward string repeats the amount columns everywhere except the super tournament sheet', () => {
-  const agreement = Object.fromEntries(report.tournamentColumnAgreement.map(entry => [entry.table, entry]));
+  const agreement = Object.fromEntries(report.sheetColumnAgreement.map(entry => [entry.table, entry]));
   for (const table of ['TournamentRewardInfo', 'ChallengeTournamentRewardInfo', 'SuperChallengeTournamentRewardInfo']) {
     assert.equal(agreement[table].divergedRows, 0, table);
     assert.deepEqual(agreement[table].divergedColumns, {}, table);
@@ -66,16 +66,16 @@ test('the reward string repeats the amount columns everywhere except the super t
 });
 
 test('tournament reward tokens keep their source text and reject shapes the sheets never use', () => {
-  const parsed = parseTournamentRewardList('Diamonds:1200,RandomLevelPet:16,Equipment:Rare:3', native);
+  const parsed = parseSheetRewardList('Diamonds:1200,RandomLevelPet:16,Equipment:Rare:3', native);
   assert.deepEqual(parsed.map(e => [e.type, e.quantity, e.itemId, e.qualifier ?? null, e.nativeRewardId]),
     [['Diamonds', '1200', null, null, '33'], ['RandomLevelPet', '16', null, null, null],
      ['Equipment', '3', null, 'Rare', '15']]);
-  assert.deepEqual(parseTournamentRewardList('', native), []);
-  assert.deepEqual(parseTournamentRewardList('None', native), []);
+  assert.deepEqual(parseSheetRewardList('', native), []);
+  assert.deepEqual(parseSheetRewardList('None', native), []);
   for (const bad of ['Diamonds', 'Diamonds:1:2:3', ':5', 'Equipment:Mythic:3']) {
-    assert.throws(() => parseTournamentRewardList(bad, native), /tournament reward token/, bad);
+    assert.throws(() => parseSheetRewardList(bad, native), /tournament reward token/, bad);
   }
-  assert.throws(() => parseTournamentRewardList(null, native), /must be a string/);
+  assert.throws(() => parseSheetRewardList(null, native), /must be a string/);
 });
 
 test('challenge tournament artifact pools keep weights, including artifacts weighted out of every pool', () => {

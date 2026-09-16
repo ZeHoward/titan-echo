@@ -48,7 +48,7 @@
     {
       "name": "HolidayEventGlobalRaidSoloContributionRewards",
       "sourceSha256": "59e3057b09caad8342e8aa30c8d0121490875252e66934a70cbfedd4a20e7dfc",
-      "status": "not-imported",
+      "status": "imported",
       "route": "V01-V02"
     },
     {
@@ -96,7 +96,7 @@
     {
       "name": "HolidayEventGlobalRaidLevelInfo",
       "sourceSha256": "7447ed1af0736d58f916dd8f395de9b2d0904eb602941e62487abc1c39adcbff",
-      "status": "not-imported",
+      "status": "imported",
       "route": "V01-V02"
     },
     {
@@ -1026,7 +1026,7 @@
     {
       "name": "HolidayEventBombGameRewardInfo",
       "sourceSha256": "3cfb6b971128e0e26d875506d2bf411f3e9f944f3bd4ce06b41cd0ce7bbbe953",
-      "status": "not-imported",
+      "status": "imported",
       "route": "V01-V02"
     },
     {
@@ -1110,7 +1110,7 @@
     {
       "name": "HolidayEventGlobalRaidTargetZoneInfo",
       "sourceSha256": "e573b56b75cf674d63a58ba6b016ab8b34c61af2109ba962cd5c161acb9c054e",
-      "status": "not-imported",
+      "status": "imported",
       "route": "V01-V02"
     },
     {
@@ -1158,7 +1158,7 @@
     {
       "name": "HolidayEventGlobalRaidRewardInfo",
       "sourceSha256": "10f820f15d47c7a1fafaa83f29b57104ada1b6cbca8bc3fb6d717c444466c20e",
-      "status": "not-imported",
+      "status": "imported",
       "route": "V01-V02"
     },
     {
@@ -1242,7 +1242,7 @@
     {
       "name": "GlobalEventTasksInfo",
       "sourceSha256": "2e61ccc512594ab6a86e5c1c3a152fc3e2a7a56921a67c5969c35cb9613a8614",
-      "status": "not-imported",
+      "status": "imported",
       "route": "V01-V02"
     },
     {
@@ -1428,7 +1428,7 @@
     {
       "name": "HolidayEventBombGameLevelInfo",
       "sourceSha256": "8a2d6969220ddb9a55302e5b57d2c99f0897bd1dd0398a066e7f6ca2142a5209",
-      "status": "not-imported",
+      "status": "imported",
       "route": "V01-V02"
     },
     {
@@ -1818,7 +1818,7 @@
     {
       "name": "GlobalEventInfo",
       "sourceSha256": "8be05fbda8c021656bc7884ac5af40acbe0569a10050d2a4b6fe36dfdc00c4ec",
-      "status": "not-imported",
+      "status": "imported",
       "route": "V01-V02"
     },
     {
@@ -1884,7 +1884,7 @@
     {
       "name": "HolidayEventGlobalRaidPartDestroyOrder",
       "sourceSha256": "0d47ef1a718629f01a1426f2cc12aaec592bb2c291bacd3955c5d54f3bd7991d",
-      "status": "not-imported",
+      "status": "imported",
       "route": "V01-V02"
     },
     {
@@ -2016,7 +2016,7 @@
     {
       "name": "HolidayEventCurrencyAmounts",
       "sourceSha256": "7088cf2385d08b1afefbc157837627d932fa06599f95e9cd3ae702d6c1b6b078",
-      "status": "not-imported",
+      "status": "imported",
       "route": "V01-V02"
     },
     {

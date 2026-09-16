@@ -2,7 +2,7 @@
 
 這是資料準備成果，尚未接入遊戲或改寫存檔。現行遊戲仍為 2.6.0／7.5 數值基準。
 
-`manifest.json` 記錄安裝包、107 張已解析表（24,075 個表內有效 ID）的 SHA-256，以及 372 個 TextAsset 的大小與雜湊。未解析的資源只列索引，不宣稱它們皆為 CSV 或已完成 schema。
+`manifest.json` 記錄安裝包、117 張已解析表（26,796 個表內有效 ID）的 SHA-256，以及 372 個 TextAsset 的大小與雜湊。未解析的資源只列索引，不宣稱它們皆為 CSV 或已完成 schema。
 
 每張表以來源 ID 為鍵；英雄里程碑使用 `[Ascension,Level]` 複合鍵。`sourceOrdinal` 僅作來源定位，不能用來覆蓋玩家陣列。`legacy-2.6.json` 固定目前七組核心陣列的原始 ID 順序；不存在於目標表的 ID 映射為 null，後續遷移必須保留及處理，不能改配其他內容。
 
@@ -12,7 +12,7 @@
 
 重建：使用本機已忽略的原始資料執行 `python tools/import-reference-v8.py`，再執行 `node tools/reference-validation.mjs`。工具驗證安裝包、既有全資源索引、原生列舉與解析器證據雜湊。除了下列已取得原生證據的表以外，拒絕重複鍵與重複欄位名；不完整 CSV 列一律拒絕。CI 透過 `npm test` 驗證提交資料完整性、舊 ID 對照、換序、超大數值、跨表引用與活動證據，並執行 `python3 -m unittest discover -s tests -p '*_test.py'` 驗證實際 Python 匯入規則。未知效果 ID、壞掉的前置引用、循環技能前置、非法數字及不成對的成就階段皆有反例測試。
 
-目前檢查 30,987 處引用；其中 33 處不在 BonusInfo，但在原生 BonusType 列舉中存在，記錄在 `nativeOnly`；其中 21 處是四份泰坦縮放來源變體重複引用同一個 MonsterHPScaling。`native-bonus-types.json` 僅保存列舉 ID／數字與來源雜湊，不能用來推定效果公式。沒有未解析的引用 ID，不代表所有公式或所有資源都已驗證。
+目前檢查 31,357 處引用；其中 33 處不在 BonusInfo，但在原生 BonusType 列舉中存在，記錄在 `nativeOnly`；其中 21 處是四份泰坦縮放來源變體重複引用同一個 MonsterHPScaling。`native-bonus-types.json` 僅保存列舉 ID／數字與來源雜湊，不能用來推定效果公式。沒有未解析的引用 ID，不代表所有公式或所有資源都已驗證。
 
 裝備副屬性表已解除隔離：原生 `ParseEquipmentEnhancementScalingInfo`（RVA 0x218994c）按遞增列號讀取；五個 TryGetCell 都成功才呼叫字典 set_Item，後者使用 OverwriteExisting。故同 ID 最後成功解析的列生效。59 筆來源列整理為 58 個 ID，AllActiveSkillAmount 的 PowerExp 從第 9 列的 0.4 被第 57 列的 1.002 覆寫（列號從 0 起）。兩筆都保留在表內 rowResolution.duplicateHistory，sourceOrdinal 指向最後生效列。這項結論只適用於目前安裝包資料，不推定歷史 7.5 解析器或線上覆蓋值。
 
@@ -111,3 +111,11 @@ NewPrizeInfoDoc 與 TournamentRewardInfo 的 273 個複合鍵完全相同，屬�
 MinigameEventQuestInfo 的 Requirement 與 Reward 是成對的純數字階段清單，不是獎勵字串，改用與成就表相同的階段配對檢查，並驗證 ClientTracked 為布林值；此表不列入獎勵引用。
 
 **再發現一處來源缺口**：AnniversaryTournamentRankRewardInfo 的前兩名獎勵引用 AvatarAnniversary10，該 ID 在 AvatarInfo 與原生 AvatarID 列舉中都不存在，2 筆記入 deferredReferences。連同大師階級的第 17 季 8 筆，目前共 10 筆缺少頭像的引用；同一獎勵字串中確實存在的稱號照常解析。
+
+本次追加節慶與全球活動 10 張表：炸彈遊戲關卡 1,300 筆、全球突襲目標區 1,199 筆（AttackNumber＋Time＋TargetPartID，因為攻擊編號與時間會重複）、單人貢獻獎勵 101 筆、全球突襲關卡與獎勵各 45 筆（HolidayEventID＋Phase）、部位摧毀順序 16 筆、活動貨幣 8 筆、全球活動任務 3 筆與活動設定 1 筆。全球突襲關卡的 AreaID 是逗號清單（與 RaidLevelInfo 的單值不同），已改用多值解析；區域、敵人與部位摧毀順序全部可在既有突襲目錄解析。
+
+**節慶全球突襲的頭目有自己的部位名稱**：目標區的 TargetPartID 使用 Head、Chest、LeftArm、LeftFinger、LeftLeg、RightArm、RightFinger、RightLeg 共 8 個名稱，全部不在 RaidEnemyPartInfo 中，記在 `validation.json` 的 `holidayRaidParts`，不強行對應到突襲部位目錄。同一活動的 PartDestroyOrder 則確實使用突襲部位 ID，兩者不可混用。
+
+獎勵詞彙模組改名為 [sheet-reward-reference.mjs](../../../tools/sheet-reward-reference.mjs)，因為非 RewardID 詞彙不只出現在錦標賽：HolidayEventBombGameLevelInfo 的 RewardString 也使用 FortuneHelperWeapon，故該欄改走表單詞彙記錄而非 RewardID 文法。目前共 17 種表單代號，其中 FortuneHelperWeapon（494 處，橫跨 4 張表）與 RandomLevelPet（96 處）沒有原生 RewardID。驗證報告欄位同步改名為 sheetRewards、sheetRewardVocabulary、sheetColumnAgreement。
+
+其餘活動獎勵欄位（RankReward、RewardString、HolidayReward）共 149 筆仍以原生 RewardID 文法解析，並補上 HelperWeapon、Perk、HolidayCurrency 三個純量代號與 HolidayReward 欄位名。活動時程、貨幣兌換與實際發獎仍未驗證；GlobalEventInfo 只有一筆 2017 年情人節的歷史設定，不代表現行活動。

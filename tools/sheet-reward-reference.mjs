@@ -1,5 +1,5 @@
-// Tournament sheets use their own reward token vocabulary, not the native RewardID grammar.
-// This module only describes what the bundled sheets contain; it never grants anything.
+// Some bundled sheets use their own reward token vocabulary instead of the native RewardID grammar.
+// This module only describes what those sheets contain; it never grants anything.
 const quantity = /^\d+$/;
 const qualifiers = new Set(['Common', 'Rare', 'Legendary']);
 
@@ -30,10 +30,12 @@ export const REWARD_FIELDS = {
   ChallengeTournamentRewardInfo: ['TournamentRewards'],
   SuperChallengeTournamentRewardInfo: ['TournamentRewards', 'ResourceRewards', 'AvatarReward'],
   ChallengeTournamentProgressionRewardInfo: ['RewardString_Type1', 'RewardString_Type2', 'RewardString_Type3'],
+  // The bomb game reward list also names FortuneHelperWeapon, which has no native RewardID.
+  HolidayEventBombGameLevelInfo: ['RewardString'],
 };
 
 /** Split one sheet reward string into typed tokens without deciding what any of them grants. */
-export function parseTournamentRewardList(text, nativeRewardIds) {
+export function parseSheetRewardList(text, nativeRewardIds) {
   if (typeof text !== 'string') throw new Error('tournament reward must be a string');
   if (text === '' || text === '-' || text === 'None') return [];
   return text.split(',').map(raw => {
@@ -54,7 +56,7 @@ export function parseTournamentRewardList(text, nativeRewardIds) {
 export function compareRewardColumns(table, row, nativeRewardIds) {
   const spec = REWARD_COLUMNS[table];
   if (!spec) return null;
-  const tokens = parseTournamentRewardList(row.values[spec.field], nativeRewardIds);
+  const tokens = parseSheetRewardList(row.values[spec.field], nativeRewardIds);
   const agreed = [], diverged = [], covered = new Set();
   for (const token of tokens) {
     const column = spec.columns[token.type];
