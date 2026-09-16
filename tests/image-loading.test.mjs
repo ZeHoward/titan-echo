@@ -67,7 +67,7 @@ test('戰鬥畫面只請求 WebP，沒有留下會落空的 PNG 路徑', () => {
 
 test('public/ 只放實際會被請求的檔案，原始 PNG 留在 art/', () => {
   const served = readdirSync(PUBLIC).filter(name => statSync(new URL(name, PUBLIC)).isFile());
-  // favicon.svg has no reference in the source: the browser asks for it by convention.
+  // favicon.svg is linked from static/index.html, which this scanner does not read.
   // The sheets are named by monsterSheet() rather than written into the markup.
   const expected = [...requestedFiles(), ...MONSTER_SHEETS, 'favicon.svg'].filter(name => !name.includes('/'));
   assert.deepEqual(served.sort(), [...new Set(expected)].sort());
