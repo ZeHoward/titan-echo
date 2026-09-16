@@ -2,9 +2,12 @@
 
 使用內建 image_gen 工具產生，均已保存在本專案。
 
-- `public/battlefield.png`：直式翡翠森林戰場。
-- `public/golem.png`：透明背景苔岩巨獸。
-- `public/swordsman.png`：透明背景劍術大師。
+原始 PNG 放在 `art/`，**不隨網站發布**；`public/` 只放實際會被請求的 WebP 衍生檔。
+先前 `public/` 同時放著兩者，發布產物 28MB 中有 20MB 是沒有任何程式碼會請求的原始 PNG。
+
+- `art/battlefield.png`：直式翡翠森林戰場。
+- `art/golem.png`：透明背景苔岩巨獸。
+- `art/swordsman.png`：透明背景劍術大師。
 
 ## 最終提示詞
 
@@ -17,4 +20,11 @@ Use case: stylized-concept. Asset type: original mobile tapping fantasy RPG enem
 ### swordsman.png
 Original fantasy tapping mobile RPG sword master sprite. Single full-body chibi young adult male hero viewed from behind in three quarter view, facing right towards an enemy. Spiky brown hair, teal-blue tunic, leather boots, long bright red scarf flowing left, oversized shining silver sword held diagonally upward to the right, ready to slash. Clean stylized 2D cel-shaded mobile game illustration, bold dark outline, chunky simple shapes. Whole body visible, isolated centered on genuinely transparent background, no scenery, no UI, no words, no border. Square canvas.
 
-Performance derivatives: monsters*.webp and worlds-atlas.webp are generated from the corresponding original PNGs with Pillow WebP quality 85, method 6. Dimensions and transparency are preserved.
+Performance derivatives: monsters*.webp, worlds-atlas.webp and swordsman.webp are generated from the corresponding `art/` PNGs with Pillow WebP quality 85, method 6. Dimensions and transparency are preserved.
+
+```python
+from PIL import Image
+Image.open('art/<name>.png').save('public/<name>.webp', 'WEBP', quality=85, method=6)
+```
+
+swordsman.webp：972,366 → 159,518 位元組，1254×1254 RGBA 不變；合成到深色背景後與原圖的 RMS 差異 1.7、最大單點差 31，1,572,516 個像素中只有 32 個差異超過 24。

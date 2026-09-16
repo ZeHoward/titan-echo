@@ -2,6 +2,13 @@ export const REGIONS=['翡翠森林','赤焰峽谷','紫晶遺跡','霜雪之巔
 export const SPECIES=['史萊姆王','蘑菇巨人','鐵甲蟲','冰原狼','牛頭巨魔','古海巨龜','夜翼魔','寶箱怪','千年樹人','骸骨騎士','赤焰幼龍','暗黑泰坦'];
 export const ALL_SPECIES=[...SPECIES,'金甲蠍王','劍齒白虎','冰霜雪怪','幽魂術師','赤鬃半人馬','鱷魚船長','蒸汽機兵','沙海獅身獸','深海巨蛇','死神鐮衛','雷霆巨鷹','熔岩石靈','巨鉗紅蟹','紫蛛女王','雪羽梟熊','南瓜稻草人','暗殿石像鬼','翡翠螳螂','銅角犀王','不死火鳳','八爪巫師','黃金木乃伊','狂暴野豬','影刃黑豹','噬人魔花','鈷甲穿山獸','火焰蠑螈','哥布林巫師','白銀獅鷲','暗影獨角獸','水晶巨像','蘑菇蝸牛','沙漠巨蟲','冰雪元素','熔火惡魔','遠古魔眼','黃金獅王','黑鴉女巫','珊瑚海將','翡翠古龍','紫煙神燈魔','赤鬼武士','黃金機械龍','冰骸戰馬','星海水母','熔岩巨龜','魔界帝王','天使石衛'];
 export const MONSTERS=Array.from({length:60},(_,id)=>({id,name:ALL_SPECIES[id],sprite:id%12,sheet:Math.floor(id/12),variant:0,trait:id%6}));
+// The battle view draws one monster at a time, so only the sheet holding that monster has to be
+// in the browser cache. Keeping the name here lets the loader ask for a sheet without a DOM.
+export function monsterSheet(id:number){const sheet=MONSTERS[((id%60)+60)%60].sheet;return sheet?`monsters-${sheet+1}.webp`:'monsters-atlas.webp';}
+export const MONSTER_SHEETS=[...new Set(MONSTERS.map(m=>monsterSheet(m.id)))];
+// Warming order for the sheets the player has not reached yet: the sheet on screen first, then the
+// sheets the next monsters need, in the order the battle will ask for them.
+export function sheetWarmOrder(index:number){return [...new Set(Array.from({length:60},(_,i)=>monsterSheet(index+i)))];}
 export const EXTRA_HEROES=[['賽琳','晨曦聖騎','☀️'],['烏爾','荒原獵手','🪓'],['璃月','狐火巫女','🦊'],['伊芙','花語精靈','🌸'],['洛克','蒸汽機師','⚙️'],['米菈','潮汐歌者','🐚'],['澤恩','影刃刺客','🥷'],['奧朵','巨石山王','🪨'],['薇拉','毒霧術士','🧪'],['赫爾','冥界使者','💀'],['蘇拉','沙海女皇','👑'],['阿斯特','星象賢者','🔭'],['席格','極地戰神','❄️'],['多蘭','鍛魂巨匠','🔨'],['梅菲','夢境魔女','🦋'],['雷納','獅心統帥','🦁'],['卡歐','混沌術師','🌀'],['菲恩','遠古龍裔','🐲'],['艾菈','聖光天使','🪽'],['尤米','靈兔守護','🐇'],['皮可','虹光妖精','🧚'],['莫德','永夜魔王','😈'],['亞特拉斯','世界守望者','🌌']];
 export type Effect='all'|'gold'|'tap'|'hero'|'crit'|'bossGold'|'duration'|'cooldown'|'bossTime'|'offline'|'relic'|'chest'|'fairy'|'revive'|'skill'|'weapon'|'gear'|'monsters';
 export type Artifact={name:string;icon:string;desc:string;effect:Effect;value:number;max:number};
