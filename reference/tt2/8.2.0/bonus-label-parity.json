@@ -235,17 +235,17 @@
     },
     {
       "id": "HelperBoostSkillAmount",
-      "project": "戰爭狂嚎效果",
+      "project": "戰爭狂吼效果",
       "official": "戰爭狂吼傷害倍率"
     },
     {
       "id": "HelperBoostSkillDuration",
-      "project": "戰爭狂嚎持續秒數",
+      "project": "戰爭狂吼持續秒數",
       "official": "戰爭狂吼持續時間"
     },
     {
       "id": "HelperBoostSkillMana",
-      "project": "戰爭狂嚎魔力消耗減少",
+      "project": "戰爭狂吼魔力消耗減少",
       "official": "戰爭狂吼魔力消耗"
     },
     {

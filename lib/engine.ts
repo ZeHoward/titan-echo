@@ -15,12 +15,13 @@ import {freshTT2,TT2_RULESET,TT2_ARTIFACTS,TT2_ACTIVE,TT2_TREE,effect,artifactAl
 export {TT2_ARTIFACTS,TT2_TREE,discoveryCost};
 import { EXTRA_HEROES, ARTIFACTS, MONSTERS, PERKS, ACTION_TYPES, type Effect } from './content.ts';
 import { bossSprite, pickMonsterSprite, spriteForMonster, stagePool } from './tt2-stages.ts';
+import { SOURCE_NAMES } from './tt2-source-names.ts';
 export { ARTIFACTS, MONSTERS, PERKS, ACTION_TYPES } from './content.ts';
 export const HEROES=TT2_HEROES.map(h=>({name:HERO_NAMES[h.name],title:h.kind,icon:'⚔️',base:h.base,power:h.power}));
 // Save indices remain stable: clone, deadly, war cry, fire sword, midas, strike.
 export const SKILL_DATA=[5,1,4,3,2,0].map(i=>TT2_ACTIVE[i]);
 export const SKILL_ORDER=[5,1,4,3,2,0];
-export const SKILLS=SKILL_DATA.map((k,i)=>({name:['影分身之術','致命爆擊','戰爭狂嚎','火焰之劍','點石成金','天堂聖擊'][i],icon:['👥','🎯','📯','🔥','✋','☄️'][i],desc:['持續造成影分身傷害','提高致命攻擊傷害及觸發機率','提高英雄傷害','提高點擊傷害','提高各金源收益','造成一擊天堂傷害'][i],level:k.unlock,cooldown:k.cooldown,duration:k.duration}));
+export const SKILLS=SKILL_DATA.map((k,i)=>({name:SOURCE_NAMES['ACTIVE_SKILL_NAME_'+k.id.toUpperCase()],icon:['👥','🎯','📯','🔥','✋','☄️'][i],desc:['持續造成影分身傷害','提高致命攻擊傷害及觸發機率','提高英雄傷害','提高點擊傷害','提高各金源收益','造成一擊天堂傷害'][i],level:k.unlock,cooldown:k.cooldown,duration:k.duration}));
 export type Gear={id:number;slot:number;rarity:number;power:number;level:number};
 export type Trial={kind:'dungeon'|'challenge';tier:number;wave:number;base:number;endAt:number;period:number};
 export type State={version:2;ruleset?:string;tt2?:TT2State;stage:number;best:number;kills:number;hp:Big;gold:Big;level:number;heroes:number[];relics:number;artifacts:number[];prestiges:number;taps:number;totalKills:number;cooldowns:number[];active:number[];bossEnd:number;farming:boolean;last:number;lastTap:number;lastFairy:number;diamonds:number;weapons:number[];evolutions:number[];wounded:number[];skillLevels:number[];gear:Gear[];equipped:number[];dust:number;lootCounter:number;bossKills:number;bossWounded:boolean;protection:number;seen:number[];monster?:number;achievements:Record<string,number>;daily:{day:number;claimed:string[];taps:number;kills:number;upgrades:number;skills:number;fairies:number;login:boolean;dungeons:number[];petLevels:number;equipment:number;prestiges:number};loginDay:number;streak:number;trial:Trial|null;weekly:{week:number;best:number;claimed:number[]};world:number;worldBest:number[];artifactSpent:number[];log:string[]};

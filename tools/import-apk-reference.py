@@ -15,7 +15,7 @@ source = data_path.read_text(encoding='utf-8')
 catalog = {name: json.loads(body) for name, body in re.findall(r'export const (TT2_\w+) = (.*);', source)}
 groups = [('TT2_HEROES', 'HELPERNAME_', False), ('TT2_PETS', 'PET_NAME_', False),
           ('TT2_TREE', 'SKILLTREE_', True), ('TT2_SETS', 'EQUIPMENT_SET_', False),
-          ('TT2_ARTIFACTS', 'ARTIFACT_NAME_', False)]
+          ('TT2_ARTIFACTS', 'ARTIFACT_NAME_', False), ('TT2_ACTIVE', 'ACTIVE_SKILL_NAME_', True)]
 names = {}
 skipped = []
 for group, prefix, uppercase in groups:
@@ -28,6 +28,22 @@ for group, prefix, uppercase in groups:
         names[key] = value
         if group == 'TT2_ARTIFACTS':
             row['name'] = value
+# Background themes are not a row in tt2-data.ts, they are the distinct Theme values of the
+# bundled BackgroundInfo table. Reading them here keeps a rerun of this tool from dropping them.
+backgrounds = json.loads((root / 'reference/tt2/8.2.0/BackgroundInfo.json').read_text(encoding='utf-8'))
+themes = []
+for row in sorted(backgrounds['records'], key=lambda entry: int(entry['values']['Level'])):
+    theme = row['values']['Theme']
+    if theme not in themes:
+        themes.append(theme)
+for theme in themes:
+    key = 'BACKGROUND_NAME_' + theme
+    value = locale.get(key, '').strip()
+    if not value or re.search('[A-Za-z{}<>]', value):
+        skipped.append(key)
+        continue
+    names[key] = value
+
 body = json.dumps(catalog['TT2_ARTIFACTS'], ensure_ascii=False, separators=(',', ':'))
 source = re.sub(r'export const TT2_ARTIFACTS = .*;', lambda _: 'export const TT2_ARTIFACTS = ' + body + ';', source)
 data_path.write_text(source, encoding='utf-8')

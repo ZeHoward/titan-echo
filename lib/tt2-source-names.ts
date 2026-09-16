@@ -391,6 +391,12 @@ export const SOURCE_NAMES:Record<string,string>={
   "ARTIFACT_NAME_Artifact85": "白矮星之槌",
   "ARTIFACT_NAME_Artifact57": "阿拉姆之矛",
   "ARTIFACT_NAME_Artifact60": "黑暗守衛",
+  "ACTIVE_SKILL_NAME_BURSTDAMAGE": "天堂聖擊",
+  "ACTIVE_SKILL_NAME_CRITBOOST": "致命爆擊",
+  "ACTIVE_SKILL_NAME_HANDOFMIDAS": "點石成金",
+  "ACTIVE_SKILL_NAME_TAPBOOST": "火焰之劍",
+  "ACTIVE_SKILL_NAME_HELPERBOOST": "戰爭狂吼",
+  "ACTIVE_SKILL_NAME_SHADOWCLONE": "影分身之術",
   "BACKGROUND_NAME_ForgottenRuins": "約特王國",
   "BACKGROUND_NAME_EnchantedForest": "神聖森林",
   "BACKGROUND_NAME_FalloutLand": "簡陋城鎮",
@@ -404,5 +410,5 @@ export const SOURCE_NAMES:Record<string,string>={
   "BACKGROUND_NAME_BushidoValley": "日落之城",
   "BACKGROUND_NAME_ArcaneFields": "東方之港",
   "BACKGROUND_NAME_Meadow": "深藍草原",
-  "BACKGROUND_NAME_IceGuardians": "寒冷國度",
+  "BACKGROUND_NAME_IceGuardians": "寒冷國度"
 };
