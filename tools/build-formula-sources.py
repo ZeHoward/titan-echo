@@ -22,10 +22,13 @@ FORMULAS = [
               entry(part='頭目倍率序列 [2,3,4,5,8]', status='table-differs', ref='TitanScalingInfo.json',
                     note='安裝包的 ThemeMultiplierSequence 分四段：關卡 1–5 為 2,3,4,5,8、6–39 為 4,6,8,15,24、'
                          '40–59 為 8,12,16,30,48、60 起回到 2,3,4,5,8，四個來源變體（含 A／B／C）在這四列完全一致。'
-                         '引擎對所有關卡只用第一段，因此 6–59 關的頭目血量偏低。尚未套用的原因：選列由 '
-                         'MonsterModel 存的索引決定（GetCurrentScalingInfo 只做邊界檢查後取 list[index]），'
-                         '該索引如何更新尚未查證，且 themeMultiplierSequence 同時是 ServerVarsModel 的 '
-                         '[ServerVar] 靜態欄位，線上可整份覆蓋。'),
+                         '引擎對所有關卡只用第一段，因此 6–59 關的頭目血量偏低。**尚未套用**，原因有三：'
+                         '一、選列不是關卡的純函數——MonsterModel.StageChangedPreSpawnHandler 會呼叫 '
+                         'UpdateCurrentScalingInfo，後者用 GetScalingIndex 從目前索引往前掃，'
+                         'GetCurrentScalingInfo 只是對這個有狀態的索引做邊界檢查後取 list[index]；'
+                         '二、換段時還會先 RemoveCurrentScalingBonuses 再以 BonusModel.ModifyBonus 套用該列的 '
+                         'bonusA／bonusB，倍率序列只是該列的一部分；三、themeMultiplierSequence 同時是 '
+                         'ServerVarsModel 的 [ServerVar] 靜態欄位，線上可整份覆蓋。'),
               entry(part='基礎值 18 與每關成長率 1.32', status='server', ref='monster-curve-evidence.json',
                     note='原生沒有「基礎值 × 成長率^關卡」這種寫法：MonsterModel.GetMonsterBaseHP 把關卡先加上 '
                          'ActiveHonourAmount × honourStageOffset（安裝包值 250），再呼叫共用的 GetMonsterBase，'

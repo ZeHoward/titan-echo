@@ -22,7 +22,7 @@
 
 | 來源條目 | 狀態 | 依據 |
 |---|---|---|
-| 頭目倍率序列 [2,3,4,5,8] | `table-differs` | `reference/tt2/8.2.0/TitanScalingInfo.json`；安裝包的 ThemeMultiplierSequence 分四段：關卡 1–5 為 2,3,4,5,8、6–39 為 4,6,8,15,24、40–59 為 8,12,16,30,48、60 起回到 2,3,4,5,8，四個來源變體（含 A／B／C）在這四列完全一致。引擎對所有關卡只用第一段，因此 6–59 關的頭目血量偏低。尚未套用的原因：選列由 MonsterModel 存的索引決定（GetCurrentScalingInfo 只做邊界檢查後取 list[index]），該索引如何更新尚未查證，且 themeMultiplierSequence 同時是 ServerVarsModel 的 [ServerVar] 靜態欄位，線上可整份覆蓋。 |
+| 頭目倍率序列 [2,3,4,5,8] | `table-differs` | `reference/tt2/8.2.0/TitanScalingInfo.json`；安裝包的 ThemeMultiplierSequence 分四段：關卡 1–5 為 2,3,4,5,8、6–39 為 4,6,8,15,24、40–59 為 8,12,16,30,48、60 起回到 2,3,4,5,8，四個來源變體（含 A／B／C）在這四列完全一致。引擎對所有關卡只用第一段，因此 6–59 關的頭目血量偏低。**尚未套用**，原因有三：一、選列不是關卡的純函數——MonsterModel.StageChangedPreSpawnHandler 會呼叫 UpdateCurrentScalingInfo，後者用 GetScalingIndex 從目前索引往前掃，GetCurrentScalingInfo 只是對這個有狀態的索引做邊界檢查後取 list[index]；二、換段時還會先 RemoveCurrentScalingBonuses 再以 BonusModel.ModifyBonus 套用該列的 bonusA／bonusB，倍率序列只是該列的一部分；三、themeMultiplierSequence 同時是 ServerVarsModel 的 [ServerVar] 靜態欄位，線上可整份覆蓋。 |
 | 基礎值 18 與每關成長率 1.32 | `server` | `reference/tt2/8.2.0/monster-curve-evidence.json`；原生沒有「基礎值 × 成長率^關卡」這種寫法：MonsterModel.GetMonsterBaseHP 把關卡先加上 ActiveHonourAmount × honourStageOffset（安裝包值 250），再呼叫共用的 GetMonsterBase，參數是 monsterHPLevelOff、monsterTransendenceHPLevelOff、monsterHPMult、monsterHPBase1–3 與 monsterHPExpo1–4 共十個具名 [ServerVar]，**安裝包一個值都沒帶**。目前的 18 與 1.32 是 7.5 基準的近似，不是原版係數。另外 MonsterHPScaling 的 A／B 變體彼此不同（B 在關卡 1–3 為 0.3／0.4／0.475），屬 A／B 指派結果。 |
 | MonsterHP 減免上限 0.9 | `invented` | 引擎自訂的安全上限，避免血量歸零；安裝包未見對應上限。 |
 
