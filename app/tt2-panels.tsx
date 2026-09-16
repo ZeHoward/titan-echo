@@ -10,7 +10,7 @@ import {PET_NAMES,TALENT_NAMES,SET_NAMES,RARITY_NAMES} from '../lib/zh-tw';
 import {TT2_PETS,TT2_GEAR,TT2_DAILY} from '../lib/tt2-data';
 import {petBonus,equipmentEffect} from '../lib/tt2-rules';
 import {craftPrice,EGG_INTERVAL} from '../lib/tt2-collection';
-import {TT2_ACHIEVEMENTS,ACHIEVEMENT_PANEL_TEXT,UNMEASURED_ACHIEVEMENTS,achievementTier,achievementClaimed,achievementReward,achievementProgress} from '../lib/engine';
+import {TT2_ACHIEVEMENTS,TT2_DAILY_TASKS,ACHIEVEMENT_PANEL_TEXT,UNMEASURED_ACHIEVEMENTS,UNMEASURED_DAILY_TASKS,DAILY_TASK_PAID,achievementTier,achievementClaimed,achievementReward,achievementProgress,dailyTaskAvailable,dailyTaskProgress,dailyTaskDone,dailyTaskClaimed} from '../lib/engine';
 import {HEROES,SKILLS,SKILL_ORDER,SKILL_DATA,heroLevel,cost,swordMasterBaseDamage,fmt,tapDamage,dps,skillPower,skillCost,skillMana,skillDuration,skillCooldown,manaMax,manaRegen,relicGain,artifactCost,buildDamage,type State,type Action} from '../lib/engine';
 import {TT2_ARTIFACTS,TT2_TREE,TT2_SETS,artifactValue,discoveryCost,canDiscover,canBuyTalent,spentPoints,effectLabel,bonusDefinitions,effectText,BUILD_COEFFICIENTS,type Build} from '../lib/tt2-rules';
 type Props={s:State;tab:string;ready:boolean;basePath:string;act:(a:Omit<Action,'at'>)=>void;onPrestige:()=>void};
@@ -65,6 +65,15 @@ export default function TT2Panels({s,tab,ready,basePath,act,onPrestige}:Props){
     <div className="hp-track"><div style={{width:`${share*100}%`}}/></div>
     <button className="buy-button" disabled={!reward} onClick={()=>act({type:'achievement',index:i})}>{reward?`領取 💎${reward}`:tier>=a.requirement.length?'已全部領取':'尚未達成'}</button></>}
    </article>;})}
+  <div className="content-heading"><h3>{ACHIEVEMENT_PANEL_TEXT.ACHIEVEMENTS_PANEL_DAILY_TITLE ?? '每日'}成就 {TT2_DAILY_TASKS.filter((_,i)=>dailyTaskClaimed(s,i)).length} / {TT2_DAILY_TASKS.filter((_,i)=>dailyTaskAvailable(i)).length}</h3><p>每日世界標準時間零時重置。</p></div>
+  {TT2_DAILY_TASKS.map((d,i)=>{const blocked=!d.active?'安裝包把這項標為未啟用':UNMEASURED_DAILY_TASKS[d.type];
+   const done=dailyTaskDone(s,i),claimed=dailyTaskClaimed(s,i),paid=d.rewards.filter(r=>DAILY_TASK_PAID.includes(r.reward as typeof DAILY_TASK_PAID[number]));
+   return <article className="feature-card" key={d.type}>
+    <h3>{d.description.replace('{0}',String(d.requirement))}<small>{blocked?'待實作':claimed?'已領取':`${dailyTaskProgress(s,i)} / ${d.requirement}`}</small></h3>
+    {blocked?<p>{blocked}</p>:<><p>獎勵 {paid.map(r=>`${r.reward==='Diamonds'?'💎':'🎟'}${r.amount}`).join(' · ')}{paid.length<d.rewards.length?` · 另有 ${d.rewards.filter(r=>!paid.includes(r)).map(r=>r.reward).join('、')} 尚未開放`:''}</p>
+    <button className="buy-button" disabled={!done||claimed} onClick={()=>act({type:'dailyTask',index:i})}>{claimed?ACHIEVEMENT_PANEL_TEXT.DAILY_ACHIEVEMENT_ALREADY_COLLECTED ?? '已領取':done?'領取':'尚未完成'}</button></>}
+   </article>;})}
+  <p className="panel-note">10 項每日成就取自安裝包 DailyAchievementInfo，敘述為官方繁體中文字串。其中 UniqueArtifacts 的 IsActive 欄為 FALSE，安裝包本身就未啟用；另有五項所依賴的系統尚未實作。獎勵字串同時列出突襲券、鍊金與寶石貨幣，這三種在本專案尚未存在，只發放鑽石與活動幣並在上方標明。</p>
   <p className="panel-note">22 項成就與各五階門檻、鑽石獎勵取自安裝包 AchievementInfo，敘述為安裝包官方繁體中文字串。原生列舉另有 ChestTokens 一項，安裝包的資料表沒有對應列，因此未列出。錦標賽與魔力瑪尼兩項所依賴的系統尚未實作，標為待實作且不可領取。</p></>
   :<><div className="content-heading"><h3>流派加成核對</h3><p>這是計算預覽。公會飛船、匕首與金槍完整戰鬥尚待還原；寵物基礎蓄力攻擊已開放。</p></div><div className="collection-tabs">{builds.map(([id,name])=><button key={id} className={selected===id?'chosen':''} onClick={()=>setSelected(id)}>{name}</button>)}</div><article className="feature-card"><h3>{builds.find(b=>b[0]===selected)?.[1]}</h3><p>點擊加成指數 {BUILD_COEFFICIENTS[selected].tap}</p><p>英雄加成指數 {BUILD_COEFFICIENTS[selected].hero}</p><p>目前預估傷害 {fmt(buildDamage(s,selected))}</p><p>例如點擊倍率 十的一百次方，影分身只取得 十的六十次方，飛船取得 ×1。</p></article></>}
  </>:tab==='shop'?<>

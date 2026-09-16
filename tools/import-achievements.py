@@ -43,21 +43,48 @@ def main():
     if len(facts) != len(rows):
         raise ValueError('lost a row on the way')
 
+    daily_known = set(evidence['dailyAchievementTypes'].values())
+    daily = []
+    for record in json.loads((REFERENCE/'DailyAchievementInfo.json').read_text(encoding='utf-8'))['records']:
+        kind = record['values']['Type']
+        if kind not in daily_known:
+            raise ValueError(f'row type is not a native DailyAchievementType: {kind}')
+        requirement = record['values']['Requirement'].strip()
+        if not requirement.isdigit():
+            raise ValueError(f'{kind}: unexpected requirement {requirement!r}')
+        rewards = []
+        for part in record['values']['RewardString'].split(','):
+            name, _, count = part.strip().partition(':')
+            if not name or not count.isdigit():
+                raise ValueError(f'{kind}: unexpected reward token {part!r}')
+            rewards.append(dict(reward=name, amount=int(count)))
+        description = locale.get(f'DAILY_ACHIEVEMENT_DESC_{kind}', '').strip()
+        if not description:
+            raise ValueError(f'{kind}: no official description')
+        daily.append(dict(type=kind, active=record['values']['IsActive'].strip().upper() == 'TRUE',
+                          requirement=int(requirement), rewards=rewards, description=description))
+
     panel = {key: locale[key] for key in ('ACHIEVEMENT_PANEL_DESC', 'ACHIEVEMENTS_PANEL_MILESTONES_TITLE',
-                                          'ACHIEVEMENTS_PANEL_PROGRESSION_TITLE') if key in locale}
+                                          'ACHIEVEMENTS_PANEL_PROGRESSION_TITLE', 'ACHIEVEMENTS_PANEL_DAILY_TITLE',
+                                          'DAILY_ACHIEVEMENT_ALREADY_COLLECTED') if key in locale}
     header = ('// AchievementInfo 8.2.0: Type, Requirement and Reward are the three columns\n'
               '// AchievementModel.Initialize reads (reference/tt2/8.2.0/achievement-parser-evidence.json).\n'
               '// Requirement is a list of GHDouble natively and reaches 1e1500, so it stays as source text.\n'
               '// Reward lands in the native field named diamondReward, so the reward is diamonds.\n'
-              '// Wording is the package ChineseTrad description template, which has a {0} placeholder\n'
-              f'// rather than a name. Localization SHA256: {hashlib.sha256(locale_path.read_bytes()).hexdigest()}\n')
+              '// Wording is the package ChineseTrad description, a template with a {0} placeholder\n'
+              '// DailyAchievementInfo carries IsActive and one RewardString per row.\n'
+              f'// Localization SHA256: {hashlib.sha256(locale_path.read_bytes()).hexdigest()}\n')
     body = ('export const TT2_ACHIEVEMENTS=' + json.dumps(facts, ensure_ascii=False, separators=(',', ':'))
+            + ' as const;\n'
+            + 'export const TT2_DAILY_TASKS=' + json.dumps(daily, ensure_ascii=False, separators=(',', ':'))
             + ' as const;\n'
             + 'export const ACHIEVEMENT_PANEL_TEXT=' + json.dumps(panel, ensure_ascii=False, separators=(',', ':'))
             + ' as const;\n')
     (ROOT/'lib/tt2-achievements.ts').write_text(header + body, encoding='utf-8')
     tiers = sum(len(fact['requirement']) for fact in facts)
-    print(f'Imported {len(facts)} achievements, {tiers} tiers, {len(panel)} panel strings')
+    active = sum(1 for row in daily if row['active'])
+    print(f'Imported {len(facts)} achievements, {tiers} tiers, '
+          f'{len(daily)} daily tasks ({active} active), {len(panel)} panel strings')
 
 
 if __name__ == '__main__':

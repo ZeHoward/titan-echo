@@ -39,7 +39,6 @@ export const ARTIFACTS:Artifact[]=[
 ];
 export const SLOTS=[{name:'武器',icon:'🗡️',effect:'tap'},{name:'頭盔',icon:'🪖',effect:'hero'},{name:'盔甲',icon:'🥋',effect:'gold'},{name:'光環',icon:'💫',effect:'all'},{name:'披風',icon:'🧣',effect:'crit'}] as const;
 export const RARITIES=['普通','稀有','史詩','傳說'];
-export const DAILY_TASKS=[{name:'百次揮劍',metric:'taps',target:100,reward:15},{name:'巨獸剋星',metric:'kills',target:50,reward:20},{name:'打造強軍',metric:'upgrades',target:20,reward:15},{name:'魔力沸騰',metric:'skills',target:3,reward:20},{name:'追逐仙女',metric:'fairies',target:2,reward:10}] as const;
 export const PERKS=[{name:'金幣雨',icon:'💰',price:30,desc:'立即獲得 100 隻普通巨獸的金幣'},{name:'時間扭曲',icon:'⏱️',price:40,desc:'立刻結束全部技能冷卻'},{name:'守護祝福',icon:'🛡️',price:25,desc:'10 分鐘內英雄不會負傷'},{name:'末日審判',icon:'☄️',price:50,desc:'立即擊敗當前一隻巨獸（試煉不可用）'},{name:'全員復甦',icon:'💚',price:20,desc:'立刻復活所有負傷英雄'}];
-export const ACTION_TYPES=['resourcePerk','petEquip','egg','gearDiscard','discover','talent','resetTalents','build','tap','upgrade','hero','skill','artifact','prestige','boss','fairy','evolve','skillUp','equip','salvage','craft','daily','quest','achievement','perk','revive','trial','leaveTrial','trialReward','world','artifactSalvage'] as const;
+export const ACTION_TYPES=['resourcePerk','petEquip','egg','gearDiscard','discover','talent','resetTalents','build','tap','upgrade','hero','skill','artifact','prestige','boss','fairy','evolve','skillUp','equip','salvage','craft','daily','quest','achievement','dailyTask','perk','revive','trial','leaveTrial','trialReward','world','artifactSalvage'] as const;
 
