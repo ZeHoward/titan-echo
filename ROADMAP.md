@@ -1,11 +1,11 @@
 # Titan Echo 完整復刻代辦清單
 
-更新：2026-09-14。遊戲目前為 **2.6.0**，最近完整測試 **108 項 Node 測試＋6 項 Python 匯入測試通過**。此文件是後續工作的主清單；`TT2-RULES.md` 保留歷史研究紀錄，不以舊敘述判斷目前完成度。
+更新：2026-09-16。遊戲目前為 **2.6.0**，最近完整測試 **111 項 Node 測試＋12 項 Python 匯入測試通過**。此文件是後續工作的主清單；`TT2-RULES.md` 保留歷史研究紀錄，不以舊敘述判斷目前完成度。
 
 ## 目前位置
 
 - **已完成 R01：固定目標、盤點差異、建立來源基準。** 產物：[來源與雜湊清單](docs/reference-baseline.json)、本清單與工作約定。
-- **下一項：R02，將資料與匯入工具統一到 8.2.0，先建立穩定 ID 映射，再做相容遷移。** 已完成 50 張表、16,867 個有效 ID 的精確字串資料、七組舊 ID 對照及 17,531 處引用檢查，尚未切換線上資料版本。
+- **下一項：R02，將資料與匯入工具統一到 8.2.0，先建立穩定 ID 映射，再做相容遷移。** 已完成 52 張表、16,936 個有效 ID 的精確字串資料、七組舊 ID 對照及 19,181 處引用檢查，尚未切換線上資料版本。
 - 接續順序：R02 → R03 → R04 → C01，之後依下表執行。
 - 尚未有任何一個大型系統通過「與原版同版本完整一致」驗收。已有功能不會重寫成空白，但必須逐項校正與驗證。
 
@@ -58,7 +58,13 @@ R02 本次完成：[獨立參考目錄](reference/tt2/8.2.0/README.md)、372 個
 
 本次追加頭像 583 筆、外框 65 筆、稱號 263 筆，完成兩組季節合計 8 筆排名獎勵 ID 核對。Title:634 的值是稱號 ID，不是數量；不因稱號目錄另有第一名稱號就自行加到獎勵中。第 12／13 季來源分開保存，線上啟用條件未知。全目錄仍有 3 個每日配送 ID 缺少實際配送表。
 
-**下一個子步驟仍為 R02**：補齊 AvatarParticleInfo、ProfileBackgroundInfo 等外觀支援資料，檢查引用和解鎖條件；再按剩餘資源盤點處理其他資料表。線上季節版本選用與配送內容維持待外部證據。PerkInfo 等缺乏模式證據的內容保留未分類，缺乏啟用證據的列保留 unverified，不直接開放購買或發獎。完成資料整備後才進入 R03。
+本次完成外觀支援資料：AvatarParticleInfo 22 筆、ProfileBackgroundInfo 47 筆，並匯入 native-cosmetic-types.json（AvatarID 608、AvatarFrameId 66、AvatarParticleID 24、AvatarUnlockType 201、ProfileBackgroundType 3）與 5 個原生解析／取用方法位址，作為欄位型別證據。驗證器改以原生列舉核對五張外觀表的 ID、解鎖類型與背景分槽，新增 1,650 處引用檢查全部可解析，總數 17,531 增為 19,181。
+
+四張外觀表的解鎖欄位都由同一個原生 AvatarUnlockType 型別化，201 個成員涵蓋全部來源值；PlayerTitleInfo 的 TitleID 原生是 int、ProfileBackgroundInfo 的 ID 原生是字串，沒有 ID 列舉可核對，已在 tableTypes 記錄原因。列舉中沒有資料列的成員只列在 cosmeticCoverage.enumOnly（AvatarID 25 個、AvatarFrameId 僅 None、AvatarParticleID 為 None 與 Particle1），不補進目錄。
+
+ProfileBackgroundInfo 與 7.5 快照逐格相同；AvatarParticleInfo 沒有 7.5 對應檔，differenceFrom75 保持 null，不推定它必為 8.2 新增。背景表只有 Player 14 筆、Raid 33 筆的分槽欄位，表內沒有解鎖欄位，解鎖來源待證據。原生 RewardID 雖有 AvatarParticle、ProfileBackground、ProfileBackgroundPlayer、ProfileBackgroundRaid，但目前所有來源獎勵欄位都未使用，解析器維持拒絕這四種代號，不預先實作發放。未改遊戲執行資料、存檔或版本號。
+
+**下一個子步驟仍為 R02**：匯入 ServerVarsInfo、ServerVarOverride、ScheduledBonusInfo，以及 ArtifactCostInfo_A、TitanScalingInfo_A／B／C 來源變體，變體分開保存並比對同名鍵差異；伺服器變數只是安裝包內附值，不等於線上生效的覆蓋值。已確認 Equipment 與 Helpers 是 LWF 動畫二進位、HelperLayout 是圖集 JSON，不作 CSV 匯入。線上季節版本選用與配送內容維持待外部證據。PerkInfo 等缺乏模式證據的內容保留未分類，缺乏啟用證據的列保留 unverified，不直接開放購買或發獎。完成資料整備後才進入 R03。
 
 ## 第二階段：核心戰鬥與升級
 
@@ -169,6 +175,7 @@ R02 本次完成：[獨立參考目錄](reference/tt2/8.2.0/README.md)、372 個
 
 | 日期 | 項目 | 證據／結果 |
 |---|---|---|
+| 2026-09-16 | R02 外觀支援資料 | 匯入 AvatarParticleInfo 22 筆、ProfileBackgroundInfo 47 筆與 native-cosmetic-types.json；外觀 ID、解鎖類型與背景分槽全部對上原生列舉，新增 1,650 處引用檢查（總數 19,181），列舉獨有成員只作記錄。111 項 Node 測試＋12 項 Python 測試通過，tsc --noEmit 無誤，匯入重跑結果一致。遊戲執行資料與版本未變。 |
 | 2026-09-14 | R01 | 已固定目標 8.2.0；重算 XAPK SHA-256、14 表差異、目前產物數量；建立 `docs/reference-baseline.json` 與 `tools/audit-reference-baseline.py`。現行遊戲保持 2.6.0，未假裝完成 8.2 遷移。 |
 
 現有基礎成果：2.2 寵物蓄力、2.3 基礎英雄被動與名稱、2.4 戰術洞察、2.5 劍士里程碑、2.6 劍士裸傷及費用。這些是上述大型項目的部分成果，並不是整個系統的完成證明。

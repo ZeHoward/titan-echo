@@ -12,7 +12,7 @@
     {
       "name": "AvatarParticleInfo",
       "sourceSha256": "8909d8443d2674a3550cb14cabf9a285cb7a6c74557a692f77fefb4586ff00fb",
-      "status": "not-imported",
+      "status": "imported",
       "route": "V03"
     },
     {
@@ -1938,7 +1938,7 @@
     {
       "name": "ProfileBackgroundInfo",
       "sourceSha256": "40e3f49aab0ad3d942228de34a51906cde4d08427996b3788c3b57d7d402fe04",
-      "status": "not-imported",
+      "status": "imported",
       "route": "V03"
     },
     {

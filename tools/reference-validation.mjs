@@ -28,11 +28,16 @@ export function classify(table, row, catalogs) {
     }
   }
   let scope = 'unclassified';
-  if (['AvatarInfo', 'AvatarFrameInfo', 'PlayerTitleInfo'].includes(table)) {
+  if (['AvatarInfo', 'AvatarFrameInfo', 'PlayerTitleInfo', 'AvatarParticleInfo'].includes(table)) {
     scope = 'cosmetic-unlock-definition';
     for (const field of ['AvatarUnlockType', 'TitleUnlockType', 'UnlockType', 'UnlockValue', 'CollectionName']) {
       if (v[field] !== undefined) evidence.push(`${field}=${v[field]}`);
     }
+  }
+  if (table === 'ProfileBackgroundInfo') {
+    // The bundled table only partitions backgrounds by slot; it carries no unlock column at all.
+    scope = 'cosmetic-category-entry';
+    evidence.push(`ProfileBackgroundType=${v.ProfileBackgroundType}`, 'unlock-source=not-in-table');
   }
   if (table.startsWith('Endgame')) {
     scope = 'endgame-source-variant';
@@ -99,9 +104,14 @@ export function loadNativeBonuses() {
   return JSON.parse(readFileSync(new URL('native-bonus-types.json', referenceRoot), 'utf8')).values;
 }
 
-export function auditCatalogs(catalogs, nativeBonuses = loadNativeBonuses()) {
+export function loadNativeCosmetics() {
+  return JSON.parse(readFileSync(new URL('native-cosmetic-types.json', referenceRoot), 'utf8'));
+}
+
+export function auditCatalogs(catalogs, nativeBonuses = loadNativeBonuses(), nativeCosmetics = loadNativeCosmetics()) {
   const nativeRewards = JSON.parse(readFileSync(new URL('native-reward-types.json', referenceRoot), 'utf8')).values;
   const errors = [], unresolved = [], nativeOnly = [], deferredReferences = [], rewardReferences = [], classifications = {}, referenceCounts = {};
+  const cosmeticTypes = nativeCosmetics.types ?? {}, cosmeticTables = nativeCosmetics.tableTypes ?? {};
   const ids = Object.fromEntries(Object.entries(catalogs).map(([name, data]) => [name, new Set(data.records.map(r => r.id))]));
   function ref(table, row, field, target, multiple = false, quantities = false) {
     const raw = row.values[field];
@@ -121,6 +131,14 @@ export function auditCatalogs(catalogs, nativeBonuses = loadNativeBonuses()) {
           nativeOnly.push({ ...issue, enumValue: nativeBonuses[value], formulaStatus: 'unverified' });
         } else unresolved.push(issue);
       }
+    }
+  }
+  // Cosmetic columns are typed by native enums, so an unknown member is a source change, not a new item.
+  function enumRef(table, row, field, typeName) {
+    const value = row.values[field];
+    referenceCounts[`${table}.${field} -> ${typeName}`] = (referenceCounts[`${table}.${field} -> ${typeName}`] ?? 0) + 1;
+    if (typeof value !== 'string' || missing(value) || !Object.hasOwn(cosmeticTypes[typeName] ?? {}, value)) {
+      unresolved.push({ table, id: row.id, field, value: value ?? null, target: typeName });
     }
   }
   for (const [table, data] of Object.entries(catalogs)) {
@@ -257,6 +275,12 @@ export function auditCatalogs(catalogs, nativeBonuses = loadNativeBonuses()) {
         if (requirements.length !== rewards.length || !requirements.length ||
             [...requirements, ...rewards].some(v => !decimal.test(v))) errors.push(`${label}: achievement tiers mismatch`);
       }
+      const cosmetic = cosmeticTables[table];
+      if (cosmetic) {
+        if (cosmetic.idType) enumRef(table, row, cosmetic.idColumn, cosmetic.idType);
+        if (cosmetic.unlockType) enumRef(table, row, cosmetic.unlockColumn, cosmetic.unlockType);
+        if (cosmetic.categoryType) enumRef(table, row, cosmetic.categoryColumn, cosmetic.categoryType);
+      }
       classifications[table].push(classify(table, row, catalogs));
     }
   }
@@ -271,7 +295,18 @@ export function auditCatalogs(catalogs, nativeBonuses = loadNativeBonuses()) {
     active.delete(id); finished.add(id);
   }
   for (const id of tree.keys()) visit(id);
-  return { version: '8.2.0', runtimeEnabled: false, errors, unresolved, nativeOnly, deferredReferences, rewardReferences, referenceCounts, classifications };
+  // Enum members without a catalog row stay listed as evidence; they are never invented into the catalog.
+  const cosmeticCoverage = Object.entries(cosmeticTables).filter(([table]) => catalogs[table]).map(([table, spec]) => {
+    const members = spec.idType ? Object.keys(cosmeticTypes[spec.idType] ?? {}) : [];
+    const tally = column => column ? Object.fromEntries([...(catalogs[table].records.reduce((counts, row) =>
+      counts.set(row.values[column], (counts.get(row.values[column]) ?? 0) + 1), new Map()))].sort()) : null;
+    return { table, idType: spec.idType ?? null, idTypeNote: spec.idTypeNote ?? null,
+      records: catalogs[table].records.length, enumMembers: members.length,
+      enumOnly: members.filter(member => !ids[table].has(member)),
+      unlockTypes: tally(spec.unlockColumn), categories: tally(spec.categoryColumn),
+      activation: 'unverified', runtimeEnabled: false };
+  });
+  return { version: '8.2.0', runtimeEnabled: false, errors, unresolved, nativeOnly, deferredReferences, rewardReferences, referenceCounts, classifications, cosmeticCoverage };
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {

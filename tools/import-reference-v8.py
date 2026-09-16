@@ -22,7 +22,27 @@ TABLES = ['ArtifactInfo', 'ArtifactCostInfo', 'ActiveSkillInfo', 'ActiveSkillMul
           'GemstoneLevelCost', 'GemstoneRarityInfo', 'GemstoneBonusTypeScalingInfo', 'GemstoneLevelSummonRateInfo',
           'EndgamePetInfo', 'EndgamePetInfo_1', 'EndgameSeasonArtifactInfo', 'EndgameSeasonArtifactInfo_1',
           'EndgameSeasonArtifactCostInfo', 'EndgameSeasonRewardInfo', 'EndgameSeasonRewardInfo_1',
-          'AvatarInfo', 'AvatarFrameInfo', 'PlayerTitleInfo']
+          'AvatarInfo', 'AvatarFrameInfo', 'PlayerTitleInfo',
+          'AvatarParticleInfo', 'ProfileBackgroundInfo']
+# Native cosmetic typing: which enum backs each catalog column. None = no native enum for that column.
+COSMETIC_TABLES = {
+    'AvatarInfo': dict(idColumn='AvatarID', idType='AvatarID', unlockColumn='AvatarUnlockType', unlockType='AvatarUnlockType'),
+    'AvatarFrameInfo': dict(idColumn='AvatarFrameID', idType='AvatarFrameId', unlockColumn='UnlockType', unlockType='AvatarUnlockType'),
+    'AvatarParticleInfo': dict(idColumn='AvatarParticleID', idType='AvatarParticleID', unlockColumn='UnlockType', unlockType='AvatarUnlockType'),
+    'PlayerTitleInfo': dict(idColumn='TitleID', idType=None, idTypeNote='native TitleID is int, not an enum',
+                            unlockColumn='TitleUnlockType', unlockType='AvatarUnlockType'),
+    'ProfileBackgroundInfo': dict(idColumn='ProfileBackgroundID', idType=None, idTypeNote='native ID is a plain string',
+                                  unlockColumn=None, unlockType=None,
+                                  categoryColumn='ProfileBackgroundType', categoryType='ProfileBackgroundType'),
+}
+COSMETIC_ENUMS = ['AvatarID', 'AvatarFrameId', 'AvatarParticleID', 'AvatarUnlockType', 'ProfileBackgroundType']
+COSMETIC_MEMBERS = [
+    ('AvatarParticleInfo', 'public static bool TryParse(InfoDoc infoDoc, int row, out AvatarParticleInfo info)'),
+    ('AvatarParticleModel', 'private void ParseAvatarParticleInfo()'),
+    ('ProfileBackgroundModel', 'private void ParseProfileBackgroundInfo()'),
+    ('ProfileBackgroundModel', 'public List<ProfileBackgroundInfo> GetProfileBackgroundInfos(ProfileBackgroundType backgroundType)'),
+    ('ProfileBackgroundModel', 'public void SetProfileBackgrounds(string playerBackgroundID, string raidBackgroundID)'),
+]
 OMIT = {'Name', 'Note', 'Notes', 'Description', 'PetName', 'NameColor', 'BonusIcon', 'TextSpriteIndex',
         'Color', 'EnchantColor', 'BestAgainst', 'Title', 'LongDescription', 'CatchDescription',
         'MissedDescription', 'BundleImageOverride', 'BgColor', 'BgColorSecondary', 'BannerPrefabPath',
@@ -32,6 +52,19 @@ DECIMAL = re.compile(r'[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?\Z')
 
 def sha(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
+
+def enum_values(text, name):
+    rows = re.findall(r'public const ' + name + r' (\w+) = (-?\d+);', text)
+    if not rows or len(dict(rows)) != len(rows):
+        raise ValueError(f'missing or duplicate native {name} members')
+    return dict(rows)
+
+def native_rva(text, signature):
+    marker = r'\t// RVA: (0x[0-9A-Fa-f]+)[^\n]*\n\t' + re.escape(signature) + r' \{ \}'
+    found = re.findall(marker, text)
+    if len(found) != 1:
+        raise ValueError(f'native member not uniquely located: {signature}')
+    return found[0]
 
 def parse(path):
     reader = csv.DictReader(io.StringIO(path.read_text(encoding='utf-8-sig')))
@@ -147,12 +180,13 @@ def main():
           reason='native-overwrite-policy-verified', evidence='enhancement-parser-evidence.json',
           historyLocation=ENHANCEMENT_TABLE+'.json#rowResolution', runtimeEnabled=False)]))
     dump_path = ROOT / 'work/apk-analysis/dump/dump.cs'
+    dump_text = dump_path.read_text(encoding='utf-8')
     native_path = OUT / 'native-bonus-types.json'
     if native_path.exists():
         native_pins = json.loads(native_path.read_text())
         if sha(dump_path) != native_pins['dumpSha256'] or sha(ROOT/'work/apk-analysis/global-metadata.dat') != native_pins['metadataSha256']:
             raise ValueError('native BonusType evidence hash mismatch')
-    enum_rows = re.findall(r'public const BonusType (\w+) = (-?\d+);', dump_path.read_text(encoding='utf-8'))
+    enum_rows = re.findall(r'public const BonusType (\w+) = (-?\d+);', dump_text)
     if not enum_rows or len(dict(enum_rows)) != len(enum_rows):
         raise ValueError('missing or duplicate native BonusType IDs')
     write('native-bonus-types.json', dict(version='8.2.0',
@@ -160,10 +194,18 @@ def main():
           dumpSha256=sha(dump_path), packageSha256=audit['package']['sha256'],
           type='BonusType', values=dict(enum_rows),
           evidenceScope='Enum identity only; not a formula, enabled flag or live server value'))
-    reward_ids = dict(re.findall(r'public const RewardID (\w+) = (-?\d+);', dump_path.read_text(encoding='utf-8')))
+    reward_ids = dict(re.findall(r'public const RewardID (\w+) = (-?\d+);', dump_text))
     write('native-reward-types.json', dict(version='8.2.0', values=reward_ids,
           dumpSha256=sha(dump_path), metadataSha256=sha(ROOT/'work/apk-analysis/global-metadata.dat'),
           evidenceScope='RewardID identity only; reward grammar and delivery behavior require separate verification'))
+    write('native-cosmetic-types.json', dict(version='8.2.0',
+          packageSha256=audit['package']['sha256'], dumpSha256=sha(dump_path),
+          metadataSha256=sha(ROOT/'work/apk-analysis/global-metadata.dat'),
+          types={name: enum_values(dump_text, name) for name in COSMETIC_ENUMS},
+          tableTypes=COSMETIC_TABLES,
+          nativeMembers=[dict(type=owner, signature=signature, rva=native_rva(dump_text, signature))
+                         for owner, signature in COSMETIC_MEMBERS],
+          evidenceScope='Enum identity, column typing and method addresses only; not unlock rules, live availability, purchase or reward delivery'))
     write('manifest.json', dict(version='8.2.0', packageSha256=audit['package']['sha256'], runtimeEnabled=False,
                                tables=manifest, resourceIndex=[dict(name=p.name, sha256=sha(p), bytes=p.stat().st_size,
                                parsed=any(p.name.endswith('_'+t+'.txt') for t in TABLES)) for p in sorted(ASSETS.glob('*.txt'))]))
