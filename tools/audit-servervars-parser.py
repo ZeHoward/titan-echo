@@ -80,7 +80,9 @@ def main():
         (0x22880ec, 'csel', 'x20, x21, x19, ne'),
         (0x22880f4, 'bl', '#0x2287768'),
     ]
-    observations = override_loop + vars_loop + scaling_selection
+    # One crit parameter has a default written by the static constructor; the rest are server-supplied.
+    crit_defaults = [(0x24aafc0, 'strb', 'wzr, [x9, #0x6ec]')]
+    observations = override_loop + vars_loop + scaling_selection + crit_defaults
     for address, mnemonic, operands in observations:
         instruction(address, mnemonic, operands)
     expected_symbols = {
@@ -127,6 +129,12 @@ def main():
                 rowOrder='ascending zero-based row index', rowGuard='none observed',
                 assignmentCallRva='0x24a91a4', assignmentTarget='Dictionary<object, object>.set_Item',
                 appliedBy='ServerVarsModel.SetVarsFromAttributes')),
+        critParameters=dict(
+            serverVarFields=['playerCritChance', 'playerCritMult', 'maxCritChance', 'helperCanCrit'],
+            bundledValues='none: neither ServerVarsInfo nor ServerVarOverride carries any of them',
+            nativeDefault=dict(field='helperCanCrit', offset='0x6ec', value=False,
+                               instructionRva='0x24aafc0', note='static constructor stores zero'),
+            limits='the live crit chance and multiplier are server-supplied and not in this package'),
         abTestSelection=dict(selectorRva=hex(AB_SELECTOR), callerRva=hex(SCALING_PARSER),
             requestedSheet='TitanScalingInfo',
             rule='a runtime-provided A/B sheet name replaces the requested sheet when it is non-empty and contains the requested name',

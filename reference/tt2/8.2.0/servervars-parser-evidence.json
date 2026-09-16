@@ -41,6 +41,23 @@
       "appliedBy": "ServerVarsModel.SetVarsFromAttributes"
     }
   },
+  "critParameters": {
+    "serverVarFields": [
+      "playerCritChance",
+      "playerCritMult",
+      "maxCritChance",
+      "helperCanCrit"
+    ],
+    "bundledValues": "none: neither ServerVarsInfo nor ServerVarOverride carries any of them",
+    "nativeDefault": {
+      "field": "helperCanCrit",
+      "offset": "0x6ec",
+      "value": false,
+      "instructionRva": "0x24aafc0",
+      "note": "static constructor stores zero"
+    },
+    "limits": "the live crit chance and multiplier are server-supplied and not in this package"
+  },
   "abTestSelection": {
     "selectorRva": "0x228804c",
     "callerRva": "0x23252f8",
@@ -77,7 +94,8 @@
     "0x22880c8",
     "0x22880e4",
     "0x22880ec",
-    "0x22880f4"
+    "0x22880f4",
+    "0x24aafc0"
   ],
   "verifiedStringReferences": {
     "0x4c1abb0": "ServerVarsInfo",
