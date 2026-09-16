@@ -127,12 +127,21 @@ FORMULAS = [
     entry(id='prestigeRelics', module='lib/engine.ts', export='relicGain',
           expression='max(1, floor(關卡^1.7 ÷ 100 × PrestigeRelic))，最高關卡到 60 後開放',
           parts=[
-              entry(part='指數 1.7 與除數 100', status='baseline-75',
-                    note='沿用 7.5 基準；安裝包的 relicsStageMax 為 180000，與本式無直接對應。'),
+              entry(part='指數 1.7 與除數 100', status='server', ref='native-server-var-fields.json',
+                    note='原生沒有「關卡^指數 ÷ 常數」這種寫法：PrestigeModel.GetBonusRelicsFromStageCount '
+                         '（RVA 0x23ff6cc）把係數從模型欄位載入（如 ldr d9,[x8,#0x170]、ldr d10,[x8,#0x1b0]、'
+                         'ldr w9,[x8,#0x214]），不是程式裡的常數。對應的具名 [ServerVar] 欄位有十個——'
+                         'relicStageBase、relicStageBase2、relicStageExpo、relicStageExpo2、relicStageExpo3、'
+                         'relicStageExpoMax3、relicStageMult1–3 與 relicStageOffset——'
+                         '**安裝包一個值都沒帶**。目前的 1.7 與 100 是 7.5 基準的近似，不是原版係數。'),
               entry(part='開放門檻第 60 關', status='baseline-75',
                     note='沿用 7.5 基準；安裝包未見對應的蛻變開放關卡欄位。'),
               entry(part='至少一顆聖物的下限', status='invented',
-                    note='引擎自訂：開放後即使在第一關蛻變也給一顆，安裝包未見對應下限。')]),
+                    note='引擎自訂：開放後即使在第一關蛻變也給一顆，安裝包未見對應下限。'),
+              entry(part='額外的聖物乘數（累加、季節、新手）', status='server', ref='native-server-var-fields.json',
+                    note='原生另有 additiveRelicMultiplier、seasonalRelicMultiplier 與新手加成三條乘數，'
+                         '共 31 個含 relic 的 [ServerVar] 欄位，包內只有 additiveRelicMultiplierMax（150000）與 '
+                         'relicsStageMax（180000）兩個有值；本專案尚未實作這三條乘數。')]),
     entry(id='evolveCost', module='lib/engine.ts', export='evolveCost',
           expression='英雄基礎費用 × 1e4^已昇階次數 × 1e6',
           parts=[entry(part='1e4 與 1e6 係數', status='invented',

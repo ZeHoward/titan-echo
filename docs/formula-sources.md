@@ -2,17 +2,17 @@
 
 每個核心公式的來源登記表：資料表、原生方法、原生預設值，或明確標記為 7.5 基準沿用、專案自訂或伺服器供給。
 
-版本 8.2.0。共 29 條公式、49 項來源條目。
+版本 8.2.0。共 29 條公式、50 項來源條目。
 
 | 狀態 | 意義 | 條目數 |
 |---|---|---|
 | `native` | 由反組譯證據確認 | 5 |
 | `table` | 取自安裝包資料表 | 15 |
 | `default` | 原生靜態預設值，線上可覆蓋 | 2 |
-| `baseline-75` | 沿用 7.5 基準，尚未對 8.2 核實 | 9 |
+| `baseline-75` | 沿用 7.5 基準，尚未對 8.2 核實 | 8 |
 | `table-differs` | 安裝包有值但引擎目前未照做 | 1 |
 | `invented` | 本專案自訂，安裝包未提供 | 9 |
-| `server` | 原生為伺服器變數，安裝包未帶值 | 8 |
+| `server` | 原生為伺服器變數，安裝包未帶值 | 10 |
 
 ## 逐條登記
 
@@ -161,9 +161,10 @@ max(1, floor(關卡^1.7 ÷ 100 × PrestigeRelic))，最高關卡到 60 後開放
 
 | 來源條目 | 狀態 | 依據 |
 |---|---|---|
-| 指數 1.7 與除數 100 | `baseline-75` | 沿用 7.5 基準；安裝包的 relicsStageMax 為 180000，與本式無直接對應。 |
+| 指數 1.7 與除數 100 | `server` | `reference/tt2/8.2.0/native-server-var-fields.json`；原生沒有「關卡^指數 ÷ 常數」這種寫法：PrestigeModel.GetBonusRelicsFromStageCount （RVA 0x23ff6cc）把係數從模型欄位載入（如 ldr d9,[x8,#0x170]、ldr d10,[x8,#0x1b0]、ldr w9,[x8,#0x214]），不是程式裡的常數。對應的具名 [ServerVar] 欄位有十個——relicStageBase、relicStageBase2、relicStageExpo、relicStageExpo2、relicStageExpo3、relicStageExpoMax3、relicStageMult1–3 與 relicStageOffset——**安裝包一個值都沒帶**。目前的 1.7 與 100 是 7.5 基準的近似，不是原版係數。 |
 | 開放門檻第 60 關 | `baseline-75` | 沿用 7.5 基準；安裝包未見對應的蛻變開放關卡欄位。 |
 | 至少一顆聖物的下限 | `invented` | 引擎自訂：開放後即使在第一關蛻變也給一顆，安裝包未見對應下限。 |
+| 額外的聖物乘數（累加、季節、新手） | `server` | `reference/tt2/8.2.0/native-server-var-fields.json`；原生另有 additiveRelicMultiplier、seasonalRelicMultiplier 與新手加成三條乘數，共 31 個含 relic 的 [ServerVar] 欄位，包內只有 additiveRelicMultiplierMax（150000）與 relicsStageMax（180000）兩個有值；本專案尚未實作這三條乘數。 |
 
 ### evolveCost · `lib/engine.ts` 的 `evolveCost`
 
