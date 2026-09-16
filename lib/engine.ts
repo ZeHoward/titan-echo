@@ -126,8 +126,9 @@ export function heroLevel(s:State,i:number){return i<33?s.heroes[i]:s.tt2!.extra
 function setHeroLevel(s:State,i:number,n:number){if(i<33)s.heroes[i]=n;else s.tt2!.extraHeroes[i-33]=n;}
 function rawHeroDps(s:State){return limit(HEROES.reduce((n,_,i)=>n+heroDps(s,i),0));}
 export function manaMax(s:State){return 200+stateEffect(s,'ManaPoolCap');}
-function baseManaRegen(s:State){return (2+stateEffect(s,'ManaRegen'))/60*stateEffect(s,'ManaRegenMult');}
-export function manaRegen(s:State){return baseManaRegen(s)*perkValue(s.tt2!,0,s.last);}
+// Two clamped effects multiplied together still overflow, so the composed regen is clamped again.
+function baseManaRegen(s:State){return limit((2+stateEffect(s,'ManaRegen'))/60*stateEffect(s,'ManaRegenMult'));}
+export function manaRegen(s:State){return limit(baseManaRegen(s)*perkValue(s.tt2!,0,s.last));}
 export function skillMana(s:State,i:number){return Math.max(0,SKILL_DATA[i].mana[Math.max(0,s.skillLevels[i]-1)]-stateEffect(s,SKILL_DATA[i].id+'SkillMana'));}
 export function critChance(s:State){return Math.min(1,.02+stateEffect(s,'CritChance'));}
 export function buildDamage(s:State,build:Build){const t=s.tt2!,active=s.active.filter(n=>n>s.last).length,c={tap:0,pet:.5,ship:1,clone:.5,dagger:.5,heavenly:.5,goldGun:.9}[build];
@@ -172,7 +173,9 @@ export function stateEffect(s:State,target:string){
  let cached=heroPassiveCache.get(s);
  if(!cached||cached.signature!==signature){cached={signature,totals:heroPassiveTotals(levels,boost)};heroPassiveCache.set(s,cached);}
  const additive=bonusDefinitions[target]?.additive,base=effect(s.tt2!,target),hero=cached.totals[target]??(additive?0:1);
- return additive?base+hero:limit(base*hero);
+ // Both branches are clamped: an unbounded effect used to reach the save as Infinity through mana,
+ // skill duration and cooldown, which then failed snapshot validation on every write.
+ return limit(additive?base+hero:base*hero);
 }
 
 export function swordMasterBaseDamage(s:State){return limit(playerBaseDamage(s.level)*stateEffect(s,'SwordMasterDamage'));}
