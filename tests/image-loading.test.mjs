@@ -51,6 +51,10 @@ test('載入時不再一次抓走全部圖集：最先只暖畫面上那張，�
   assert.ok(source.includes('warmImage(currentSheet)'), '沒有先暖畫面上那張圖集');
   assert.ok(source.includes('sheetWarmOrder('), '其餘圖集沒有照預載順序補');
   assert.ok(source.includes('requestIdleCallback'), '其餘圖集沒有排在閒置時段');
+  // Before the save is read the component holds a fresh state, i.e. stage 1. Drawing the monster
+  // then would make every mid-game player fetch the first sheet for a monster never shown.
+  assert.ok(source.includes("const currentSheet=ready?monsterSheet("), '存檔還沒讀進來就先暖圖集');
+  assert.ok(source.includes('{ready&&<MonsterSprite'), '存檔還沒讀進來就先畫怪物');
 });
 
 test('戰鬥畫面只請求 WebP，沒有留下會落空的 PNG 路徑', () => {

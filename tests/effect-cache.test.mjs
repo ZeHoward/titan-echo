@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { fresh, dps, tapDamage } from '../lib/engine.ts';
-import { effect, baseEffect, TT2_ARTIFACTS, TT2_TREE, TT2_SETS } from '../lib/tt2-rules.ts';
+import { effect, baseEffect, equipmentEffect, petBonus, TT2_ARTIFACTS, TT2_TREE, TT2_SETS } from '../lib/tt2-rules.ts';
 import { TT2_GEAR } from '../lib/tt2-data.ts';
 import { toNumber } from '../lib/big-number.ts';
 
@@ -73,6 +73,81 @@ test('a changed equipped item or its level moves the bonus it feeds', () => {
   const equippedBefore = effect(s.tt2, target);
   s.tt2.equipped = [-1, -1, -1, -1, -1];
   assert.notEqual(effect(s.tt2, target), equippedBefore, '卸下裝備後應重算');
+});
+
+// effect() no longer re-reads the fields baseEffect already checked; it follows the base cache by
+// version. These cases change a base field and ask effect(), which is the path that would go stale.
+test('一個基礎欄位改變時，走 effect() 的結果也要跟著動，不只是 baseEffect()', () => {
+  const s = armed();
+  const damageArtifact = TT2_ARTIFACTS.findIndex(a => a.effect === 'AllDamage');
+  const before = effect(s.tt2, 'AllDamage');
+  s.tt2.artifacts[damageArtifact] += 10;
+  assert.notEqual(effect(s.tt2, 'AllDamage'), before, '神器改變後 effect() 仍回舊值');
+
+  const talent = TT2_TREE.findIndex(k => k.effects.some(e => e.type === 'TapDamage'));
+  const tapBefore = effect(s.tt2, 'TapDamage');
+  s.tt2.tree[talent] = Math.min(TT2_TREE[talent].max, s.tt2.tree[talent] + 1);
+  assert.notEqual(effect(s.tt2, 'TapDamage'), tapBefore, '天賦改變後 effect() 仍回舊值');
+
+  const carried = TT2_SETS[0].effects[0].type;
+  const setBefore = effect(s.tt2, carried);
+  s.tt2.sets = [...s.tt2.sets, 0];
+  assert.notEqual(effect(s.tt2, carried), setBefore, '套裝收齊後 effect() 仍回舊值');
+});
+
+test('陣列變長或變短都要重算，長度改變不能被逐格比對漏掉', () => {
+  const s = armed();
+  const definition = TT2_GEAR.findIndex(g => g.effect === 'SwordAttackDamage');
+  const slot = TT2_GEAR[definition].slot, target = TT2_GEAR[definition].effect;
+  s.tt2.inventory = [{ id: 1, definition, level: 30 }];
+  s.tt2.equipped = [-1, -1, -1, -1, -1];
+  s.tt2.equipped[slot] = 1;
+  const one = effect(s.tt2, target);
+  // A second, unequipped piece only changes the bag length; the answer must still be recomputed
+  // rather than served from a reading that was one item shorter.
+  s.tt2.inventory = [...s.tt2.inventory, { id: 2, definition, level: 99 }];
+  assert.equal(effect(s.tt2, target), one, '多一件沒裝上的裝備不該改變加成');
+  s.tt2.inventory = [{ id: 2, definition, level: 99 }];
+  s.tt2.equipped[slot] = 2;
+  assert.notEqual(effect(s.tt2, target), one, '丟掉舊裝備並換上新的之後仍回舊值');
+
+  const enchantArtifact = TT2_ARTIFACTS.findIndex(a => a.effect === 'AllDamage');
+  s.tt2.artifacts[enchantArtifact] = 20;
+  const plain = effect(s.tt2, 'AllDamage');
+  s.tt2.enchanted = [enchantArtifact];
+  assert.notEqual(effect(s.tt2, 'AllDamage'), plain, '附魔清單變長後仍回舊值');
+  s.tt2.enchanted = [];
+  assert.equal(effect(s.tt2, 'AllDamage'), plain, '附魔清單清空後應回到原值');
+});
+
+test('同樣的數字換位置也算改變：兩件裝備互換等級', () => {
+  const s = armed();
+  const definition = TT2_GEAR.findIndex(g => g.effect === 'SwordAttackDamage');
+  const slot = TT2_GEAR[definition].slot, target = TT2_GEAR[definition].effect;
+  s.tt2.inventory = [{ id: 1, definition, level: 10 }, { id: 2, definition, level: 90 }];
+  s.tt2.equipped = [-1, -1, -1, -1, -1];
+  s.tt2.equipped[slot] = 1;
+  const low = effect(s.tt2, target);
+  s.tt2.inventory = [{ id: 1, definition, level: 90 }, { id: 2, definition, level: 10 }];
+  assert.notEqual(effect(s.tt2, target), low, '兩件裝備互換等級後仍回舊值');
+});
+
+test('面板直接呼叫的 equipmentEffect 與 petBonus 也跟著基礎欄位動', () => {
+  const s = armed();
+  const definition = TT2_GEAR.findIndex(g => g.effect === 'SwordAttackDamage');
+  const item = { id: 1, definition, level: 30 };
+  s.tt2.inventory = [item];
+  s.tt2.equipped = [-1, -1, -1, -1, -1];
+  s.tt2.equipped[TT2_GEAR[definition].slot] = 1;
+  const gearBefore = equipmentEffect(s.tt2, item);
+  const talent = TT2_TREE.findIndex(k => k.effects.some(e => e.type === 'AllEquipmentEffect'));
+  if (talent >= 0) {
+    s.tt2.tree[talent] = Math.min(TT2_TREE[talent].max, (s.tt2.tree[talent] || 0) + 1);
+    assert.notEqual(equipmentEffect(s.tt2, item), gearBefore, '天賦改變後裝備效果仍回舊值');
+  }
+  const petBefore = petBonus(s.tt2, 0);
+  s.tt2.petLevels[0] += 10;
+  assert.notEqual(petBonus(s.tt2, 0), petBefore, '寵物等級改變後仍回舊值');
 });
 
 test('the cached path gives the same answer as a freshly built state', () => {

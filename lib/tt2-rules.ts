@@ -17,16 +17,40 @@ export const EFFECT_LABELS:Record<string,string>={
 export const effectLabel=(id:string)=>EFFECT_LABELS[id]||EXTRA_EFFECT_LABELS[id]||'特殊效果';
 export function effectText(id:string,value:number){const d=bonusDefinitions[id];const number=(n:number)=>n>=1000?n.toExponential(2):Number(n.toPrecision(4)).toString();if(d?.additive)return `${d.subtract?'−':'+'}${number(value*(d.percent?100:1))}${d.percent?'%':d.seconds?' 秒':''}`;return `×${number(value)}`;}
 export function artifactValue(t:TT2State,i:number){const a=TT2_ARTIFACTS[i],level=t.artifacts[i]||0;if(!level)return bonusDefinitions[a.effect]?.additive?0:1;const magnitude=a.value*level**a.exponent;return cap((bonusDefinitions[a.effect]?.additive?magnitude:1+magnitude)*(t.enchanted.includes(i)?a.enchant:1));}
-function reaches(from:string,target:string,seen=new Set<string>()):boolean{if(from===target)return true;if(seen.has(from))return false;seen.add(from);return (bonusDefinitions[from]?.combos||[]).some(c=>reaches(c,target,new Set(seen)));}
+function walk(from:string,target:string,seen=new Set<string>()):boolean{if(from===target)return true;if(seen.has(from))return false;seen.add(from);return (bonusDefinitions[from]?.combos||[]).some(c=>walk(c,target,new Set(seen)));}
+// The expansion graph is data, not state, so a pair's answer never changes. The bonus walks ask the
+// same few hundred pairs on every cache miss, and each answer used to rebuild a Set per branch.
+const reachable=new Map<string,boolean>();
+function reaches(from:string,target:string){const key=from+'>'+target;let known=reachable.get(key);if(known===undefined){known=walk(from,target);reachable.set(key,known);}return known;}
 // Keep independent multipliers independent; additive chance/seconds/cost modifiers
 // are summed. Composite bonuses use the CSV's explicit expansion graph.
-const effectCache=new WeakMap<TT2State,{signature:string;values:Map<string,number>}>();
-// Everything baseEffect reads. Any field added here must appear in baseSignature, or a cached
-// value would survive a change that should have moved it; tests/effect-cache.test.mjs pins that.
-const baseSignature=(t:TT2State)=>t.artifacts.join(',')+'|'+t.tree.join(',')+'|'+t.sets.join(',')+'|'+t.enchanted.join(',');
-export function baseEffect(t:TT2State,target:string){
- const signature=baseSignature(t);
- let cached=effectCache.get(t);if(!cached||cached.signature!==signature){cached={signature,values:new Map()};effectCache.set(t,cached);}
+type Cache={values:Map<string,number>;stamp:number[];version:number};
+// Reading every field into a string on each call cost more than the walk it was protecting: a full
+// bag alone is 300 numbers per call. The fields are compared in place against the last reading, so
+// an unchanged state allocates nothing and a changed one is still caught exactly, not by a hash.
+function sameAsStamp(t:TT2State,stamp:number[],visit:(t:TT2State,see:(n:number)=>void)=>void){
+ let at=0,same=true;
+ visit(t,n=>{if(stamp[at]!==n){stamp[at]=n;same=false;}at++;});
+ if(at!==stamp.length){stamp.length=at;same=false;}
+ return same;
+}
+// Everything baseEffect reads. Any field added here must appear in visitBase, or a cached value
+// would survive a change that should have moved it; tests/effect-cache.test.mjs pins that.
+function visitBase(t:TT2State,see:(n:number)=>void){
+ for(const n of t.artifacts)see(n);for(const n of t.tree)see(n);for(const n of t.sets)see(n);for(const n of t.enchanted)see(n);
+}
+const effectCache=new WeakMap<TT2State,Cache>();
+/** The base cache for this state, checked against the fields it was built from. */
+function baseEntry(t:TT2State){
+ let cached=effectCache.get(t);
+ if(!cached){cached={values:new Map(),stamp:[],version:0};effectCache.set(t,cached);}
+ if(!sameAsStamp(t,cached.stamp,visitBase)){cached.values.clear();cached.version++;}
+ return cached;
+}
+export function baseEffect(t:TT2State,target:string){return baseFrom(baseEntry(t),t,target);}
+// Takes an already-checked entry: one bonus walk asks for dozens of base values through the pet and
+// equipment helpers, and re-checking the fields for each of them was the whole cost.
+function baseFrom(cached:Cache,t:TT2State,target:string){
  const found=cached.values.get(target);if(found!==undefined)return found;
  const additive=bonusDefinitions[target]?.additive;let total=additive?0:1;
  const put=(n:number)=>{total=additive?total+n:cap(total*n);};
@@ -36,37 +60,42 @@ export function baseEffect(t:TT2State,target:string){
  cached.values.set(target,total);return total;
 }
 export function artifactAllDamage(t:TT2State){return cap((1+TT2_ARTIFACTS.reduce((n,a,i)=>n+a.damage*(t.artifacts[i]||0),0))*effect(t,'HSArtifactDamage'));}
-export function petBonus(t:TT2State,i:number){
+export function petBonus(t:TT2State,i:number,base=baseEntry(t)){
  const p=TT2_PETS[i],level=t.petLevels[i]||0,additive=bonusDefinitions[p.effect]?.additive;
  if(!level)return additive?0:1;
  const selected=t.activePets.includes(i),fraction=selected?1:Math.min(1,Math.floor(level/5)*.05);
  const steps=Math.max(0,Math.floor((Math.min(level,p.improvementMax)-100)/50));
  let full=(p.base+level*p.inc)*p.improvement**steps;
  const group=bonusDefinitions[p.effect]?.group;
- if(group==='Damage'||group==='Gold')full*=baseEffect(t,p.family+'Pet'+group+'Effect');
- if(p.effect.endsWith('Boost'))full*=baseEffect(t,'EquipmentPetEffect');
+ if(group==='Damage'||group==='Gold')full*=baseFrom(base,t,p.family+'Pet'+group+'Effect');
+ if(p.effect.endsWith('Boost'))full*=baseFrom(base,t,'EquipmentPetEffect');
  return cap(additive?full*fraction:1+(full-1)*fraction);
 }
-function petEffect(t:TT2State,target:string){let n=bonusDefinitions[target]?.additive?0:1;TT2_PETS.forEach((p,i)=>{if(reaches(p.effect,target))n=bonusDefinitions[target]?.additive?n+petBonus(t,i):cap(n*petBonus(t,i));});return n;}
+function petEffect(base:Cache,t:TT2State,target:string){let n=bonusDefinitions[target]?.additive?0:1;TT2_PETS.forEach((p,i)=>{if(reaches(p.effect,target))n=bonusDefinitions[target]?.additive?n+petBonus(t,i,base):cap(n*petBonus(t,i,base));});return n;}
 export function equipmentValue(item:EquipmentItem){const g=TT2_GEAR[item.definition];return cap(g.base+g.inc*(item.level**g.exp1+g.expBase**(item.level**g.exp2)));}
-export function equipmentEffect(t:TT2State,item:EquipmentItem){
+export function equipmentEffect(t:TT2State,item:EquipmentItem,base=baseEntry(t)){
  const g=TT2_GEAR[item.definition],boost=['SwordBoost','HelmetBoost','ArmorBoost','AuraBoost','SlashBoost'][g.slot];
- let n=equipmentValue(item)*baseEffect(t,'AllEquipmentEffect')*baseEffect(t,boost)*petEffect(t,boost);
- if(g.slot!==3){const aura=t.inventory.find(x=>x.id===t.equipped[3]);if(aura&&reaches(TT2_GEAR[aura.definition].effect,boost))n*=equipmentEffect(t,aura);}
+ let n=equipmentValue(item)*baseFrom(base,t,'AllEquipmentEffect')*baseFrom(base,t,boost)*petEffect(base,t,boost);
+ if(g.slot!==3){const aura=t.inventory.find(x=>x.id===t.equipped[3]);if(aura&&reaches(TT2_GEAR[aura.definition].effect,boost))n*=equipmentEffect(t,aura,base);}
  return cap(n);
 }
 // Resolving one bonus walks 103 artifacts, the talent tree, every set, 30 pets and the equipped
 // items. The hot paths ask for the same handful of bonuses tens of times per frame, so the whole
-// result is cached against a signature of every field the walk reads.
-const fullCache=new WeakMap<TT2State,{signature:string;values:Map<string,number>}>();
-const fullSignature=(t:TT2State)=>baseSignature(t)+'|'+t.petLevels.join(',')+'|'+t.activePets.join(',')
- +'|'+t.equipped.join(',')+'|'+t.inventory.map(i=>i.id+':'+i.definition+':'+i.level).join(',');
+// result is cached. What baseEffect already checks is not checked again here: the full cache only
+// reads the extra fields, and follows the base cache by its version.
+// Any field added here must appear in visitExtra or visitBase; tests/effect-cache.test.mjs pins that.
+function visitExtra(t:TT2State,see:(n:number)=>void){
+ for(const n of t.petLevels)see(n);for(const n of t.activePets)see(n);for(const n of t.equipped)see(n);
+ for(const item of t.inventory){see(item.id);see(item.definition);see(item.level);}
+}
+const fullCache=new WeakMap<TT2State,Cache>();
 export function effect(t:TT2State,target:string){
- const signature=fullSignature(t);
- let cached=fullCache.get(t);if(!cached||cached.signature!==signature){cached={signature,values:new Map()};fullCache.set(t,cached);}
+ const base=baseEntry(t);
+ let cached=fullCache.get(t);if(!cached){cached={values:new Map(),stamp:[],version:-1};fullCache.set(t,cached);}
+ if(!sameAsStamp(t,cached.stamp,visitExtra)||cached.version!==base.version){cached.values.clear();cached.version=base.version;}
  const found=cached.values.get(target);if(found!==undefined)return found;
- const additive=bonusDefinitions[target]?.additive;let n=baseEffect(t,target),p=petEffect(t,target);n=additive?n+p:cap(n*p);
- for(const item of t.inventory){const g=TT2_GEAR[item.definition];if(t.equipped[g.slot]===item.id&&reaches(g.effect,target)){const value=equipmentEffect(t,item);n=additive?n+value:cap(n*value);}}
+ const additive=bonusDefinitions[target]?.additive;let n=baseFrom(base,t,target),p=petEffect(base,t,target);n=additive?n+p:cap(n*p);
+ for(const item of t.inventory){const g=TT2_GEAR[item.definition];if(t.equipped[g.slot]===item.id&&reaches(g.effect,target)){const value=equipmentEffect(t,item,base);n=additive?n+value:cap(n*value);}}
  cached.values.set(target,n);return n;
 }
 export function discoveryCost(t:TT2State){return TT2_DISCOVERY[t.artifacts.filter(n=>n>0).length]||1e240;}
