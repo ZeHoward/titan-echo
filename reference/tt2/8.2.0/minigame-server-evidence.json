@@ -1,0 +1,391 @@
+{
+  "version": "8.2.0",
+  "role": "小遊戲的結果從哪裡來：哪些方法交還結果、哪些是客戶端自己算的。",
+  "packageSha256": "8d78c9aa877e6c0b291ee2116cab855bd26c59c1d080bc654f88ecf1ff268b5f",
+  "binarySha256": "c13fc44321b1214c71ab0277a134fc3401fd7392c74a0bbb3935671c55a8713a",
+  "scriptSha256": "62c2eeb8472bb107de516e4b6ae69d3dcdf5013fb1caa87223d82a54dd203f8b",
+  "finding": "六個小遊戲全部把花費送到伺服器，再從回應解析結果；安裝包內的魚、野獸、關卡、稀有度機率與獎勵字串是顯示用的資料，不是客戶端的抽選規則。",
+  "consequence": "抽到什麼、多大、幾點數、給多少獎勵，安裝包內沒有值，不能自行編造；可從包內核實的只有升級費用與加成、消耗品回復速度、收藏門檻這類客戶端算式。",
+  "games": {
+    "FishingDerbyMinigameModel": {
+      "label": "釣魚大賽",
+      "methodCount": 84,
+      "serverOutcome": {
+        "PullFishFromServer": {
+          "rva": "0x22db824",
+          "bytesSha256": "f00573fbfbbce9d1ab0078048a81df583e6024dd89e2f6ef6cc6de0f8fb6f1f7"
+        },
+        "TryParsePulledFish": {
+          "rva": "0x22db9a8",
+          "bytesSha256": "a4dc995c55db1c49007f2f6b3dd54ac1aef749864f81fe43a276c319471cbc41"
+        },
+        "ParseFishDict": {
+          "rva": "0x22db5c0",
+          "bytesSha256": "434a91bdf5f1367eabe792bffae95d25dcfeecd21d52bd1f3cd609b6b6938333"
+        },
+        "UpdateFishCollection": {
+          "rva": "0x22dbd00",
+          "bytesSha256": "863d2753cdfa8428816b876255d582c5a261c6f58a3dc2e6f12f7f1a12a88ae9"
+        }
+      },
+      "serverSupplied": {
+        "SyncWithServer": {
+          "rva": "0x22d9d30",
+          "bytesSha256": "60513ea8c7cc4498b526407b97d66d5302965cf90ad6aeac2daf19108bcc5a8a"
+        },
+        "ParseServerMinigameDict": {
+          "rva": "0x22daf20",
+          "bytesSha256": "3bdeb54cad65f3c3e230a8d59de36d18f5d741c020a29113e665f1d8a6fcc10f"
+        },
+        "ParseServerFishCollection": {
+          "rva": "0x22db20c",
+          "bytesSha256": "75dcb21df48154301a63f8bc5c194981ccea1e87161c3940a9d037a0acc57057"
+        },
+        "ParseServerUpgradeLevel": {
+          "rva": "0x22db4e0",
+          "bytesSha256": "445eea9cc929b6a705c7bccdc6de66f7ba23fe334dabce03e780d634a1d45e89"
+        },
+        "ParseLuresDict": {
+          "rva": "0x22dcf04",
+          "bytesSha256": "f09cc42fbd6c9062f7e29a5590a7572b79777c9f95ba8baf97d777332a0c7928"
+        },
+        "SetLureAmount": {
+          "rva": "0x22db1ec",
+          "bytesSha256": "8f08ee3c769ec9764554c01c548ec10b6b456ef600d9e3908fd6c19715fc45ef"
+        }
+      },
+      "clientSide": {
+        "get_TackleBoxSize": {
+          "rva": "0x22d90ac",
+          "bytesSha256": "6d236541582537913bbd5825ba0afe4e7d087139316f446d0bd3b08196894559"
+        },
+        "get_CollectableLures": {
+          "rva": "0x22d8e10",
+          "bytesSha256": "5236b69f089f750fc6aa716c92603b74c0aacbc16dd2e873491ad197f7e70e92"
+        },
+        "get_LurePerXSeconds": {
+          "rva": "0x22d8fd0",
+          "bytesSha256": "e605ec7b05acd80dc81acf8844cd5273bed3d48cff3bab004b4f20f428e442aa"
+        },
+        "get_IsTackleBoxFull": {
+          "rva": "0x22d9184",
+          "bytesSha256": "7b6e9147acec6f3b84a08dd500ed1d591c625ad6ca9e21ae647b473943963be7"
+        },
+        "get_FishingLevel": {
+          "rva": "0x22d91a4",
+          "bytesSha256": "11ffbc08c56943570b9cc170870d1a4e7b04e807cbbfc65c56c785b9a8a85167"
+        },
+        "get_FishingLevelMax": {
+          "rva": "0x22d925c",
+          "bytesSha256": "776a3baa46d5c1e583bd30161eaeb34cc10b28e11b0210c97fced2154bce7cdf"
+        },
+        "CanUpgrade": {
+          "rva": "0x22dc558",
+          "bytesSha256": "215a9d60f4fd1a173d610472b4609c04e8bcc74aa57e8d44f4697cb702bbbbb5"
+        },
+        "Upgrade": {
+          "rva": "0x22dc6b0",
+          "bytesSha256": "37a272b4a6519bd974b4b2212dcbb5c52d7a9f4e4bb41db361025ba541615d2e"
+        },
+        "GetUpgradeBase": {
+          "rva": "0x22dca50",
+          "bytesSha256": "7de90bf9218e2553f2e7038f3618a4abcac49fe7aabfaadc2b830a2048204508"
+        },
+        "UpdateUpgradeBonuses": {
+          "rva": "0x22d9a98",
+          "bytesSha256": "3ac5889cc9282aa696129d6f106f7f593b39b8894e2da8676aff8e25f78e4f60"
+        },
+        "CanCollect": {
+          "rva": "0x22dc2e0",
+          "bytesSha256": "fb75d05d30c938c1b3417a6461a077e5414ffe53ff89767bdcbc9fdc5aaf1d57"
+        },
+        "IsCollected": {
+          "rva": "0x22dc380",
+          "bytesSha256": "1ef1ea35300673ff088b4e596faf917af40c8d37b250f1f6f49e9f894ae7e480"
+        },
+        "GetPercentToNextReward": {
+          "rva": "0x22d5574",
+          "bytesSha256": "ffe201b8a9d618ea7e60ba9a29efd6b709f93b4bc3c83cfc6fbc3ffd469af4e6"
+        }
+      }
+    },
+    "HuntingMinigameModel": {
+      "label": "狩獵",
+      "methodCount": 92,
+      "serverOutcome": {
+        "PullBeasts": {
+          "rva": "0x22f22d4",
+          "bytesSha256": "54cde3d789bc177ba06da4b4a7274aa0e4bec8cbb01ef50cbfdac1c62188d315"
+        },
+        "TryParsePulledBeasts": {
+          "rva": "0x22f246c",
+          "bytesSha256": "4ba86d757c262ad602631b995af82c4c601455845ce232a1c4ed08321c4c4a87"
+        },
+        "ParseBeastDict": {
+          "rva": "0x22f0aa4",
+          "bytesSha256": "05a6e408711da84740606d5fb2916ee726d5d1058be784bc30a217f54783f5aa"
+        },
+        "UpdateCollection": {
+          "rva": "0x22f27b0",
+          "bytesSha256": "22c32032c97b47465eefa9b66713819b7480af17d59dbe0c24fe12e605dcca61"
+        }
+      },
+      "serverSupplied": {
+        "SyncWithServer": {
+          "rva": "0x22ef2f4",
+          "bytesSha256": "fda0450b88881f3b5963954835e8986117ebdbddc30644fa23d7a6700fa5e12b"
+        },
+        "ParseServerMinigameDict": {
+          "rva": "0x22f01f0",
+          "bytesSha256": "724ca0f31ad4400154837f88857202e56f679e18bfaeb4be50c9a2c08f8f6e13"
+        },
+        "ParseServerBeastCollection": {
+          "rva": "0x22f0558",
+          "bytesSha256": "44863041e8603654905e96cc44101b814f5f5624919703ffba2f8bf76b1678d0"
+        },
+        "ParseServerUpgradeLevel": {
+          "rva": "0x22f08c4",
+          "bytesSha256": "9ab5f201547b6d2cb0b58cd41d13698fc11ad935dc07fd85f6d520e50b1134d8"
+        },
+        "ParseQuiverCollectDict": {
+          "rva": "0x22f1e44",
+          "bytesSha256": "d0b7cb6338c63321ec923796faa6bf34c08a10581ffd312b391d43f8b8b32d3d"
+        },
+        "SyncArrows": {
+          "rva": "0x22f044c",
+          "bytesSha256": "2f375e8a9c9ced4bfb7bd8b894377471cca329de74dcbb442605752bc09afa1c"
+        },
+        "SyncUpgradePoints": {
+          "rva": "0x22f07c4",
+          "bytesSha256": "58766109c99e466e123d8114cadb5b23276ac278a0c59b0621b049a10a6f6563"
+        }
+      },
+      "clientSide": {
+        "get_CollectableArrows": {
+          "rva": "0x22ee1dc",
+          "bytesSha256": "36d67fe7ab29ce25f49492cb26c5de974d298724238c093a8ff44c325bc4c2b3"
+        },
+        "get_ArrowPerXSeconds": {
+          "rva": "0x22ee39c",
+          "bytesSha256": "3ead3a7e9cfb8d9c487f374b901bd9c91878b4916d67c3fc00cbd61a069d04a6"
+        },
+        "get_QuiverCapacity": {
+          "rva": "0x22ee478",
+          "bytesSha256": "7a46ab7a0936d85c2583452ca6a8fea36d677286cb338499386577a8ffc86d53"
+        },
+        "get_IsQuiverFull": {
+          "rva": "0x22ee550",
+          "bytesSha256": "7b6e9147acec6f3b84a08dd500ed1d591c625ad6ca9e21ae647b473943963be7"
+        },
+        "CanUpgrade": {
+          "rva": "0x22f0d78",
+          "bytesSha256": "e1e106499c9e07e58de66a2d58b81cf1559d665e30ce0ca44cd2113ddb4884a1"
+        },
+        "Upgrade": {
+          "rva": "0x22f0ed4",
+          "bytesSha256": "f8a31598c82ed9e8a0950417dbc5c1659225fd2b1eb8abf1630b1a6dbac90acd"
+        },
+        "GetUpgradeBase": {
+          "rva": "0x22f12e8",
+          "bytesSha256": "071aa02763fb0ad7444f488b18e4c104f4b9e85d08b2ef6e3eb6ab50e2c9dbe7"
+        },
+        "UpdateUpgradeBonuses": {
+          "rva": "0x22ef05c",
+          "bytesSha256": "00f76b8ca0d1882d07259d3937ddaaf39b3190d48bab108e2cba4ba54fe21368"
+        },
+        "CanCollect": {
+          "rva": "0x22f1418",
+          "bytesSha256": "8b9c77a593a5ea7620cac2f3dac627aa06d9ea1f9658469d6d354efdbe3ba8ab"
+        },
+        "IsCollected": {
+          "rva": "0x22f14bc",
+          "bytesSha256": "7ba87222db5523e7a53f87df2cb70663b7b0e12eb1a663a8587a05c66bc62640"
+        },
+        "GetPercentToNextReward": {
+          "rva": "0x22f1a98",
+          "bytesSha256": "69d8088257f72acfbb486011fd64b1c10341433c8a4810a84889a1a2a9d307f6"
+        }
+      }
+    },
+    "DigsiteMinigameModel": {
+      "label": "挖掘",
+      "methodCount": 38,
+      "serverOutcome": {
+        "RevealTile": {
+          "rva": "0x22ce35c",
+          "bytesSha256": "b136b6da92912c22fe37dfb5b831f2b88d7cd4af95359c4c7486372e1b8e81b0"
+        },
+        "OnBoardComplete": {
+          "rva": "0x22d0fd8",
+          "bytesSha256": "f71337c6551065e0406864cc7661fd9b9d8c5990360f60cd0f91fecd60221be4"
+        },
+        "BoardCompleteCoroutine": {
+          "rva": "0x22d0ff8",
+          "bytesSha256": "66056d16f55ba708b071cae15f5da60da7c949a196b93f8862aea2370e5b0a4a"
+        }
+      },
+      "serverSupplied": {
+        "ParseDict": {
+          "rva": "0x22d0ca4",
+          "bytesSha256": "d1d8d383e83e60793d31d745edb0bfceba9c4e403c075f56a76dabed5559ab0f"
+        }
+      },
+      "clientSide": {
+        "GetLevelInfo": {
+          "rva": "0x22d10a8",
+          "bytesSha256": "a21265965869f955eb988f56f7181f4db269fb49d9a64337674402f62dda567c"
+        },
+        "GetNumTrinkets": {
+          "rva": "0x22d1134",
+          "bytesSha256": "b07a00d7b7d92d3674f604862cb2f01d53d5dbba822f27bb090eff31983350f1"
+        },
+        "GetNumTrinketsCompleted": {
+          "rva": "0x22d11c4",
+          "bytesSha256": "0162beecdefdf6923f19ddabfaa32e7d20f160a72cb2f2368160abccd01b553c"
+        }
+      }
+    },
+    "BallDropMinigameModel": {
+      "label": "落球",
+      "methodCount": 72,
+      "serverOutcome": {
+        "Submit": {
+          "rva": "0x22c062c",
+          "bytesSha256": "f3a0587939f6e845e84ba49ff2edec6094d9de1b93c0c9e62b4753f52eaafc23"
+        },
+        "CollectRewards": {
+          "rva": "0x22c1064",
+          "bytesSha256": "56617a43c119a22c3ae036bbf6df805fda64a9978827767dfa284e350072b802"
+        },
+        "ParseContainerCollectDict": {
+          "rva": "0x22c12e0",
+          "bytesSha256": "88bd11f212fcb2360cf78835aa4a70f479533a7dffca3178f031d9d7d42024af"
+        }
+      },
+      "serverSupplied": {
+        "SyncWithServer": {
+          "rva": "0x22bf3a8",
+          "bytesSha256": "4ca42ce60b5f9dbaa93909b6794470a3a73ad4c30b475b5438fac504519cf9e7"
+        },
+        "ParseServerMinigameDict": {
+          "rva": "0x22bfb5c",
+          "bytesSha256": "93ee6d3210a1d6daf45b2aafa8bafa13999e97bd8d7310556178cb4b15b38a43"
+        },
+        "ParsePegsAndBuckets": {
+          "rva": "0x22c001c",
+          "bytesSha256": "d55a9f4713612e5d2465a9f39276cedaf705ed99e4de1038ff712654a3672dc3"
+        },
+        "ParseServerUpgradeLevel": {
+          "rva": "0x22bff3c",
+          "bytesSha256": "00dc7cdec793737de6a2cc895f2f6bdf46ffd4f75eff253be64ae2d214851abb"
+        },
+        "SyncPrestigeCurrency": {
+          "rva": "0x22bfd24",
+          "bytesSha256": "e4240dba9af8d805069580061ae5043858d16f22d0cf7cc1380a9082ed1b5bae"
+        },
+        "SyncUpgradePoints": {
+          "rva": "0x22bfe24",
+          "bytesSha256": "978de5df9f079249a1d897a4cc533e4e219e6f24bc162312966d8227e44bfab6"
+        }
+      },
+      "clientSide": {
+        "GetPegValue": {
+          "rva": "0x22c0d78",
+          "bytesSha256": "42f579b118bbfd57b90285937c3c5f5fd6c9b9901739663baa6ee9b6b00317c8"
+        },
+        "GetBucketMult": {
+          "rva": "0x22c0ea0",
+          "bytesSha256": "b7f112114a325d16f0d7a4f90dd16fc1e25aee90e1788098ec2afce24446abe9"
+        },
+        "CanUpgrade": {
+          "rva": "0x22c07ec",
+          "bytesSha256": "eb0deafb150b510be5fb4d92167d8e722121a901964c478f9b763ff014d0f5b9"
+        },
+        "Upgrade": {
+          "rva": "0x22c0948",
+          "bytesSha256": "2596d944c047650b2826c5dfd4d2e2ca1fe1145e37bb1302273fbcd51b3a4b74"
+        },
+        "UpdateUpgradeBonuses": {
+          "rva": "0x22bf110",
+          "bytesSha256": "bb795d5013d85b79e3e61e6fdd00f6e7cc7ad76becc8568d2aa40054fb659144"
+        }
+      }
+    },
+    "MazeMinigameModel": {
+      "label": "迷宮",
+      "methodCount": 34,
+      "serverOutcome": {
+        "OpenDoor": {
+          "rva": "0x22fbd50",
+          "bytesSha256": "47fd475bf935d6602bc267642ce5c75cb45615b6516f4d4bc21b90d13e3b38c4"
+        }
+      },
+      "serverSupplied": {
+        "SyncWithServer": {
+          "rva": "0x2300a18",
+          "bytesSha256": "c27234534f07b29ea2ca74e93f37a01b0a17c464b9b546976690cd406cdd2a6b"
+        },
+        "ParseServerDict": {
+          "rva": "0x2300c28",
+          "bytesSha256": "2eb481b65221fcae90d0e7a8796b8607ae8385b6a58f1dd35b376d57b80d84bf"
+        },
+        "ParseMaze": {
+          "rva": "0x2300dac",
+          "bytesSha256": "feae78c191bd9d236d5777b8c15dea71b7dfad9c446d058a77dcf912b29f7975"
+        }
+      },
+      "clientSide": {
+        "GetSection": {
+          "rva": "0x22fe8d8",
+          "bytesSha256": "9422a96dac5044db58d62e94d7a2001967055fbe7fe2d2cd28fd5919a06db946"
+        },
+        "IsLastSection": {
+          "rva": "0x22fe720",
+          "bytesSha256": "583b47adf6bebe4135681d34946e7a6cc9193e8a65282cba174566e5605c4576"
+        },
+        "InitFloorInfos": {
+          "rva": "0x230079c",
+          "bytesSha256": "d5004d3495ea259b649dcd7efc38bc11a709512008b6b95e6789f667ab193d35"
+        }
+      }
+    },
+    "ClanVaultMinigameModel": {
+      "label": "公會保險庫",
+      "methodCount": 42,
+      "serverOutcome": {
+        "CollectRewards": {
+          "rva": "0x22c6a80",
+          "bytesSha256": "cdac365e254d5f99794b03a4911468e995b194e96ba09b63d784fff3fe95c711"
+        }
+      },
+      "serverSupplied": {
+        "SyncWithServer": {
+          "rva": "0x22c7e2c",
+          "bytesSha256": "6c05e27c71fc18aed38a500d4b5f3cd501d7cb0deb49e720e8abdaf1123322f7"
+        },
+        "ParseServerMinigameDict": {
+          "rva": "0x22c7ff8",
+          "bytesSha256": "5f42957b91e9fda67aeeadd544e580b0e247d927b7bf4de4689697d7c71f3a70"
+        }
+      },
+      "clientSide": {
+        "CanCollectRewards": {
+          "rva": "0x22c6430",
+          "bytesSha256": "a36a9ce55b726eb003b2ea89be2cd0fcd595b3198db314bc1d6db5c0c7603ce3"
+        },
+        "CanCollectAnyReward": {
+          "rva": "0x22c81e8",
+          "bytesSha256": "60ebe4cbea6e345fd88b6e0e408744395da408320585ca69a1674858abc0c802"
+        },
+        "AddLocalRewardProgress": {
+          "rva": "0x22c87dc",
+          "bytesSha256": "beefdc48e298c89c09e976709512fe4ce8407875c3c3ba7283bb65cc2ea0b9b4"
+        }
+      }
+    }
+  },
+  "limits": [
+    "方法存在與其位址是事實，方法內部的伺服器請求內容不在包內",
+    "客戶端算式仍可能被線上參數覆蓋，本表不宣稱其數值與線上一致"
+  ]
+}
