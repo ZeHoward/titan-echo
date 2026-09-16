@@ -1,0 +1,534 @@
+{
+  "version": "8.2.0",
+  "role": "效果標籤與安裝包官方字串的逐項核對",
+  "localizationSha256": "6cd0af86bd04117fcc4e33b67e6bb7c228da6eab5f48f7e3c123941ce160af3d",
+  "labels": 103,
+  "withOfficialString": 103,
+  "differingFromProject": 90,
+  "withoutOfficialString": [],
+  "unusableOfficialStrings": [],
+  "differing": [
+    {
+      "id": "AllActiveSkillCooldownRate",
+      "project": "全部主動技能冷卻縮減",
+      "official": "所有法術冷卻時間"
+    },
+    {
+      "id": "AllActiveSkillDuration",
+      "project": "全部主動技能持續秒數",
+      "official": "所有法術持續時間"
+    },
+    {
+      "id": "AllArtifactDamageEffect",
+      "project": "傷害神器效果",
+      "official": "損壞神器提升"
+    },
+    {
+      "id": "AllArtifactGoldEffect",
+      "project": "金幣神器效果",
+      "official": "金神器提升"
+    },
+    {
+      "id": "AllDamage",
+      "project": "所有傷害",
+      "official": "所有攻擊力"
+    },
+    {
+      "id": "AllEquipmentEffect",
+      "project": "所有裝備主要效果",
+      "official": "所有設備主要效果"
+    },
+    {
+      "id": "AllHelperDamage",
+      "project": "所有英雄傷害",
+      "official": "全體英雄傷害"
+    },
+    {
+      "id": "AllManaSourceMult",
+      "project": "所有魔力回復",
+      "official": "法力促進"
+    },
+    {
+      "id": "AllProbabilityBoost",
+      "project": "全部機率效果",
+      "official": "概率提升"
+    },
+    {
+      "id": "AllUpgradeCost",
+      "project": "全部金幣升級費用減少",
+      "official": "全升級費用"
+    },
+    {
+      "id": "ArmorBoost",
+      "project": "衣服效果",
+      "official": "裝甲主要效果"
+    },
+    {
+      "id": "AuraBoost",
+      "project": "靈氣效果",
+      "official": "靈氣的主要作用"
+    },
+    {
+      "id": "BoostedSwordAttackDamage",
+      "project": "所有傷害與暴擊傷害",
+      "official": "泰坦殺手傷害"
+    },
+    {
+      "id": "BossTimerDuration",
+      "project": "頭目戰時間",
+      "official": "頭目戰時間限制"
+    },
+    {
+      "id": "BurstDamageSkillAmount",
+      "project": "天堂聖擊效果",
+      "official": "天堂聖擊傷害"
+    },
+    {
+      "id": "BurstDamageSkillMana",
+      "project": "天堂聖擊魔力消耗減少",
+      "official": "天堂聖擊魔力消耗"
+    },
+    {
+      "id": "CannonDamage",
+      "project": "雷霆船效果與金槍傷害",
+      "official": "大砲傷害"
+    },
+    {
+      "id": "ChestAmount",
+      "project": "寶箱泰坦金幣",
+      "official": "寶箱泰坦黃金數量"
+    },
+    {
+      "id": "ClanScrollBoost",
+      "project": "英雄卷軸效果",
+      "official": "氏族捲軸效果"
+    },
+    {
+      "id": "ClanScrollSetBoost",
+      "project": "卷軸套裝效果",
+      "official": "氏族捲軸設置效果"
+    },
+    {
+      "id": "CompanionDamage",
+      "project": "同伴傷害（寵物／飛船／影分身）",
+      "official": "同伴傷害"
+    },
+    {
+      "id": "CritBoostSkillDuration",
+      "project": "致命爆擊持續秒數",
+      "official": "致命爆擊持續時間"
+    },
+    {
+      "id": "CritBoostSkillMana",
+      "project": "致命爆擊魔力消耗減少",
+      "official": "致命爆擊魔力消耗"
+    },
+    {
+      "id": "CritChance",
+      "project": "暴擊機率",
+      "official": "爆擊率"
+    },
+    {
+      "id": "CritDamage",
+      "project": "暴擊傷害",
+      "official": "爆擊傷害"
+    },
+    {
+      "id": "DamagePerOwnedArtifact",
+      "project": "每件神器增加所有傷害",
+      "official": "每擁有神器附加額外傷害加成"
+    },
+    {
+      "id": "DamagePerOwnedCardLevel",
+      "project": "依突襲卡總等級增加所有傷害",
+      "official": "每張總卡級別損壞"
+    },
+    {
+      "id": "DamagePerRunningActiveSkill",
+      "project": "每個施放中技能的傷害加成（最多四個）",
+      "official": "每個發動中技能附加額外傷害加成"
+    },
+    {
+      "id": "DualPetAmount",
+      "project": "雙重召喚效果",
+      "official": "雙重召喚傷害"
+    },
+    {
+      "id": "EquipmentPetEffect",
+      "project": "裝備寵物效果",
+      "official": "設備寵物效果"
+    },
+    {
+      "id": "ExoticPetDamageEffect",
+      "project": "異國寵物的傷害加成效果",
+      "official": "異國風情寵物傷害"
+    },
+    {
+      "id": "ExoticPetGoldEffect",
+      "project": "異國寵物的金幣加成效果",
+      "official": "異國風情寵物金幣"
+    },
+    {
+      "id": "FairyGold",
+      "project": "妖精金幣",
+      "official": "妖精黃金"
+    },
+    {
+      "id": "FairySpawnChance",
+      "project": "多重妖精機率",
+      "official": "機率出現數名精靈"
+    },
+    {
+      "id": "FundamentalDamage",
+      "project": "點擊與英雄傷害",
+      "official": "基礎傷害"
+    },
+    {
+      "id": "GoldAll",
+      "project": "所有金幣",
+      "official": "所有黃金"
+    },
+    {
+      "id": "GoldBoss",
+      "project": "頭目金幣",
+      "official": "頭目黃金"
+    },
+    {
+      "id": "GoldPerOwnedCardLevel",
+      "project": "依突襲卡總等級增加所有金幣",
+      "official": "每次卡水平金"
+    },
+    {
+      "id": "GoldPerRunningActiveSkill",
+      "project": "每個施放中技能的金幣加成（最多四個）",
+      "official": "每個施展中技能所帶來的額外金幣"
+    },
+    {
+      "id": "GoldSpecialty",
+      "project": "妖精與米心金幣",
+      "official": "特別金幣"
+    },
+    {
+      "id": "HSArtifactDamage",
+      "project": "神器總傷害",
+      "official": "神器傷害"
+    },
+    {
+      "id": "HandOfMidasSkillAmount",
+      "project": "點石成金效果",
+      "official": "點石成金金幣倍率"
+    },
+    {
+      "id": "HandOfMidasSkillDuration",
+      "project": "點石成金持續秒數",
+      "official": "點石成金持續時間"
+    },
+    {
+      "id": "HandOfMidasSkillMana",
+      "project": "點石成金魔力消耗減少",
+      "official": "點石成金魔力消耗"
+    },
+    {
+      "id": "HelmetBoost",
+      "project": "頭盔效果",
+      "official": "盔甲主要效果"
+    },
+    {
+      "id": "HelperBoostSkillAmount",
+      "project": "戰爭狂嚎效果",
+      "official": "戰爭狂吼傷害倍率"
+    },
+    {
+      "id": "HelperBoostSkillDuration",
+      "project": "戰爭狂嚎持續秒數",
+      "official": "戰爭狂吼持續時間"
+    },
+    {
+      "id": "HelperBoostSkillMana",
+      "project": "戰爭狂嚎魔力消耗減少",
+      "official": "戰爭狂吼魔力消耗"
+    },
+    {
+      "id": "HelperUpgradeCost",
+      "project": "英雄升級費用減少",
+      "official": "英雄升級花費"
+    },
+    {
+      "id": "HelperWeaponSetBoost",
+      "project": "英雄武器套裝效果",
+      "official": "英雄武器設定效果"
+    },
+    {
+      "id": "JackpotGold",
+      "project": "累積金幣",
+      "official": "累積黃金"
+    },
+    {
+      "id": "JackpotGoldChance",
+      "project": "十倍金幣機率",
+      "official": "累積獎金金機"
+    },
+    {
+      "id": "KnightBonusBoost",
+      "project": "寵物、點擊、火劍效果",
+      "official": "教練升壓"
+    },
+    {
+      "id": "KronusComboBoost",
+      "project": "靈氣效果與咒術英雄傷害",
+      "official": "秘術者加成"
+    },
+    {
+      "id": "LanceComboBoost",
+      "project": "衣服效果與地面英雄傷害",
+      "official": "決鬥者加成"
+    },
+    {
+      "id": "LegacyPetDamageEffect",
+      "project": "傳統寵物的傷害加成效果",
+      "official": "傳統寵物傷害"
+    },
+    {
+      "id": "LegacyPetGoldEffect",
+      "project": "傳統寵物的金幣加成效果",
+      "official": "傳統寵物黃金"
+    },
+    {
+      "id": "ManaMonsterSpawnChance",
+      "project": "魔力馬尼機率",
+      "official": "魔力瑪尼出現機率"
+    },
+    {
+      "id": "ManaPoolCap",
+      "project": "魔力上限",
+      "official": "魔力值上限"
+    },
+    {
+      "id": "ManaRefundPercent",
+      "project": "施法魔力返還機率",
+      "official": "魔力返還比率"
+    },
+    {
+      "id": "MegaBombSpawnChance",
+      "project": "炸彈泰坦機率",
+      "official": "快速偶爾"
+    },
+    {
+      "id": "MonsterHP",
+      "project": "所有泰坦生命減少",
+      "official": "泰坦生命值"
+    },
+    {
+      "id": "MultiMonsters",
+      "project": "多重泰坦機率",
+      "official": "多個泰坦機會"
+    },
+    {
+      "id": "MultiMonstersGold",
+      "project": "多重泰坦金幣",
+      "official": "多個泰坦金"
+    },
+    {
+      "id": "NohniComboBoost",
+      "project": "頭盔效果與飛行英雄傷害",
+      "official": "飛行員加成"
+    },
+    {
+      "id": "PetGoldQTEAmount",
+      "project": "米達斯之心金幣",
+      "official": "金子般的心"
+    },
+    {
+      "id": "PrestigeRelic",
+      "project": "蛻變聖物",
+      "official": "聲望遺物"
+    },
+    {
+      "id": "RangedHelperDamage",
+      "project": "遠程英雄傷害",
+      "official": "遠距英雄傷害"
+    },
+    {
+      "id": "RogueBonusBoost",
+      "project": "匕首、致命爆擊效果",
+      "official": "騙子提升"
+    },
+    {
+      "id": "SajeComboBoost",
+      "project": "砍痕效果與遠程英雄傷害",
+      "official": "射手加成"
+    },
+    {
+      "id": "ShadowCloneSkillAmount",
+      "project": "影分身效果",
+      "official": "影分身傷害"
+    },
+    {
+      "id": "ShadowCloneSkillDuration",
+      "project": "影分身持續秒數",
+      "official": "影分身效果持續時間"
+    },
+    {
+      "id": "ShadowCloneSkillMana",
+      "project": "影分身魔力消耗減少",
+      "official": "影分身魔力消耗"
+    },
+    {
+      "id": "SlashBoost",
+      "project": "砍痕效果",
+      "official": "斜線主要效果"
+    },
+    {
+      "id": "SophiaComboBoost",
+      "project": "劍效果與近戰英雄傷害",
+      "official": "決鬥者加成"
+    },
+    {
+      "id": "SorcererBonusBoost",
+      "project": "天堂、影分身、點石成金效果",
+      "official": "暮提升"
+    },
+    {
+      "id": "StageSkipMonsterSpawnChance",
+      "project": "波特機率",
+      "official": "波塔爾機會"
+    },
+    {
+      "id": "StreamOfBladesSkillAmount",
+      "project": "刀片流效果",
+      "official": "刀片流損壞"
+    },
+    {
+      "id": "SwordAttackDamage",
+      "project": "劍攻擊傷害（天堂／影分身／匕首／金槍）",
+      "official": "甘藍損壞"
+    },
+    {
+      "id": "SwordBoost",
+      "project": "劍裝備效果",
+      "official": "劍初步效應"
+    },
+    {
+      "id": "TapBoostSkillAmount",
+      "project": "火焰之劍效果",
+      "official": "火焰之劍傷害"
+    },
+    {
+      "id": "TapBoostSkillDuration",
+      "project": "火焰之劍持續秒數",
+      "official": "火焰之劍持續時間"
+    },
+    {
+      "id": "TapBoostSkillMana",
+      "project": "火焰之劍魔力消耗減少",
+      "official": "火焰之劍魔力消耗"
+    },
+    {
+      "id": "TapDamage",
+      "project": "點擊傷害",
+      "official": "點擊攻擊力"
+    },
+    {
+      "id": "TapDamageFromHelpers",
+      "project": "英雄傷害轉為點擊傷害",
+      "official": "來自英雄的點擊傷害"
+    },
+    {
+      "id": "TitanDamage",
+      "project": "普通泰坦傷害",
+      "official": "非頭目傷害"
+    },
+    {
+      "id": "TitanSlayer",
+      "project": "天堂傷害與劍裝備效果",
+      "official": "聖殿騎士團提升"
+    },
+    {
+      "id": "TwilightBoost",
+      "project": "天堂與影分身傷害",
+      "official": "暮光損傷"
+    },
+    {
+      "id": "UnskilledGold",
+      "project": "所有金幣與累積金幣",
+      "official": "獎金"
+    },
+    {
+      "id": "WarlordBonusBoost",
+      "project": "飛船、英雄、戰嚎效果",
+      "official": "指揮官提升"
+    }
+  ],
+  "glossary": [
+    {
+      "projectTerm": "金幣",
+      "packageAlternative": "黃金",
+      "inBonusStrings": {
+        "kept": 13,
+        "alternative": 25
+      },
+      "inOtherStrings": {
+        "kept": 60,
+        "alternative": 124
+      },
+      "blocksAdoption": false
+    },
+    {
+      "projectTerm": "蛻變",
+      "packageAlternative": "聲望",
+      "inBonusStrings": {
+        "kept": 1,
+        "alternative": 7
+      },
+      "inOtherStrings": {
+        "kept": 28,
+        "alternative": 114
+      },
+      "blocksAdoption": false
+    },
+    {
+      "projectTerm": "聖物",
+      "packageAlternative": "遺物",
+      "inBonusStrings": {
+        "kept": 2,
+        "alternative": 6
+      },
+      "inOtherStrings": {
+        "kept": 40,
+        "alternative": 26
+      },
+      "blocksAdoption": true
+    },
+    {
+      "projectTerm": "技能",
+      "packageAlternative": "法術",
+      "inBonusStrings": {
+        "kept": 25,
+        "alternative": 16
+      },
+      "inOtherStrings": {
+        "kept": 225,
+        "alternative": 47
+      },
+      "blocksAdoption": false
+    },
+    {
+      "projectTerm": "妖精",
+      "packageAlternative": "精靈",
+      "inBonusStrings": {
+        "kept": 3,
+        "alternative": 1
+      },
+      "inOtherStrings": {
+        "kept": 15,
+        "alternative": 33
+      },
+      "blocksAdoption": true
+    }
+  ],
+  "decision": "官方字串已匯入為資料，但介面維持本專案既有用語：安裝包的繁中在 BONUS_ 區與其他字串之間對「聖物／遺物」與「妖精／精靈」剛好相反，照抄只會把不一致帶進介面。",
+  "limits": [
+    "這是用詞核對，不是對效果數值的判定",
+    "若日後改採官方用語，differing 清單就是需要逐條檢視的範圍"
+  ]
+}
