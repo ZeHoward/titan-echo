@@ -1,0 +1,56 @@
+{
+  "version": "8.2.0",
+  "table": "DailyRewardsInfo",
+  "packageSha256": "8d78c9aa877e6c0b291ee2116cab855bd26c59c1d080bc654f88ecf1ff268b5f",
+  "binarySha256": "c13fc44321b1214c71ab0277a134fc3401fd7392c74a0bbb3935671c55a8713a",
+  "sourceSha256": "403c909635025bddd189b8d061f271398dfdbcecc55fc34cd294b9fec199fba8",
+  "metadataSha256": "2d93f9e3f58a17cfb1bbd20ccd9fcbb26b3b9497afc4ecc6b94b0bfb2c460d97",
+  "scriptSha256": "62c2eeb8472bb107de516e4b6ae69d3dcdf5013fb1caa87223d82a54dd203f8b",
+  "parserRva": "0x2137a4c",
+  "parserBytesSha256": "7236650c295583369a4ee4fd89c458bed53943188c45690c01fdadaf7a68e90d",
+  "columnsRead": [
+    "Day",
+    "RewardType",
+    "Count",
+    "HolidayCurrency",
+    "AnniversaryMinigameCurrency"
+  ],
+  "columnsIgnored": [
+    "Reward"
+  ],
+  "evidence": {
+    "cellsPerRow": 5,
+    "enumCell": "RewardType read as Int32Enum",
+    "amountColumn": "Count",
+    "insertion": "Dictionary<int, DailyRewardInfo>.Add keyed by day",
+    "structFields": [
+      "type",
+      "amount",
+      "dayNumber",
+      "holidayCurrency",
+      "anniversaryMinigameCurrency"
+    ],
+    "consequence": "the Reward string column is not read, so Count is the amount the client uses",
+    "checkedInstructionAddresses": [
+      "0x2137b54",
+      "0x2137b64",
+      "0x2137bcc",
+      "0x2137c00",
+      "0x2137c1c",
+      "0x2137c38",
+      "0x2137c54",
+      "0x2137c80"
+    ],
+    "verifiedStringReferences": {
+      "0x4c15d20": "DailyRewardsInfo",
+      "0x4c15d48": "Day",
+      "0x4c15d38": "Count",
+      "0x4c15d50": "HolidayCurrency",
+      "0x4c15d40": "AnniversaryMinigameCurrency"
+    }
+  },
+  "limits": [
+    "Column identity and row insertion only; what an amount means per reward type is not proven here",
+    "Bundled sheet only; a live server may replace these rows"
+  ]
+}
