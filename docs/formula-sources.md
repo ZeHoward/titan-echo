@@ -2,17 +2,17 @@
 
 每個核心公式的來源登記表：資料表、原生方法、原生預設值，或明確標記為 7.5 基準沿用、專案自訂或伺服器供給。
 
-版本 8.2.0。共 29 條公式、50 項來源條目。
+版本 8.2.0。共 29 條公式、52 項來源條目。
 
 | 狀態 | 意義 | 條目數 |
 |---|---|---|
 | `native` | 由反組譯證據確認 | 5 |
-| `table` | 取自安裝包資料表 | 15 |
+| `table` | 取自安裝包資料表 | 16 |
 | `default` | 原生靜態預設值，線上可覆蓋 | 2 |
-| `baseline-75` | 沿用 7.5 基準，尚未對 8.2 核實 | 8 |
+| `baseline-75` | 沿用 7.5 基準，尚未對 8.2 核實 | 6 |
 | `table-differs` | 安裝包有值但引擎目前未照做 | 1 |
 | `invented` | 本專案自訂，安裝包未提供 | 9 |
-| `server` | 原生為伺服器變數，安裝包未帶值 | 10 |
+| `server` | 原生為伺服器變數，安裝包未帶值 | 13 |
 
 ## 逐條登記
 
@@ -60,7 +60,7 @@
 |---|---|---|
 | 英雄基礎傷害 | `table` | `reference/tt2/8.2.0/HelperInfo.json`；DefaultDamageAmount 欄。 |
 | 里程碑倍率 | `table` | `reference/tt2/8.2.0/HelperImprovementsInfo.json`；依等級取最後一列的累計倍率，資料表最高 6000 級。 |
-| 每級成長率 1.035 | `baseline-75` | 沿用 7.5 基準，安裝包未見對應欄位。 |
+| 每級成長率 1.035 | `baseline-75` | `reference/tt2/8.2.0/HelperImprovementsInfo.json`；沿用 7.5 基準，安裝包未見對應欄位。 |
 
 ### heroCost · `lib/engine.ts` 的 `cost`
 
@@ -172,7 +172,8 @@ max(1, floor(關卡^1.7 ÷ 100 × PrestigeRelic))，最高關卡到 60 後開放
 
 | 來源條目 | 狀態 | 依據 |
 |---|---|---|
-| 1e4 與 1e6 係數 | `invented` | 昇階費用尚未由安裝包還原；HelperInfo 的 AscendCostExpo1–6 欄位尚未接入。 |
+| 1e4 與 1e6 係數 | `invented` | 引擎自訂的等比近似，與原生結構不同：原生每位英雄在 HelperInfo 有 AscendCostExpo1–6 六個逐階係數（例如 H18 為 255、2216、4748.5、7281、9813.5、12346），不是同一個倍率連乘。**資料在包內、尚未接入**。 |
+| 逐階係數的縮放 | `server` | `reference/tt2/8.2.0/native-server-var-fields.json`；接入前還缺一塊：原生另有 [ServerVar] ascendCostExpoScaling（與傷害側的 ascendDamageExpoScaling 對稱）以及 maximumHeroAscension、ascensionMinGoldExp，安裝包都沒有值，所以就算把六個係數接上也無法宣稱與線上一致。 |
 
 ### skillPoints · `lib/engine.ts` 的 `apply`
 
@@ -180,7 +181,7 @@ max(1, floor(關卡^1.7 ÷ 100 × PrestigeRelic))，最高關卡到 60 後開放
 
 | 來源條目 | 狀態 | 依據 |
 |---|---|---|
-| 每 50 關一點與起算偏移 | `baseline-75` | 沿用 7.5 基準；安裝包未見對應的技能點發放欄位。 |
+| 每 50 關一點與起算偏移 | `server` | `reference/tt2/8.2.0/native-server-var-fields.json`；原生把這兩個數字放在具名 [ServerVar]：skillPointsStageDelta（每幾關一點）與 skillPointsStageMin（起算關卡），另有 skillPointsPrestigeDelta／Min 走蛻變那條線；五個欄位中只有 skillPointsPrestigeMax 在包內有值（180000），決定發放節奏的那幾個都沒有。目前的 50 與 −1 是 7.5 基準的近似。 |
 
 ### petCombat · `lib/tt2-pet-combat.ts` 的 `petDamageFactor`
 
@@ -197,7 +198,8 @@ max(1, floor(關卡^1.7 ÷ 100 × PrestigeRelic))，最高關卡到 60 後開放
 
 | 來源條目 | 狀態 | 依據 |
 |---|---|---|
-| 間隔與上限 | `baseline-75` | 沿用 7.5 基準；安裝包未見對應的寵物蛋補充間隔欄位。 |
+| 四小時的補充間隔 | `table` | `reference/tt2/8.2.0/ServerVarOverride.json`；原生欄位是 [ServerVar] hoursToCollectEgg，而**安裝包的 ServerVarOverride 帶了值 4**，與本專案沿用的四小時一致；這是少數包內能核對上的欄位之一。該表屬 bundled-server-variable，線上是否被覆蓋未知。 |
+| 上限兩顆 | `server` | `reference/tt2/8.2.0/native-server-var-fields.json`；對應的具名欄位是 maxPetEggs（另有 vipStatusMaxPetEggsAdditive 為 VIP 加成），兩者在安裝包內都沒有值；目前的 2 是 7.5 基準沿用，不是原版上限。 |
 
 ### perks · `lib/tt2-perks.ts` 的 `perkValue`
 

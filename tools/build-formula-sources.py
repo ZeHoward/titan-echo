@@ -67,7 +67,7 @@ FORMULAS = [
               entry(part='英雄基礎傷害', status='table', ref='HelperInfo.json', note='DefaultDamageAmount 欄。'),
               entry(part='里程碑倍率', status='table', ref='HelperImprovementsInfo.json',
                     note='依等級取最後一列的累計倍率，資料表最高 6000 級。'),
-              entry(part='每級成長率 1.035', status='baseline-75', note='沿用 7.5 基準，安裝包未見對應欄位。')]),
+              entry(part='每級成長率 1.035', status='baseline-75', ref='HelperImprovementsInfo.json', note='沿用 7.5 基準，安裝包未見對應欄位。')]),
     entry(id='heroCost', module='lib/engine.ts', export='cost',
           expression='基礎費用 × (1.075^(等級+購買數) − 1.075^等級) ÷ 0.075 × 費用減免',
           parts=[
@@ -144,12 +144,22 @@ FORMULAS = [
                          'relicsStageMax（180000）兩個有值；本專案尚未實作這三條乘數。')]),
     entry(id='evolveCost', module='lib/engine.ts', export='evolveCost',
           expression='英雄基礎費用 × 1e4^已昇階次數 × 1e6',
-          parts=[entry(part='1e4 與 1e6 係數', status='invented',
-                       note='昇階費用尚未由安裝包還原；HelperInfo 的 AscendCostExpo1–6 欄位尚未接入。')]),
+          parts=[
+              entry(part='1e4 與 1e6 係數', status='invented',
+                    note='引擎自訂的等比近似，與原生結構不同：原生每位英雄在 HelperInfo 有 AscendCostExpo1–6 '
+                         '六個逐階係數（例如 H18 為 255、2216、4748.5、7281、9813.5、12346），不是同一個倍率連乘。'
+                         '**資料在包內、尚未接入**。'),
+              entry(part='逐階係數的縮放', status='server', ref='native-server-var-fields.json',
+                    note='接入前還缺一塊：原生另有 [ServerVar] ascendCostExpoScaling（與傷害側的 '
+                         'ascendDamageExpoScaling 對稱）以及 maximumHeroAscension、ascensionMinGoldExp，'
+                         '安裝包都沒有值，所以就算把六個係數接上也無法宣稱與線上一致。')]),
     entry(id='skillPoints', module='lib/engine.ts', export='apply',
           expression='可用技能點 = floor(最高關卡 ÷ 50) − 1，只在最高關卡推進時增加',
-          parts=[entry(part='每 50 關一點與起算偏移', status='baseline-75',
-                       note='沿用 7.5 基準；安裝包未見對應的技能點發放欄位。')]),
+          parts=[entry(part='每 50 關一點與起算偏移', status='server', ref='native-server-var-fields.json',
+                       note='原生把這兩個數字放在具名 [ServerVar]：skillPointsStageDelta（每幾關一點）與 '
+                            'skillPointsStageMin（起算關卡），另有 skillPointsPrestigeDelta／Min 走蛻變那條線；'
+                            '五個欄位中只有 skillPointsPrestigeMax 在包內有值（180000），'
+                            '決定發放節奏的那幾個都沒有。目前的 50 與 −1 是 7.5 基準的近似。')]),
     entry(id='petCombat', module='lib/tt2-pet-combat.ts', export='petDamageFactor',
           expression='寵物傷害係數依等級分段，出戰與未出戰分開計算',
           parts=[
@@ -159,8 +169,14 @@ FORMULAS = [
                     note='沿用 7.5 基準；PetTapCountToAttack 加成可減少次數，但基準 20 未對 8.2 核實。')]),
     entry(id='eggs', module='lib/tt2-collection.ts', export='advanceEggs',
           expression='每 4 小時補一顆寵物蛋，上限兩顆',
-          parts=[entry(part='間隔與上限', status='baseline-75',
-                       note='沿用 7.5 基準；安裝包未見對應的寵物蛋補充間隔欄位。')]),
+          parts=[
+              entry(part='四小時的補充間隔', status='table', ref='ServerVarOverride.json',
+                    note='原生欄位是 [ServerVar] hoursToCollectEgg，而**安裝包的 ServerVarOverride 帶了值 4**，'
+                         '與本專案沿用的四小時一致；這是少數包內能核對上的欄位之一。'
+                         '該表屬 bundled-server-variable，線上是否被覆蓋未知。'),
+              entry(part='上限兩顆', status='server', ref='native-server-var-fields.json',
+                    note='對應的具名欄位是 maxPetEggs（另有 vipStatusMaxPetEggsAdditive 為 VIP 加成），'
+                         '兩者在安裝包內都沒有值；目前的 2 是 7.5 基準沿用，不是原版上限。')]),
     entry(id='perks', module='lib/tt2-perks.ts', export='perkValue',
           expression='增益每層 12 小時獨立計時；魔力藥水提高回復倍率，黃金雨依層數縮短自動購買間隔',
           parts=[entry(part='層數倍率與間隔', status='baseline-75',

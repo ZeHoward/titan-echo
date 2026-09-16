@@ -110,6 +110,7 @@
         {
           "part": "每級成長率 1.035",
           "status": "baseline-75",
+          "ref": "HelperImprovementsInfo.json",
           "note": "沿用 7.5 基準，安裝包未見對應欄位。"
         }
       ]
@@ -324,7 +325,13 @@
         {
           "part": "1e4 與 1e6 係數",
           "status": "invented",
-          "note": "昇階費用尚未由安裝包還原；HelperInfo 的 AscendCostExpo1–6 欄位尚未接入。"
+          "note": "引擎自訂的等比近似，與原生結構不同：原生每位英雄在 HelperInfo 有 AscendCostExpo1–6 六個逐階係數（例如 H18 為 255、2216、4748.5、7281、9813.5、12346），不是同一個倍率連乘。**資料在包內、尚未接入**。"
+        },
+        {
+          "part": "逐階係數的縮放",
+          "status": "server",
+          "ref": "native-server-var-fields.json",
+          "note": "接入前還缺一塊：原生另有 [ServerVar] ascendCostExpoScaling（與傷害側的 ascendDamageExpoScaling 對稱）以及 maximumHeroAscension、ascensionMinGoldExp，安裝包都沒有值，所以就算把六個係數接上也無法宣稱與線上一致。"
         }
       ]
     },
@@ -336,8 +343,9 @@
       "parts": [
         {
           "part": "每 50 關一點與起算偏移",
-          "status": "baseline-75",
-          "note": "沿用 7.5 基準；安裝包未見對應的技能點發放欄位。"
+          "status": "server",
+          "ref": "native-server-var-fields.json",
+          "note": "原生把這兩個數字放在具名 [ServerVar]：skillPointsStageDelta（每幾關一點）與 skillPointsStageMin（起算關卡），另有 skillPointsPrestigeDelta／Min 走蛻變那條線；五個欄位中只有 skillPointsPrestigeMax 在包內有值（180000），決定發放節奏的那幾個都沒有。目前的 50 與 −1 是 7.5 基準的近似。"
         }
       ]
     },
@@ -367,9 +375,16 @@
       "expression": "每 4 小時補一顆寵物蛋，上限兩顆",
       "parts": [
         {
-          "part": "間隔與上限",
-          "status": "baseline-75",
-          "note": "沿用 7.5 基準；安裝包未見對應的寵物蛋補充間隔欄位。"
+          "part": "四小時的補充間隔",
+          "status": "table",
+          "ref": "ServerVarOverride.json",
+          "note": "原生欄位是 [ServerVar] hoursToCollectEgg，而**安裝包的 ServerVarOverride 帶了值 4**，與本專案沿用的四小時一致；這是少數包內能核對上的欄位之一。該表屬 bundled-server-variable，線上是否被覆蓋未知。"
+        },
+        {
+          "part": "上限兩顆",
+          "status": "server",
+          "ref": "native-server-var-fields.json",
+          "note": "對應的具名欄位是 maxPetEggs（另有 vipStatusMaxPetEggsAdditive 為 VIP 加成），兩者在安裝包內都沒有值；目前的 2 是 7.5 基準沿用，不是原版上限。"
         }
       ]
     },

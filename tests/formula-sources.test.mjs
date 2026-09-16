@@ -10,7 +10,7 @@ const readable = readFileSync(new URL('../docs/formula-sources.md', import.meta.
 test('every core formula names a source, and every source it names exists', () => {
   assert.deepEqual(report.problems, []);
   assert.equal(report.formulas, 29);
-  assert.equal(report.parts, 50);
+  assert.equal(report.parts, 52);
 });
 
 test('no export in a covered module escapes classification', () => {
@@ -29,11 +29,11 @@ test('no export in a covered module escapes classification', () => {
 
 test('the counts are recorded, so a source changing status is a visible change', () => {
   assert.deepEqual(report.counts, {
-    'table-differs': 1, 'baseline-75': 8, invented: 9, table: 15, default: 2, server: 10, native: 5,
+    'table-differs': 1, 'baseline-75': 6, invented: 9, table: 16, default: 2, server: 13, native: 5,
   });
   // Over a third of the sources are still the 7.5 baseline or this project's own choice.
   const unverified = report.counts['baseline-75'] + report.counts.invented + report.counts.server;
-  assert.equal(unverified, 27);
+  assert.equal(unverified, 28);
   assert.ok(unverified / report.parts > 0.5, '待核實比例應如實記錄');
 });
 
@@ -49,7 +49,7 @@ test('the one place the package disagrees with the engine is written down', () =
 });
 
 test('the readable copy matches the register it was rendered from', () => {
-  assert.match(readable, /共 29 條公式、50 項來源條目/);
+  assert.match(readable, /共 29 條公式、52 項來源條目/);
   for (const formula of register.formulas) assert.ok(readable.includes(formula.id), formula.id);
   for (const status of Object.keys(register.statuses)) assert.ok(readable.includes(`\`${status}\``), status);
 });
