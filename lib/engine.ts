@@ -79,11 +79,18 @@ export function skillCooldown(s:State,i:number){return SKILLS[i].cooldown*(1-Mat
 export function critMultiplier(s:State){return 10*stateEffect(s,'CritDamage');}
 export function tapDamage(s:State):Big{return buildDamage(s,'tap');}
 export function weaponSets(s:State){return Math.min(...s.weapons,...s.tt2!.extraWeapons);}
-export function heroDps(s:State,i:number):Big{const n=heroLevel(s,i),kind=TT2_HEROES[i].kind as 'Melee'|'Ranged'|'Spell';const milestone=TT2_HERO_MILESTONES.findLast(m=>m.level<=n)?.[kind]||1;
+// Resolving a bonus walks every artifact and pet, so the six keys the roster shares are resolved
+// once per pass instead of once per hero: thirty-seven heroes used to ask a hundred and eleven times.
+const HERO_EFFECT_KEYS=['HelperWeaponBoost','MeleeHelperDamage','RangedHelperDamage','SpellHelperDamage',
+ 'GroundHelperDamage','FlyingHelperDamage'] as const;
+type HeroEffects=Record<string,number>;
+const heroEffects=(s:State):HeroEffects=>Object.fromEntries(HERO_EFFECT_KEYS.map(key=>[key,stateEffect(s,key)]));
+export function heroDps(s:State,i:number,shared?:HeroEffects):Big{const n=heroLevel(s,i),kind=TT2_HEROES[i].kind as 'Melee'|'Ranged'|'Spell';const milestone=TT2_HERO_MILESTONES.findLast(m=>m.level<=n)?.[kind]||1;
  if(n<=0)return {...ZERO};
+ const effects=shared??heroEffects(s);
  // Each factor is finite on its own; multiplying them as numbers is what used to overflow.
  let value=scale(pow(1.035,Math.max(0,n-1)),HEROES[i].power*n);
- for(const factor of [milestone,1+((i<33?s.weapons[i]:s.tt2!.extraWeapons[i-33])||0)*.5*stateEffect(s,'HelperWeaponBoost'),stateEffect(s,kind+'HelperDamage'),stateEffect(s,TT2_HEROES[i].spatial)])value=scale(value,factor);
+ for(const factor of [milestone,1+((i<33?s.weapons[i]:s.tt2!.extraWeapons[i-33])||0)*.5*effects.HelperWeaponBoost,effects[kind+'HelperDamage'],effects[TT2_HEROES[i].spatial]])value=scale(value,factor);
  return value;}
 export function dps(s:State):Big{let value=rawHeroDps(s);
  for(const factor of [stateEffect(s,'AllHelperDamage'),artifactAllDamage(s.tt2!),stateEffect(s,'AllDamage'),s.active[2]>s.last?skillPower(s,2):1,gearBonus(s,1)])value=scale(value,factor);
@@ -304,7 +311,7 @@ export function fmt(value:BigLike){
 
 export function heroLevel(s:State,i:number){return i<33?s.heroes[i]:s.tt2!.extraHeroes[i-33];}
 function setHeroLevel(s:State,i:number,n:number){if(i<33)s.heroes[i]=n;else s.tt2!.extraHeroes[i-33]=n;}
-function rawHeroDps(s:State):Big{return sum(HEROES.map((_,i)=>heroDps(s,i)));}
+function rawHeroDps(s:State):Big{const shared=heroEffects(s);return sum(HEROES.map((_,i)=>heroDps(s,i,shared)));}
 export function manaMax(s:State){return 200+stateEffect(s,'ManaPoolCap');}
 // Two clamped effects multiplied together still overflow, so the composed regen is clamped again.
 function baseManaRegen(s:State){return limit((2+stateEffect(s,'ManaRegen'))/60*stateEffect(s,'ManaRegenMult'));}
