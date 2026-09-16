@@ -2,16 +2,16 @@
 
 每個核心公式的來源登記表：資料表、原生方法、原生預設值，或明確標記為 7.5 基準沿用、專案自訂或伺服器供給。
 
-版本 8.2.0。共 28 條公式、46 項來源條目。
+版本 8.2.0。共 29 條公式、49 項來源條目。
 
 | 狀態 | 意義 | 條目數 |
 |---|---|---|
-| `native` | 由反組譯證據確認 | 4 |
-| `table` | 取自安裝包資料表 | 14 |
+| `native` | 由反組譯證據確認 | 5 |
+| `table` | 取自安裝包資料表 | 15 |
 | `default` | 原生靜態預設值，線上可覆蓋 | 2 |
 | `baseline-75` | 沿用 7.5 基準，尚未對 8.2 核實 | 9 |
 | `table-differs` | 安裝包有值但引擎目前未照做 | 1 |
-| `invented` | 本專案自訂，安裝包未提供 | 8 |
+| `invented` | 本專案自訂，安裝包未提供 | 9 |
 | `server` | 原生為伺服器變數，安裝包未帶值 | 8 |
 
 ## 逐條登記
@@ -231,6 +231,16 @@ max(1, floor(關卡^1.7 ÷ 100 × PrestigeRelic))，最高關卡到 60 後開放
 |---|---|---|
 | 門檻、啟用旗標與獎勵字串 | `native` | `reference/tt2/8.2.0/achievement-parser-evidence.json` |
 | 五項的進度來源與三種貨幣 | `invented` | 廣告、單人突襲、鑽石妖精、增益妖精與每日裝備未實作；突襲券、鍊金與寶石貨幣尚不存在，介面標明未開放而不自行折算。 |
+
+### tutorial · `lib/engine.ts` 的 `tutorialMet`
+
+51 步教學，每步在進度達到門檻時完成並發放金幣
+
+| 來源條目 | 狀態 | 依據 |
+|---|---|---|
+| 目標判定與進度來源 | `native` | `reference/tt2/8.2.0/tutorial-evidence.json`；原生 TutorialEventModel.IsObjectiveMet 為 GetCurrentProgress() ≥ ObjectiveAmount；TapCount 讀模型自己的 CurrentTapCount（換步歸零），SwordMasterLevel、ReachStage 與 UnlockHelperCount 皆為絕對值。 |
+| 步驟、門檻、金幣與文字 | `table` | `reference/tt2/8.2.0/TutorialEventInfo.json`；採基礎變體：B 變體與其完全相同，A 變體只調高點擊次數（27 列不同），執行期採用哪一份由伺服器指派。 |
+| 金幣獎勵的換算 | `invented` | 資料表的 GoldReward 是隻數而非絕對金幣，本專案照登入獎勵的作法乘上當前關卡的普通泰坦金幣；原生如何換算尚未查證。 |
 
 ### themes · `lib/tt2-themes.ts` 的 `themeIndex`
 

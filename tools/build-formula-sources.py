@@ -176,6 +176,19 @@ FORMULAS = [
               entry(part='五項的進度來源與三種貨幣', status='invented',
                     note='廣告、單人突襲、鑽石妖精、增益妖精與每日裝備未實作；突襲券、鍊金與寶石貨幣尚不存在，'
                          '介面標明未開放而不自行折算。')]),
+    entry(id='tutorial', module='lib/engine.ts', export='tutorialMet',
+          expression='51 步教學，每步在進度達到門檻時完成並發放金幣',
+          parts=[
+              entry(part='目標判定與進度來源', status='native', ref='tutorial-evidence.json',
+                    note='原生 TutorialEventModel.IsObjectiveMet 為 GetCurrentProgress() ≥ ObjectiveAmount；'
+                         'TapCount 讀模型自己的 CurrentTapCount（換步歸零），SwordMasterLevel、ReachStage 與 '
+                         'UnlockHelperCount 皆為絕對值。'),
+              entry(part='步驟、門檻、金幣與文字', status='table', ref='TutorialEventInfo.json',
+                    note='採基礎變體：B 變體與其完全相同，A 變體只調高點擊次數（27 列不同），'
+                         '執行期採用哪一份由伺服器指派。'),
+              entry(part='金幣獎勵的換算', status='invented',
+                    note='資料表的 GoldReward 是隻數而非絕對金幣，本專案照登入獎勵的作法乘上當前關卡的'
+                         '普通泰坦金幣；原生如何換算尚未查證。')]),
     entry(id='themes', module='lib/tt2-themes.ts', export='themeIndex',
           expression='每 5 關換一個場景，14 個場景循環',
           parts=[entry(part='場景順序與每段關卡數', status='table', ref='BackgroundInfo.json')]),
@@ -206,7 +219,7 @@ NOT_FORMULAS = {
         'advanceEggs', 'playerUpgradeCost', 'playerBaseDamage', 'themeIndex', 'goldReward', 'health', 'heroDps',
         'cost', 'critChance', 'manaMax', 'bossDuration', 'relicGain', 'evolveCost', 'buildDamage', 'skillPower',
         'petDamageFactor', 'artifactValue', 'upgradeArtifactCost', 'heroPassiveTotals', 'perkValue',
-        'dailyTaskProgress', 'normalise'],
+        'dailyTaskProgress', 'normalise', 'tutorialStep', 'tutorialProgress', 'tutorialText'],
     'catalog': [
         'HEROES', 'SKILLS', 'SKILL_DATA', 'SKILL_ORDER', 'TT2_RULESET', 'bonusDefinitions',
         'EFFECT_LABELS', 'effectLabel', 'BUILD_COEFFICIENTS', 'PLAYER_DEFAULTS', 'RESOURCE_PERKS',

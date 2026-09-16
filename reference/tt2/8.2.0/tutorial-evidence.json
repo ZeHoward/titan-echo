@@ -1,0 +1,83 @@
+{
+  "version": "8.2.0",
+  "table": "TutorialEventInfo",
+  "packageSha256": "8d78c9aa877e6c0b291ee2116cab855bd26c59c1d080bc654f88ecf1ff268b5f",
+  "binarySha256": "c13fc44321b1214c71ab0277a134fc3401fd7392c74a0bbb3935671c55a8713a",
+  "scriptSha256": "62c2eeb8472bb107de516e4b6ae69d3dcdf5013fb1caa87223d82a54dd203f8b",
+  "objectiveTest": {
+    "method": "TutorialEventModel.IsObjectiveMet",
+    "rva": "0x25db344",
+    "bytesSha256": "a3c7ce3799a4e24fc2bbf098bda53dca6489a47cd63693682335c64d615ff944",
+    "rule": "GetCurrentProgress() >= TutorialEventInfo.ObjectiveAmount"
+  },
+  "progress": {
+    "method": "TutorialEventModel.GetCurrentProgress",
+    "rva": "0x25db37c",
+    "bytesSha256": "aedba15a0e28503417fd8fa6a1369e15a0a222e14f4f6a86c94cc35cc9ab4f50",
+    "sources": {
+      "TapCount": "TutorialEventModel.CurrentTapCount，模型自己的計數，換步時歸零",
+      "SwordMasterLevel": "玩家目前等級，絕對值",
+      "ReachStage": "目前關卡，絕對值",
+      "UnlockHelperCount": "HelperModel.GetUnlockedHelpersCount()，絕對值"
+    }
+  },
+  "objectiveTypes": {
+    "0": "TapCount",
+    "1": "SwordMasterLevel",
+    "2": "ReachStage",
+    "3": "UnlockHelperCount"
+  },
+  "modelState": [
+    "CurrentTapCount",
+    "CurrentEventIndex",
+    "AllComplete"
+  ],
+  "infoFields": [
+    "Index",
+    "GoldReward",
+    "ShowProgress",
+    "Objective",
+    "ObjectiveAmount",
+    "displayString",
+    "shouldModifyString"
+  ],
+  "variants": {
+    "rows": 51,
+    "objectivesDifferingFromBase": {
+      "TutorialEventInfo_A": [
+        0,
+        1,
+        2,
+        5,
+        6,
+        8,
+        9,
+        13,
+        14,
+        15,
+        16,
+        21,
+        22,
+        25,
+        27,
+        29,
+        33,
+        34,
+        36,
+        38,
+        41,
+        42,
+        44,
+        46,
+        47,
+        48,
+        49
+      ],
+      "TutorialEventInfo_B": []
+    }
+  },
+  "limits": [
+    "只證明目標判定與進度來源，不證明每一步的觸發時機或畫面指引",
+    "安裝包另有 A／B 變體，執行期採用哪一份由伺服器指派"
+  ]
+}

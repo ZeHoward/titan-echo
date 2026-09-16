@@ -2,6 +2,8 @@ import {heroPassiveTotals,heroPowerBoost} from './tt2-hero-passives.ts';
 import {type Big,type BigLike,ZERO,ONE,isBig,big,fromNumber,fromText,toNumber,add,subtract,multiply,power,pow,scale,compare,sum,max as bigMax,atLeastZero,ceil as bigCeil,ratio} from './big-number.ts';
 import {STAGE_CAP,HERO_LEVEL_CAP,PLAYER_LEVEL_CAP} from './tt2-limits.ts';
 import {TT2_ACHIEVEMENTS,TT2_DAILY_TASKS} from './tt2-achievements.ts';
+import {TT2_TUTORIAL} from './tt2-tutorial.ts';
+export {TT2_TUTORIAL} from './tt2-tutorial.ts';
 export {TT2_ACHIEVEMENTS,TT2_DAILY_TASKS,ACHIEVEMENT_PANEL_TEXT} from './tt2-achievements.ts';
 import {playerBaseDamage,playerUpgradeCost} from './tt2-player.ts';
 import {chargePet,petDamageFactor} from './tt2-pet-combat.ts';
@@ -46,7 +48,7 @@ if(s.ruleset===TT2_RULESET){s.tt2??=freshTT2(s.last??Date.now());normaliseAmount
 function normaliseTallies(s:State){
  const t=s.tt2;if(!t)return;
  t.goldCollected=toAmount(t.goldCollected);
- for(const key of ['chestKills','fairyRewards','heavenlyStrikes','crits','equipmentCollected','relicsCollected','perksUsed'] as const){
+ for(const key of ['chestKills','fairyRewards','heavenlyStrikes','crits','equipmentCollected','relicsCollected','perksUsed','tutorialStep','tutorialTaps'] as const){
   if(!Number.isFinite(t[key]))t[key]=0;
  }
  // Claimed tiers used to be positions in a list this project invented, which was never claimable
@@ -142,6 +144,33 @@ export function dailyTaskDone(s:State,index:number){
 export function dailyTaskClaimed(s:State,index:number){
  return s.daily.claimed.includes(TT2_DAILY_TASKS[index]?.type);
 }
+// The tutorial reads the same four measures the package names, and the tap objective counts
+// taps since the step began rather than lifetime taps (tutorial-evidence.json).
+export function tutorialStep(s:State){const t=s.tt2!;return t.tutorialStep<TT2_TUTORIAL.length?TT2_TUTORIAL[t.tutorialStep]:null;}
+export function tutorialProgress(s:State){
+ const step=tutorialStep(s);if(!step)return 0;
+ switch(step.objective){
+  case 'TapCount':return s.tt2!.tutorialTaps;
+  case 'SwordMasterLevel':return s.level;
+  case 'ReachStage':return s.best;
+  case 'UnlockHelperCount':return s.heroes.filter((n,i)=>n>0||s.evolutions[i]>0).length+s.tt2!.extraHeroes.filter(n=>n>0).length;
+  default:return 0;
+ }
+}
+export function tutorialMet(s:State){const step=tutorialStep(s);return !!step&&tutorialProgress(s)>=step.amount;}
+export function tutorialText(s:State){
+ const step=tutorialStep(s);if(!step)return '';
+ return step.fills?step.text.replace('{0}',String(step.amount)):step.text;
+}
+/** Advance past every objective already met, paying each step's gold once. */
+function advanceTutorial(s:State){
+ const t=s.tt2!;
+ for(let guard=0;guard<TT2_TUTORIAL.length&&tutorialMet(s);guard++){
+  const step=TT2_TUTORIAL[t.tutorialStep];
+  if(step.gold>0)earnGold(s,scale(goldReward(s,'monster'),step.gold));
+  t.tutorialStep++;t.tutorialTaps=0;
+ }
+}
 const ACHIEVEMENT_TIERS:Big[][]=TT2_ACHIEVEMENTS.map(a=>a.requirement.map(text=>fromText(text)));
 const heroSum=(s:State)=>s.heroes.reduce((n,v)=>n+v,0)+s.tt2!.extraHeroes.reduce((n,v)=>n+v,0);
 /** Lifetime progress for one achievement, in the same units as its requirement. */
@@ -209,7 +238,7 @@ export function apply(s:State,a:Action){advance(s,a.at);const i=a.index??0,t=s.t
   const token=a.amount===1,price=RESOURCE_PERKS[i].cost;
   if((token?t.perkTokens>0:s.diamonds>=price)&&activatePerk(t,i,s.last)){t.perksUsed++;if(token)t.perkTokens--;else s.diamonds-=price;if(i===0)t.mana=manaMax(s);if(i===1){t.rainLast=s.last;buyAffordableHeroes(s);}note(s,`已使用${RESOURCE_PERKS[i].name}，每層持續十二小時。`);}
  }
- if(a.type==='tap'&&s.last-s.lastTap>=45){s.lastTap=s.last;s.taps++;s.daily.taps++;t.lastCrit=tt2Random(t)<critChance(s);if(t.lastCrit)t.crits++;let n=scale(tapDamage(s),t.lastCrit?10:1);if(s.active[1]>s.last&&tt2Random(t)<SKILL_DATA[1].second[s.skillLevels[1]-1])n=scale(n,skillPower(s,1));t.lastHit=n;damage(s,n);if(chargePet(t)){t.lastPetHit=petAttackDamage(s);t.petAttacks++;damage(s,t.lastPetHit);}}
+ if(a.type==='tap'&&s.last-s.lastTap>=45){s.lastTap=s.last;s.taps++;s.daily.taps++;t.tutorialTaps++;t.lastCrit=tt2Random(t)<critChance(s);if(t.lastCrit)t.crits++;let n=scale(tapDamage(s),t.lastCrit?10:1);if(s.active[1]>s.last&&tt2Random(t)<SKILL_DATA[1].second[s.skillLevels[1]-1])n=scale(n,skillPower(s,1));t.lastHit=n;damage(s,n);if(chargePet(t)){t.lastPetHit=petAttackDamage(s);t.petAttacks++;damage(s,t.lastPetHit);}}
  if(a.type==='upgrade'||a.type==='hero'){const id=a.type==='upgrade'?-1:i;if(id<-1||id>=HEROES.length||!Number.isInteger(id))return s;let count=a.amount??1;const cap=id<0?PLAYER_LEVEL_CAP:HERO_LEVEL_CAP;
   if(count===0){while(count<1000&&compare(s.gold,cost(s,id,count+1))>=0&&(id<0?s.level:heroLevel(s,id))+count<cap)count++;}if(![1,10,25,100,1000,0].includes(a.amount??1)||!count)return s;const price=cost(s,id,count);
   if(compare(s.gold,price)>=0&&(id<0?s.level:heroLevel(s,id))+count<=cap){s.gold=atLeastZero(subtract(s.gold,price));if(id<0)s.level+=count;else setHeroLevel(s,id,heroLevel(s,id)+count);}}
@@ -258,6 +287,7 @@ export function apply(s:State,a:Action){advance(s,a.at);const i=a.index??0,t=s.t
   if(reward.reward==='HelperWeapon')for(let n=0;n<reward.amount;n++){const j=Math.floor(tt2Random(t)*37);if(j<33)s.weapons[j]++;else t.extraWeapons[j-33]++;}
   note(s,`已領取第 ${(t.loginIndex-1)%14+1} 天獎勵。`);
  }
+ advanceTutorial(s);
  // Old daily quests, random forging, weekly solo trials, death and world switching
  // remain archived rather than paying invented rewards in the TT2 economy.
  return s;

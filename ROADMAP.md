@@ -1,6 +1,6 @@
 # Titan Echo 完整復刻代辦清單
 
-更新：2026-09-16。遊戲目前為 **2.10.0**，最近完整測試 **267 項 Node 測試＋23 項 Python 匯入測試通過**。此文件是後續工作的主清單；`TT2-RULES.md` 保留歷史研究紀錄，不以舊敘述判斷目前完成度。
+更新：2026-09-16。遊戲目前為 **2.11.0**，最近完整測試 **274 項 Node 測試＋23 項 Python 匯入測試通過**。此文件是後續工作的主清單；`TT2-RULES.md` 保留歷史研究紀錄，不以舊敘述判斷目前完成度。
 
 ## 目前位置
 
@@ -38,7 +38,7 @@
 | R02 | 完成 | 8.2 資料匯入與完整 ID 目錄 | 神器、法術、技能樹、裝備、套裝、英雄、寵物、被動等皆有版本與唯一 ID；處理新增／刪除／停用列及新增欄位；區分活動和常駐內容 |
 | R03 | 完成 | 穩定 ID 存檔遷移、規則版本與還原備份 | 舊 2.6 存檔可遷移且重跑不重複退款；新增 6 項技能與 28 組套裝不錯置；雲端舊版資料有相容讀取流程 |
 | R04 | 完成 | 大數值與數字顯示 | 取代 1e240 的實質封頂及未驗證的等級限制；巨大傷害、金幣、費用、聖物可運算與序列化，無 Infinity／NaN；雲端容量測試通過 |
-| R05 | 完成 | 來源證據與同版本比對用例 | 每個核心公式記錄表、方法或實測來源；建立升級前後、施法前後、蛻變前後對照；缺少實測的項目保留待驗證標記。**登記表見 [docs/formula-sources.md](docs/formula-sources.md)**，46 項來源中 25 項仍為待驗證 |
+| R05 | 完成 | 來源證據與同版本比對用例 | 每個核心公式記錄表、方法或實測來源；建立升級前後、施法前後、蛻變前後對照；缺少實測的項目保留待驗證標記。**登記表見 [docs/formula-sources.md](docs/formula-sources.md)**，49 項來源中 26 項仍為待驗證 |
 
 R02 子步驟：建立 8.2 全表索引 → 逐表 schema 解析 → 以 ID 映射至現行資料 → 保留版本差異與停用標記 → 產生逐 ID 待驗收清單 → 交給 R03 遷移。此階段不直接以新版陣列覆蓋線上存檔。**R02 標記完成的範圍只有資料目錄與逐 ID 核對**；資料齊備不等於任何玩法系統已還原，後續各項仍須逐條實作與驗證。
 
@@ -241,7 +241,7 @@ C01 證據狀態：原生把暴擊參數放在 `[ServerVar]` 欄位——`player
 
 | ID | 狀態 | 工作項目 | 驗收條件 |
 |---|---|---|---|
-| L01 | 部分 | 登入、每日任務、成就與教學 | 取代自訂兌換分布；使用確認的任務、獎勵、重置時區、補領與新手解鎖流程（**14 天登入獎勵已逐日對上客戶端實際讀取的欄位**；每日任務與教學仍待核對）。**成就已改用安裝包的 22 項並可領取鑽石（2.9.0）、每日成就改用安裝包的 10 項（2.10.0）**，剩教學流程與五項依賴未實作系統的每日成就 |
+| L01 | 部分 | 登入、每日任務、成就與教學 | 取代自訂兌換分布；使用確認的任務、獎勵、重置時區、補領與新手解鎖流程（**14 天登入獎勵已逐日對上客戶端實際讀取的欄位**；每日任務與教學仍待核對）。**成就已改用安裝包的 22 項並可領取鑽石（2.9.0）、每日成就改用安裝包的 10 項（2.10.0）、新手教學改用安裝包的 51 步（2.11.0）**，剩五項依賴未實作系統的每日成就 |
 | L02 | 待做 | 商店與各種貨幣 | 商品、輪替、購買次數、鑽石、碎片、粉塵、兌換與廣告獎勵；實際付款／廣告供應流程另標明網頁差異 |
 | L03 | 待做 | 泰坦靈魂、召喚與研究 | 依 TitanSummonBanner／TitanResearch／TitanCard 等表釐清系統，完成收入、抽取、研究費用與真實加成 |
 | L04 | 待做 | 寶石與新增養成 | Gemstone 相關稀有度、召喚、等級、研究和效果逐表核對；確認解鎖與版本可用性 |
@@ -294,6 +294,7 @@ C01 證據狀態：原生把暴擊參數放在 `[ServerVar]` 欄位——`player
 
 | 日期 | 項目 | 證據／結果 |
 |---|---|---|
+| 2026-09-16 | L01 新手教學改用原版資料（2.11.0） | 反組譯 TutorialEventModel：IsObjectiveMet（RVA 0x25DB344）就是 GetCurrentProgress() ≥ ObjectiveAmount；GetCurrentProgress（0x25DB37C）依目標型別取值，**TapCount 讀模型自己的 CurrentTapCount，因此是「該步驟開始後的點擊數」而非累計點擊**，SwordMasterLevel、ReachStage 與 UnlockHelperCount（走 HelperModel.GetUnlockedHelpersCount）皆為絕對值。原生 ObjectiveType 只有這四種，本引擎四種都量得到，所以 51 步全部可實作。新增 tools/audit-tutorial-parser.py 與 tutorial-evidence.json。以 tools/import-tutorial.py 產生 lib/tt2-tutorial.ts：採**基礎變體**，因為 B 變體與其完全相同、A 變體只調高點擊次數（27 列不同），執行期採用哪一份由伺服器指派。22 個步驟帶金幣獎勵，數值是隻數，照登入獎勵的作法乘上當前關卡的普通泰坦金幣（換算方式未查證，已在登記表標為 invented）。戰鬥區顯示目前目標與進度，文字為官方繁中字串、需要填數字的步驟會填入門檻。既有存檔從第一步開始。新增 tests/tutorial.test.mjs（7 項）。**登記表的覆蓋檢查在這次確實擋下了未分類的新匯出**，補登記後才通過。274 項 Node 測試＋23 項 Python 測試通過，tsc --noEmit 與靜態建置無誤。 |
 | 2026-09-16 | 找出原生的怪物血量與金幣曲線 | 反組譯 MonsterModel.GetMonsterBaseHP（RVA 0x2325968）與 GetMonsterBaseGold（0x2325ED8），兩者呼叫同一條 GetMonsterBase(stageNum, levelOff, transcendenceLevelOff, mult, base1, base2, base3, expo1–expo4)；關卡先加上 HonourModel.ActiveHonourAmount × honourStageOffset 才進曲線。**十個血量係數與十個金幣係數全部是具名 [ServerVar]**（monsterHPMult、monsterHPBase1–3、monsterHPExpo1–4、monsterHPLevelOff、monsterTransendenceHPLevelOff，金幣側同構），逐一比對 ServerVarsInfo 與 ServerVarOverride，**安裝包一個值都沒有帶**；相鄰的 honourStageOffset 倒是有值（250）。因此登記表把「18 × 1.32^關卡」與「5 × 1.27^關卡」由 baseline-75 改判為 server：原生根本不是這個形狀，目前數值只是 7.5 基準的近似。同時記下兩處尚未實作：每關小怪隻數原生由 monsterCountBase／Inc／StageDelta 決定（引擎固定 10），頭目血量另有 bossHPModBase 與 bossHPModStageMult 參與。新增 tools/audit-monster-curve.py 與 reference/tt2/8.2.0/monster-curve-evidence.json（26 個靜態欄位、兩條曲線、20 個係數的帶值狀態），以及 tests/monster-curve.test.mjs（4 項，會在安裝包開始帶值時失敗以提醒改判）。267 項 Node 測試＋23 項 Python 測試通過。 |
 | 2026-09-16 | R05 核心公式來源登記表與前後對照 | 新增 [docs/formula-sources.json](docs/formula-sources.json) 與產生的 [docs/formula-sources.md](docs/formula-sources.md)：26 條核心公式、44 項來源條目，各自標記 native（反組譯確認，4）、table（安裝包資料表，14）、default（原生靜態預設值，2）、baseline-75（7.5 沿用未核實，11）、invented（專案自訂，8）、server（原生為伺服器變數且安裝包未帶值，4）與 table-differs（安裝包有值但引擎未照做，1）。tools/formula-sources.mjs 會驗證每條公式的匯出仍存在、引用的來源檔確實在 reference 目錄裡、**且十個核心模組的每一個匯出都必須被登記或分類**，因此新增或改名公式不可能悄悄漏掉。**查出唯一一處安裝包與引擎不一致**：TitanScalingInfo 的 ThemeMultiplierSequence 分四段（1–5 為 2,3,4,5,8；6–39 為 4,6,8,15,24；40–59 為 8,12,16,30,48；60 起回到 2,3,4,5,8，四個來源變體在這四列完全一致），引擎對所有關卡只用第一段，6–59 關頭目血量偏低；**暫不套用**，因為選列由 MonsterModel 存的索引決定（GetCurrentScalingInfo 只做邊界檢查後取 list[index]，索引更新方式未查證），且該序列同時是 ServerVarsModel 的 [ServerVar]。另補記兩項原本沒寫下來的規則：十連購買比逐次購買便宜（每筆各自進位，實測差 5 金），以及蛻變聖物有「至少一顆」的自訂下限。後續追查頭目倍率的選列方式：MonsterModel.StageChangedPreSpawnHandler → UpdateCurrentScalingInfo → GetScalingIndex 是從目前索引往前掃的**有狀態**流程，GetCurrentScalingInfo 只對該索引做邊界檢查；換段時還會先 RemoveCurrentScalingBonuses 再用 BonusModel.ModifyBonus 套用該列的 bonusA／bonusB。換言之倍率序列只是該列的一部分，且不是關卡的純函數，因此維持不套用並記在登記表。新增 tests/formula-sources.test.mjs（5 項）與 tests/before-after.test.mjs（升級前後、施法前後、蛻變前後共 4 項）。263 項 Node 測試＋23 項 Python 測試通過。 |
 | 2026-09-16 | L01 每日成就改用原版資料（2.10.0） | 以同一份解析證據（AchievementModel.Initialize 讀 DailyAchievementInfo 的 Type、RewardString、IsActive、Requirement 四欄）產生 lib/tt2-achievements.ts 的 TT2_DAILY_TASKS，10 項與門檻、獎勵字串、啟用旗標全部照抄，敘述取自安裝包官方繁中字串（例如 ClickFairies「點擊妖精 {0} 次」、Prestiges「進行蛻變 {0} 次」）。**10 項中只有 4 項可誠實量測**：獲得寵物等級、獲得裝備、點擊妖精、進行蛻變，分別接到既有的開蛋／掉裝／妖精／蛻變事件，daily 區塊新增 petLevels、equipment、prestiges 三個當日計數並隨換日一起歸零（改由 newDaily() 單點重置）。UniqueArtifacts 的 IsActive 欄在安裝包就是 FALSE；WatchVideos、SoloRaidAttacks、DiamondFairies、PerkFairy、DailyEquipment 五項所依賴的系統未實作，逐項寫明原因並不可領取。獎勵字串同時列出 Diamonds、RaidTicket、HolidayCurrency、Alchemy、GemstoneCurrency，本專案只有前者與活動幣，**只發這兩種並在介面標明其餘未開放**，不自行折算。舊的自訂五項每日任務移除，daily.claimed 由索引陣列改為型別名稱，遷移時濾掉非字串殘留（該清單從未可領取）。新增 tests/daily-tasks.test.mjs（6 項）。254 項 Node 測試＋23 項 Python 測試通過，tsc --noEmit 與靜態建置無誤。已部署 2.10.0 並在瀏覽器實測：成就分頁共 32 張卡（22 成就＋10 每日），其中 6 張顯示待實作或未啟用；實際走一次轉生→確認轉生後，「進行蛻變 1 次」由「尚未完成」變成「領取」，點下後鑽石由 3 變 8（該列 Diamonds:5），卡片改為「已領取」，未開放的三種貨幣照實標示，無 NaN。 |

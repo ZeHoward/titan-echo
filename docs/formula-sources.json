@@ -431,6 +431,31 @@
       ]
     },
     {
+      "id": "tutorial",
+      "module": "lib/engine.ts",
+      "export": "tutorialMet",
+      "expression": "51 步教學，每步在進度達到門檻時完成並發放金幣",
+      "parts": [
+        {
+          "part": "目標判定與進度來源",
+          "status": "native",
+          "ref": "tutorial-evidence.json",
+          "note": "原生 TutorialEventModel.IsObjectiveMet 為 GetCurrentProgress() ≥ ObjectiveAmount；TapCount 讀模型自己的 CurrentTapCount（換步歸零），SwordMasterLevel、ReachStage 與 UnlockHelperCount 皆為絕對值。"
+        },
+        {
+          "part": "步驟、門檻、金幣與文字",
+          "status": "table",
+          "ref": "TutorialEventInfo.json",
+          "note": "採基礎變體：B 變體與其完全相同，A 變體只調高點擊次數（27 列不同），執行期採用哪一份由伺服器指派。"
+        },
+        {
+          "part": "金幣獎勵的換算",
+          "status": "invented",
+          "note": "資料表的 GoldReward 是隻數而非絕對金幣，本專案照登入獎勵的作法乘上當前關卡的普通泰坦金幣；原生如何換算尚未查證。"
+        }
+      ]
+    },
+    {
       "id": "themes",
       "module": "lib/tt2-themes.ts",
       "export": "themeIndex",
@@ -574,7 +599,10 @@
       "heroPassiveTotals",
       "perkValue",
       "dailyTaskProgress",
-      "normalise"
+      "normalise",
+      "tutorialStep",
+      "tutorialProgress",
+      "tutorialText"
     ],
     "catalog": [
       "HEROES",
