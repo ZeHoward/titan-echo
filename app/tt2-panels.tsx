@@ -2,7 +2,7 @@
 import {useState} from 'react';
 import {playerMilestone,nextPlayerMilestone} from '../lib/tt2-player';
 import {petAttackDamage} from '../lib/engine';
-import {compare,fromNumber,fromText,toNumber} from '../lib/big-number';
+import {compare,fromNumber,fromText,toNumber,ratio} from '../lib/big-number';
 import {heroSkills,heroSkillValue,heroPowerBoost,PENDING_HERO_EFFECTS} from '../lib/tt2-hero-passives';
 import {petRequiredTaps} from '../lib/tt2-pet-combat';
 import {RESOURCE_PERKS,perkLevel,perkLimit,perkValue} from '../lib/tt2-perks';
@@ -10,6 +10,7 @@ import {PET_NAMES,TALENT_NAMES,SET_NAMES,RARITY_NAMES} from '../lib/zh-tw';
 import {TT2_PETS,TT2_GEAR,TT2_DAILY} from '../lib/tt2-data';
 import {petBonus,equipmentEffect} from '../lib/tt2-rules';
 import {craftPrice,EGG_INTERVAL} from '../lib/tt2-collection';
+import {TT2_ACHIEVEMENTS,ACHIEVEMENT_PANEL_TEXT,UNMEASURED_ACHIEVEMENTS,achievementTier,achievementClaimed,achievementReward,achievementProgress} from '../lib/engine';
 import {HEROES,SKILLS,SKILL_ORDER,SKILL_DATA,heroLevel,cost,swordMasterBaseDamage,fmt,tapDamage,dps,skillPower,skillCost,skillMana,skillDuration,skillCooldown,manaMax,manaRegen,relicGain,artifactCost,buildDamage,type State,type Action} from '../lib/engine';
 import {TT2_ARTIFACTS,TT2_TREE,TT2_SETS,artifactValue,discoveryCost,canDiscover,canBuyTalent,spentPoints,effectLabel,bonusDefinitions,effectText,BUILD_COEFFICIENTS,type Build} from '../lib/tt2-rules';
 type Props={s:State;tab:string;ready:boolean;basePath:string;act:(a:Omit<Action,'at'>)=>void;onPrestige:()=>void};
@@ -51,9 +52,20 @@ export default function TT2Panels({s,tab,ready,basePath,act,onPrestige}:Props){
   {t.inventory.map(item=>{const g=TT2_GEAR[item.definition],equipped=t.equipped[g.slot]===item.id;return <article className="feature-card" key={item.id}><h3>{['⚔️ 劍','🪖 頭盔','🥋 衣服','🔮 靈氣','✨ 砍痕'][g.slot]} · 等級 {item.level}</h3><small>{SET_NAMES[g.set]||'一般裝備'} · {g.limited?'活動':({1:'一般',2:'稀有',3:'傳說',4:'神話',5:'獨特'} as Record<number,string>)[g.rarity]||'特殊'} · 編號 {item.id}</small><p>{effectLabel(g.effect)} {effectText(g.effect,equipmentEffect(t,item))}</p><div className="feature-actions"><button className="buy-button" disabled={equipped} onClick={()=>act({type:'equip',index:item.id})}>{equipped?'已裝備':'裝備'}</button><button className="outline-button" disabled={equipped} onClick={()=>act({type:'gearDiscard',index:item.id})}>丟棄</button></div></article>;})}
   {!!s.gear.length&&<details><summary>舊版封存裝備 {s.gear.length} 件</summary>{s.gear.map(g=><p key={g.id}>#{g.id} · 原部位 {g.slot+1} · 原效果 {g.power.toFixed(3)}</p>)}</details>}
  </>:tab==='collection'?<>
-  <div className="collection-tabs">{[['pets','寵物'],['sets','套裝'],['builds','流派係數']].map(([id,label])=><button key={id} className={collection===id?'chosen':''} onClick={()=>setCollection(id)}>{label}</button>)}</div>
+  <div className="collection-tabs">{[['pets','寵物'],['sets','套裝'],['achievements','成就'],['builds','流派係數']].map(([id,label])=><button key={id} className={collection===id?'chosen':''} onClick={()=>setCollection(id)}>{label}</button>)}</div>
   {collection==='pets'?<><div className="content-heading"><h3>寵物 {t.petLevels.filter(n=>n>0).length} / 30</h3><p>傷害與支援各可出戰一隻。未出戰每 5 級增加 5% 被動效果，100 級達完整效果。</p><p>每 {petRequiredTaps(t)} 次有效點擊發動寵物攻擊 · 目前傷害 {fmt(petAttackDamage(s))} · 累計攻擊 {t.petAttacks} 次</p></div><button className="buy-button" disabled={!t.eggs} onClick={()=>act({type:'egg'})}>開啟寵物蛋 · {t.eggs} / 2</button><p className="panel-note">每 4 小時補充一顆，上限兩顆。下顆 {t.eggs===2?'已滿':`${Math.max(0,Math.ceil((t.eggAt+EGG_INTERVAL-s.last)/60000))} 分鐘`}。目前每顆給 1 級；原版多級機率、自動攻擊、閃電爆發與閃光突進尚待還原。</p>{TT2_PETS.map((p,i)=><article className="feature-card" key={p.id}><h3>{PET_NAMES[p.name]}<small>等級 {t.petLevels[i]}</small></h3><p>{p.family==='Legacy'?'傳統':'異國'} · {p.slot==='Damage'?'傷害':'支援'}</p><p>{effectLabel(p.effect)} {effectText(p.effect,petBonus(t,i))}</p><button className="buy-button" disabled={!t.petLevels[i]||t.activePets.includes(i)} onClick={()=>act({type:'petEquip',index:i})}>{t.activePets.includes(i)?'出戰中':t.petLevels[i]?'出戰':`第 ${p.unlock} 關加入蛋池`}</button></article>)}</>
   :collection==='sets'?<><h3>套裝效果資料 · {TT2_SETS.length} 組</h3><p className="panel-note">已收齊套裝會標示完成。可使用碎片依序製作缺少部位。基礎數值加成已接入；工藝力量、每日成長與特殊行為仍待還原。</p>{TT2_SETS.map((set,i)=><article className="feature-card" key={set.id}><h3>{SET_NAMES[set.id]}<small>{RARITY_NAMES[set.rarity]} · {t.sets.includes(i)?'已收齊':`${t.pieces.filter(p=>p.set===i).length} / 5`}</small></h3>{set.effects.map(e=><p key={e.type}>{effectLabel(e.type)} · {e.amount}{e.perDay?'／天（有上限）':''}</p>)}<small>五件製作費：{set.cost.join(' + ')} 工藝碎片</small><button className="buy-button" disabled={t.sets.includes(i)||s.best<set.stage||t.shards<craftPrice(t,i)||!['Rare','Legendary','Mythic'].includes(set.rarity)||t.inventory.length>=100} onClick={()=>act({type:'craft',index:i})}>{s.best<set.stage?`第 ${set.stage} 關開放`:t.sets.includes(i)?'已完成':`製作缺少部位 · ${Number.isFinite(craftPrice(t,i))?craftPrice(t,i):'—'} 碎片`}</button></article>)}</>
+  :collection==='achievements'?<><div className="content-heading"><h3>成就 {TT2_ACHIEVEMENTS.filter((_,i)=>achievementTier(s,i)>0).length} / {TT2_ACHIEVEMENTS.length}</h3><p>{ACHIEVEMENT_PANEL_TEXT.ACHIEVEMENT_PANEL_DESC}</p><p>💎{fmt(s.diamonds)} 鑽石 · 可領取 {TT2_ACHIEVEMENTS.reduce((n,_,i)=>n+achievementReward(s,i),0)} 鑽石</p></div>
+  {TT2_ACHIEVEMENTS.map((a,i)=>{const blocked=UNMEASURED_ACHIEVEMENTS[a.type],tier=achievementTier(s,i),claimed=achievementClaimed(s,i),reward=achievementReward(s,i);
+   const target=fromText(a.requirement[Math.min(tier,a.requirement.length-1)]),progress=achievementProgress(s,i);
+   const share=blocked||tier>=a.requirement.length?tier>=a.requirement.length?1:0:Math.max(0,Math.min(1,ratio(progress,target)));
+   return <article className="feature-card" key={a.type}>
+    <h3>{a.description.replace('{0}',fmt(target))}<small>{blocked?'待實作':`第 ${tier} / ${a.requirement.length} 階`}</small></h3>
+    {blocked?<p>{blocked}</p>:<><p>目前 {fmt(progress)} · 已領 {claimed} 階 · 本階獎勵 💎{a.diamondReward[Math.min(tier,a.diamondReward.length-1)]}</p>
+    <div className="hp-track"><div style={{width:`${share*100}%`}}/></div>
+    <button className="buy-button" disabled={!reward} onClick={()=>act({type:'achievement',index:i})}>{reward?`領取 💎${reward}`:tier>=a.requirement.length?'已全部領取':'尚未達成'}</button></>}
+   </article>;})}
+  <p className="panel-note">22 項成就與各五階門檻、鑽石獎勵取自安裝包 AchievementInfo，敘述為安裝包官方繁體中文字串。原生列舉另有 ChestTokens 一項，安裝包的資料表沒有對應列，因此未列出。錦標賽與魔力瑪尼兩項所依賴的系統尚未實作，標為待實作且不可領取。</p></>
   :<><div className="content-heading"><h3>流派加成核對</h3><p>這是計算預覽。公會飛船、匕首與金槍完整戰鬥尚待還原；寵物基礎蓄力攻擊已開放。</p></div><div className="collection-tabs">{builds.map(([id,name])=><button key={id} className={selected===id?'chosen':''} onClick={()=>setSelected(id)}>{name}</button>)}</div><article className="feature-card"><h3>{builds.find(b=>b[0]===selected)?.[1]}</h3><p>點擊加成指數 {BUILD_COEFFICIENTS[selected].tap}</p><p>英雄加成指數 {BUILD_COEFFICIENTS[selected].hero}</p><p>目前預估傷害 {fmt(buildDamage(s,selected))}</p><p>例如點擊倍率 十的一百次方，影分身只取得 十的六十次方，飛船取得 ×1。</p></article></>}
  </>:tab==='shop'?<>
   <div className="content-heading"><h3>增益道具</h3><p>💎{fmt(s.diamonds)} 鑽石 · 登入兌換次數 {t.perkTokens}</p></div>

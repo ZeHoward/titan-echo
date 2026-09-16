@@ -39,7 +39,7 @@ test('hydrating twice changes nothing, so a repeated load cannot drift', () => {
 
 test('an unusable amount reads as zero rather than reaching the save as NaN', () => {
   for (const broken of [undefined, null, NaN, Infinity, -Infinity, 'x', {}, { s: 1 }]) {
-    assert.deepEqual(toAmount(broken), { s: 0, e: 0 }, String(broken));
+    assert.deepEqual(toAmount(broken), { s: 0, e: 0 }, JSON.stringify(broken) ?? 'undefined');
   }
   // A negative balance is not a thing the economy holds.
   assert.deepEqual(toAmount(-5), { s: 0, e: 0 });

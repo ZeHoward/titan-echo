@@ -1,0 +1,130 @@
+{
+  "version": "8.2.0",
+  "table": "AchievementInfo",
+  "packageSha256": "8d78c9aa877e6c0b291ee2116cab855bd26c59c1d080bc654f88ecf1ff268b5f",
+  "binarySha256": "c13fc44321b1214c71ab0277a134fc3401fd7392c74a0bbb3935671c55a8713a",
+  "metadataSha256": "2d93f9e3f58a17cfb1bbd20ccd9fcbb26b3b9497afc4ecc6b94b0bfb2c460d97",
+  "scriptSha256": "62c2eeb8472bb107de516e4b6ae69d3dcdf5013fb1caa87223d82a54dd203f8b",
+  "parser": "AchievementModel.Initialize",
+  "parserRva": "0x211299c",
+  "parserBytesSha256": "5cd7a2c236da65673b7689e4480146e535da459ed3c06243f15db324f204874e",
+  "columnsRead": {
+    "AchievementInfo": [
+      "Type",
+      "Requirement",
+      "Reward"
+    ],
+    "DailyAchievementInfo": [
+      "Type",
+      "RewardString",
+      "IsActive",
+      "Requirement"
+    ]
+  },
+  "evidence": {
+    "requirementType": "List<GHDouble> via GHTool.ParseStringToListGHDouble",
+    "rewardType": "List<int> via GHTool.ParseStringToListInt",
+    "rewardField": "diamondReward",
+    "rewardCurrency": "diamonds, named by the field the parsed list is stored in",
+    "dailyRewardType": "RewardClass built from the RewardString cell",
+    "insertion": "Dictionary<AchievementType, AchievementInfo>.set_Item keyed by type",
+    "structFields": [
+      "type",
+      "requirement",
+      "diamondReward",
+      "tier",
+      "progress",
+      "status"
+    ],
+    "statuses": [
+      "Unavailable",
+      "InProgress",
+      "ToBeCollected",
+      "Completed"
+    ],
+    "checkedInstructionAddresses": [
+      "0x2112b54",
+      "0x2112b6c",
+      "0x2112bb4",
+      "0x2112be8",
+      "0x2112c14",
+      "0x2112c40",
+      "0x2112c50",
+      "0x2112c80",
+      "0x2112cb8",
+      "0x2112d20",
+      "0x2112d70",
+      "0x2112d9c",
+      "0x2112dd8",
+      "0x2112e08",
+      "0x2112e38",
+      "0x2112e94"
+    ],
+    "verifiedStringReferences": {
+      "0x4c14b20": "AchievementInfo",
+      "0x4c14b78": "DailyAchievementInfo",
+      "0x4c0ec58": "Type",
+      "0x4c14b68": "Requirement",
+      "0x4c14b70": "Reward",
+      "0x4c0ec98": "IsActive",
+      "0x4c14b80": "RewardString"
+    }
+  },
+  "achievementTypes": {
+    "0": "MonsterKill",
+    "1": "BossKill",
+    "2": "Chesterson",
+    "3": "CollectGold",
+    "4": "ReachStage",
+    "5": "CollectRelics",
+    "6": "OwnArtifacts",
+    "7": "HelperDPS",
+    "8": "TapCount",
+    "9": "PrestigeCount",
+    "10": "HelperLevels",
+    "11": "FairyCount",
+    "12": "CriticalCount",
+    "13": "JumpAttackCount",
+    "14": "ParticipatedTournament",
+    "15": "PetLevel",
+    "16": "EquipmentCollected",
+    "17": "TotalSkillPoints",
+    "18": "Manny",
+    "19": "UnlockHeroes",
+    "20": "Weapons",
+    "21": "Perk",
+    "22": "ChestTokens"
+  },
+  "dailyAchievementTypes": {
+    "-1": "None",
+    "0": "KillTitan",
+    "1": "KillTitanBoss",
+    "2": "KillChesterson",
+    "3": "Tap",
+    "4": "FairyReward",
+    "5": "Pet",
+    "6": "PetLightning",
+    "7": "ActiveSkill",
+    "8": "CriticalStrike",
+    "9": "DiamondFairies",
+    "10": "ClanQuest",
+    "11": "PetLevels",
+    "12": "CollectedEquipment",
+    "13": "UniqueArtifacts",
+    "14": "ClickFairies",
+    "15": "Prestiges",
+    "16": "ClanDungeonPanel",
+    "17": "SoldEquipment",
+    "18": "WatchVideos",
+    "19": "SoloRaidAttacks",
+    "20": "PerkFairy",
+    "21": "DailyEquipment"
+  },
+  "typesWithoutSheetRow": [
+    "ChestTokens"
+  ],
+  "limits": [
+    "Column identity, cell types and insertion only; what counts as progress for a type is not proven here",
+    "Bundled sheet only; a live server may replace these rows or their progress"
+  ]
+}

@@ -56,8 +56,10 @@ test('the clamp is a safety net for an out-of-range save, not a limit on play', 
 
 test('the magnitudes these multipliers feed are still carried as pairs', () => {
   const s = fullyUpgraded();
-  for (const [label, value] of [['每秒傷害', dps(s)], ['點擊傷害', tapDamage(s)], ['金幣', goldReward(s, 'monster')]]) {
+  const measured = [{ label: '每秒傷害', value: dps(s) }, { label: '點擊傷害', value: tapDamage(s) },
+    { label: '金幣', value: goldReward(s, 'monster') }];
+  for (const { label, value } of measured) {
     assert.ok(Number.isFinite(value.s) && Number.isFinite(value.e), label);
-    assert.ok(value.e > 240, `${label} 指數 ${value.e}`);
+    assert.ok(value.e > 240, `${label} 指數 ${String(value.e)}`);
   }
 });
