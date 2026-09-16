@@ -433,6 +433,24 @@ def main():
                                                if str(v).strip() and k in english
                                                and str(v).strip() == str(english[k]).strip())
         localization_index.append(entry)
+    # Set names this project shows that the official file names differently, or does not name at all.
+    sets = [r['id'] for r in json.loads((OUT/'EquipmentSetInfo.json').read_text())['records']]
+    parity = []
+    for identifier in sets:
+        key = 'EQUIPMENT_SET_' + identifier
+        official, source = english.get(key), 'english-only'
+        translated = json.loads(next(ASSETS.glob('*_LocalizationInfo_ChineseTrad.txt'))
+                                .read_text(encoding='utf-8-sig')).get(key)
+        if official is None and translated is None:
+            parity.append(dict(id=identifier, status='not-named-in-package'))
+        elif translated and '{' in translated:
+            parity.append(dict(id=identifier, status='template', english=official, chineseTrad=translated))
+        elif translated and any('a' <= c.lower() <= 'z' for c in translated):
+            parity.append(dict(id=identifier, status='partly-untranslated', english=official, chineseTrad=translated))
+    write('set-name-parity.json', dict(version='8.2.0', sets=len(sets), flagged=len(parity),
+          basis='official EQUIPMENT_SET keys from the bundled localization files',
+          note='a flagged name is not copied verbatim; the package text itself is templated or partly English',
+          entries=parity))
     write('localization-index.json', dict(version='8.2.0', packageSha256=audit['package']['sha256'],
           referenceLanguage='LocalizationInfo_English', referenceKeys=len(reference_keys), files=localization_index,
           role='key-coverage-index-only',
