@@ -36,7 +36,10 @@ TABLES = ['ArtifactInfo', 'ArtifactCostInfo', 'ActiveSkillInfo', 'ActiveSkillMul
           'TournamentRewardInfo', 'SuperTournamentRewardInfo', 'NewPlayerTournamentRewardInfo',
           'ChallengeTournamentRewardInfo', 'SuperChallengeTournamentRewardInfo',
           'ChallengeTournamentProgressionRewardInfo', 'ChallengeTournamentArtifactPools',
-          'ChallengeTournamentStartingInfo']
+          'ChallengeTournamentStartingInfo', 'ShopDisplayInfo', 'AdChestInfo', 'NewPrizeInfoDoc',
+          'PetParadiseLevelInfo']
+# Shop server-response samples: not gameplay tables, so only their shape is indexed.
+SHOP_SAMPLES = ['ShopInfo', 'ShopInfoServerTest', 'ShopInfoServerTest_all_dailyDeals', 'ShopInfoServerTest_copy']
 # Composite stable keys where a single source column repeats across rows.
 KEYS = {'HelperImprovementsInfo': ['Ascension', 'Level'], 'RaidLevelInfo': ['TierID', 'LevelID'],
         'RaidMasterTierLevelInfo': ['TierID', 'LevelID'], 'SoloRaidLevelInfo': ['WorldID', 'LevelID'],
@@ -44,7 +47,9 @@ KEYS = {'HelperImprovementsInfo': ['Ascension', 'Level'], 'RaidLevelInfo': ['Tie
         'SuperTournamentRewardInfo': ['PrizeID', 'TierID', 'StartRank', 'PrizeType'],
         'ChallengeTournamentRewardInfo': ['StartRank', 'PrizeType'],
         'SuperChallengeTournamentRewardInfo': ['StartRank', 'PrizeType'],
-        'ChallengeTournamentProgressionRewardInfo': ['TourneyID', 'RewardStage']}
+        'ChallengeTournamentProgressionRewardInfo': ['TourneyID', 'RewardStage'],
+        'NewPrizeInfoDoc': ['PrizeID', 'TierID', 'StartRank', 'PrizeType'],
+        'AdChestInfo': ['ChestType', 'Tier', 'RewardCategoryTier', 'RewardTier']}
 # Sheets whose header repeats a column name. Allowed only with the verified InfoDoc column policy.
 DUPLICATE_COLUMN_TABLES = {'RaidTicketBoostInfo', 'RaidResearchInfo'}
 # Same-shaped alternate sources for a base table. Kept separate; the live choice is not in the package.
@@ -52,7 +57,8 @@ VARIANTS = {'ArtifactCostInfo_A': 'ArtifactCostInfo', 'TitanScalingInfo_A': 'Tit
             'TitanScalingInfo_B': 'TitanScalingInfo', 'TitanScalingInfo_C': 'TitanScalingInfo',
             'EndgamePetInfo_1': 'EndgamePetInfo', 'EndgameSeasonArtifactInfo_1': 'EndgameSeasonArtifactInfo',
             'EndgameSeasonRewardInfo_1': 'EndgameSeasonRewardInfo',
-            'RaidMasterTierRewardInfo_1': 'RaidMasterTierRewardInfo'}
+            'RaidMasterTierRewardInfo_1': 'RaidMasterTierRewardInfo',
+            'NewPrizeInfoDoc': 'TournamentRewardInfo'}
 # Native cosmetic typing: which enum backs each catalog column. None = no native enum for that column.
 COSMETIC_TABLES = {
     'AvatarInfo': dict(idColumn='AvatarID', idType='AvatarID', unlockColumn='AvatarUnlockType', unlockType='AvatarUnlockType'),
@@ -149,7 +155,7 @@ def main():
         raise ValueError('server var parser evidence mismatch')
     known_bonuses = json.loads((OUT/'native-bonus-types.json').read_text())['values']
     OUT.mkdir(parents=True, exist_ok=True)
-    manifest, catalogs = [], {}
+    manifest, catalogs, retained_columns = [], {}, {}
     for table in TABLES:
         paths = list(ASSETS.glob('*_' + table + '.txt'))
         if len(paths) != 1:
@@ -212,8 +218,12 @@ def main():
             base = catalogs.get(VARIANTS[table])
             if base is None:
                 raise ValueError(f'{table}: base source {VARIANTS[table]} must be imported first')
-            shared = set(schema) & set(base[next(iter(base))]) if base else set()
+            # Compare retained columns only; omitted name and colour columns are not part of the catalog.
+            columns_here, columns_base = set(schema), set(retained_columns[VARIANTS[table]])
+            shared = columns_here & columns_base
             variant = dict(baseTable=VARIANTS[table], liveSelection='unknown',
+                sharedColumns=sorted(shared), variantOnlyColumns=sorted(columns_here - columns_base),
+                baseOnlyColumns=sorted(columns_base - columns_here),
                 added=sorted(indexed.keys()-base.keys()), removed=sorted(base.keys()-indexed.keys()),
                 changed=sorted(k for k in indexed.keys() & base.keys() if any(indexed[k][f] != base[k][f] for f in shared)))
         old = ROOT / 'work/tt2-csv/csv' / (table + '.csv')
@@ -236,6 +246,7 @@ def main():
             data['differenceFrom75Status'] = 'not-compared: historical parser duplicate policy not verified'
         write(table + '.json', data)
         catalogs[table] = indexed
+        retained_columns[table] = retained
         manifest.append(dict(table=table, rows=len(indexed), sourceSha256=sha(path), catalogSha256=sha(OUT/(table+'.json'))))
     legacy = {}
     source = (ROOT / 'lib/tt2-data.ts').read_text(encoding='utf-8')
@@ -307,6 +318,27 @@ def main():
     write('manifest.json', dict(version='8.2.0', packageSha256=audit['package']['sha256'], runtimeEnabled=False,
                                tables=manifest, resourceIndex=[dict(name=p.name, sha256=sha(p), bytes=p.stat().st_size,
                                parsed=any(p.name.endswith('_'+t+'.txt') for t in TABLES)) for p in sorted(ASSETS.glob('*.txt'))]))
+    # Shop payload samples, including the ones that are not even strict JSON, are shape-indexed only.
+    samples = []
+    for name in SHOP_SAMPLES:
+        path = next(ASSETS.glob('*_' + name + '.txt'))
+        if sha(path) != resource_pins[path.name]:
+            raise ValueError(f'{name}: indexed resource hash mismatch')
+        text = path.read_text(encoding='utf-8-sig')
+        try:
+            payload = json.loads(text)
+            sections = sorted(payload) if isinstance(payload, dict) else None
+            product_types = sorted({p.get('product_type') for section in (payload.values() if isinstance(payload, dict) else [])
+                                    if isinstance(section, dict) for p in section.get('products', [])
+                                    if isinstance(p, dict) and p.get('product_type')})
+            status = 'strict-json'
+        except json.JSONDecodeError as error:
+            sections, product_types, status = None, [], f'not-strict-json: {error.msg} at line {error.lineno}'
+        samples.append(dict(name=name, sourceSha256=sha(path), bytes=path.stat().st_size,
+            status=status, topLevelSections=sections, productTypes=product_types,
+            role='shop-server-response-sample', runtimeEnabled=False,
+            limits='test fixture shape only; not a live shop listing, price, schedule or daily delivery source'))
+    write('shop-payload-samples.json', dict(version='8.2.0', packageSha256=audit['package']['sha256'], samples=samples))
     layout_path = next(ASSETS.glob('*_RaidEnemyLayout.txt'))
     if sha(layout_path) != resource_pins[layout_path.name]:
         raise ValueError('raid atlas source changed')

@@ -10,8 +10,9 @@ const itemTables = { RaidCard: 'RaidSkillInfo', Pet: 'PetInfo', EquipmentSet: 'E
 
 export function parseRewardReference(text, field, catalogs, nativeRewardIds, options = {}) {
   if (typeof text !== 'string') throw new Error('reward must be a string');
-  if (!['RewardString', 'RankReward', 'ClanGift', 'Reward', 'NewPlayerReward', 'SelectionSlotContents1',
-    'SelectionSlotContents2', 'SelectionSlotContents3', 'SelectionSlotContents4'].includes(field)) throw new Error('unsupported reward field');
+  if (!['RewardString', 'RankReward', 'ClanGift', 'Reward', 'NewPlayerReward', 'CompletionRewardString',
+    'RewardTier', 'SelectionSlotContents1', 'SelectionSlotContents2', 'SelectionSlotContents3',
+    'SelectionSlotContents4'].includes(field)) throw new Error('unsupported reward field');
   const mode = field.startsWith('SelectionSlotContents') ? 'choice-candidates' : field === 'ClanGift' ? 'clan-gift-list' : 'reward-list';
   const entries = [], candidates = [], missingTargets = [];
   const populated = text !== '' && text !== 'None' && text !== '-';

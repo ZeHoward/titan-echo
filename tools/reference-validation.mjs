@@ -47,6 +47,14 @@ export function classify(table, row, catalogs) {
     scope = 'raid';
     evidence.push(`table=${table}`);
   }
+  if (['ShopDisplayInfo', 'AdChestInfo'].includes(table)) {
+    scope = 'shop-listing';
+    evidence.push(`table=${table}`, 'live-price-and-availability=unknown');
+  }
+  if (table === 'PetParadiseLevelInfo') {
+    scope = 'pet-paradise-progression';
+    evidence.push('table=PetParadiseLevelInfo');
+  }
   if (/Tournament/.test(table)) {
     scope = /^(Challenge|SuperChallenge)/.test(table) ? 'challenge-tournament' : 'tournament';
     evidence.push(`table=${table}`, 'live-schedule=unknown');
@@ -262,6 +270,49 @@ export function auditCatalogs(catalogs, nativeBonuses = loadNativeBonuses(), nat
         }
         const comparison = compareRewardColumns(table, row, nativeRewards);
         if (comparison) tournamentColumnChecks.push({ table, id: row.id, ...comparison });
+      }
+      if (table === 'AdChestInfo' || table === 'PetParadiseLevelInfo') {
+        const field = table === 'AdChestInfo' ? 'RewardTier' : 'CompletionRewardString';
+        if (!none(row.values[field])) {
+          try {
+            const parsed = parseRewardReference(row.values[field], field, catalogs, nativeRewards, { missingTargets: 'report' });
+            rewardReferences.push({ table, id: row.id, field, activation: 'unverified', ...parsed });
+            for (const miss of parsed.missingTargets) {
+              const enumName = cosmeticTables[miss.target]?.idType;
+              if (enumName && !Object.hasOwn(cosmeticTypes[enumName] ?? {}, miss.itemId)) {
+                deferredReferences.push({ table, id: row.id, field, value: miss.itemId, target: miss.target,
+                  reason: `absent from both the ${miss.target} catalog and the native ${enumName} enum in this package` });
+              } else errors.push(`${label}.${field}: unknown ${miss.target} ID: ${miss.itemId}`);
+            }
+          } catch (error) { errors.push(`${label}.${field}: ${error.message}`); }
+        }
+      }
+      if (table === 'AdChestInfo') {
+        const category = row.values.RewardCategoryTier;
+        const link = 'AdChestInfo.RewardCategoryTier -> native RewardID';
+        referenceCounts[link] = (referenceCounts[link] ?? 0) + 1;
+        if (!Object.hasOwn(nativeRewards, category)) {
+          unresolved.push({ table, id: row.id, field: 'RewardCategoryTier', value: category, target: 'native RewardID' });
+        }
+        const chance = Number(row.values.ChanceTier);
+        if (!Number.isFinite(chance) || chance < 0 || chance > 1) errors.push(`${label}.ChanceTier: invalid probability`);
+      }
+      if (table === 'ShopDisplayInfo') {
+        for (const [field, value] of Object.entries(row.values)) {
+          if (field === 'chestID') continue;
+          if (!/^\d+$/.test(value)) errors.push(`${label}.${field}: invalid nonnegative integer`);
+        }
+      }
+      if (table === 'PetParadiseLevelInfo') {
+        for (const field of ['BoardNumber', 'BoardSize', 'Rows', 'Columns', 'NumberOfFoodTypesToSpawn', 'NumberOfFoodTypesToPrefer']) {
+          if (!/^\d+$/.test(row.values[field])) errors.push(`${label}.${field}: invalid nonnegative integer`);
+        }
+        if (Number(row.values.Rows) * Number(row.values.Columns) !== Number(row.values.BoardSize)) {
+          errors.push(`${label}: board size does not match its rows and columns`);
+        }
+        if (Number(row.values.NumberOfFoodTypesToPrefer) > Number(row.values.NumberOfFoodTypesToSpawn)) {
+          errors.push(`${label}: prefers more food types than it spawns`);
+        }
       }
       if (table === 'ChallengeTournamentStartingInfo') {
         const pairs = 'ABCDEFGHI'.split('').map(slot => row.values[`BonusType${slot}`]).filter(value => value);

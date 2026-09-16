@@ -990,7 +990,7 @@
     {
       "name": "ShopDisplayInfo",
       "sourceSha256": "ecbe3344363170fbd88a7962bec5044a3c164457edd29e1e26bfe1bf27efd745",
-      "status": "not-imported",
+      "status": "imported",
       "route": "L02"
     },
     {
@@ -1476,7 +1476,7 @@
     {
       "name": "PetParadiseLevelInfo",
       "sourceSha256": "31913ab5bda387881426c355796c30b17c70d1091af5fb99e6a1a2c5058e22e8",
-      "status": "not-imported",
+      "status": "imported",
       "route": "I06"
     },
     {
@@ -1566,7 +1566,7 @@
     {
       "name": "AdChestInfo",
       "sourceSha256": "423c6bdf82456c309acbf1f7c3fe8d33170af4c4dd3562cbbf4195c8547376ea",
-      "status": "not-imported",
+      "status": "imported",
       "route": "L02"
     },
     {
@@ -1812,7 +1812,7 @@
     {
       "name": "NewPrizeInfoDoc",
       "sourceSha256": "f6a610561ad2daeda0644b39346d309a3c0d7ab540a7a1f354fc13eac198c967",
-      "status": "not-imported",
+      "status": "imported",
       "route": "L02"
     },
     {

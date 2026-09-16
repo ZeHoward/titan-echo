@@ -2,7 +2,7 @@
 
 這是資料準備成果，尚未接入遊戲或改寫存檔。現行遊戲仍為 2.6.0／7.5 數值基準。
 
-`manifest.json` 記錄安裝包、79 張已解析表（20,242 個表內有效 ID）的 SHA-256，以及 372 個 TextAsset 的大小與雜湊。未解析的資源只列索引，不宣稱它們皆為 CSV 或已完成 schema。
+`manifest.json` 記錄安裝包、83 張已解析表（22,627 個表內有效 ID）的 SHA-256，以及 372 個 TextAsset 的大小與雜湊。未解析的資源只列索引，不宣稱它們皆為 CSV 或已完成 schema。
 
 每張表以來源 ID 為鍵；英雄里程碑使用 `[Ascension,Level]` 複合鍵。`sourceOrdinal` 僅作來源定位，不能用來覆蓋玩家陣列。`legacy-2.6.json` 固定目前七組核心陣列的原始 ID 順序；不存在於目標表的 ID 映射為 null，後續遷移必須保留及處理，不能改配其他內容。
 
@@ -12,7 +12,7 @@
 
 重建：使用本機已忽略的原始資料執行 `python tools/import-reference-v8.py`，再執行 `node tools/reference-validation.mjs`。工具驗證安裝包、既有全資源索引、原生列舉與解析器證據雜湊。除了下列已取得原生證據的表以外，拒絕重複鍵與重複欄位名；不完整 CSV 列一律拒絕。CI 透過 `npm test` 驗證提交資料完整性、舊 ID 對照、換序、超大數值、跨表引用與活動證據，並執行 `python3 -m unittest discover -s tests -p '*_test.py'` 驗證實際 Python 匯入規則。未知效果 ID、壞掉的前置引用、循環技能前置、非法數字及不成對的成就階段皆有反例測試。
 
-目前檢查 30,883 處引用；其中 33 處不在 BonusInfo，但在原生 BonusType 列舉中存在，記錄在 `nativeOnly`；其中 21 處是四份泰坦縮放來源變體重複引用同一個 MonsterHPScaling。`native-bonus-types.json` 僅保存列舉 ID／數字與來源雜湊，不能用來推定效果公式。沒有未解析的引用 ID，不代表所有公式或所有資源都已驗證。
+目前檢查 30,966 處引用；其中 33 處不在 BonusInfo，但在原生 BonusType 列舉中存在，記錄在 `nativeOnly`；其中 21 處是四份泰坦縮放來源變體重複引用同一個 MonsterHPScaling。`native-bonus-types.json` 僅保存列舉 ID／數字與來源雜湊，不能用來推定效果公式。沒有未解析的引用 ID，不代表所有公式或所有資源都已驗證。
 
 裝備副屬性表已解除隔離：原生 `ParseEquipmentEnhancementScalingInfo`（RVA 0x218994c）按遞增列號讀取；五個 TryGetCell 都成功才呼叫字典 set_Item，後者使用 OverwriteExisting。故同 ID 最後成功解析的列生效。59 筆來源列整理為 58 個 ID，AllActiveSkillAmount 的 PowerExp 從第 9 列的 0.4 被第 57 列的 1.002 覆寫（列號從 0 起）。兩筆都保留在表內 rowResolution.duplicateHistory，sourceOrdinal 指向最後生效列。這項結論只適用於目前安裝包資料，不推定歷史 7.5 解析器或線上覆蓋值。
 
@@ -93,3 +93,11 @@ ChallengeTournamentArtifactPools 的 A 至 E 是每個發現池的權重（0 到
 DiscoveryPool 的值是 ChallengeTournamentArtifactPools 的欄位名（目前使用 A 與 C），已逐列核對。StartingPlayerInventory、DisplayedInventory、HiddenInventory、EquippedInventory 的 Equipment 與 Pet 代號全部可在 C_EquipmentInfo 與 PetInfo 解析；其餘代號沿用錦標賽詞彙，不推定發放。
 
 **伺服器變數鍵的綁定狀況已核對**：37 個鍵中 28 個在原生 `[ServerVar]` 欄位存在，9 個不存在——ServerVarsInfo 的 useChestSpecial、chestSpecialRelicsBonus、chestSpecialSkillPointBonus、chestSpecialMythicShardsBonus、chestSpecialDustBonus、skillTreeResetPromotion、skillTreeRestCostPromotionMult，以及 ServerVarOverride 的 EquipmentLevelReductionMin、EquipmentLevelReductionAmount。這些鍵在此版客戶端沒有可綁定的欄位，SetVarsFromAttributes 無法套用；記在 `validation.json` 的 `serverVarBinding`，資料列照常保留，不刪除也不改名。ChallengeTournamentStartingInfo 的 ServerVarOverrides 鍵則全部可對應到原生欄位。
+
+本次追加商店與寵物樂園 4 張表：ShopDisplayInfo 18 筆、AdChestInfo 83 筆（ChestType＋Tier＋RewardCategoryTier＋RewardTier 複合鍵，因為 RewardTier 為 None 的列只靠 RewardCategoryTier 區分）、NewPrizeInfoDoc 273 筆、PetParadiseLevelInfo 2,011 筆。AdChestInfo 的 RewardCategoryTier 全部是原生 RewardID 名稱，ChanceTier 皆在 0 到 1；RewardTier 與 CompletionRewardString 走既有獎勵解析器，來源中 `Diamonds: 10` 這類含空白的寫法原樣保留。
+
+PetParadiseLevelInfo 逐列自洽檢查：Rows×Columns 必須等於 BoardSize，NumberOfFoodTypesToPrefer 不得大於 NumberOfFoodTypesToSpawn，2,011 筆全數通過；獎勵字串使用 PetsLvl1／PetsLvl5／Avatar，頭像全部可解析。
+
+NewPrizeInfoDoc 與 TournamentRewardInfo 的 273 個複合鍵完全相同，屬同一份獎勵表的另一個來源，已納入 `sourceVariants`。變體比較新增 `sharedColumns`、`variantOnlyColumns`、`baseOnlyColumns`，且只比對雙方保留的欄位（略過名稱與顏色等被 omit 的欄）：此組共用 13 欄，變體多 Perk，基準多 AnniversaryMinigameCurrency、PerkTicket 與 Rewards，共用欄位中 SkillPoint、Weapon、PremiumWeapon 有差異。兩份都保留，liveSelection 維持 unknown。
+
+四個商店 JSON 不是資料表，改以 [shop-payload-samples.json](shop-payload-samples.json) 只記錄形狀：ShopInfo **不是嚴格 JSON**（第 26 行陣列有多餘逗號），其餘三個為嚴格 JSON，頂層皆為 section_chests／section_daily_deals／section_special_bundle，product_type 有 chest、daily_deal、special_bundle。這些是商店回應的測試樣本，含 uuid 與 expire_time，**不能當成線上商品、價格、時程或每日配送來源**；ShopBundleInfo 仍有 3 個 DailyDeliveryID 缺少真實配送表。

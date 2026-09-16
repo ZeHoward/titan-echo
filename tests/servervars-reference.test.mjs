@@ -76,11 +76,17 @@ test('titan scaling variants are reported side by side without choosing a live A
 test('every imported alternate source is diffed against its base table', () => {
   const variants = report.sourceVariants.map(entry => entry.table).sort();
   assert.deepEqual(variants, ['ArtifactCostInfo_A', 'EndgamePetInfo_1', 'EndgameSeasonArtifactInfo_1',
-    'EndgameSeasonRewardInfo_1', 'RaidMasterTierRewardInfo_1', 'TitanScalingInfo_A', 'TitanScalingInfo_B',
-    'TitanScalingInfo_C']);
+    'EndgameSeasonRewardInfo_1', 'NewPrizeInfoDoc', 'RaidMasterTierRewardInfo_1', 'TitanScalingInfo_A',
+    'TitanScalingInfo_B', 'TitanScalingInfo_C']);
   for (const entry of report.sourceVariants) {
     assert.ok(catalogs[entry.baseTable], entry.table);
-    assert.deepEqual(Object.keys(catalogs[entry.table].schema), Object.keys(catalogs[entry.baseTable].schema));
+    // Column sets may differ between alternate sources, so the diff states exactly what it compared.
+    const here = new Set(Object.keys(catalogs[entry.table].schema));
+    const base = new Set(Object.keys(catalogs[entry.baseTable].schema));
+    assert.deepEqual(entry.sharedColumns, [...here].filter(column => base.has(column)).sort());
+    assert.deepEqual(entry.variantOnlyColumns, [...here].filter(column => !base.has(column)).sort());
+    assert.deepEqual(entry.baseOnlyColumns, [...base].filter(column => !here.has(column)).sort());
+    assert.ok(entry.sharedColumns.length > 0, entry.table);
     assert.equal(classify(entry.table, catalogs[entry.table].records[0], catalogs).evidence
       .includes(`base-table=${entry.baseTable}`), true);
   }
