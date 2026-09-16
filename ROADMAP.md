@@ -1,11 +1,11 @@
 # Titan Echo 完整復刻代辦清單
 
-更新：2026-09-16。遊戲目前為 **2.6.0**，最近完整測試 **111 項 Node 測試＋12 項 Python 匯入測試通過**。此文件是後續工作的主清單；`TT2-RULES.md` 保留歷史研究紀錄，不以舊敘述判斷目前完成度。
+更新：2026-09-16。遊戲目前為 **2.6.0**，最近完整測試 **117 項 Node 測試＋18 項 Python 匯入測試通過**。此文件是後續工作的主清單；`TT2-RULES.md` 保留歷史研究紀錄，不以舊敘述判斷目前完成度。
 
 ## 目前位置
 
 - **已完成 R01：固定目標、盤點差異、建立來源基準。** 產物：[來源與雜湊清單](docs/reference-baseline.json)、本清單與工作約定。
-- **下一項：R02，將資料與匯入工具統一到 8.2.0，先建立穩定 ID 映射，再做相容遷移。** 已完成 52 張表、16,936 個有效 ID 的精確字串資料、七組舊 ID 對照及 19,181 處引用檢查，尚未切換線上資料版本。
+- **下一項：R02，將資料與匯入工具統一到 8.2.0，先建立穩定 ID 映射，再做相容遷移。** 已完成 58 張表、17,188 個有效 ID 的精確字串資料、七組舊 ID 對照及 19,202 處引用檢查，尚未切換線上資料版本。
 - 接續順序：R02 → R03 → R04 → C01，之後依下表執行。
 - 尚未有任何一個大型系統通過「與原版同版本完整一致」驗收。已有功能不會重寫成空白，但必須逐項校正與驗證。
 
@@ -64,7 +64,15 @@ R02 本次完成：[獨立參考目錄](reference/tt2/8.2.0/README.md)、372 個
 
 ProfileBackgroundInfo 與 7.5 快照逐格相同；AvatarParticleInfo 沒有 7.5 對應檔，differenceFrom75 保持 null，不推定它必為 8.2 新增。背景表只有 Player 14 筆、Raid 33 筆的分槽欄位，表內沒有解鎖欄位，解鎖來源待證據。原生 RewardID 雖有 AvatarParticle、ProfileBackground、ProfileBackgroundPlayer、ProfileBackgroundRaid，但目前所有來源獎勵欄位都未使用，解析器維持拒絕這四種代號，不預先實作發放。未改遊戲執行資料、存檔或版本號。
 
-**下一個子步驟仍為 R02**：匯入 ServerVarsInfo、ServerVarOverride、ScheduledBonusInfo，以及 ArtifactCostInfo_A、TitanScalingInfo_A／B／C 來源變體，變體分開保存並比對同名鍵差異；伺服器變數只是安裝包內附值，不等於線上生效的覆蓋值。已確認 Equipment 與 Helpers 是 LWF 動畫二進位、HelperLayout 是圖集 JSON，不作 CSV 匯入。線上季節版本選用與配送內容維持待外部證據。PerkInfo 等缺乏模式證據的內容保留未分類，缺乏啟用證據的列保留 unverified，不直接開放購買或發獎。完成資料整備後才進入 R03。
+本次追加伺服器變數與來源變體 6 張表：ServerVarsInfo 12 筆、ServerVarOverride 25 筆（來源 26 列）、ArtifactCostInfo_A 194 筆、TitanScalingInfo_A／B／C 共 21 筆。新增 `tools/audit-servervars-parser.py` 與 servervars-parser-evidence.json，核對 28 處指令、14 個方法名稱及 8 個字串引用。**兩張伺服器變數表都是安裝包內附值**，分類 bundled-server-variable、liveAvailability=unknown；maxStage 98000、relicsStageMax 180000 等數字是資料事實，不得當成線上上限直接改寫 R04／C05。
+
+ServerVarOverride 的重複鍵依原生證據解除隔離：載入器按遞增列號讀取，跳過空白鍵與空值後呼叫 Dictionary.set_Item，故最後成功解析的列生效。pet_paradise_shovel_purchase_daily_limit 在第 14 與第 18 列（列號從 0 起）出現兩次、值皆為 3，26 列整理為 25 個 ID，兩列都保留在 duplicateHistory。此政策只適用本表。
+
+泰坦縮放確認為 A／B 測試來源：ParseTitanScalingInfo 呼叫 GetABTestInfoDoc("TitanScalingInfo")，執行期取得的 A／B 表名才決定實際使用哪一份，該表名不在安裝包內。新增 variantOfSource 與 sourceVariants 逐 ID 比對七組變體：ArtifactCostInfo_A、TitanScalingInfo_C 與基準表完全相同；_A 多關卡 105／110／120／200／500；_B 多關卡 2 至 5 且關卡 1 的 BonusAmountA 由 1.00E+00 變 3.00E-01；三組終局 _1 只有欄位值差異。liveSelection 一律 unknown，不選用任何一組。
+
+ScheduledBonusInfo 不匯入，記入 quarantine.json：原生沒有此表的 InfoDoc 逐列解析器，改由 ParseAllBonuses 與 TryParse 從伺服器字典建立；安裝包 4 列中只有 1 列有 BonusType，其餘 3 列只有註解。未改遊戲執行資料、存檔或版本號。
+
+**下一個子步驟仍為 R02 收尾**：依剩餘資源盤點處理 UpdateInfo（版本更新紀錄文字）與其餘尚未匯入的資料表，並補齊缺乏模式證據的分類。已確認 Equipment 與 Helpers 是 LWF 動畫二進位、HelperLayout 是圖集 JSON，不作 CSV 匯入。線上季節版本選用、每日配送內容與 A／B 指派維持待外部證據。PerkInfo 等缺乏模式證據的內容保留未分類，缺乏啟用證據的列保留 unverified，不直接開放購買或發獎。完成資料整備後才進入 R03。
 
 ## 第二階段：核心戰鬥與升級
 
@@ -175,6 +183,7 @@ ProfileBackgroundInfo 與 7.5 快照逐格相同；AvatarParticleInfo 沒有 7.5
 
 | 日期 | 項目 | 證據／結果 |
 |---|---|---|
+| 2026-09-16 | R02 伺服器變數與來源變體 | 匯入 ServerVarsInfo、ServerVarOverride、ArtifactCostInfo_A、TitanScalingInfo_A／B／C 共 6 張表；以 28 處指令核對確認覆蓋表的最後有效列政策與泰坦縮放的 A／B 表選用，七組來源變體逐 ID 比對，ScheduledBonusInfo 依原生字典解析證據不匯入。117 項 Node 測試＋18 項 Python 測試通過，tsc --noEmit 無誤，核對與匯入重跑結果一致。遊戲執行資料與版本未變。 |
 | 2026-09-16 | R02 外觀支援資料 | 匯入 AvatarParticleInfo 22 筆、ProfileBackgroundInfo 47 筆與 native-cosmetic-types.json；外觀 ID、解鎖類型與背景分槽全部對上原生列舉，新增 1,650 處引用檢查（總數 19,181），列舉獨有成員只作記錄。111 項 Node 測試＋12 項 Python 測試通過，tsc --noEmit 無誤，匯入重跑結果一致。遊戲執行資料與版本未變。 |
 | 2026-09-14 | R01 | 已固定目標 8.2.0；重算 XAPK SHA-256、14 表差異、目前產物數量；建立 `docs/reference-baseline.json` 與 `tools/audit-reference-baseline.py`。現行遊戲保持 2.6.0，未假裝完成 8.2 遷移。 |
 

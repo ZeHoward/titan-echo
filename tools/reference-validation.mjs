@@ -28,6 +28,20 @@ export function classify(table, row, catalogs) {
     }
   }
   let scope = 'unclassified';
+  const variant = catalogs[table]?.variantOfSource;
+  if (variant) {
+    scope = 'source-variant';
+    evidence.push(`base-table=${variant.baseTable}`, 'live-variant-selection=unknown');
+  }
+  if (['ServerVarsInfo', 'ServerVarOverride'].includes(table)) {
+    // Bundled defaults and bundled overrides; the values the live server sends are not in the package.
+    scope = 'bundled-server-variable';
+    evidence.push(`table=${table}`, 'live-server-value=unknown');
+  }
+  if (/^TitanScalingInfo(_[ABC])?$/.test(table)) {
+    scope = 'ab-test-source-variant';
+    evidence.push(`source-table=${table}`, 'ab-sheet-assignment=unknown');
+  }
   if (['AvatarInfo', 'AvatarFrameInfo', 'PlayerTitleInfo', 'AvatarParticleInfo'].includes(table)) {
     scope = 'cosmetic-unlock-definition';
     for (const field of ['AvatarUnlockType', 'TitleUnlockType', 'UnlockType', 'UnlockValue', 'CollectionName']) {
@@ -262,6 +276,22 @@ export function auditCatalogs(catalogs, nativeBonuses = loadNativeBonuses(), nat
             field, value: match[1], target: 'RaidEnemyPartInfo' });
         }
       }
+      if (['ServerVarsInfo', 'ServerVarOverride'].includes(table)) {
+        if (!row.values.ServerVarsKey?.trim()) errors.push(`${label}: blank server var key`);
+        if (table === 'ServerVarOverride' && missing(row.values.Value)) errors.push(`${label}.Value: missing server var value`);
+      }
+      if (/^TitanScalingInfo(_[ABC])?$/.test(table)) {
+        if (!/^[1-9]\d*$/.test(row.values.Stage)) errors.push(`${label}.Stage: invalid positive integer`);
+        const sequence = list(row.values.ThemeMultiplierSequence);
+        if (!sequence.length || sequence.some(value => !decimal.test(value))) {
+          errors.push(`${label}.ThemeMultiplierSequence: invalid multiplier list`);
+        }
+      }
+      if (/^ArtifactCostInfo(_A)?$/.test(table)) {
+        for (const field of ['Count', 'RelicCost']) {
+          if (!decimal.test(row.values[field] ?? '')) errors.push(`${label}.${field}: invalid decimal`);
+        }
+      }
       if (table === 'BonusInfo') ref(table, row, 'Combos', 'BonusInfo', true);
       if (table === 'HelperSkillInfo') ref(table, row, 'Owner', 'HelperInfo');
       if (table === 'ClanScrollInfo') ref(table, row, 'ImageMap', 'HelperInfo');
@@ -295,6 +325,12 @@ export function auditCatalogs(catalogs, nativeBonuses = loadNativeBonuses(), nat
     active.delete(id); finished.add(id);
   }
   for (const id of tree.keys()) visit(id);
+  // Alternate sources are reported side by side; picking one as the live rule needs server evidence.
+  const sourceVariants = Object.entries(catalogs).filter(([, data]) => data.variantOfSource)
+    .map(([table, data]) => ({ table, ...data.variantOfSource, records: data.records.length,
+      baseRecords: catalogs[data.variantOfSource.baseTable]?.records.length ?? null,
+      identicalToBase: !data.variantOfSource.added.length && !data.variantOfSource.removed.length
+        && !data.variantOfSource.changed.length, runtimeEnabled: false }));
   // Enum members without a catalog row stay listed as evidence; they are never invented into the catalog.
   const cosmeticCoverage = Object.entries(cosmeticTables).filter(([table]) => catalogs[table]).map(([table, spec]) => {
     const members = spec.idType ? Object.keys(cosmeticTypes[spec.idType] ?? {}) : [];
@@ -306,7 +342,7 @@ export function auditCatalogs(catalogs, nativeBonuses = loadNativeBonuses(), nat
       unlockTypes: tally(spec.unlockColumn), categories: tally(spec.categoryColumn),
       activation: 'unverified', runtimeEnabled: false };
   });
-  return { version: '8.2.0', runtimeEnabled: false, errors, unresolved, nativeOnly, deferredReferences, rewardReferences, referenceCounts, classifications, cosmeticCoverage };
+  return { version: '8.2.0', runtimeEnabled: false, errors, unresolved, nativeOnly, deferredReferences, rewardReferences, referenceCounts, classifications, cosmeticCoverage, sourceVariants };
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {

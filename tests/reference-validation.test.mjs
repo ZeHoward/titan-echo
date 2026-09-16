@@ -22,7 +22,12 @@ test('reference audit is reproducible and native-only bonus identities remain di
     'RaidSkillInfo/LimbBurst/BonusTypeA/LimbBurstDamage',
     'RaidSkillInfo/LimbBurst/BonusTypeC/LimbBurstMult',
     'RaidSkillInfo/DecayingAttack/BonusTypeE/DecayHealthCap',
-    ...['1', '6', '40', '60'].map(id => `TitanScalingInfo/${id}/BonusTypeA/MonsterHPScaling`),
+    // Every A/B source variant repeats the same native-only scaling identity; none of them is the live sheet.
+    ...Object.entries({ TitanScalingInfo: ['1', '6', '40', '60'],
+      TitanScalingInfo_A: ['1', '6', '40', '60', '105', '110', '120', '200', '500'],
+      TitanScalingInfo_B: ['1', '2', '3', '4', '5', '6', '40', '60'],
+      TitanScalingInfo_C: ['1', '6', '40', '60'] }).flatMap(([table, stages]) =>
+        stages.map(id => `${table}/${id}/BonusTypeA/MonsterHPScaling`)),
   ].sort());
 });
 
@@ -31,7 +36,7 @@ test('unknown effect IDs fail reference resolution even when other native-only I
   broken.ArtifactInfo.records[0].values.BonusType = 'InventedDamage';
   assert.ok(auditCatalogs(broken).unresolved.some(r => r.value === 'InventedDamage'));
   const withoutNative = auditCatalogs(catalogs, {});
-  assert.equal(withoutNative.unresolved.length, 12);
+  assert.equal(withoutNative.unresolved.length, 33);
 });
 
 test('schema validation rejects corrupted decimals, flags, IDs and achievement tiers', () => {
@@ -88,6 +93,6 @@ test('enhancement duplicate resolution retains both source rows and the native l
   assert.deepEqual(data.rowResolution.duplicateHistory.AllActiveSkillAmount.map(r =>
     [r.sourceOrdinal, r.values.PowerExp]), [[9, '0.4'], [57, '1.002']]);
   assert.equal(load('enhancement-parser-evidence').policy, data.rowResolution.policy);
-  assert.deepEqual(load('quarantine').tables, []);
+  assert.ok(!load('quarantine').tables.some(entry => entry.table === data.table));
   assert.equal(result.activation, 'unverified');
 });

@@ -6,6 +6,7 @@ import json
 import pathlib
 import re
 from enhancement_reference import TABLE as ENHANCEMENT_TABLE, resolve_enhancements
+from servervars_reference import TABLE as SERVERVARS_TABLE, resolve_server_var_overrides
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 ASSETS = ROOT / 'work/apk-analysis/text-assets'
@@ -23,7 +24,14 @@ TABLES = ['ArtifactInfo', 'ArtifactCostInfo', 'ActiveSkillInfo', 'ActiveSkillMul
           'EndgamePetInfo', 'EndgamePetInfo_1', 'EndgameSeasonArtifactInfo', 'EndgameSeasonArtifactInfo_1',
           'EndgameSeasonArtifactCostInfo', 'EndgameSeasonRewardInfo', 'EndgameSeasonRewardInfo_1',
           'AvatarInfo', 'AvatarFrameInfo', 'PlayerTitleInfo',
-          'AvatarParticleInfo', 'ProfileBackgroundInfo']
+          'AvatarParticleInfo', 'ProfileBackgroundInfo',
+          'ServerVarsInfo', SERVERVARS_TABLE, 'ArtifactCostInfo_A',
+          'TitanScalingInfo_A', 'TitanScalingInfo_B', 'TitanScalingInfo_C']
+# Same-shaped alternate sources for a base table. Kept separate; the live choice is not in the package.
+VARIANTS = {'ArtifactCostInfo_A': 'ArtifactCostInfo', 'TitanScalingInfo_A': 'TitanScalingInfo',
+            'TitanScalingInfo_B': 'TitanScalingInfo', 'TitanScalingInfo_C': 'TitanScalingInfo',
+            'EndgamePetInfo_1': 'EndgamePetInfo', 'EndgameSeasonArtifactInfo_1': 'EndgameSeasonArtifactInfo',
+            'EndgameSeasonRewardInfo_1': 'EndgameSeasonRewardInfo'}
 # Native cosmetic typing: which enum backs each catalog column. None = no native enum for that column.
 COSMETIC_TABLES = {
     'AvatarInfo': dict(idColumn='AvatarID', idType='AvatarID', unlockColumn='AvatarUnlockType', unlockType='AvatarUnlockType'),
@@ -108,6 +116,11 @@ def main():
         evidence['policy'] != 'last-successfully-parsed-row-wins' or
         evidence['binarySha256'] != sha(ROOT/'work/apk-analysis/libil2cpp.so')):
         raise ValueError('enhancement parser evidence mismatch')
+    server_evidence = json.loads((OUT/'servervars-parser-evidence.json').read_text())
+    if (server_evidence['packageSha256'] != audit['package']['sha256'] or
+        server_evidence['policy'] != 'last-parsed-row-wins' or
+        server_evidence['binarySha256'] != sha(ROOT/'work/apk-analysis/libil2cpp.so')):
+        raise ValueError('server var parser evidence mismatch')
     known_bonuses = json.loads((OUT/'native-bonus-types.json').read_text())['values']
     OUT.mkdir(parents=True, exist_ok=True)
     manifest, catalogs = [], {}
@@ -129,6 +142,16 @@ def main():
             indexed, source_ordinals, duplicate_history = resolve_enhancements(table, rows, known_bonuses)
             resolution = dict(policy=evidence['policy'], evidence='enhancement-parser-evidence.json',
                 sourceRows=len(rows), effectiveRows=len(indexed), duplicateHistory=duplicate_history)
+        elif table in server_evidence['sourceSha256']:
+            if sha(path) != server_evidence['sourceSha256'][table]:
+                raise ValueError(f'{table}: source differs from verified parser evidence')
+            if table == SERVERVARS_TABLE:
+                indexed, source_ordinals, duplicate_history = resolve_server_var_overrides(table, rows)
+                resolution = dict(policy=server_evidence['policy'], evidence='servervars-parser-evidence.json',
+                    sourceRows=len(rows), effectiveRows=len(indexed), duplicateHistory=duplicate_history)
+            else:
+                indexed = index(rows, keys)
+                source_ordinals = {identity: ordinal for ordinal, identity in enumerate(indexed)}
         else:
             indexed = index(rows, keys)
             source_ordinals = {identity: ordinal for ordinal, identity in enumerate(indexed)}
@@ -145,9 +168,18 @@ def main():
             flags = {f: row[f] for f in ('Enabled', 'IsInGame', 'IsActive', 'LimitedTime', 'SkillType', 'SetType', 'Type') if f in row}
             records.append(dict(id=identity, sourceOrdinal=source_ordinals[identity], values=values,
                                 availabilityEvidence=flags, activation='unverified', verification='pending'))
+        variant = None
+        if table in VARIANTS:
+            base = catalogs.get(VARIANTS[table])
+            if base is None:
+                raise ValueError(f'{table}: base source {VARIANTS[table]} must be imported first')
+            shared = set(schema) & set(base[next(iter(base))]) if base else set()
+            variant = dict(baseTable=VARIANTS[table], liveSelection='unknown',
+                added=sorted(indexed.keys()-base.keys()), removed=sorted(base.keys()-indexed.keys()),
+                changed=sorted(k for k in indexed.keys() & base.keys() if any(indexed[k][f] != base[k][f] for f in shared)))
         old = ROOT / 'work/tt2-csv/csv' / (table + '.csv')
         diff = None
-        if old.exists() and table != ENHANCEMENT_TABLE:
+        if old.exists() and table not in (ENHANCEMENT_TABLE, SERVERVARS_TABLE):
             old_fields, old_rows = parse(old)
             before = index(old_rows, keys)
             shared = set(fields) & set(old_fields) - OMIT
@@ -156,6 +188,8 @@ def main():
                         addedColumns=sorted(set(fields)-set(old_fields)), removedColumns=sorted(set(old_fields)-set(fields)))
         data = dict(version='8.2.0', table=table, keys=keys, schema=schema, omittedColumns=sorted(set(fields)&OMIT),
                     missingValues=['', '-'], records=records, differenceFrom75=diff)
+        if variant:
+            data['variantOfSource'] = variant
         if resolution:
             data['rowResolution'] = resolution
             data['differenceFrom75Status'] = 'not-compared: historical parser duplicate policy not verified'
@@ -176,11 +210,26 @@ def main():
         target = catalogs[mapping[name]]
         legacy[name] = dict(table=mapping[name], entries=[dict(legacyIndex=i, id=v, targetId=v if v in target else None) for i,v in enumerate(ids)])
     write('legacy-2.6.json', dict(runtimeSourceSha256=sha(ROOT/'lib/tt2-data.ts'), catalogs=legacy))
-    write('quarantine.json', dict(tables=[], resolved=[dict(table=ENHANCEMENT_TABLE,
-          reason='native-overwrite-policy-verified', evidence='enhancement-parser-evidence.json',
-          historyLocation=ENHANCEMENT_TABLE+'.json#rowResolution', runtimeEnabled=False)]))
     dump_path = ROOT / 'work/apk-analysis/dump/dump.cs'
     dump_text = dump_path.read_text(encoding='utf-8')
+    # Scheduled bonuses are built from a server dictionary, so the bundled sheet is not an authoritative table.
+    scheduled_path = next(ASSETS.glob('*_ScheduledBonusInfo.txt'))
+    scheduled_fields, scheduled_rows = parse(scheduled_path)
+    scheduled_members = ['public virtual bool TryParse(Dictionary<string, object> bonusDict, string bonusKey)',
+                         'private void ParseAllBonuses(Dictionary<string, object> infoDict)']
+    write('quarantine.json', dict(tables=[dict(table='ScheduledBonusInfo', status='not-imported',
+          reason='no InfoDoc row parser; the client builds scheduled bonuses from a server dictionary',
+          sourceSha256=sha(scheduled_path), sourceRows=len(scheduled_rows),
+          rowsWithKey=sum(1 for r in scheduled_rows if r[scheduled_fields[0]]),
+          noteOnlyRows=sum(1 for r in scheduled_rows if not r[scheduled_fields[0]]),
+          nativeMembers=[dict(signature=m, rva=native_rva(dump_text, m)) for m in scheduled_members],
+          blockedBy='live schedule payload unavailable', runtimeEnabled=False)],
+          resolved=[dict(table=ENHANCEMENT_TABLE,
+          reason='native-overwrite-policy-verified', evidence='enhancement-parser-evidence.json',
+          historyLocation=ENHANCEMENT_TABLE+'.json#rowResolution', runtimeEnabled=False),
+          dict(table=SERVERVARS_TABLE, reason='native-last-parsed-row-policy-verified',
+          evidence='servervars-parser-evidence.json',
+          historyLocation=SERVERVARS_TABLE+'.json#rowResolution', runtimeEnabled=False)]))
     native_path = OUT / 'native-bonus-types.json'
     if native_path.exists():
         native_pins = json.loads(native_path.read_text())

@@ -1,0 +1,97 @@
+{
+  "version": "8.2.0",
+  "tables": [
+    "ServerVarOverride",
+    "ServerVarsInfo"
+  ],
+  "packageSha256": "8d78c9aa877e6c0b291ee2116cab855bd26c59c1d080bc654f88ecf1ff268b5f",
+  "binarySha256": "c13fc44321b1214c71ab0277a134fc3401fd7392c74a0bbb3935671c55a8713a",
+  "metadataSha256": "2d93f9e3f58a17cfb1bbd20ccd9fcbb26b3b9497afc4ecc6b94b0bfb2c460d97",
+  "scriptSha256": "62c2eeb8472bb107de516e4b6ae69d3dcdf5013fb1caa87223d82a54dd203f8b",
+  "sourceSha256": {
+    "ServerVarsInfo": "c839c697c1e1cc7cb4d819f94ceb5f44f889485686491e52c7c9095d550a0fad",
+    "ServerVarOverride": "5cc6a00296940be945646051d90e8446d9c96c8a567332098f0da9ed0dd38e88"
+  },
+  "policy": "last-parsed-row-wins",
+  "parsers": {
+    "ServerVarOverride": {
+      "rva": "0x24a8dcc",
+      "parserBytesSha256": "6d12e32a4feb32533d9ca1c832ccf1c71327d015461f50baee9aa69895284618",
+      "keyColumn": "ServerVarsKey",
+      "valueColumn": "Value",
+      "rowOrder": "ascending zero-based row index",
+      "rowGuard": "row skipped when the key is null or whitespace, or the value cell is null",
+      "assignmentCallRva": "0x24a8f48",
+      "assignmentTarget": "Dictionary<object, object>.set_Item"
+    },
+    "ServerVarsInfo": {
+      "rva": "0x24a8f78",
+      "parserBytesSha256": "cb17c6a1fa763d849debfef44432fe6f7564dc0db9902a4304e047374fffc0e2",
+      "keyColumn": "ServerVarsKey",
+      "valueColumns": [
+        "iOS",
+        "Google",
+        "Amazon"
+      ],
+      "valueColumnSelection": "one platform column chosen at runtime; the bundled file is not the choice",
+      "rowOrder": "ascending zero-based row index",
+      "rowGuard": "none observed",
+      "assignmentCallRva": "0x24a91a4",
+      "assignmentTarget": "Dictionary<object, object>.set_Item",
+      "appliedBy": "ServerVarsModel.SetVarsFromAttributes"
+    }
+  },
+  "abTestSelection": {
+    "selectorRva": "0x228804c",
+    "callerRva": "0x23252f8",
+    "requestedSheet": "TitanScalingInfo",
+    "rule": "a runtime-provided A/B sheet name replaces the requested sheet when it is non-empty and contains the requested name",
+    "loader": "InfoDocs.LoadAsText",
+    "variantInUse": "unknown: the assigned A/B sheet name is not in the package"
+  },
+  "checkedInstructionAddresses": [
+    "0x24a8e6c",
+    "0x24a8eb4",
+    "0x24a8eb8",
+    "0x24a8ebc",
+    "0x24a8ee4",
+    "0x24a8f00",
+    "0x24a8f1c",
+    "0x24a8f28",
+    "0x24a8f2c",
+    "0x24a8f34",
+    "0x24a8f48",
+    "0x24a8f4c",
+    "0x24a8f54",
+    "0x24a9080",
+    "0x24a9130",
+    "0x24a9158",
+    "0x24a9174",
+    "0x24a9190",
+    "0x24a91a4",
+    "0x24a91a8",
+    "0x24a91b0",
+    "0x24a91b8",
+    "0x23253b4",
+    "0x23253e8",
+    "0x22880c8",
+    "0x22880e4",
+    "0x22880ec",
+    "0x22880f4"
+  ],
+  "verifiedStringReferences": {
+    "0x4c1abb0": "ServerVarsInfo",
+    "0x4c1b000": "ServerVarOverride",
+    "0x4c1ac30": "TitanScalingInfo",
+    "0x4c2e550": "ServerVarsKey",
+    "0x4c2c840": "Value",
+    "0x4c2e578": "iOS",
+    "0x4c2e570": "Google",
+    "0x4c2e568": "Amazon"
+  },
+  "limits": [
+    "Bundled tables only; the live server var payload and A/B assignment are unknown",
+    "Row resolution and column identity only; this is not a value, formula or activation check",
+    "Import rejects unsupported cells rather than emulating every .NET parsing case"
+  ]
+}

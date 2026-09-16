@@ -78,7 +78,7 @@
     {
       "name": "ServerVarOverride",
       "sourceSha256": "5cc6a00296940be945646051d90e8446d9c96c8a567332098f0da9ed0dd38e88",
-      "status": "not-imported",
+      "status": "imported",
       "route": "R01-R05"
     },
     {
@@ -786,7 +786,7 @@
     {
       "name": "ServerVarsInfo",
       "sourceSha256": "c839c697c1e1cc7cb4d819f94ceb5f44f889485686491e52c7c9095d550a0fad",
-      "status": "not-imported",
+      "status": "imported",
       "route": "R01-R05"
     },
     {
@@ -1266,7 +1266,7 @@
     {
       "name": "TitanScalingInfo_C",
       "sourceSha256": "f1c6db9fe1032363a23d28ffb5f72e5e09600b256cb028ebf22b9f29d31efece",
-      "status": "not-imported",
+      "status": "imported",
       "route": "core-reference"
     },
     {
@@ -1572,7 +1572,7 @@
     {
       "name": "TitanScalingInfo_A",
       "sourceSha256": "2b165c42479c87ac1e7a85e2707a1ac688c686ab38eeda7dada2b9f4f0f7fe49",
-      "status": "not-imported",
+      "status": "imported",
       "route": "core-reference"
     },
     {
@@ -1836,7 +1836,7 @@
     {
       "name": "ArtifactCostInfo_A",
       "sourceSha256": "1a4a86cd0be268bb8d9f41cdac1f4f4ae93c6171268bded6f257919ddecf82dc",
-      "status": "not-imported",
+      "status": "imported",
       "route": "core-reference"
     },
     {
@@ -2034,7 +2034,7 @@
     {
       "name": "TitanScalingInfo_B",
       "sourceSha256": "b79dbbc73906d51d6c5ce65ebff120e48029844a61fdb72dcf9614e3b314cb46",
-      "status": "not-imported",
+      "status": "imported",
       "route": "core-reference"
     },
     {
