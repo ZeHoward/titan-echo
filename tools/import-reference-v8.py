@@ -1,4 +1,5 @@
 """Build an isolated, lossless numerical catalog; never modify runtime/save data."""
+import collections
 import csv
 import hashlib
 import io
@@ -26,12 +27,23 @@ TABLES = ['ArtifactInfo', 'ArtifactCostInfo', 'ActiveSkillInfo', 'ActiveSkillMul
           'AvatarInfo', 'AvatarFrameInfo', 'PlayerTitleInfo',
           'AvatarParticleInfo', 'ProfileBackgroundInfo',
           'ServerVarsInfo', SERVERVARS_TABLE, 'ArtifactCostInfo_A',
-          'TitanScalingInfo_A', 'TitanScalingInfo_B', 'TitanScalingInfo_C']
+          'TitanScalingInfo_A', 'TitanScalingInfo_B', 'TitanScalingInfo_C',
+          'RaidCardBoostedSlotInfo', 'RaidCardLevelRewardInfo', 'RaidEnemyEnchantmentInfo',
+          'RaidFastCompletionBonusStagesInfo', 'RaidMasterTierFastCompletionBonusStagesInfo',
+          'RaidLoyaltyInfo', 'RaidTicketBoostInfo', 'RaidResearchInfo', 'RaidMasterTierLevelInfo',
+          'RaidMasterTierRewardInfo', 'RaidMasterTierRewardInfo_1',
+          'SoloRaidLevelInfo', 'SoloRaidFarmingLevelInfo']
+# Composite stable keys where a single source column repeats across rows.
+KEYS = {'HelperImprovementsInfo': ['Ascension', 'Level'], 'RaidLevelInfo': ['TierID', 'LevelID'],
+        'RaidMasterTierLevelInfo': ['TierID', 'LevelID'], 'SoloRaidLevelInfo': ['WorldID', 'LevelID']}
+# Sheets whose header repeats a column name. Allowed only with the verified InfoDoc column policy.
+DUPLICATE_COLUMN_TABLES = {'RaidTicketBoostInfo', 'RaidResearchInfo'}
 # Same-shaped alternate sources for a base table. Kept separate; the live choice is not in the package.
 VARIANTS = {'ArtifactCostInfo_A': 'ArtifactCostInfo', 'TitanScalingInfo_A': 'TitanScalingInfo',
             'TitanScalingInfo_B': 'TitanScalingInfo', 'TitanScalingInfo_C': 'TitanScalingInfo',
             'EndgamePetInfo_1': 'EndgamePetInfo', 'EndgameSeasonArtifactInfo_1': 'EndgameSeasonArtifactInfo',
-            'EndgameSeasonRewardInfo_1': 'EndgameSeasonRewardInfo'}
+            'EndgameSeasonRewardInfo_1': 'EndgameSeasonRewardInfo',
+            'RaidMasterTierRewardInfo_1': 'RaidMasterTierRewardInfo'}
 # Native cosmetic typing: which enum backs each catalog column. None = no native enum for that column.
 COSMETIC_TABLES = {
     'AvatarInfo': dict(idColumn='AvatarID', idType='AvatarID', unlockColumn='AvatarUnlockType', unlockType='AvatarUnlockType'),
@@ -77,8 +89,8 @@ def native_rva(text, signature):
 def parse(path):
     reader = csv.DictReader(io.StringIO(path.read_text(encoding='utf-8-sig')))
     fields = reader.fieldnames
-    if not fields or len(fields) != len(set(fields)):
-        raise ValueError(f'{path.name}: missing or duplicate columns')
+    if not fields:
+        raise ValueError(f'{path.name}: missing columns')
     rows = list(reader)
     if any(None in r or None in r.values() for r in rows):
         raise ValueError(f'{path.name}: malformed row')
@@ -116,6 +128,11 @@ def main():
         evidence['policy'] != 'last-successfully-parsed-row-wins' or
         evidence['binarySha256'] != sha(ROOT/'work/apk-analysis/libil2cpp.so')):
         raise ValueError('enhancement parser evidence mismatch')
+    infodoc_evidence = json.loads((OUT/'infodoc-parser-evidence.json').read_text())
+    if (infodoc_evidence['packageSha256'] != audit['package']['sha256'] or
+        infodoc_evidence['columnPolicy'] != 'last-header-index-wins' or
+        infodoc_evidence['binarySha256'] != sha(ROOT/'work/apk-analysis/libil2cpp.so')):
+        raise ValueError('InfoDoc parser evidence mismatch')
     server_evidence = json.loads((OUT/'servervars-parser-evidence.json').read_text())
     if (server_evidence['packageSha256'] != audit['package']['sha256'] or
         server_evidence['policy'] != 'last-parsed-row-wins' or
@@ -134,7 +151,20 @@ def main():
         if table in pinned and sha(path) != pinned[table]:
             raise ValueError(f'{table}: source hash mismatch')
         fields, rows = parse(path)
-        keys = ['Ascension', 'Level'] if table == 'HelperImprovementsInfo' else ['TierID', 'LevelID'] if table == 'RaidLevelInfo' else [fields[0]]
+        repeated = sorted(name for name, count in collections.Counter(fields).items() if count > 1)
+        columns = None
+        if repeated:
+            if table not in DUPLICATE_COLUMN_TABLES:
+                raise ValueError(f'{table}: duplicate columns {repeated}')
+            raw = list(csv.reader(io.StringIO(path.read_text(encoding='utf-8-sig'))))[1:]
+            # The shadowed column is unreachable by name natively, so keep its cells beside the effective one.
+            columns = dict(policy=infodoc_evidence['columnPolicy'], evidence='infodoc-parser-evidence.json',
+                repeated=[dict(column=name, sourceIndexes=[i for i, f in enumerate(fields) if f == name],
+                               effectiveIndex=max(i for i, f in enumerate(fields) if f == name),
+                               shadowed=[dict(sourceIndex=i, values=[row[i].strip() for row in raw])
+                                         for i in [j for j, f in enumerate(fields) if f == name][:-1]])
+                          for name in repeated])
+        keys = KEYS.get(table, [fields[0]])
         resolution = None
         if table == ENHANCEMENT_TABLE:
             if sha(path) != evidence['sourceSha256']:
@@ -155,7 +185,7 @@ def main():
         else:
             indexed = index(rows, keys)
             source_ordinals = {identity: ordinal for ordinal, identity in enumerate(indexed)}
-        retained = [f for f in fields if f not in OMIT]
+        retained = list(dict.fromkeys(f for f in fields if f not in OMIT))
         schema = {}
         for field in retained:
             values = {r[field] for r in rows} - {'', '-'}
@@ -188,6 +218,8 @@ def main():
                         addedColumns=sorted(set(fields)-set(old_fields)), removedColumns=sorted(set(old_fields)-set(fields)))
         data = dict(version='8.2.0', table=table, keys=keys, schema=schema, omittedColumns=sorted(set(fields)&OMIT),
                     missingValues=['', '-'], records=records, differenceFrom75=diff)
+        if columns:
+            data['columnResolution'] = columns
         if variant:
             data['variantOfSource'] = variant
         if resolution:

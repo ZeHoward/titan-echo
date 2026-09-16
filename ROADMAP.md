@@ -1,11 +1,11 @@
 # Titan Echo 完整復刻代辦清單
 
-更新：2026-09-16。遊戲目前為 **2.6.0**，最近完整測試 **117 項 Node 測試＋18 項 Python 匯入測試通過**。此文件是後續工作的主清單；`TT2-RULES.md` 保留歷史研究紀錄，不以舊敘述判斷目前完成度。
+更新：2026-09-16。遊戲目前為 **2.6.0**，最近完整測試 **123 項 Node 測試＋23 項 Python 匯入測試通過**。此文件是後續工作的主清單；`TT2-RULES.md` 保留歷史研究紀錄，不以舊敘述判斷目前完成度。
 
 ## 目前位置
 
 - **已完成 R01：固定目標、盤點差異、建立來源基準。** 產物：[來源與雜湊清單](docs/reference-baseline.json)、本清單與工作約定。
-- **下一項：R02，將資料與匯入工具統一到 8.2.0，先建立穩定 ID 映射，再做相容遷移。** 已完成 58 張表、17,188 個有效 ID 的精確字串資料、七組舊 ID 對照及 19,202 處引用檢查，尚未切換線上資料版本。
+- **下一項：R02，將資料與匯入工具統一到 8.2.0，先建立穩定 ID 映射，再做相容遷移。** 已完成 71 張表、19,292 個有效 ID 的精確字串資料、七組舊 ID 對照及 30,124 處引用檢查，尚未切換線上資料版本。
 - 接續順序：R02 → R03 → R04 → C01，之後依下表執行。
 - 尚未有任何一個大型系統通過「與原版同版本完整一致」驗收。已有功能不會重寫成空白，但必須逐項校正與驗證。
 
@@ -72,7 +72,15 @@ ServerVarOverride 的重複鍵依原生證據解除隔離：載入器按遞增�
 
 ScheduledBonusInfo 不匯入，記入 quarantine.json：原生沒有此表的 InfoDoc 逐列解析器，改由 ParseAllBonuses 與 TryParse 從伺服器字典建立；安裝包 4 列中只有 1 列有 BonusType，其餘 3 列只有註解。未改遊戲執行資料、存檔或版本號。
 
-**下一個子步驟仍為 R02 收尾**：依剩餘資源盤點處理 UpdateInfo（版本更新紀錄文字）與其餘尚未匯入的資料表，並補齊缺乏模式證據的分類。已確認 Equipment 與 Helpers 是 LWF 動畫二進位、HelperLayout 是圖集 JSON，不作 CSV 匯入。線上季節版本選用、每日配送內容與 A／B 指派維持待外部證據。PerkInfo 等缺乏模式證據的內容保留未分類，缺乏啟用證據的列保留 unverified，不直接開放購買或發獎。完成資料整備後才進入 R03。
+本次追加突襲進度 13 張表：大師階級關卡 190 筆（TierID＋LevelID 複合鍵）、單人突襲關卡 1,200 筆（WorldID＋LevelID）、農場關卡 120 筆、研究 94 筆、卡片等級獎勵 150 筆、票券加成 301 筆、忠誠 13 筆、加成槽 14 筆、敵人附魔 3 筆、兩張快速完成加成表 9 筆，以及大師階級排名獎勵與其 _1 變體各 5 筆。引用檢查由 19,202 增為 30,124，errors 與 unresolved 皆為 0。
+
+新增 `tools/audit-infodoc-parser.py` 與 infodoc-parser-evidence.json：InfoDocs.ParseInfoDoc 以 set_Item 建立欄位字典，**重複欄位名以最後一欄索引生效**。RaidTicketBoostInfo 的 Amount5 與 RaidResearchInfo 的 Total Levels 各重複一次，只對這兩張列名表放行，並在 columnResolution 保留來源索引、生效索引與被遮蔽欄位的逐列原值，不丟任何儲存格。其他表出現重複欄位仍直接停止匯入。
+
+**發現版本落差**：大師階級排名獎勵引用的 AvatarClanMasterTierSeason17Top10／25／50／100 既不在 AvatarInfo 也不在原生 AvatarID 列舉中，8 筆記入 deferredReferences，不自行建立頭像。判定規則為「目標表有 ID 列舉且該 ID 也不在列舉中」才算來源缺口，否則仍視為匯入遺漏並報錯。另有 17 列突襲研究的前置指向不存在的 999，這些列 BonusType 為 None、MaxLevel 與成本皆為 0，屬無效果列才予以延後；若出現在有效果的列上仍會使驗證失敗。
+
+獎勵解析新增實際出現的 FortuneRaidCard 與 PlayerRaidXP 純量代號及 Reward／NewPlayerReward 欄位；AvatarReward 為 AvatarID 參照而非獎勵字串。突襲戰鬥、傷害公式、票券消耗與發獎仍未實作。未改遊戲執行資料、存檔或版本號。
+
+**下一個子步驟仍為 R02 收尾**：處理 M07／M08 的錦標賽獎勵表（TournamentRewardInfo、SuperTournamentRewardInfo、NewPlayerTournamentRewardInfo、ChallengeTournament 系列共 8 張），再處理 L02 商店（ShopInfo 系列為 JSON，需先判定格式）、PetParadiseLevelInfo 與 V01-V02 活動小遊戲表。已確認 Equipment 與 Helpers 是 LWF 動畫二進位、HelperLayout 是圖集 JSON，不作 CSV 匯入；UpdateInfo 是版本更新說明文字，不是玩法資料表。線上季節版本選用、每日配送內容與 A／B 指派維持待外部證據。完成資料整備後才進入 R03。
 
 ## 第二階段：核心戰鬥與升級
 
@@ -183,6 +191,7 @@ ScheduledBonusInfo 不匯入，記入 quarantine.json：原生沒有此表的 In
 
 | 日期 | 項目 | 證據／結果 |
 |---|---|---|
+| 2026-09-16 | R02 突襲進度資料 | 匯入突襲進度 13 張表（含兩組複合鍵），引用檢查增至 30,124 且 errors／unresolved 為 0；以 10 處指令核對確認 InfoDoc 重複欄位名的最後一欄政策並保留被遮蔽儲存格；記錄第 17 季大師階級頭像與 999 前置兩處來源缺口，未自行補造。123 項 Node 測試＋23 項 Python 測試通過，tsc --noEmit 無誤。遊戲執行資料與版本未變。 |
 | 2026-09-16 | R02 伺服器變數與來源變體 | 匯入 ServerVarsInfo、ServerVarOverride、ArtifactCostInfo_A、TitanScalingInfo_A／B／C 共 6 張表；以 28 處指令核對確認覆蓋表的最後有效列政策與泰坦縮放的 A／B 表選用，七組來源變體逐 ID 比對，ScheduledBonusInfo 依原生字典解析證據不匯入。117 項 Node 測試＋18 項 Python 測試通過，tsc --noEmit 無誤，核對與匯入重跑結果一致。遊戲執行資料與版本未變。 |
 | 2026-09-16 | R02 外觀支援資料 | 匯入 AvatarParticleInfo 22 筆、ProfileBackgroundInfo 47 筆與 native-cosmetic-types.json；外觀 ID、解鎖類型與背景分槽全部對上原生列舉，新增 1,650 處引用檢查（總數 19,181），列舉獨有成員只作記錄。111 項 Node 測試＋12 項 Python 測試通過，tsc --noEmit 無誤，匯入重跑結果一致。遊戲執行資料與版本未變。 |
 | 2026-09-14 | R01 | 已固定目標 8.2.0；重算 XAPK SHA-256、14 表差異、目前產物數量；建立 `docs/reference-baseline.json` 與 `tools/audit-reference-baseline.py`。現行遊戲保持 2.6.0，未假裝完成 8.2 遷移。 |

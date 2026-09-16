@@ -120,7 +120,7 @@
     {
       "name": "RaidMasterTierRewardInfo_1",
       "sourceSha256": "417ccf157d364cfdf175ff6a5d580f52cbda95e3f68cd170351ae5d24c1a3b03",
-      "status": "not-imported",
+      "status": "imported",
       "route": "M04-M06"
     },
     {
@@ -138,7 +138,7 @@
     {
       "name": "RaidCardBoostedSlotInfo",
       "sourceSha256": "4d9bb1ab6ddb2ed05b61c37dbd41ab4c586dcd8c9f62db03a0b6c26a91e521c6",
-      "status": "not-imported",
+      "status": "imported",
       "route": "M04-M06"
     },
     {
@@ -258,7 +258,7 @@
     {
       "name": "RaidCardLevelRewardInfo",
       "sourceSha256": "bd02953dd5d61c694db6f371088e336e221005f872efcec06a8b7470c5765373",
-      "status": "not-imported",
+      "status": "imported",
       "route": "M04-M06"
     },
     {
@@ -708,7 +708,7 @@
     {
       "name": "RaidMasterTierLevelInfo",
       "sourceSha256": "a9be98434abe5a94a3fbe6dde6a57bcbc194afeecdc08680c9f17929935653d8",
-      "status": "not-imported",
+      "status": "imported",
       "route": "M04-M06"
     },
     {
@@ -780,7 +780,7 @@
     {
       "name": "SoloRaidFarmingLevelInfo",
       "sourceSha256": "dc87a04a14748aad2cc560e0e74cf12eaeb8ad6d722d56d6d60f30599f614929",
-      "status": "not-imported",
+      "status": "imported",
       "route": "M04-M06"
     },
     {
@@ -882,7 +882,7 @@
     {
       "name": "RaidResearchInfo",
       "sourceSha256": "4005f48aa381f41b3bc3d352a82e29fe2628186893e599e35568eb4a5ea590d2",
-      "status": "not-imported",
+      "status": "imported",
       "route": "M04-M06"
     },
     {
@@ -948,7 +948,7 @@
     {
       "name": "SoloRaidLevelInfo",
       "sourceSha256": "d1db91a13c981a7926875bec9c7b26d14e688a4de4dca25c3e0b8a9168534928",
-      "status": "not-imported",
+      "status": "imported",
       "route": "M04-M06"
     },
     {
@@ -1602,7 +1602,7 @@
     {
       "name": "RaidTicketBoostInfo",
       "sourceSha256": "13a1b28600884d192bb705584568f0d11dfb2357d3777615067bf81263652e7f",
-      "status": "not-imported",
+      "status": "imported",
       "route": "M04-M06"
     },
     {
@@ -1668,7 +1668,7 @@
     {
       "name": "RaidMasterTierRewardInfo",
       "sourceSha256": "417ccf157d364cfdf175ff6a5d580f52cbda95e3f68cd170351ae5d24c1a3b03",
-      "status": "not-imported",
+      "status": "imported",
       "route": "M04-M06"
     },
     {
@@ -1830,7 +1830,7 @@
     {
       "name": "RaidFastCompletionBonusStagesInfo",
       "sourceSha256": "834f143131d1ff79b7d3190c6e0246108e7e8d7903ac2cf8755d04bca39f78bd",
-      "status": "not-imported",
+      "status": "imported",
       "route": "M04-M06"
     },
     {
@@ -2076,7 +2076,7 @@
     {
       "name": "RaidLoyaltyInfo",
       "sourceSha256": "af9b0892fc27753e0be49f0b2cdd13ce6a175d99e1c0d8b9db4d4b2fffb87b98",
-      "status": "not-imported",
+      "status": "imported",
       "route": "M04-M06"
     },
     {
@@ -2136,7 +2136,7 @@
     {
       "name": "RaidMasterTierFastCompletionBonusStagesInfo",
       "sourceSha256": "5da58b3df1367e60f7e225299f25d001f8eb1f4a2b0caae7d3243b275a74788a",
-      "status": "not-imported",
+      "status": "imported",
       "route": "M04-M06"
     },
     {
@@ -2154,7 +2154,7 @@
     {
       "name": "RaidEnemyEnchantmentInfo",
       "sourceSha256": "a63cc704527c33906fac73c3d6e5adb065c46af1fdb49e6f1d97791895af6496",
-      "status": "not-imported",
+      "status": "imported",
       "route": "M04-M06"
     },
     {

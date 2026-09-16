@@ -1,0 +1,36 @@
+{
+  "version": "8.2.0",
+  "scope": "InfoDocs.ParseInfoDoc column dictionary",
+  "packageSha256": "8d78c9aa877e6c0b291ee2116cab855bd26c59c1d080bc654f88ecf1ff268b5f",
+  "binarySha256": "c13fc44321b1214c71ab0277a134fc3401fd7392c74a0bbb3935671c55a8713a",
+  "metadataSha256": "2d93f9e3f58a17cfb1bbd20ccd9fcbb26b3b9497afc4ecc6b94b0bfb2c460d97",
+  "scriptSha256": "62c2eeb8472bb107de516e4b6ae69d3dcdf5013fb1caa87223d82a54dd203f8b",
+  "columnPolicy": "last-header-index-wins",
+  "parserRva": "0x2287a10",
+  "parserBytesSha256": "50693377862de2794b76c40b0006df69355eede222e247eaf9c8e958b2aa9367",
+  "evidence": {
+    "headerOrder": "ascending zero-based header index",
+    "assignmentCallRva": "0x2287fd4",
+    "assignmentTarget": "Dictionary<string, int>.set_Item",
+    "storedValue": "the header index being visited",
+    "consequence": "a repeated header name resolves to its last column; earlier columns become unreachable by name",
+    "headerRowRemovedRva": "0x2288004",
+    "checkedInstructionAddresses": [
+      "0x2287b50",
+      "0x2287f84",
+      "0x2287fa4",
+      "0x2287fbc",
+      "0x2287fd0",
+      "0x2287fd4",
+      "0x2287fdc",
+      "0x2287fe4",
+      "0x2288004",
+      "0x2288020"
+    ]
+  },
+  "limits": [
+    "Column name resolution only; this says nothing about cell meaning, units or activation",
+    "Applies to every sheet parsed through InfoDocs, not to a single table",
+    "Shadowed columns are still published in the catalog so no source value is dropped"
+  ]
+}

@@ -76,7 +76,8 @@ test('titan scaling variants are reported side by side without choosing a live A
 test('every imported alternate source is diffed against its base table', () => {
   const variants = report.sourceVariants.map(entry => entry.table).sort();
   assert.deepEqual(variants, ['ArtifactCostInfo_A', 'EndgamePetInfo_1', 'EndgameSeasonArtifactInfo_1',
-    'EndgameSeasonRewardInfo_1', 'TitanScalingInfo_A', 'TitanScalingInfo_B', 'TitanScalingInfo_C']);
+    'EndgameSeasonRewardInfo_1', 'RaidMasterTierRewardInfo_1', 'TitanScalingInfo_A', 'TitanScalingInfo_B',
+    'TitanScalingInfo_C']);
   for (const entry of report.sourceVariants) {
     assert.ok(catalogs[entry.baseTable], entry.table);
     assert.deepEqual(Object.keys(catalogs[entry.table].schema), Object.keys(catalogs[entry.baseTable].schema));

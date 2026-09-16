@@ -21,7 +21,7 @@ test('cosmetic rank rewards retain ID values and do not infer numeric quantities
 test('rank source variants remain separate and missing cosmetics fail without auto-awarding another title', () => {
   const report = auditCatalogs(catalogs);
   assert.deepEqual(report.errors, []);
-  const ranks = report.rewardReferences.filter(r => r.field === 'RankReward');
+  const ranks = report.rewardReferences.filter(r => r.field === 'RankReward' && r.table.startsWith('EndgameSeasonRewardInfo'));
   assert.equal(ranks.length, 8);
   assert.deepEqual([...new Set(ranks.map(r => r.season))].sort(), ['12', '13']);
   assert.ok(ranks.every(r => r.activation === 'unverified' && r.runtimeEnabled === false));

@@ -42,6 +42,10 @@ export function classify(table, row, catalogs) {
     scope = 'ab-test-source-variant';
     evidence.push(`source-table=${table}`, 'ab-sheet-assignment=unknown');
   }
+  if (/^(Raid|SoloRaid)/.test(table)) {
+    scope = 'raid';
+    evidence.push(`table=${table}`);
+  }
   if (['AvatarInfo', 'AvatarFrameInfo', 'PlayerTitleInfo', 'AvatarParticleInfo'].includes(table)) {
     scope = 'cosmetic-unlock-definition';
     for (const field of ['AvatarUnlockType', 'TitleUnlockType', 'UnlockType', 'UnlockValue', 'CollectionName']) {
@@ -207,6 +211,56 @@ export function auditCatalogs(catalogs, nativeBonuses = loadNativeBonuses(), nat
               errors.push(`${label}.LVL${level}: invalid difficulty probability vector`);
             }
           } else if (typeof value !== 'string' || !decimal.test(value)) errors.push(`${label}.LVL${level}: missing quest progression value`);
+        }
+      }
+      if (/^(SoloRaidLevelInfo|SoloRaidFarmingLevelInfo|RaidMasterTierLevelInfo)$/.test(table)) {
+        ref(table, row, 'EnemyIDs', 'RaidEnemyInfo', true);
+        ref(table, row, 'AreaID', 'RaidAreaInfo');
+        ref(table, row, 'AvatarReward', 'AvatarInfo');
+        for (const field of ['HasArmor', 'Enabled']) {
+          if (row.values[field] !== undefined && !bool(row.values[field])) errors.push(`${label}.${field}: invalid flag`);
+        }
+        for (const field of ['TitanCount', 'MaxAttacks', 'AttacksPerReset', 'MaxDecks']) {
+          if (row.values[field] !== undefined && !/^[1-9]\d*$/.test(row.values[field])) {
+            errors.push(`${label}.${field}: invalid positive integer`);
+          }
+        }
+      }
+      if (table === 'RaidResearchInfo') {
+        for (const value of list(row.values.RequiredResearchID)) {
+          const link = 'RaidResearchInfo.RequiredResearchID -> RaidResearchInfo';
+          referenceCounts[link] = (referenceCounts[link] ?? 0) + 1;
+          if (ids[table].has(value)) continue;
+          // A dangling prerequisite is only tolerated on a row that grants nothing and cannot be levelled.
+          const inert = row.values.BonusType === 'None' && row.values.MaxLevel === '0'
+            && row.values.ResearchPointsPerLevel === '0';
+          if (inert) {
+            deferredReferences.push({ table, id: row.id, field: 'RequiredResearchID', value, target: table,
+              reason: 'prerequisite row is not in the bundled table; the referencing row has no effect, max level or cost' });
+          } else unresolved.push({ table, id: row.id, field: 'RequiredResearchID', value, target: table });
+        }
+      }
+      if (table === 'RaidCardLevelRewardInfo') {
+        const costLink = 'RaidCardLevelRewardInfo.CardLevel -> RaidSkillCardCostInfo';
+        referenceCounts[costLink] = (referenceCounts[costLink] ?? 0) + 1;
+        if (!ids.RaidSkillCardCostInfo?.has(row.id)) unresolved.push({ table, id: row.id,
+          field: 'CardLevel', value: row.id, target: 'RaidSkillCardCostInfo' });
+      }
+      if (/^(RaidMasterTierRewardInfo(_1)?|SoloRaidLevelInfo|SoloRaidFarmingLevelInfo)$/.test(table)) {
+        for (const field of ['RankReward', 'Reward', 'NewPlayerReward']) {
+          if (row.values[field] === undefined || none(row.values[field])) continue;
+          try {
+            const parsed = parseRewardReference(row.values[field], field, catalogs, nativeRewards, { missingTargets: 'report' });
+            rewardReferences.push({ table, id: row.id, field, activation: 'unverified', ...parsed });
+            for (const miss of parsed.missingTargets) {
+              // A name the whole package does not know is a source gap; a name it knows is a lost catalog row.
+              const enumName = cosmeticTables[miss.target]?.idType;
+              if (enumName && !Object.hasOwn(cosmeticTypes[enumName] ?? {}, miss.itemId)) {
+                deferredReferences.push({ table, id: row.id, field, value: miss.itemId, target: miss.target,
+                  reason: `absent from both the ${miss.target} catalog and the native ${enumName} enum in this package` });
+              } else errors.push(`${label}.${field}: unknown ${miss.target} ID: ${miss.itemId}`);
+            }
+          } catch (error) { errors.push(`${label}.${field}: ${error.message}`); }
         }
       }
       if (table === 'EndgameSeasonRewardInfo' || table === 'EndgameSeasonRewardInfo_1') {
