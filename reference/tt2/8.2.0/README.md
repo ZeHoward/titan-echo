@@ -2,7 +2,7 @@
 
 這是資料準備成果，尚未接入遊戲或改寫存檔。現行遊戲仍為 2.6.0／7.5 數值基準。
 
-`manifest.json` 記錄安裝包、83 張已解析表（22,627 個表內有效 ID）的 SHA-256，以及 372 個 TextAsset 的大小與雜湊。未解析的資源只列索引，不宣稱它們皆為 CSV 或已完成 schema。
+`manifest.json` 記錄安裝包、107 張已解析表（24,075 個表內有效 ID）的 SHA-256，以及 372 個 TextAsset 的大小與雜湊。未解析的資源只列索引，不宣稱它們皆為 CSV 或已完成 schema。
 
 每張表以來源 ID 為鍵；英雄里程碑使用 `[Ascension,Level]` 複合鍵。`sourceOrdinal` 僅作來源定位，不能用來覆蓋玩家陣列。`legacy-2.6.json` 固定目前七組核心陣列的原始 ID 順序；不存在於目標表的 ID 映射為 null，後續遷移必須保留及處理，不能改配其他內容。
 
@@ -12,7 +12,7 @@
 
 重建：使用本機已忽略的原始資料執行 `python tools/import-reference-v8.py`，再執行 `node tools/reference-validation.mjs`。工具驗證安裝包、既有全資源索引、原生列舉與解析器證據雜湊。除了下列已取得原生證據的表以外，拒絕重複鍵與重複欄位名；不完整 CSV 列一律拒絕。CI 透過 `npm test` 驗證提交資料完整性、舊 ID 對照、換序、超大數值、跨表引用與活動證據，並執行 `python3 -m unittest discover -s tests -p '*_test.py'` 驗證實際 Python 匯入規則。未知效果 ID、壞掉的前置引用、循環技能前置、非法數字及不成對的成就階段皆有反例測試。
 
-目前檢查 30,966 處引用；其中 33 處不在 BonusInfo，但在原生 BonusType 列舉中存在，記錄在 `nativeOnly`；其中 21 處是四份泰坦縮放來源變體重複引用同一個 MonsterHPScaling。`native-bonus-types.json` 僅保存列舉 ID／數字與來源雜湊，不能用來推定效果公式。沒有未解析的引用 ID，不代表所有公式或所有資源都已驗證。
+目前檢查 30,987 處引用；其中 33 處不在 BonusInfo，但在原生 BonusType 列舉中存在，記錄在 `nativeOnly`；其中 21 處是四份泰坦縮放來源變體重複引用同一個 MonsterHPScaling。`native-bonus-types.json` 僅保存列舉 ID／數字與來源雜湊，不能用來推定效果公式。沒有未解析的引用 ID，不代表所有公式或所有資源都已驗證。
 
 裝備副屬性表已解除隔離：原生 `ParseEquipmentEnhancementScalingInfo`（RVA 0x218994c）按遞增列號讀取；五個 TryGetCell 都成功才呼叫字典 set_Item，後者使用 OverwriteExisting。故同 ID 最後成功解析的列生效。59 筆來源列整理為 58 個 ID，AllActiveSkillAmount 的 PowerExp 從第 9 列的 0.4 被第 57 列的 1.002 覆寫（列號從 0 起）。兩筆都保留在表內 rowResolution.duplicateHistory，sourceOrdinal 指向最後生效列。這項結論只適用於目前安裝包資料，不推定歷史 7.5 解析器或線上覆蓋值。
 
@@ -101,3 +101,13 @@ PetParadiseLevelInfo 逐列自洽檢查：Rows×Columns 必須等於 BoardSize�
 NewPrizeInfoDoc 與 TournamentRewardInfo 的 273 個複合鍵完全相同，屬同一份獎勵表的另一個來源，已納入 `sourceVariants`。變體比較新增 `sharedColumns`、`variantOnlyColumns`、`baseOnlyColumns`，且只比對雙方保留的欄位（略過名稱與顏色等被 omit 的欄）：此組共用 13 欄，變體多 Perk，基準多 AnniversaryMinigameCurrency、PerkTicket 與 Rewards，共用欄位中 SkillPoint、Weapon、PremiumWeapon 有差異。兩份都保留，liveSelection 維持 unknown。
 
 四個商店 JSON 不是資料表，改以 [shop-payload-samples.json](shop-payload-samples.json) 只記錄形狀：ShopInfo **不是嚴格 JSON**（第 26 行陣列有多餘逗號），其餘三個為嚴格 JSON，頂層皆為 section_chests／section_daily_deals／section_special_bundle，product_type 有 chest、daily_deal、special_bundle。這些是商店回應的測試樣本，含 uuid 與 expire_time，**不能當成線上商品、價格、時程或每日配送來源**；ShopBundleInfo 仍有 3 個 DailyDeliveryID 缺少真實配送表。
+
+本次追加小遊戲與周年賽 24 張表，涵蓋落球、挖掘、釣魚、狩獵、迷宮、公會保險庫、公會與單人蛻變賽及周年錦標賽：挖掘關卡 1,000 筆、魚類與野獸各 50 筆、飾品 43 筆、活動任務 15 筆、各遊戲的排名獎勵、單人貢獻獎勵、升級與稀有度表。分類為 event-minigame、live-event-schedule=unknown；支付活動貨幣的貢獻表沿用更精確的 mixed-event-rewards 分類。周年錦標賽雖然名稱含 Tournament，但屬小遊戲排行榜，保留活動分類。
+
+三張升級表的 BonusType 欄（BallDropPegCoinBonus、FishingBaitLevel、QuiverSizeLevel 等 21 個）全部是真實 BonusInfo ID，不是升級標籤，已逐列核對。
+
+**獎勵解析新增 RewardedBonus 形式**：`RewardedBonus:AuraLevel:0.01` 為三段格式，中段是 BonusInfo ID、末段是小數比例。解析器把它記為 `itemId` 加 `amount`，`quantity` 保持 null，避免把 0.01 誤當物品數量；50 處挖掘關卡獎勵使用此形式，涵蓋 AuraLevel、ArmorLevel、HelmetLevel、SlashLevel、WeaponLevel 五個加成。同時補上 AnniversaryMinigameCurrency 與 MinigameMazeKeys 兩個純量代號，以及 RewardStringForRarity4 欄位名。小遊戲共 1,334 筆獎勵引用全部以原生 RewardID 文法解析成功。
+
+MinigameEventQuestInfo 的 Requirement 與 Reward 是成對的純數字階段清單，不是獎勵字串，改用與成就表相同的階段配對檢查，並驗證 ClientTracked 為布林值；此表不列入獎勵引用。
+
+**再發現一處來源缺口**：AnniversaryTournamentRankRewardInfo 的前兩名獎勵引用 AvatarAnniversary10，該 ID 在 AvatarInfo 與原生 AvatarID 列舉中都不存在，2 筆記入 deferredReferences。連同大師階級的第 17 季 8 筆，目前共 10 筆缺少頭像的引用；同一獎勵字串中確實存在的稱號照常解析。

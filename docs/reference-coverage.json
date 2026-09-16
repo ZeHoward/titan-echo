@@ -72,7 +72,7 @@
     {
       "name": "MinigameClanVaultContributionRewards",
       "sourceSha256": "c6ec6107620846b974446a7cbf81bbc27c6bc04031e9841b769ebf6328117e2a",
-      "status": "not-imported",
+      "status": "imported",
       "route": "V01-V02"
     },
     {
@@ -210,7 +210,7 @@
     {
       "name": "MinigameHuntingBeastInfo",
       "sourceSha256": "3de6d43d9225297975e8e1e62a6da10baf802c5cd9eb329e58913f23b7fc5cbb",
-      "status": "not-imported",
+      "status": "imported",
       "route": "V01-V02"
     },
     {
@@ -282,7 +282,7 @@
     {
       "name": "MinigameDigsiteRewardInfo",
       "sourceSha256": "a2a753a88b9489ed507bfb710b652adeeb7831e93fe5288977e7826fa5d7c497",
-      "status": "not-imported",
+      "status": "imported",
       "route": "V01-V02"
     },
     {
@@ -444,7 +444,7 @@
     {
       "name": "MinigameFishingDerbySoloContributionRewards",
       "sourceSha256": "18d192253fd75f16e3ed1a271944be11573a9ef7c16dcdb3cc3a6426cc0ae1f0",
-      "status": "not-imported",
+      "status": "imported",
       "route": "V01-V02"
     },
     {
@@ -462,7 +462,7 @@
     {
       "name": "MinigameFishingDerbyUpgradeInfo",
       "sourceSha256": "2a73fac21472a59867aeb714993a8d434922d29da5f6083d19c5db8df10701d7",
-      "status": "not-imported",
+      "status": "imported",
       "route": "V01-V02"
     },
     {
@@ -558,7 +558,7 @@
     {
       "name": "MinigameFishingDerbyRewardInfo",
       "sourceSha256": "5aa8578d4d5c76590eb545dfc36c98d136f355a3ed38139eb11dae65a1fb8395",
-      "status": "not-imported",
+      "status": "imported",
       "route": "V01-V02"
     },
     {
@@ -828,7 +828,7 @@
     {
       "name": "MinigameMazeRewardInfo",
       "sourceSha256": "274d1d093ca4b4ba3ccd5d26364b55f45f505ac070ebc7a8980927bb6062e9c7",
-      "status": "not-imported",
+      "status": "imported",
       "route": "V01-V02"
     },
     {
@@ -894,7 +894,7 @@
     {
       "name": "AnniversaryTournamentSoloContributionRewards",
       "sourceSha256": "d6b7eaa10fdaddcacc7e0b7ea70a001eb1774ad87681c44d1a11c84f5a9302df",
-      "status": "not-imported",
+      "status": "imported",
       "route": "V01-V02"
     },
     {
@@ -960,7 +960,7 @@
     {
       "name": "MinigameHuntingUpgradeInfo",
       "sourceSha256": "e6ec0e50ce2b80ebb7efc4962e8beec8412631873f1a023992e6422762f9e6c7",
-      "status": "not-imported",
+      "status": "imported",
       "route": "V01-V02"
     },
     {
@@ -1050,7 +1050,7 @@
     {
       "name": "MinigameFishingDerbyFishInfo",
       "sourceSha256": "b71de5e0c50200458e0e2c82471a4ede16821f44bbc213fa473c3dd16a97e5dc",
-      "status": "not-imported",
+      "status": "imported",
       "route": "V01-V02"
     },
     {
@@ -1080,7 +1080,7 @@
     {
       "name": "MinigameFishingDerbyRarityInfo",
       "sourceSha256": "9ce824d12ffd7a80fb3339240c9d1835f7335fcdeeeac33c324496a022ba3cf5",
-      "status": "not-imported",
+      "status": "imported",
       "route": "V01-V02"
     },
     {
@@ -1278,7 +1278,7 @@
     {
       "name": "MinigameFishingDerbyXPInfo",
       "sourceSha256": "2b32ee9f5922909368af9064d52e18c5bc2ca423e327013db11bad3a85ae40fe",
-      "status": "not-imported",
+      "status": "imported",
       "route": "V01-V02"
     },
     {
@@ -1326,7 +1326,7 @@
     {
       "name": "AnniversaryTournamentRankRewardInfo",
       "sourceSha256": "f574ff2c34fdb80f1a3e5b12ba00a87f417410b34de0540707d2494bf08ea3fa",
-      "status": "not-imported",
+      "status": "imported",
       "route": "V01-V02"
     },
     {
@@ -1368,7 +1368,7 @@
     {
       "name": "MinigameHuntingRarityInfo",
       "sourceSha256": "4918326c2891e0d7fef6c531ebcffe32ebfe9619ecce54aba6bf6dd5285bb6ed",
-      "status": "not-imported",
+      "status": "imported",
       "route": "V01-V02"
     },
     {
@@ -1416,7 +1416,7 @@
     {
       "name": "MinigameClanPrestigeGameRewardInfo",
       "sourceSha256": "686341bb36f50eb21209688682f1299e3537ce9c840359eb1e0d0bb026a486e2",
-      "status": "not-imported",
+      "status": "imported",
       "route": "V01-V02"
     },
     {
@@ -1440,7 +1440,7 @@
     {
       "name": "MinigameBallDropSoloContributionRewards",
       "sourceSha256": "d6b7eaa10fdaddcacc7e0b7ea70a001eb1774ad87681c44d1a11c84f5a9302df",
-      "status": "not-imported",
+      "status": "imported",
       "route": "V01-V02"
     },
     {
@@ -1482,7 +1482,7 @@
     {
       "name": "MinigameHuntingRewardInfo",
       "sourceSha256": "37c42ec6715af4cdbee445ac7736a020a3afabe5038a6a84c190fb7190c77d51",
-      "status": "not-imported",
+      "status": "imported",
       "route": "V01-V02"
     },
     {
@@ -1560,7 +1560,7 @@
     {
       "name": "MinigameBallDropUpgradeInfo",
       "sourceSha256": "5f53bdc911773521307324237c06c41c6f5992d6df6f45e2b72c5bd8be2f8444",
-      "status": "not-imported",
+      "status": "imported",
       "route": "V01-V02"
     },
     {
@@ -1650,7 +1650,7 @@
     {
       "name": "MinigameDigsiteTrinketInfo",
       "sourceSha256": "90d2c6955b330078373cedec84b972e6a1d5c354f2436601ea96bb94f15d9e40",
-      "status": "not-imported",
+      "status": "imported",
       "route": "V01-V02"
     },
     {
@@ -1740,7 +1740,7 @@
     {
       "name": "MinigameSoloPrestigeGameRewardInfo",
       "sourceSha256": "8b003e2109b51a1bd273cb4b23fc0d188125d6a238939bc4dfde71bc04725c34",
-      "status": "not-imported",
+      "status": "imported",
       "route": "V01-V02"
     },
     {
@@ -1788,7 +1788,7 @@
     {
       "name": "MinigameBallDropRewardInfo",
       "sourceSha256": "40584b7997d5d37a86fe2ac74eb9a4fe9cef3626951f2256ecb1671dbaab309c",
-      "status": "not-imported",
+      "status": "imported",
       "route": "V01-V02"
     },
     {
@@ -1842,7 +1842,7 @@
     {
       "name": "MinigameDigsiteLevelInfo",
       "sourceSha256": "f12087916156a77d72ca51f5c3e045a14f5d8c0ab56ada01a4e531a8f2f30234",
-      "status": "not-imported",
+      "status": "imported",
       "route": "V01-V02"
     },
     {
@@ -1854,7 +1854,7 @@
     {
       "name": "MinigameHuntingSoloContributionRewards",
       "sourceSha256": "de0eebd2551fd89daa19dd36f41c0f66004d02bb64c5031b27fa9550d63bd760",
-      "status": "not-imported",
+      "status": "imported",
       "route": "V01-V02"
     },
     {
@@ -1956,7 +1956,7 @@
     {
       "name": "MinigameEventQuestInfo",
       "sourceSha256": "fd2a5ebe94f4df924335e8797360df43cbdf9003d65dc8d67c4811e8c534792d",
-      "status": "not-imported",
+      "status": "imported",
       "route": "V01-V02"
     },
     {

@@ -55,7 +55,12 @@ export function classify(table, row, catalogs) {
     scope = 'pet-paradise-progression';
     evidence.push('table=PetParadiseLevelInfo');
   }
-  if (/Tournament/.test(table)) {
+  if (/^(Minigame|AnniversaryTournament|GlobalEvent|HolidayEvent)/.test(table)) {
+    scope = 'event-minigame';
+    evidence.push(`table=${table}`, 'live-event-schedule=unknown');
+  }
+  // Anniversary tournaments are minigame leaderboards, so they keep the event scope set above.
+  if (/Tournament/.test(table) && !table.startsWith('AnniversaryTournament')) {
     scope = /^(Challenge|SuperChallenge)/.test(table) ? 'challenge-tournament' : 'tournament';
     evidence.push(`table=${table}`, 'live-schedule=unknown');
   }
@@ -271,21 +276,32 @@ export function auditCatalogs(catalogs, nativeBonuses = loadNativeBonuses(), nat
         const comparison = compareRewardColumns(table, row, nativeRewards);
         if (comparison) tournamentColumnChecks.push({ table, id: row.id, ...comparison });
       }
-      if (table === 'AdChestInfo' || table === 'PetParadiseLevelInfo') {
-        const field = table === 'AdChestInfo' ? 'RewardTier' : 'CompletionRewardString';
-        if (!none(row.values[field])) {
-          try {
-            const parsed = parseRewardReference(row.values[field], field, catalogs, nativeRewards, { missingTargets: 'report' });
-            rewardReferences.push({ table, id: row.id, field, activation: 'unverified', ...parsed });
-            for (const miss of parsed.missingTargets) {
-              const enumName = cosmeticTables[miss.target]?.idType;
-              if (enumName && !Object.hasOwn(cosmeticTypes[enumName] ?? {}, miss.itemId)) {
-                deferredReferences.push({ table, id: row.id, field, value: miss.itemId, target: miss.target,
-                  reason: `absent from both the ${miss.target} catalog and the native ${enumName} enum in this package` });
-              } else errors.push(`${label}.${field}: unknown ${miss.target} ID: ${miss.itemId}`);
-            }
-          } catch (error) { errors.push(`${label}.${field}: ${error.message}`); }
+      // Minigame and event sheets reuse the native RewardID grammar, unlike the tournament sheets.
+      const nativeRewardFields = table === 'AdChestInfo' ? ['RewardTier']
+        : /^(Minigame|AnniversaryTournament)/.test(table) || table === 'PetParadiseLevelInfo'
+          ? ['RankReward', 'RewardString', 'CompletionRewardString', 'RewardStringForRarity4'] : [];
+      for (const field of nativeRewardFields) {
+        if (row.values[field] === undefined || none(row.values[field])) continue;
+        try {
+          const parsed = parseRewardReference(row.values[field], field, catalogs, nativeRewards, { missingTargets: 'report' });
+          rewardReferences.push({ table, id: row.id, field, activation: 'unverified', ...parsed });
+          for (const miss of parsed.missingTargets) {
+            const enumName = cosmeticTables[miss.target]?.idType;
+            if (enumName && !Object.hasOwn(cosmeticTypes[enumName] ?? {}, miss.itemId)) {
+              deferredReferences.push({ table, id: row.id, field, value: miss.itemId, target: miss.target,
+                reason: `absent from both the ${miss.target} catalog and the native ${enumName} enum in this package` });
+            } else errors.push(`${label}.${field}: unknown ${miss.target} ID: ${miss.itemId}`);
+          }
+        } catch (error) { errors.push(`${label}.${field}: ${error.message}`); }
+      }
+      if (table === 'MinigameEventQuestInfo') {
+        // Requirement and Reward are paired tier lists of plain numbers, not a reward grammar.
+        const requirements = list(row.values.Requirement), rewards = list(row.values.Reward);
+        if (requirements.length !== rewards.length || !requirements.length ||
+            [...requirements, ...rewards].some(value => !decimal.test(value))) {
+          errors.push(`${label}: quest tiers mismatch`);
         }
+        if (!bool(row.values.ClientTracked)) errors.push(`${label}.ClientTracked: invalid flag`);
       }
       if (table === 'AdChestInfo') {
         const category = row.values.RewardCategoryTier;

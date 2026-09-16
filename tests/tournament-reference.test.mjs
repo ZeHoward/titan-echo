@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { auditCatalogs, loadCatalogs, referenceRoot } from '../tools/reference-validation.mjs';
-import { compareRewardColumns, parseTournamentRewardList } from '../tools/tournament-reference.mjs';
+import { REWARD_FIELDS, compareRewardColumns, parseTournamentRewardList } from '../tools/tournament-reference.mjs';
 const catalogs = loadCatalogs();
 const report = auditCatalogs(catalogs);
 const load = name => JSON.parse(readFileSync(new URL(name + '.json', referenceRoot), 'utf8'));
@@ -44,7 +44,7 @@ test('two tournament reward tokens have no native RewardID and are recorded, not
     row.interpretation === 'sheet-token-list-not-native-reward-grammar'
     && row.deliveryRules === 'unverified' && row.runtimeEnabled === false));
   // The sheet vocabulary is deliberately not routed through the RewardID grammar.
-  assert.ok(!report.rewardReferences.some(row => /Tournament/.test(row.table)));
+  assert.ok(!report.rewardReferences.some(row => Object.hasOwn(REWARD_FIELDS, row.table)));
 });
 
 test('the reward string repeats the amount columns everywhere except the super tournament sheet', () => {

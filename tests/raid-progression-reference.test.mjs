@@ -49,7 +49,8 @@ test('solo raid and master tier rewards parse with the native reward IDs they ac
 });
 
 test('season 17 master tier avatars are recorded as a source gap, never invented', () => {
-  const missing = report.deferredReferences.filter(r => r.target === 'AvatarInfo');
+  const missing = report.deferredReferences.filter(r => r.target === 'AvatarInfo'
+    && r.table.startsWith('RaidMasterTierRewardInfo'));
   assert.equal(missing.length, 8);
   assert.deepEqual([...new Set(missing.map(r => r.value))].sort(), ['AvatarClanMasterTierSeason17Top10',
     'AvatarClanMasterTierSeason17Top100', 'AvatarClanMasterTierSeason17Top25', 'AvatarClanMasterTierSeason17Top50']);

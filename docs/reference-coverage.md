@@ -1,6 +1,6 @@
 # 剩餘參考資源盤點
 
-共 372 個 TextAsset；83 張表已匯入，1 個圖集已記錄 ID，其餘 288 個資源尚未匯入。這些資源包含非資料表內容，不能當成待做系統數或完成率。
+共 372 個 TextAsset；107 張表已匯入，1 個圖集已記錄 ID，其餘 264 個資源尚未匯入。這些資源包含非資料表內容，不能當成待做系統數或完成率。
 
 以下依檔名分派到 ROADMAP 項目，僅作查找順序，不是格式或玩法判定。每日配送內容與線上季節選用仍待外部證據；同名不同來源變體不得直接覆寫。
 
@@ -18,8 +18,6 @@
 
 ## V01-V02
 
-- AnniversaryTournamentRankRewardInfo
-- AnniversaryTournamentSoloContributionRewards
 - GlobalEventInfo
 - GlobalEventTasksInfo
 - HolidayEventBombGameLevelInfo
@@ -30,28 +28,6 @@
 - HolidayEventGlobalRaidRewardInfo
 - HolidayEventGlobalRaidSoloContributionRewards
 - HolidayEventGlobalRaidTargetZoneInfo
-- MinigameBallDropRewardInfo
-- MinigameBallDropSoloContributionRewards
-- MinigameBallDropUpgradeInfo
-- MinigameClanPrestigeGameRewardInfo
-- MinigameClanVaultContributionRewards
-- MinigameDigsiteLevelInfo
-- MinigameDigsiteRewardInfo
-- MinigameDigsiteTrinketInfo
-- MinigameEventQuestInfo
-- MinigameFishingDerbyFishInfo
-- MinigameFishingDerbyRarityInfo
-- MinigameFishingDerbyRewardInfo
-- MinigameFishingDerbySoloContributionRewards
-- MinigameFishingDerbyUpgradeInfo
-- MinigameFishingDerbyXPInfo
-- MinigameHuntingBeastInfo
-- MinigameHuntingRarityInfo
-- MinigameHuntingRewardInfo
-- MinigameHuntingSoloContributionRewards
-- MinigameHuntingUpgradeInfo
-- MinigameMazeRewardInfo
-- MinigameSoloPrestigeGameRewardInfo
 
 ## V05
 

@@ -4,15 +4,17 @@ const scalarTypes = new Set(['Equipment', 'RaidWildcard', 'SeasonalPetsLvl1', 'R
   'SkillPoint', 'PerkTicket', 'PetParadiseCurrency', 'PetsLvl1', 'Diamonds', 'BombGameCurrency',
   'MinigameQuestCurrency', 'MinigameFishingCurrency', 'MinigameDigsiteCurrency', 'MinigameHuntingCurrency',
   'MinigameBallDropPrestigeCurrency', 'TitanSouls', 'GemstoneCurrency', 'PetsLvl5', 'Alchemy', 'EquipmentShards',
-  'FortuneRaidCard', 'PlayerRaidXP']);
+  'FortuneRaidCard', 'PlayerRaidXP', 'AnniversaryMinigameCurrency', 'MinigameMazeKeys']);
 const itemTables = { RaidCard: 'RaidSkillInfo', Pet: 'PetInfo', EquipmentSet: 'EquipmentSetInfo',
-  Avatar: 'AvatarInfo', Frame: 'AvatarFrameInfo', Title: 'PlayerTitleInfo' };
+  Avatar: 'AvatarInfo', Frame: 'AvatarFrameInfo', Title: 'PlayerTitleInfo', RewardedBonus: 'BonusInfo' };
+// RewardedBonus names a bonus and a fractional amount, so its quantity is not an item count.
+const decimalAmount = /^[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?$/;
 
 export function parseRewardReference(text, field, catalogs, nativeRewardIds, options = {}) {
   if (typeof text !== 'string') throw new Error('reward must be a string');
   if (!['RewardString', 'RankReward', 'ClanGift', 'Reward', 'NewPlayerReward', 'CompletionRewardString',
-    'RewardTier', 'SelectionSlotContents1', 'SelectionSlotContents2', 'SelectionSlotContents3',
-    'SelectionSlotContents4'].includes(field)) throw new Error('unsupported reward field');
+    'RewardTier', 'RewardStringForRarity4', 'SelectionSlotContents1', 'SelectionSlotContents2',
+    'SelectionSlotContents3', 'SelectionSlotContents4'].includes(field)) throw new Error('unsupported reward field');
   const mode = field.startsWith('SelectionSlotContents') ? 'choice-candidates' : field === 'ClanGift' ? 'clan-gift-list' : 'reward-list';
   const entries = [], candidates = [], missingTargets = [];
   const populated = text !== '' && text !== 'None' && text !== '-';
@@ -30,6 +32,8 @@ export function parseRewardReference(text, field, catalogs, nativeRewardIds, opt
       entry = { type, quantity: arg, itemId: null, target: null };
     } else if (parts.length === 3 && quantity.test(count) && ['RaidCard', 'Pet'].includes(type)) {
       entry = { type, itemId: arg, quantity: count, target: itemTables[type] };
+    } else if (parts.length === 3 && type === 'RewardedBonus' && arg && decimalAmount.test(count)) {
+      entry = { type, itemId: arg, amount: count, quantity: null, target: itemTables[type] };
     } else if (parts.length === 3 && type === 'Equipment' && ['Rare', 'Legendary'].includes(arg) && quantity.test(count)) {
       entry = { type, qualifier: arg, quantity: count, itemId: null, target: null };
     } else throw new Error(`unsupported reward token: ${token}`);

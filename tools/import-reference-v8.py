@@ -37,7 +37,16 @@ TABLES = ['ArtifactInfo', 'ArtifactCostInfo', 'ActiveSkillInfo', 'ActiveSkillMul
           'ChallengeTournamentRewardInfo', 'SuperChallengeTournamentRewardInfo',
           'ChallengeTournamentProgressionRewardInfo', 'ChallengeTournamentArtifactPools',
           'ChallengeTournamentStartingInfo', 'ShopDisplayInfo', 'AdChestInfo', 'NewPrizeInfoDoc',
-          'PetParadiseLevelInfo']
+          'PetParadiseLevelInfo',
+          'AnniversaryTournamentRankRewardInfo', 'AnniversaryTournamentSoloContributionRewards',
+          'MinigameBallDropRewardInfo', 'MinigameBallDropSoloContributionRewards', 'MinigameBallDropUpgradeInfo',
+          'MinigameClanPrestigeGameRewardInfo', 'MinigameClanVaultContributionRewards',
+          'MinigameDigsiteLevelInfo', 'MinigameDigsiteRewardInfo', 'MinigameDigsiteTrinketInfo',
+          'MinigameEventQuestInfo', 'MinigameFishingDerbyFishInfo', 'MinigameFishingDerbyRarityInfo',
+          'MinigameFishingDerbyRewardInfo', 'MinigameFishingDerbySoloContributionRewards',
+          'MinigameFishingDerbyUpgradeInfo', 'MinigameFishingDerbyXPInfo', 'MinigameHuntingBeastInfo',
+          'MinigameHuntingRarityInfo', 'MinigameHuntingRewardInfo', 'MinigameHuntingSoloContributionRewards',
+          'MinigameHuntingUpgradeInfo', 'MinigameMazeRewardInfo', 'MinigameSoloPrestigeGameRewardInfo']
 # Shop server-response samples: not gameplay tables, so only their shape is indexed.
 SHOP_SAMPLES = ['ShopInfo', 'ShopInfoServerTest', 'ShopInfoServerTest_all_dailyDeals', 'ShopInfoServerTest_copy']
 # Composite stable keys where a single source column repeats across rows.
