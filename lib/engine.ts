@@ -14,6 +14,7 @@ import {TT2_PETS,TT2_GEAR,TT2_DAILY,TT2_HEROES,TT2_HERO_MILESTONES} from './tt2-
 import {freshTT2,TT2_RULESET,TT2_ARTIFACTS,TT2_ACTIVE,TT2_TREE,effect,artifactAllDamage,buildMultiplier,upgradeArtifactCost,discoveryCost,drawArtifact,canBuyTalent,spentPoints,tt2Random,bonusDefinitions, type TT2State, type Build} from './tt2-rules.ts';
 export {TT2_ARTIFACTS,TT2_TREE,discoveryCost};
 import { EXTRA_HEROES, ARTIFACTS, MONSTERS, PERKS, ACTION_TYPES, type Effect } from './content.ts';
+import { bossSprite, pickMonsterSprite, spriteForMonster, stagePool } from './tt2-stages.ts';
 export { ARTIFACTS, MONSTERS, PERKS, ACTION_TYPES } from './content.ts';
 export const HEROES=TT2_HEROES.map(h=>({name:HERO_NAMES[h.name],title:h.kind,icon:'⚔️',base:h.base,power:h.power}));
 // Save indices remain stable: clone, deadly, war cry, fire sword, midas, strike.
@@ -22,7 +23,7 @@ export const SKILL_ORDER=[5,1,4,3,2,0];
 export const SKILLS=SKILL_DATA.map((k,i)=>({name:['影分身之術','致命爆擊','戰爭狂嚎','火焰之劍','點石成金','天堂聖擊'][i],icon:['👥','🎯','📯','🔥','✋','☄️'][i],desc:['持續造成影分身傷害','提高致命攻擊傷害及觸發機率','提高英雄傷害','提高點擊傷害','提高各金源收益','造成一擊天堂傷害'][i],level:k.unlock,cooldown:k.cooldown,duration:k.duration}));
 export type Gear={id:number;slot:number;rarity:number;power:number;level:number};
 export type Trial={kind:'dungeon'|'challenge';tier:number;wave:number;base:number;endAt:number;period:number};
-export type State={version:2;ruleset?:string;tt2?:TT2State;stage:number;best:number;kills:number;hp:Big;gold:Big;level:number;heroes:number[];relics:number;artifacts:number[];prestiges:number;taps:number;totalKills:number;cooldowns:number[];active:number[];bossEnd:number;farming:boolean;last:number;lastTap:number;lastFairy:number;diamonds:number;weapons:number[];evolutions:number[];wounded:number[];skillLevels:number[];gear:Gear[];equipped:number[];dust:number;lootCounter:number;bossKills:number;bossWounded:boolean;protection:number;seen:number[];achievements:Record<string,number>;daily:{day:number;claimed:string[];taps:number;kills:number;upgrades:number;skills:number;fairies:number;login:boolean;dungeons:number[];petLevels:number;equipment:number;prestiges:number};loginDay:number;streak:number;trial:Trial|null;weekly:{week:number;best:number;claimed:number[]};world:number;worldBest:number[];artifactSpent:number[];log:string[]};
+export type State={version:2;ruleset?:string;tt2?:TT2State;stage:number;best:number;kills:number;hp:Big;gold:Big;level:number;heroes:number[];relics:number;artifacts:number[];prestiges:number;taps:number;totalKills:number;cooldowns:number[];active:number[];bossEnd:number;farming:boolean;last:number;lastTap:number;lastFairy:number;diamonds:number;weapons:number[];evolutions:number[];wounded:number[];skillLevels:number[];gear:Gear[];equipped:number[];dust:number;lootCounter:number;bossKills:number;bossWounded:boolean;protection:number;seen:number[];monster?:number;achievements:Record<string,number>;daily:{day:number;claimed:string[];taps:number;kills:number;upgrades:number;skills:number;fairies:number;login:boolean;dungeons:number[];petLevels:number;equipment:number;prestiges:number};loginDay:number;streak:number;trial:Trial|null;weekly:{week:number;best:number;claimed:number[]};world:number;worldBest:number[];artifactSpent:number[];log:string[]};
 export type Action={type:typeof ACTION_TYPES[number];index?:number;amount?:number;at:number};
 // Multipliers stay plain numbers and keep this ceiling; the stage-driven magnitudes (health,
 // damage, gold, costs) no longer do, so a value's size is bounded by its factors, not by 1e240.
@@ -34,14 +35,15 @@ export const toAmount=(value:unknown):Big=>isBig(value)?big(value)
 export const dayAt=(time:number)=>Math.floor(time/86400000);
 export const weekAt=(time:number)=>Math.floor((dayAt(time)+3)/7);
 function newDaily(day:number):State['daily']{return {day,claimed:[],taps:0,kills:0,upgrades:0,skills:0,fairies:0,login:false,dungeons:[],petLevels:0,equipment:0,prestiges:0};}
-export function fresh(now=Date.now()):State {return {version:2,ruleset:TT2_RULESET,tt2:freshTT2(now),stage:1,best:1,kills:0,hp:fromNumber(18),gold:{...ZERO},level:1,heroes:Array(33).fill(0),relics:0,artifacts:ARTIFACTS.map(()=>0),prestiges:0,taps:0,totalKills:0,cooldowns:SKILLS.map(()=>0),active:SKILLS.map(()=>0),bossEnd:0,farming:false,last:now,lastTap:0,lastFairy:now,diamonds:0,weapons:Array(33).fill(0),evolutions:Array(33).fill(0),wounded:Array(33).fill(0),skillLevels:SKILLS.map(()=>0),gear:[],equipped:[-1,-1,-1,-1,-1],dust:0,lootCounter:0,bossKills:0,bossWounded:false,protection:0,seen:[0],achievements:{},daily:newDaily(dayAt(now)),loginDay:-1,streak:0,trial:null,weekly:{week:weekAt(now),best:0,claimed:[]},world:0,worldBest:[1,1],artifactSpent:ARTIFACTS.map(()=>0),log:[]};}
+export function fresh(now=Date.now()):State {return {version:2,ruleset:TT2_RULESET,tt2:freshTT2(now),stage:1,best:1,kills:0,hp:fromNumber(18),gold:{...ZERO},level:1,heroes:Array(33).fill(0),relics:0,artifacts:ARTIFACTS.map(()=>0),prestiges:0,taps:0,totalKills:0,cooldowns:SKILLS.map(()=>0),active:SKILLS.map(()=>0),bossEnd:0,farming:false,last:now,lastTap:0,lastFairy:now,diamonds:0,weapons:Array(33).fill(0),evolutions:Array(33).fill(0),wounded:Array(33).fill(0),skillLevels:SKILLS.map(()=>0),gear:[],equipped:[-1,-1,-1,-1,-1],dust:0,lootCounter:0,bossKills:0,bossWounded:false,protection:0,seen:[0],monster:spriteForMonster(stagePool(1)[0]),achievements:{},daily:newDaily(dayAt(now)),loginDay:-1,streak:0,trial:null,weekly:{week:weekAt(now),best:0,claimed:[]},world:0,worldBest:[1,1],artifactSpent:ARTIFACTS.map(()=>0),log:[]};}
 export function hydrate(s:State):State{// A save already on this ruleset is repaired, never re-migrated: the legacy path refunds artifacts
 // and clears skill levels, so falling through with a missing tt2 block would wipe live progress.
-if(s.ruleset===TT2_RULESET){s.tt2??=freshTT2(s.last??Date.now());normaliseAmounts(s);if(!s.tt2.inventory)s.tt2={...freshTT2(s.last),...s.tt2};s.tt2.perkEnds??=[[],[]];s.tt2.rainLast??=s.last;s.tt2.petCharge??=0;s.tt2.petAttacks??=0;return s;}const base=fresh(s.last||Date.now());const original={...s};Object.assign(s,base,original,{version:2});for(const key of ['heroes','weapons','evolutions','wounded','artifacts','artifactSpent','skillLevels'] as const){const length=key==='artifacts'||key==='artifactSpent'?30:key==='skillLevels'?6:33;const old=original[key]||[];s[key]=Array.from({length},(_,i)=>Number.isFinite(old[i])?old[i]:key==='skillLevels'?1:0);}if(!original.artifactSpent)s.artifactSpent=s.artifacts.map((n,i)=>i<3?n*n:0);s.worldBest[0]=s.best;s.tt2=freshTT2(s.last);s.ruleset=TT2_RULESET;
+if(s.ruleset===TT2_RULESET){s.tt2??=freshTT2(s.last??Date.now());normaliseAmounts(s);s.monster??=settledMonster(s);if(!s.tt2.inventory)s.tt2={...freshTT2(s.last),...s.tt2};s.tt2.perkEnds??=[[],[]];s.tt2.rainLast??=s.last;s.tt2.petCharge??=0;s.tt2.petAttacks??=0;return s;}const base=fresh(s.last||Date.now());const original={...s};Object.assign(s,base,original,{version:2});for(const key of ['heroes','weapons','evolutions','wounded','artifacts','artifactSpent','skillLevels'] as const){const length=key==='artifacts'||key==='artifactSpent'?30:key==='skillLevels'?6:33;const old=original[key]||[];s[key]=Array.from({length},(_,i)=>Number.isFinite(old[i])?old[i]:key==='skillLevels'?1:0);}if(!original.artifactSpent)s.artifactSpent=s.artifacts.map((n,i)=>i<3?n*n:0);s.worldBest[0]=s.best;s.tt2=freshTT2(s.last);s.ruleset=TT2_RULESET;
  normaliseAmounts(s);
  s.tt2.legacyArtifacts=[...s.artifacts];s.tt2.legacySpent=[...s.artifactSpent];s.relics=limit(s.relics+s.artifactSpent.reduce((a,b)=>a+b,0));
  s.artifacts.fill(0);s.artifactSpent.fill(0);s.active.fill(0);s.cooldowns.fill(0);s.skillLevels.fill(0);s.trial=null;s.world=0;s.evolutions.fill(0);s.wounded.fill(0);s.kills=0;s.hp=health(s);s.bossEnd=0;
  s.tt2.earnedPoints=Math.max(0,Math.floor(s.best/50)-1);s.tt2.points=s.tt2.earnedPoints;
+ s.monster=settledMonster(s);
  note(s,'已切換點擊泰坦二代 7.5 規則：舊神器投入退回聖物，舊收藏保留在備份；技能與神器效果重新校正。');return s;}
 // Amounts are the only saved fields whose representation changed; everything else is untouched.
 // Fields added after a save was written: repaired in place, never re-migrated.
@@ -95,7 +97,16 @@ export function heroDps(s:State,i:number,shared?:HeroEffects):Big{const n=heroLe
 export function dps(s:State):Big{let value=rawHeroDps(s);
  for(const factor of [stateEffect(s,'AllHelperDamage'),artifactAllDamage(s.tt2!),stateEffect(s,'AllDamage'),s.active[2]>s.last?skillPower(s,2):1,gearBonus(s,1)])value=scale(value,factor);
  return value;}
-export function monsterIndex(s:State){return s.trial?(s.trial.wave*7+s.trial.tier*12)%60:((s.stage-1)*6+s.kills)%60;}
+// A trial fights its own wave order; a stage draws from the level's loaded monsters, and its
+// boss is the one that level names rather than the same small monster tinted.
+function chooseMonster(s:State){if(s.trial)return settledMonster(s);
+ return isBoss(s)?bossSprite(s.stage):pickMonsterSprite(s.stage,tt2Random(s.tt2!));}
+// The same choice without the roll, for a save that predates the field and for reads that must
+// not touch the save: monsterIndex runs inside render, where spending rng would be a side effect.
+function settledMonster(s:State){if(s.trial)return (s.trial.wave*7+s.trial.tier*12)%60;
+ if(isBoss(s))return bossSprite(s.stage);
+ const pool=stagePool(s.stage);return spriteForMonster(pool[Math.max(0,s.kills)%pool.length]);}
+export function monsterIndex(s:State){const stored=s.monster;return typeof stored==='number'&&stored>=0&&stored<60?stored:settledMonster(s);}
 export function monsterCount(_s:State){return 10;}
 export function bossDuration(s:State){return 30+stateEffect(s,'BossTimerDuration');}
 export function health(s:State):Big{return scale(pow(1.32,s.stage-1),18*(isBoss(s)?[2,3,4,5,8][(s.stage-1)%5]:1)*(1-Math.min(.9,stateEffect(s,'MonsterHP'))));}
@@ -222,7 +233,7 @@ export function achievementReward(s:State,index:number){
  const a=TT2_ACHIEVEMENTS[index];if(!a)return 0;
  return a.diamondReward.slice(achievementClaimed(s,index),achievementTier(s,index)).reduce((n,v)=>n+v,0);
 }
-function spawn(s:State){s.hp=health(s);s.bossEnd=isBoss(s)?s.last+bossDuration(s)*1000:0;s.bossWounded=false;const id=monsterIndex(s);if(!s.seen.includes(id))s.seen.push(id);}
+function spawn(s:State){s.hp=health(s);s.bossEnd=isBoss(s)?s.last+bossDuration(s)*1000:0;s.bossWounded=false;s.monster=chooseMonster(s);const id=monsterIndex(s);if(!s.seen.includes(id))s.seen.push(id);}
 function damage(s:State,hit:Big){if(compare(hit,{...ZERO})<=0)return;s.hp=subtract(s.hp,hit);if(compare(s.hp,{...ZERO})>0)return;
  const boss=isBoss(s),chest=!boss&&tt2Random(s.tt2!)<Math.min(1,.02+stateEffect(s,'ChestChance'));
  earnGold(s,goldReward(s,boss?'boss':chest?'chest':'monster'));if(chest)s.tt2!.chestKills++;s.totalKills++;s.daily.kills++;

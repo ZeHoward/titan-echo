@@ -1,6 +1,11 @@
 // Background themes in the order BackgroundInfo lists them, with the official Traditional Chinese
-// name each one carries in the bundled localization file. Five stages belong to each theme, so a
-// full cycle covers 70 stages. Verified against reference/tt2/8.2.0/BackgroundInfo.json by tests.
+// name each one carries in the bundled localization file. Five stages belong to each theme.
+//
+// Which theme a stage shows is not a plain cycle over all fourteen: BackgroundCycleInfo splits the
+// run into bands and each band walks only the first `themeEnd` levels, so a new player sees five
+// zones repeating and the rest arrive as the bands widen. lib/tt2-stages.ts holds that rule.
+import { themeIndexFor, themeRange } from './tt2-stages.ts';
+
 export const THEME_STAGES = 5;
 
 export const TT2_THEMES = [
@@ -20,15 +25,12 @@ export const TT2_THEMES = [
   { id: 'IceGuardians', name: '寒冷國度' },
 ] as const;
 
-/** Zero-based theme index for a stage; themes repeat once the cycle is finished. */
+/** Zero-based theme index for a stage, from the level the background rule selects. */
 export function themeIndex(stage: number) {
-  const step = Math.floor((Math.max(1, Math.floor(stage)) - 1) / THEME_STAGES);
-  return ((step % TT2_THEMES.length) + TT2_THEMES.length) % TT2_THEMES.length;
+  return themeIndexFor(stage);
 }
 
-/** First and last stage of the cycle this stage sits in, for the world map list. */
+/** First and last stage of a theme inside the band this stage sits in, for the world map list. */
 export function themeStageRange(index: number, stage: number) {
-  const cycle = Math.floor((Math.max(1, Math.floor(stage)) - 1) / (TT2_THEMES.length * THEME_STAGES));
-  const first = cycle * TT2_THEMES.length * THEME_STAGES + index * THEME_STAGES + 1;
-  return { first, last: first + THEME_STAGES - 1 };
+  return themeRange(index, stage);
 }

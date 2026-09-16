@@ -1,0 +1,66 @@
+{
+  "version": "8.2.0",
+  "role": "關卡怪物與頭目的選取規則：哪一段、哪一關卡列、載入幾隻、怎麼挑。",
+  "packageSha256": "8d78c9aa877e6c0b291ee2116cab855bd26c59c1d080bc654f88ecf1ff268b5f",
+  "binarySha256": "c13fc44321b1214c71ab0277a134fc3401fd7392c74a0bbb3935671c55a8713a",
+  "scriptSha256": "62c2eeb8472bb107de516e4b6ae69d3dcdf5013fb1caa87223d82a54dd203f8b",
+  "tables": {
+    "BackgroundInfo": "70 個關卡列，各有 Theme、Boss 與 Monster1–10。",
+    "BackgroundCycleInfo": "48 段，各有起始關卡、ThemeEnd、MonsterDiversity 與 Scale。"
+  },
+  "methods": {
+    "BackgroundModel$$GetCycleIndex": {
+      "rva": "0x26a4f04",
+      "bytes": 108,
+      "bytesSha256": "3905c1cd4f41463f34a0cdb5869efc57e47ac4775a6ffce609e96cdc15f50ff7",
+      "rule": "BinarySearch 帶 rows 的 level 鍵，結果取 r^(r>>31) 還原插入點後減一（大於 0 才減），因此關卡剛好等於鍵值時仍屬前一段：關卡 25 是第一段的最後一關。"
+    },
+    "BackgroundModel$$GetBackgroundIndex": {
+      "rva": "0x26a419c",
+      "bytes": 192,
+      "bytesSha256": "d0f89872a863f40afa183a7d56cb19010ffc603f03c468bd1ac9202f9649e8e1",
+      "rule": "以該段的 level 鍵為起點：index = (關卡 − 鍵 − (段索引>0 ? 1 : 0)) mod ThemeEnd，負數夾為 0。每一段都從關卡列 1 重新走，走滿 ThemeEnd 列。"
+    },
+    "BackgroundModel$$GetMonsterIndex": {
+      "rva": "0x26a4b78",
+      "bytes": 108,
+      "bytesSha256": "7a07caa9b3bb2173ea85dbedd8e049d49a66cb5b743467d51ca9b82631549a69",
+      "rule": "未鎖定背景時直接回 GetBackgroundIndex；鎖定時改為 (關卡−1) mod 5 加上鎖定起點。"
+    },
+    "BackgroundModel$$GetLevelInfo": {
+      "rva": "0x26a50b8",
+      "bytes": 136,
+      "bytesSha256": "173539cb46c7fb2c6c17be4395aaffa2801a068cdae6a72f6acd2da8c9427771",
+      "rule": "characterToStageDict[characterType][level] 直接取用，沒有取模，取模在 GetBackgroundIndex 完成。"
+    },
+    "BackgroundModel$$GetMonsterListByLevel": {
+      "rva": "0x26a4be4",
+      "bytes": 176,
+      "bytesSha256": "1599c6e2042277dc328f69c1d7cff4790e48fcc6121e162e26291c3cdd84982d",
+      "rule": "取 GetMonsterIndex 的結果當索引，回傳該關卡列的怪物清單。"
+    },
+    "MonsterController$$GetMonsterDiversity": {
+      "rva": "0x231f66c",
+      "bytes": 96,
+      "bytesSha256": "f6158e125582fc0746428769feed3c29edde2f0e464298c1af0582daa3b828b6",
+      "rule": "回傳 GetBackgroundCycleInfoByLevel 的 MonsterDiversity，即該段載入幾隻。"
+    },
+    "MonsterController$$LoadMonsterByStageLevel": {
+      "rva": "0x231e7d8",
+      "bytes": 824,
+      "bytesSha256": "4ebcff75dfb570e121cf7afaaba4a5e96be9f5cbd2f5f2caa4defec789d670a5",
+      "rule": "依序呼叫 GetBackgroundThemeByLevel、GetMonsterListByLevel、GetMonsterDiversity 與 GetCycleIndex，把該關卡列的前 MonsterDiversity 隻載入。"
+    },
+    "MonsterController$$SpawnMonster": {
+      "rva": "0x231e2d8",
+      "bytes": 1280,
+      "bytesSha256": "e3afa5b0971872f29b79af25b95a6ddde813bef700f7e4059d35b6b39ef05ed0",
+      "rule": "一般生成：清單長度小於 1 時記錯誤，否則 Random.Range(0, count) 取索引再 List.get_Item，也就是在載入清單中均勻隨機挑一隻。"
+    }
+  },
+  "limits": [
+    "方法位址與位元組雜湊是事實，規則敘述是對該段組合語言的判讀",
+    "均勻隨機來自 UnityEngine.Random，本專案改用存檔內的 rng 以維持可重現",
+    "怪物識別字是素材名稱，安裝包的在地化檔沒有任何對應的顯示名稱"
+  ]
+}
