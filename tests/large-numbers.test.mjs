@@ -1,6 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { advance, apply, fresh, manaMax, manaRegen } from '../lib/engine.ts';
+import { readFileSync } from 'node:fs';
+import { advance, apply, fmt, fresh, manaMax, manaRegen } from '../lib/engine.ts';
+import { referenceRoot } from '../tools/reference-validation.mjs';
 import { validateSnapshot } from '../lib/sheets-cloud.ts';
 
 const CAP = 1e240;
@@ -85,4 +87,34 @@ test('the ceiling is a clamp, not an overflow: values stop at it instead of beco
       || path.endsWith('.bossEnd') || path.endsWith('.endAt') || path.endsWith('.rng'),
       `${path} = ${value} 超過封頂`);
   }
+});
+
+test('the display never shows NaN, and keeps its Chinese units in order', () => {
+  assert.equal(fmt(0), '0');
+  assert.equal(fmt(9999), '9,999');
+  assert.equal(fmt(10000), '1.0萬');
+  assert.equal(fmt(1e8), '1.0億');
+  assert.equal(fmt(1e12), '1.0兆');
+  assert.equal(fmt(1e44), '1.0載');
+  // Past the last unit it falls back to scientific notation rather than inventing a name.
+  assert.equal(fmt(1e48), '1.0×10^48');
+  assert.equal(fmt(CAP), '1.0×10^240');
+  // Non-finite input is impossible in a valid save, but must still not print NaN.
+  for (const value of [NaN, -Infinity]) assert.equal(fmt(value), '0');
+  assert.equal(fmt(Infinity), fmt(CAP));
+  for (const value of [NaN, Infinity, -Infinity]) assert.ok(!/NaN|Infinity/.test(fmt(value)), String(value));
+});
+
+test('the engine ceiling is a web-engine choice, and the native type has no matching cap', () => {
+  const native = JSON.parse(readFileSync(new URL('native-number-type.json', referenceRoot), 'utf8'));
+  assert.equal(native.type, 'GHDouble');
+  // Significand and exponent are stored separately, so the original has no 1e240-style ceiling.
+  assert.deepEqual(native.representation.parts, ['exponent', 'significand']);
+  assert.ok(native.constants.includes('MaxValue'));
+  assert.ok(native.constants.includes('PositiveInfinity') && native.constants.includes('NaN'));
+  // The gold ceiling exists as a server var but the package carries no value for it.
+  assert.equal(native.boundedByServerVar.maxGold, null);
+  assert.equal(native.boundedByServerVar.maxStage.values.iOS, '98000');
+  assert.equal(native.boundedByServerVar.relicsStageMax.values.Value, '180000');
+  assert.match(native.evidenceScope, /live values and formulas unverified/);
 });

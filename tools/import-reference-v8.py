@@ -339,6 +339,25 @@ def main():
           fields=sorted(server_var_fields), dumpSha256=sha(dump_path),
           metadataSha256=sha(ROOT/'work/apk-analysis/global-metadata.dat'),
           evidenceScope='Field identity only; not a value, default or live server payload'))
+    # The native number type has no ceiling comparable to the web engine's clamp; record its shape.
+    number_fields = re.findall(r'public struct GHDouble[^{]*\{(.*?)\n\}', dump_text, re.S)
+    if len(number_fields) != 1:
+        raise ValueError('native GHDouble struct not uniquely located')
+    constants = sorted(set(re.findall(r'public static readonly GHDouble (\w+);', number_fields[0])))
+    parts = re.findall(r'private double (\w+);', number_fields[0])
+    if sorted(parts) != ['exponent', 'significand']:
+        raise ValueError('native number representation changed')
+    server_bounds = {key: None for key in ('maxGold', 'maxStage', 'relicsStageMax',
+                                           'skillPointsPrestigeMax', 'additiveRelicMultiplierMax')}
+    for name in ('ServerVarsInfo', SERVERVARS_TABLE):
+        for record in json.loads((OUT / (name + '.json')).read_text())['records']:
+            if record['id'] in server_bounds:
+                server_bounds[record['id']] = dict(table=name, values=record['values'])
+    write('native-number-type.json', dict(version='8.2.0', type='GHDouble',
+          representation=dict(parts=sorted(parts), note='separate significand and exponent doubles'),
+          constants=constants, boundedByServerVar=server_bounds,
+          dumpSha256=sha(dump_path), metadataSha256=sha(ROOT/'work/apk-analysis/global-metadata.dat'),
+          evidenceScope='Type shape and which bounds exist as server vars; live values and formulas unverified'))
     write('native-fairy-reward-types.json', dict(version='8.2.0', type='FairyReward',
           values=enum_values(dump_text, 'FairyReward'), dumpSha256=sha(dump_path),
           metadataSha256=sha(ROOT/'work/apk-analysis/global-metadata.dat'),

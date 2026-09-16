@@ -120,7 +120,8 @@ export function apply(s:State,a:Action){advance(s,a.at);const i=a.index??0,t=s.t
  // remain archived rather than paying invented rewards in the TT2 economy.
  return s;
 }
-export function fmt(n:number){if(n<10000)return Math.floor(n).toLocaleString('zh-TW');const units=['','萬','億','兆','京','垓','秭','穰','溝','澗','正','載'];const e=Math.floor(Math.log10(Math.max(1,n))/4);return e<units.length?(n/10**(4*e)).toFixed(1)+units[e]:`${(n/10**Math.floor(Math.log10(n))).toFixed(1)}×10^${Math.floor(Math.log10(n))}`;}
+// A non-finite value must never reach the screen as "NaN": show the ceiling or zero instead.
+export function fmt(n:number){if(!Number.isFinite(n))n=n===Infinity?CAP:0;if(n<10000)return Math.floor(n).toLocaleString('zh-TW');const units=['','萬','億','兆','京','垓','秭','穰','溝','澗','正','載'];const e=Math.floor(Math.log10(Math.max(1,n))/4);return e<units.length?(n/10**(4*e)).toFixed(1)+units[e]:`${(n/10**Math.floor(Math.log10(n))).toFixed(1)}×10^${Math.floor(Math.log10(n))}`;}
 
 export function heroLevel(s:State,i:number){return i<33?s.heroes[i]:s.tt2!.extraHeroes[i-33];}
 function setHeroLevel(s:State,i:number,n:number){if(i<33)s.heroes[i]=n;else s.tt2!.extraHeroes[i-33]=n;}
