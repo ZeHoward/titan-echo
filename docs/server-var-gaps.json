@@ -1,0 +1,5834 @@
+{
+  "version": "8.2.0",
+  "nativeFields": 953,
+  "bundledKeys": 37,
+  "basis": "native [ServerVar] field names routed by name; a name is not a formula",
+  "caveat": "A bundled value is the value shipped in the package, not the value the live server sends",
+  "topics": [
+    {
+      "topic": "未分類",
+      "fields": 603,
+      "bundled": 16,
+      "bundledFields": [
+        "additiveRelicMultiplierMax",
+        "endGamePetImprovementLevelDelta",
+        "endGamePetImprovementLevelStart",
+        "fishingMinigamePrestigeRewardLimit",
+        "fishingMinigameTackleboxBaseSize",
+        "fishingMinigameTackleboxCollectTime",
+        "gemstonesCurrencyCost",
+        "gemstonesDiamondCost",
+        "gemstonesUnlockInHours",
+        "gemstonesUnlockStage",
+        "honourStageOffset",
+        "hoursToCollectEgg",
+        "hoursToCollectEndgameEgg",
+        "maxEndgamePetEggs",
+        "maxStage",
+        "minVersion"
+      ]
+    },
+    {
+      "topic": "M04-M08 突襲與賽事",
+      "fields": 85,
+      "bundled": 2,
+      "bundledFields": [
+        "raidCardCrystalLevelRank",
+        "raidCardCrystalUnlockLevel"
+      ]
+    },
+    {
+      "topic": "B03-B09 流派",
+      "fields": 74,
+      "bundled": 8,
+      "bundledFields": [
+        "clanNameChangeCost",
+        "petParadiseRewardXp",
+        "petQuestRerollCostPromotionMult",
+        "petQuestRerollPromotion",
+        "pet_paradise_max_shovels",
+        "pet_paradise_shovel_diamond_cost",
+        "pet_paradise_shovel_purchase_amount",
+        "pet_paradise_shovel_purchase_daily_limit"
+      ]
+    },
+    {
+      "topic": "C05 泰坦與金幣",
+      "fields": 67,
+      "bundled": 0,
+      "bundledFields": []
+    },
+    {
+      "topic": "E01-E05 蛻變與神器",
+      "fields": 30,
+      "bundled": 1,
+      "bundledFields": [
+        "relicsStageMax"
+      ]
+    },
+    {
+      "topic": "I01-I03 裝備",
+      "fields": 26,
+      "bundled": 0,
+      "bundledFields": []
+    },
+    {
+      "topic": "C03-C04 英雄",
+      "fields": 22,
+      "bundled": 0,
+      "bundledFields": []
+    },
+    {
+      "topic": "C07 魔力",
+      "fields": 18,
+      "bundled": 0,
+      "bundledFields": []
+    },
+    {
+      "topic": "B01-B02 法術",
+      "fields": 11,
+      "bundled": 1,
+      "bundledFields": [
+        "skillPointsPrestigeMax"
+      ]
+    },
+    {
+      "topic": "C01 暴擊",
+      "fields": 10,
+      "bundled": 0,
+      "bundledFields": []
+    },
+    {
+      "topic": "C02 劍術大師",
+      "fields": 4,
+      "bundled": 0,
+      "bundledFields": []
+    },
+    {
+      "topic": "C06 濺射與跳關",
+      "fields": 3,
+      "bundled": 0,
+      "bundledFields": []
+    }
+  ],
+  "fields": [
+    {
+      "field": "DailyCardShopCardCount",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "DiamondVaultIncrement",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "DiamondVaultMaxCount",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "DiamondVaultOfferCooldown",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "DiamondVaultPrestigeStatePercent",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "DiamondVaultPurchaseThreshold",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "DungeonDestroyEquipmentListItems",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "DungeonDestroyHelperListItems",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "PreparationDurationTierFour",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "PreparationDurationTierOne",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "PreparationDurationTierThree",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "PreparationDurationTierTwo",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "RaidAttackDuration",
+      "topic": "M04-M08 突襲與賽事",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "RaidBaseAttackCooldown",
+      "topic": "M04-M08 突襲與賽事",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "RaidBaseDamage",
+      "topic": "M04-M08 突襲與賽事",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "RewardedVideoAdEggsPerDay",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "SeasonBoostMinRaidLevel",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "SkillTreeLoadoutSlots",
+      "topic": "B01-B02 法術",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "SwordMasterLevelCap",
+      "topic": "C02 劍術大師",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "TeapotErrorCode",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "accountDeletedErrorCode",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "accountDeletionWarningErrorCode",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "accountResyncDelaySecs",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "activeSkillCostMult",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "activeSkillMaxMultiCastStacks",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "activeSkillSelectUnlockStage",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "activeSkillUpgradeCostGrowth",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "adChestNotificationEnabled",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "additiveRelicMultPrestigeMaxPercent",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "additiveRelicMultiplierMax",
+      "topic": "未分類",
+      "bundled": true,
+      "source": "ServerVarOverride"
+    },
+    {
+      "field": "adsAllActiveSkillChance",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "adsDiamondsChance",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "adsGoldCostReductionChance",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "adsManaPotionChance",
+      "topic": "C07 魔力",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "advancedRelicMultiplierFarmIncrBy",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "advancedStartMaxStagePercentage",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "advancedStartPrestigeFarmStagePercentage",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "alchemyDailyCollectables",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "alchemyNotificationEnabled",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "amazonAppStoreLink",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "anniversaryMinigameCurrencyFarmingRewardAmount",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "anniversaryMinigameCurrencyFarmingStagePercentage",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "anniversaryMinigameDailyRewardLimit",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "announcementManualRefreshCooldown",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "antiCheatMaxTapTime",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "arTutorialPrestige",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "arTutorialStartStageDelta",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "artifactBuyAmountNotificationEnabled",
+      "topic": "E01-E05 蛻變與神器",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "artifactBuyAmountNotificationMinRelics",
+      "topic": "E01-E05 蛻變與神器",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "artifactBuyAmountNotificationNumUpgrades",
+      "topic": "E01-E05 蛻變與神器",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "artifactBuyAmountNotificationSeconds",
+      "topic": "E01-E05 蛻變與神器",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "artifactCostBase",
+      "topic": "E01-E05 蛻變與神器",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "artifactMinUpgradePrecision",
+      "topic": "E01-E05 蛻變與神器",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "artifactRelicServerPrecision",
+      "topic": "E01-E05 蛻變與神器",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "artifactSalvageCostBaseScale",
+      "topic": "E01-E05 蛻變與神器",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "artifactSalvageLogBase",
+      "topic": "E01-E05 蛻變與神器",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "artifactSalvagePowerBase",
+      "topic": "E01-E05 蛻變與神器",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "artifactUpgradePercent1",
+      "topic": "E01-E05 蛻變與神器",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "artifactUpgradePercent2",
+      "topic": "E01-E05 蛻變與神器",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "artifactUpgradePercent3",
+      "topic": "E01-E05 蛻變與神器",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "artifactUpgradeServerTime",
+      "topic": "E01-E05 蛻變與神器",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "ascendCostExpoScaling",
+      "topic": "C03-C04 英雄",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "ascendDamageExpoScaling",
+      "topic": "C03-C04 英雄",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "ascensionMinGoldExp",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "atCorruptionAmount",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "atNotJoinedNotificationEnabled",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "atStartNotificationEnabled",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "attackQueueSize",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "autoBuyHeroesMaxBonus",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "autoCollectTwilightFairyDuration",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "backgroundLockDuration",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "balldropMinigameContainerBaseCapacity",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "balldropMinigameCurrencyFarmingRewardAmount",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "balldropMinigameCurrencyFarmingStagePercentage",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "balldropMinigameDailyRewardLimit",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "balldropMinigamePrestigeCurrencyCollectTime",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "bannerBoostWeightMult",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "baseClanShipBattery",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "baseMaxLoyaltyLevel",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "baseShadowCloneAniPerSec",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "bearShopNotificationEnabled",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "bombGameEventCurrencyFarmingRewardAmount",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "bombGameEventCurrencyFarmingStagePercentage",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "bombGameEventGetCacheSecs",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "bombGameEventPrestigeRewardLimit",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "bombGameEventPurchaseCurrencyAmount",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "bombGameEventPurchaseCurrencyCost",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "bombGameSkipAnimationsMult",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "boostedPrestigeDailyCap",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "boostedPrestigeDiamondCost",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "boostedPrestigeRelicMultiplier",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "bossHPModBase",
+      "topic": "C05 泰坦與金幣",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "bossHPModMax",
+      "topic": "C05 泰坦與金幣",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "bossHPModStageMult",
+      "topic": "C05 泰坦與金幣",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "bossPlayTimeBase",
+      "topic": "C05 泰坦與金幣",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "bossQTEAttackCount",
+      "topic": "C05 泰坦與金幣",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "burstDamageMultiStackFixedCooldown",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "burstSkillBaseSplashCount",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "burstSkillMultiBufferCapAmount",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "burstSkillMultiCastAddedTime",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "canSpawnStageSkipMonsterPastTournamentMax",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "cardShopReSyncMinSeconds",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "challengeTournamentCurrencyLeaderboardRefreshCooldownSec",
+      "topic": "M04-M08 突襲與賽事",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "challengeTournamentEndingSoonMinutes",
+      "topic": "M04-M08 突襲與賽事",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "challengeTournamentEquipmentSalvageMultiplier",
+      "topic": "M04-M08 突襲與賽事",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "challengeTournamentForceUpdateScore",
+      "topic": "M04-M08 突襲與賽事",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "challengeTournamentGetInfoCacheDurationSeconds",
+      "topic": "M04-M08 突襲與賽事",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "challengeTournamentLeaderboardRefreshCooldown",
+      "topic": "M04-M08 突襲與賽事",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "challengeTournamentOfflineStageCap",
+      "topic": "M04-M08 突襲與賽事",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "challengeTournamentParticipationDurationSeconds",
+      "topic": "M04-M08 突襲與賽事",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "challengeTournamentPreviewDurationSeconds",
+      "topic": "M04-M08 突襲與賽事",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "challengeTournamentProgressionCompletedBarStagesInterval",
+      "topic": "M04-M08 突襲與賽事",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "challengeTournamentProgressionRewardsStartDate",
+      "topic": "M04-M08 突襲與賽事",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "challengeTournamentResyncDelaySecs",
+      "topic": "M04-M08 突襲與賽事",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "challengeTournamentSalvageMultiplier",
+      "topic": "M04-M08 突襲與賽事",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "challengeTournamentScoreAutoResubmitOnErrorCooldown",
+      "topic": "M04-M08 突襲與賽事",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "challengeTournamentServerClientMismatchResync",
+      "topic": "M04-M08 突襲與賽事",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "challengeTournamentServerVarOverrideEnabled",
+      "topic": "M04-M08 突襲與賽事",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "challengeTournamentShopCacheDurationSecs",
+      "topic": "M04-M08 突襲與賽事",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "challengeTournamentShopHighlight",
+      "topic": "M04-M08 突襲與賽事",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "challengeTournamentShopLimitedTimeDays",
+      "topic": "M04-M08 突襲與賽事",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "challengeTournamentShopReSyncMinSeconds",
+      "topic": "M04-M08 突襲與賽事",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "challengeTournamentShopRefreshCost",
+      "topic": "M04-M08 突襲與賽事",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "challengeTournamentSkillTreeResetPercentMS",
+      "topic": "M04-M08 突襲與賽事",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "challengeTournamentSubmissionLockDuration",
+      "topic": "M04-M08 突襲與賽事",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "challengeTournamentSubmissionLockEnabled",
+      "topic": "M04-M08 突襲與賽事",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "challengeTournamentSurpassMaxAdvancementResync",
+      "topic": "M04-M08 突襲與賽事",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "challengeTournamentUnlockStage",
+      "topic": "M04-M08 突襲與賽事",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "challengeTournamentUpdateAttemptCooldown",
+      "topic": "M04-M08 突襲與賽事",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "chestersonChance",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "chestersonGoldDuration",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "chestersonGoldGunCharge",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "churnedPlayerNotificationEnabled",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "clanAutoKickTestValue",
+      "topic": "B03-B09 流派",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "clanChatClosedFallOffMultiplier",
+      "topic": "B03-B09 流派",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "clanChatClosedMaxSecondsBetweenChecking",
+      "topic": "B03-B09 流派",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "clanChatClosedMinSecondsBetweenChecking",
+      "topic": "B03-B09 流派",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "clanChatOpenFallOffMultiplier",
+      "topic": "B03-B09 流派",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "clanChatOpenMaxSecondsBetweenChecking",
+      "topic": "B03-B09 流派",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "clanChatOpenMinSecondsBetweenChecking",
+      "topic": "B03-B09 流派",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "clanCrateGoldGunCharge",
+      "topic": "B03-B09 流派",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "clanCrateMaxCount",
+      "topic": "B03-B09 流派",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "clanCrateMaxStageMult",
+      "topic": "B03-B09 流派",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "clanCrateMult",
+      "topic": "B03-B09 流派",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "clanCrateStageMult",
+      "topic": "B03-B09 流派",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "clanDefaultAdvancedStartPercent",
+      "topic": "B03-B09 流派",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "clanInfoMyClanCacheExpiryTimeInSeconds",
+      "topic": "B03-B09 流派",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "clanLastSeasonCacheExpiryTimeInSeconds",
+      "topic": "B03-B09 流派",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "clanLeaderKickNotificationEnabled",
+      "topic": "B03-B09 流派",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "clanLeaderboardCacheExpiryTimeInSeconds",
+      "topic": "B03-B09 流派",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "clanMasterTierCacheExpiryTimeInSeconds",
+      "topic": "B03-B09 流派",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "clanMateAniPerSec",
+      "topic": "B03-B09 流派",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "clanMateDmgMult",
+      "topic": "B03-B09 流派",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "clanMaxMembers",
+      "topic": "B03-B09 流派",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "clanMaxMessageStorage",
+      "topic": "B03-B09 流派",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "clanMemberListCacheExpiryTimeInSeconds",
+      "topic": "B03-B09 流派",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "clanMessageRefreshCooldownInSeconds",
+      "topic": "B03-B09 流派",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "clanNameChangeCost",
+      "topic": "B03-B09 流派",
+      "bundled": true,
+      "source": "ServerVarOverride"
+    },
+    {
+      "field": "clanNecrobearLevelRequirements",
+      "topic": "B03-B09 流派",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "clanPrestigeMinigameFarmingRewardAmount",
+      "topic": "B03-B09 流派",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "clanPrestigeMinigameFarmingStagePercentage",
+      "topic": "B03-B09 流派",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "clanPrestigeMinigamePrestigeRewardLimit",
+      "topic": "B03-B09 流派",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "clanQuestNotificationEnabled",
+      "topic": "B03-B09 流派",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "clanRaidLevelRequirements",
+      "topic": "B03-B09 流派",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "clanScrollSetBase",
+      "topic": "B03-B09 流派",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "clanShipAttackDuration",
+      "topic": "B03-B09 流派",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "clanShipDmgMult",
+      "topic": "B03-B09 流派",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "clanShipMinYPercent",
+      "topic": "B03-B09 流派",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "clanStageRequirements",
+      "topic": "B03-B09 流派",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "clanStickerMessageCooldownInSeconds",
+      "topic": "B03-B09 流派",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "clanVaultMinigameCurrencyFarmingRewardAmount",
+      "topic": "B03-B09 流派",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "clanVaultMinigameCurrencyFarmingStagePercentage",
+      "topic": "B03-B09 流派",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "clanVaultMinigameDailyRewardLimit",
+      "topic": "B03-B09 流派",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "cloneCritChanceExpo",
+      "topic": "C01 暴擊",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "craftingPowerDelta",
+      "topic": "I01-I03 裝備",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "craftingPowerForUniqueCrafting",
+      "topic": "I01-I03 裝備",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "craftingPowerForUniqueCraftingInCT",
+      "topic": "I01-I03 裝備",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "createAccountEmailReward",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "createAccountFBReward",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "createClanCost",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "daggerCooldownAutoThrowMult",
+      "topic": "B03-B09 流派",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "daggerCritChanceExpo",
+      "topic": "C01 暴擊",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "daggerCycloneStageSkipMult",
+      "topic": "B03-B09 流派",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "daggerPoisonSkillShowSpawnLevel",
+      "topic": "B03-B09 流派",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "daggerSkillPointsCondition",
+      "topic": "B03-B09 流派",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "daggerSkillShowSpawnLevel",
+      "topic": "B03-B09 流派",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "dailyCardShopRefreshIntervalMinutes",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "dailyCollectablesIngredients",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "dailyFarmedEquipmentMax",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "dailyRewardDayShowOverlay",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "dailyStreakResetTo",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "damagePerRunningPerkCap",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "dataWarehouseCtLoggingEnabled",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "dataWarehouseDownloadProgressEventLimit",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "dataWarehouseEventRateLimit",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "dataWarehouseFastLoggingMaxStage",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "dataWarehouseLoggingEnabled",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "dataWarehouseMaxStageActiveSkillUseLogging",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "daysRemainingBeforeAlchemyEndingNotification",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "daysRemainingBeforeDungeonQuestEndingNotification",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "daysTillPlayerChurned",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "deadlyStrikeExpoClone",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "deadlyStrikeExpoGoldGun",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "deadlyStrikeExpoHS",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "deadlyStrikeExpoPet",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "deadlyStrikeExpoShip",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "deadlyStrikeExpoUltraDagger",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "defaultBannerBoostType",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "defaultFilterMinMembers",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "defaultHoursUntilAdChestReset",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "defaultImagesURL",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "defaultSplashThroughBoss",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "defaultVolumeOnSettings",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "disableFairyGoldMessage",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "discordFollowDiamonds",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "discordLink",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "discoveredAllHelperSkillsStage",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "dismissHomeMerchantMinutes",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "displayPlayerAPITokenOption",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "displaySuperVIPPointsNeeded",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "doomMultiplier",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "doomTutorialPrestige",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "dualPetBaseAttackCountToBurst",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "dualPetBaseAttackPerSecond",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "dungeonQuestAutoTapInterval",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "dungeonQuestCacheDurationSeconds",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "dungeonQuestDefaultDepth",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "dungeonQuestNotificationEnabled",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "dungeonQuestPetToTorchesMult",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "dungeonQuestSpecialKeyVariations",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "dungeonQuestTargetMapHeight",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "dungeonQuestTargetMapWidth",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "dungeonQuestVisualDataIndex",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "eggCollectionNotificationEnabled",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "enableActiveSkillTutorial",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "enableAdrenalineRushTutorial",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "enableArtifactTabTutorial",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "enableBossBattleTutorial",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "enableClanJoinTutorial",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "enableClanMasterTutorial",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "enableClanTutorial",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "enableDoomTutorial",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "enableEquipmentTabTutorial",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "enableHelperTabTutorial",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "enableInactiveGoldTutorial",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "enableMakeItRainTutorial",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "enableManaPotionTutorial",
+      "topic": "C07 魔力",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "enablePetEggCollectionTutorial",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "enablePetTabTutorial",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "enablePlayerTabTutorial",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "enablePowerOfSwipeTutorial",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "enableRemindHelperUpgradeTutorial",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "enableRemindHeroUpgradeTutorial",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "enableRemindPrestigeTutorial",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "enableSecondPrestigeTutorial",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "enableShopTabTutorial",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "enableSkillPointTutorial",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "enableStageTransitionStrictUnload",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "enableTitanGachaTutorial",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "enableTitanResearchTutorial",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "enableTournamentTutorial",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "enableTransmorphTutorial",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "endGamePetImprovementLevelDelta",
+      "topic": "未分類",
+      "bundled": true,
+      "source": "ServerVarOverride"
+    },
+    {
+      "field": "endGamePetImprovementLevelStart",
+      "topic": "未分類",
+      "bundled": true,
+      "source": "ServerVarOverride"
+    },
+    {
+      "field": "endgameCacheExpiryTimeInSeconds",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "endgameForceLeaderboardStagesPushed",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "endgameHideNearbyLeaderboardRank",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "endgameMinPrestigeReqInc",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "endgameSeasonJoinStage",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "endgameServerClientMismatchResync",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "endgameSyncMinIntervalMinutes",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "endgameSyncMinSecondsProtection",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "endgameUpdateAttemptCooldown",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "endgameUpdateCooldown",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "endgameUpdateEnding5MinutesInterval",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "endgameUpdateEndingSoonMinutes",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "equipBonusDelay",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "equipEquipmentSortWeight",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "equipmentBatchingCallInterval",
+      "topic": "I01-I03 裝備",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "equipmentCommonValue",
+      "topic": "I01-I03 裝備",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "equipmentEnhancementIndexMult",
+      "topic": "I01-I03 裝備",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "equipmentEventValue",
+      "topic": "I01-I03 裝備",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "equipmentExponent",
+      "topic": "I01-I03 裝備",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "equipmentFairyRewardMaxStageModifier",
+      "topic": "I01-I03 裝備",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "equipmentLegendaryValue",
+      "topic": "I01-I03 裝備",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "equipmentLevelReductionAmount",
+      "topic": "I01-I03 裝備",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "equipmentLevelReductionMin",
+      "topic": "I01-I03 裝備",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "equipmentMigrationAttempts",
+      "topic": "I01-I03 裝備",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "equipmentMult",
+      "topic": "I01-I03 裝備",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "equipmentMythicValue",
+      "topic": "I01-I03 裝備",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "equipmentProcessingChangeDelay",
+      "topic": "I01-I03 裝備",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "equipmentRareValue",
+      "topic": "I01-I03 裝備",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "equipmentSalvageCommon",
+      "topic": "I01-I03 裝備",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "equipmentSalvageLegendary",
+      "topic": "I01-I03 裝備",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "equipmentSalvageMythic",
+      "topic": "I01-I03 裝備",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "equipmentSalvageRare",
+      "topic": "I01-I03 裝備",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "equipmentSalvageUnique",
+      "topic": "I01-I03 裝備",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "equipmentShopExponent",
+      "topic": "I01-I03 裝備",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "equipmentShopMult",
+      "topic": "I01-I03 裝備",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "equipmentStageDelta",
+      "topic": "I01-I03 裝備",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "equipmentStageMin",
+      "topic": "I01-I03 裝備",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "eventStartNotificationEnabled",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "eventTimerDisplayMin",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "everyNumStagesToSendStageEvents",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "evolveCostMultiplier",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "facebookLikeDiamonds",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "facebookLink",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "fairyActivateAllSkillsCooldown",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "fairyAdChance",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "fairyAdChanceSessionBonus",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "fairyAdFirstSessionExpireTimeMin",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "fairyAdGoldStageScaleExpo",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "fairyAdMinMult",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "fairyAdSkillTimerOffset",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "fairyAllDamageCooldownSecs",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "fairyAllGoldCooldownSecs",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "fairyChallengeTournamentRateLimitedSpawnAmount",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "fairyChestGroundOffset",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "fairyDamageBoostMaxStageCheckMult",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "fairyDiamondMaxDailyCount",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "fairyDiamondMaxStageCheckMult",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "fairyDiamondTournamentScoreCheckMult",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "fairyDropCoinsChance",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "fairyEquipmentCooldownSecs",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "fairyFatChance",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "fairyFlyVerticalOffset",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "fairyGoldGunCharge",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "fairyGoldReductionCooldownSecs",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "fairyGoldStageScaleExpo",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "fairyManaPotionCapacityCheck",
+      "topic": "C07 魔力",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "fairyManaPotionCooldown",
+      "topic": "C07 魔力",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "fairyManaPotionPercent",
+      "topic": "C07 魔力",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "fairyManaPotionRegenSecondsCheck",
+      "topic": "C07 魔力",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "fairyMaxGoldVariance",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "fairyMidasBonusExpo",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "fairyMinGoldVariance",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "fairyNeuralNetTrainedMaxStage",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "fairyNeuralNetUsageChance",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "fairyPerkMaxDailyCount",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "fairyRareEquipmentMaxDailyCount",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "fairyRareEquipmentMaxStageCheckMult",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "fairyStartStage",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "fairyTimeBetweenAutoTaps",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "fairyVideoCooldownSecs",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "fairyVideoDiamondCount",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "fairyVideoGoldThreshold",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "fetchDailyAchievementsOnStartup",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "firstPrestigeEquipmentAmount",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "firstPrestigePerkAmount",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "firstTimeDiamondsBonusCeiling",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "firstTimeDiamondsBonusMult",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "fishingMinigameFarmingRewardAmount",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "fishingMinigameFarmingStagePercentage",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "fishingMinigameMaxSpendLures",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "fishingMinigamePrestigeRewardLimit",
+      "topic": "未分類",
+      "bundled": true,
+      "source": "ServerVarOverride"
+    },
+    {
+      "field": "fishingMinigameRarityBonusGood",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "fishingMinigameRarityBonusPerfect",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "fishingMinigameTackleboxBaseSize",
+      "topic": "未分類",
+      "bundled": true,
+      "source": "ServerVarOverride"
+    },
+    {
+      "field": "fishingMinigameTackleboxCollectTime",
+      "topic": "未分類",
+      "bundled": true,
+      "source": "ServerVarOverride"
+    },
+    {
+      "field": "forbiddenAccessErrorCode",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "forceRefreshHelperDpsOnEquipmentSwap",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "gameUpdatedErrorCode",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "gemstonesCurrencyCost",
+      "topic": "未分類",
+      "bundled": true,
+      "source": "ServerVarOverride"
+    },
+    {
+      "field": "gemstonesDiamondCost",
+      "topic": "未分類",
+      "bundled": true,
+      "source": "ServerVarOverride"
+    },
+    {
+      "field": "gemstonesLoadPercentMS",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "gemstonesMaxSecondaries",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "gemstonesPullAmounts",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "gemstonesUnlockInHours",
+      "topic": "未分類",
+      "bundled": true,
+      "source": "ServerVarOverride"
+    },
+    {
+      "field": "gemstonesUnlockStage",
+      "topic": "未分類",
+      "bundled": true,
+      "source": "ServerVarOverride"
+    },
+    {
+      "field": "genericBundlePopupEnabled",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "globalPopupReminderCooldown",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "globalRaidFirstTitanMinHealthPercent",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "globalRaidInfoCacheTime",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "globalRaidMaxTitansPerAttack",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "globalRaidMaxWaitTimeBetweenMessages",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "globalRaidMinSecWaitBetweenActivityFeedRequests",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "globalRaidMinWaitTimeBetweenMessages",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "globalRaidNextAttackBufferSecs",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "globalRaidRandomPatternDuration",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "globalRaidRandomPatternWarning",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "globalRaidRefreshCooldown",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "globalRaidTitanScalePhase1",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "globalRaidTitanScalePhase2",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "globalRaidTitanScalePhase3",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "globalRaidTitanScalePhase4",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "globalRaidTransitionTime",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "goldGunChargesRequired",
+      "topic": "C05 泰坦與金幣",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "goldGunCritChanceExpo",
+      "topic": "C01 暴擊",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "goldGunDamageFromClanShipDamageReduction",
+      "topic": "C05 泰坦與金幣",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "goldGunShootTime",
+      "topic": "C05 泰坦與金幣",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "goldPrestigeBonusExpo",
+      "topic": "C05 泰坦與金幣",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "goldRewardMaxStageMult",
+      "topic": "C05 泰坦與金幣",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "goldenMissileGoldGunCharge",
+      "topic": "C05 泰坦與金幣",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "goldx10Chance",
+      "topic": "C05 泰坦與金幣",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "googleAppStoreLink",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "haystMonsterBonusAmount",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "haystMonsterEffectDuration",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "haystMonsterSpawnChance",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "helperAnimationRateMax",
+      "topic": "C03-C04 英雄",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "helperAutoUpgradeIntervalSecs",
+      "topic": "C03-C04 英雄",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "helperCanCrit",
+      "topic": "C01 暴擊",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "helperEvolveLevel1",
+      "topic": "C03-C04 英雄",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "helperEvolveLevel2",
+      "topic": "C03-C04 英雄",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "helperQTEDamageExpo",
+      "topic": "C03-C04 英雄",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "helperQTEDamageMult",
+      "topic": "C03-C04 英雄",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "helperQTEDamageOffset",
+      "topic": "C03-C04 英雄",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "helperScrollIndividualBase",
+      "topic": "C03-C04 英雄",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "helperScrollSetBase",
+      "topic": "C03-C04 英雄",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "helperSkillCostMultiplier",
+      "topic": "C03-C04 英雄",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "helperToCloneTapDPSPower",
+      "topic": "C03-C04 英雄",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "helperToDaggerTapDPSPower",
+      "topic": "C03-C04 英雄",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "helperToGoldGunTapDPSPower",
+      "topic": "C03-C04 英雄",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "helperToTapDPSPower",
+      "topic": "C03-C04 英雄",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "helperUpgradeBase",
+      "topic": "C03-C04 英雄",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "helperUpgradeLevelTiers",
+      "topic": "C03-C04 英雄",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "helperUpgradeModulus",
+      "topic": "C03-C04 英雄",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "helperUpgradeOffsets",
+      "topic": "C03-C04 英雄",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "helperWeaponIndividualBase",
+      "topic": "C03-C04 英雄",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "helperWeaponSetBase",
+      "topic": "C03-C04 英雄",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "helpshiftUrlFormat",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "heroGoldNotificationEnabled",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "hideAppleSignInOnAndroid",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "holidayBundleEndDate",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "holidayCurrencyFarmingRewardAmount",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "holidayCurrencyFarmingStagePercentage",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "holidayEventFairyAdRewardCurrency",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "holidayEventFinalizationJitter",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "holidayEventFinalizationSeconds",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "holidayEventGetInfoCacheDurationSeconds",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "holidayEventPrestigeRewardLimit",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "holidayEventShowBeforeStartSeconds",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "honourStageOffset",
+      "topic": "未分類",
+      "bundled": true,
+      "source": "ServerVarsInfo"
+    },
+    {
+      "field": "hoursToCollectEgg",
+      "topic": "未分類",
+      "bundled": true,
+      "source": "ServerVarOverride"
+    },
+    {
+      "field": "hoursToCollectEndgameEgg",
+      "topic": "未分類",
+      "bundled": true,
+      "source": "ServerVarOverride"
+    },
+    {
+      "field": "huaweiAppStoreLink",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "huntingMinigameBaseTargetCount",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "huntingMinigameCurrencyFarmingRewardAmount",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "huntingMinigameCurrencyFarmingStagePercentage",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "huntingMinigameDailyRewardLimit",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "huntingMinigameMaxSpendArrows",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "huntingMinigameQuiverBaseCapacity",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "huntingMinigameQuiverCollectTime",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "iOSAppStoreLink",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "iap4USDReq",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "iap5USDReq",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "iap6DiscountFactor",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "iap6USDReq",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "iapCostProcessingDelay",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "iapDimScreenTime",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "iapRetryGap",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "iapRetryMax",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "iapRetryStart",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "inactiveBaseSneakCount",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "inactiveDelayPerSpawn",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "inactiveGoldButtonCount",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "inactiveGoldMinSyncDays",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "inactiveGoldMonsterCap",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "inactiveGoldReduction",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "inactiveMaxSneakCount",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "inactiveMaxStageDefault",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "inactiveMinSecondsDisplayPanel",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "inactiveMinimumSneakTimeSeconds",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "inactiveScreenDisabledCollectsBonus",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "inactiveSneakTimeSeconds",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "inactiveVideoDurationMult",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "inactiveVideoGoldMult",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "individualPopupReminderCooldown",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "instagramFollowDiamonds",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "instagramLink",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "isCardShopEnabled",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "isHeartbeatEnabled",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "jackpotGoldBonusExpo",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "killFadeDuration",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "kratosMonsterBonusAmount",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "kratosMonsterMinimumSpawnStage",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "kratosMonsterMinimumStageRequirement",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "kratosMonsterSpawnChance",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "kratosMonsterSpellDuration",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "kratosMonsterStackCount",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "localDiamondRewardBase",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "localDiamondRewardInc",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "localizationForceDownloadVersion",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "lockEquipmentSortWeight",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "logFacebookIAP",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "magnumOpusBaseDuration",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "magnumOpusDPS",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "magnumOpusTimeMultiplier",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "maintenanceErrorCode",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "makeItRainChestersonCount",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "makeItRainDropDelay",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "makeItRainFairyCount",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "makeItRainGoldGunCharge",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "makeItRainMaxStageMult",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "makeItRainSpawnDuration",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "makeItRainStageMult",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "manaCapInitial",
+      "topic": "C07 魔力",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "manaCapPerSkill",
+      "topic": "C07 魔力",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "manaMonsterBaseMana",
+      "topic": "C07 魔力",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "manaNotificationEnabled",
+      "topic": "C07 魔力",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "manaRegenBaseInMinutes",
+      "topic": "C07 魔力",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "mashQTENumTaps",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "masterTierInfoCacheDurationSeconds",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "maxAscensionAnimations",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "maxBossGoldMultiplier",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "maxCritChance",
+      "topic": "C01 暴擊",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "maxDateOffset",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "maxDeckSlots",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "maxDefaultSplashKills",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "maxEndgamePetEggs",
+      "topic": "未分類",
+      "bundled": true,
+      "source": "ServerVarOverride"
+    },
+    {
+      "field": "maxExtraMultiFairySpawns",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "maxExtraMultiTwilightFairySpawns",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "maxGold",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "maxGoldPerActiveSkillCount",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "maxInactiveFrameDelay",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "maxLockableSlots",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "maxLoyaltyLevelPracticePanel",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "maxManaStrips",
+      "topic": "C07 魔力",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "maxMultiMonsterSpawns",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "maxNumRewardedAdRetries",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "maxPerksUsedBonusAmount",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "maxPetEggs",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "maxPetSpeedBoost",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "maxQueueAttempts",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "maxRaidDecks",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "maxSessionFairiesCount",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "maxSessionTwilightFairiesCount",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "maxSimultaneousTweens",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "maxSpecialSplashKills",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "maxStage",
+      "topic": "未分類",
+      "bundled": true,
+      "source": "ServerVarsInfo"
+    },
+    {
+      "field": "maxTournamentNotificationDelaySeconds",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "maximumChestersonsKilledDuringAPrestige",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "maximumChestersonsKilledDuringASeason",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "maximumFairiesDuringASeason",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "maximumFairyTappedDuringAPrestige",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "maximumHeroAscension",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "maximumManaCapBonusAmount",
+      "topic": "C07 魔力",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "maximumPrestigesDuringASeason",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "maximumSalvageCost",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "maximumSecondsDuringAPrestige",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "maximumTapsDuringAPrestige",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "maximumTitansKilledDuringASeason",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "megaBombBaseStacks",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "megaBombMonsterMaxStageEffectAmount",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "megaBombMonsterSpawnChance",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "megaBombMonsterTitanRemovalPercent",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "megaBoostAdSkipDiamondCost",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "megaBoostHudPlacementUnlockStage",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "megaCoinMult",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "midasTapMultiplier",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "milestoneRetryCooldownSecs",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "minBuildImportVersion",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "minCameraAspectRatio",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "minCameraAspectRatioIPhone",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "minFarmingStage",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "minManaStrips",
+      "topic": "C07 魔力",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "minMultiMonsterSpawns",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "minRaidLevelToSkipAnimation",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "minScientific",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "minSecondsForATNotJoinedNotification",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "minSecondsForATStartNotification",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "minSecondsForAdChestNotification",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "minSecondsForAlchemyEndingNotification",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "minSecondsForBearShopNotification",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "minSecondsForDungeonQuestEndingNotification",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "minSecondsForEggCollectionNotification",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "minSecondsForEventStartNotification",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "minSecondsForFullManaNotification",
+      "topic": "C07 魔力",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "minSecondsForRaidAttackNotification",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "minSecondsForRaidAttacksIncompleteNotification",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "minSecondsForSilentMarchNotification",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "minSecondsForSoloRaidNotJoinedNotification",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "minSecondsForTournamentNotJoinedNotification",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "minSecondsForTournamentStartNotification",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "minShopRelicCount",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "minShopSeasonalRelicCount",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "minSkillManaCost",
+      "topic": "C07 魔力",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "minSkillSplashMult",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "minVersion",
+      "topic": "未分類",
+      "bundled": true,
+      "source": "ServerVarsInfo"
+    },
+    {
+      "field": "minigameBallDropBaseBallValue",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "minigameBallDropMaxMultiBallTriggersPerCoin",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "minigameBallDropMultiBallChance",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "minigameBallDropNumBallsPerMultiBall",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "minigameDigsiteCurrencyFarmingStagePercentage",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "minigameDigsiteCurrencyMaxPerDay",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "minigameDigsiteCurrencyMaxPerPrestige",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "minigameHuntingCurrencyRarity0",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "minigameHuntingCurrencyRarity1",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "minigameHuntingCurrencyRarity2",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "minigameHuntingCurrencyRarity3",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "minigameHuntingCurrencyRarity4",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "minigameMazeCurrencyFarmingStagePercentage",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "minigameMazeCurrencyMaxPerDay",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "minigameMazeCurrencyMaxPerPrestige",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "minigameMazeMaxFloor",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "minigameTimerDisplayMin",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "minimumEndgamePanelStage",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "minimumPrestigeStage",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "minimumSalvageCost",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "minuteToResyncPlayer",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "minutesBeforeRaidAttackIncompleteNotification",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "minutesBetweenAnnouncementCheck",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "minutesToAutoSave",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "minutesToSyncServerTime",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "mirTutorialPrestige",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "mirTutorialStartStageDelta",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "mirrorForceClanMatesPerUseInterval",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "modifyBonusBroadcastsTypeChanges",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "monsterBossScaleFactor",
+      "topic": "C05 泰坦與金幣",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "monsterBossScaleFactorIpad",
+      "topic": "C05 泰坦與金幣",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "monsterCountBase",
+      "topic": "C05 泰坦與金幣",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "monsterCountInc",
+      "topic": "C05 泰坦與金幣",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "monsterCountStageDelta",
+      "topic": "C05 泰坦與金幣",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "monsterGoldBase1",
+      "topic": "C05 泰坦與金幣",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "monsterGoldBase2",
+      "topic": "C05 泰坦與金幣",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "monsterGoldBase3",
+      "topic": "C05 泰坦與金幣",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "monsterGoldExpo1",
+      "topic": "C05 泰坦與金幣",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "monsterGoldExpo2",
+      "topic": "C05 泰坦與金幣",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "monsterGoldExpo3",
+      "topic": "C05 泰坦與金幣",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "monsterGoldExpo4",
+      "topic": "C05 泰坦與金幣",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "monsterGoldLevelOff",
+      "topic": "C05 泰坦與金幣",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "monsterGoldMult",
+      "topic": "C05 泰坦與金幣",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "monsterGoldMultiplier",
+      "topic": "C05 泰坦與金幣",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "monsterGoldSlope",
+      "topic": "C05 泰坦與金幣",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "monsterHPBase1",
+      "topic": "C05 泰坦與金幣",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "monsterHPBase2",
+      "topic": "C05 泰坦與金幣",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "monsterHPBase3",
+      "topic": "C05 泰坦與金幣",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "monsterHPExpo1",
+      "topic": "C05 泰坦與金幣",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "monsterHPExpo2",
+      "topic": "C05 泰坦與金幣",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "monsterHPExpo3",
+      "topic": "C05 泰坦與金幣",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "monsterHPExpo4",
+      "topic": "C05 泰坦與金幣",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "monsterHPLevelOff",
+      "topic": "C05 泰坦與金幣",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "monsterHPMult",
+      "topic": "C05 泰坦與金幣",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "monsterHpVariance",
+      "topic": "C05 泰坦與金幣",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "monsterMinGoldDrop",
+      "topic": "C05 泰坦與金幣",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "monsterMultiSpawnGoldBonus",
+      "topic": "C05 泰坦與金幣",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "monsterMultiSpawnManaBonus",
+      "topic": "C05 泰坦與金幣",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "monsterScaleFactorIPad",
+      "topic": "C05 泰坦與金幣",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "monsterSubtypeAmount",
+      "topic": "C05 泰坦與金幣",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "monsterSubtypeNumStageRotation",
+      "topic": "C05 泰坦與金幣",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "monsterSubtypeStartStage",
+      "topic": "C05 泰坦與金幣",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "monsterTransendenceGoldLevelOff",
+      "topic": "C05 泰坦與金幣",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "monsterTransendenceHPLevelOff",
+      "topic": "C05 泰坦與金幣",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "mpTutorialPrestige",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "mpTutorialTriggerManaPercent",
+      "topic": "C07 魔力",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "multiFairySpawnPenalty",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "multiMonsterBaseChance",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "multiTwilightFairySpawnPenalty",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "needPrestigeBeforeSalvageDisenchant",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "needToCrashForBadGold",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "needToDoShopJSONOverride",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "needToShowStartMessage",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "needToWipeBeta",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "newContentVersion",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "newPlayerRaidAttackGuideURL",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "newPlayerRelicMultBonusDurationMins",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "newPlayerRelicMultBonusStartDate",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "newPlayerRelicMultMp",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "newPlayerRetentionHours",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "newPlayerTournamentEnabled",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "newPlayerTournamentLeaderboardPlayerThreshold",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "newPlayerTournamentReviewLengthMinutes",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "newSessionMintues",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "noMoreRateGameAfterStage",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "nullRefNeedsToCrashGame",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "perSecondGoldGunCharge",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "perkDiamondCost",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "perkGoldReduction",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "perkGoldSkillPointBase",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "perkGoldSkillPointMaxCount",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "perkSelectResetPercentMS",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "perkSelectUnlockStage",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "perkTicketCost",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "perkTicketsPerLegacyPerk",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "petAutoAttackDuration",
+      "topic": "B03-B09 流派",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "petCageHPMultiplier",
+      "topic": "B03-B09 流派",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "petCritChanceExpo",
+      "topic": "C01 暴擊",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "petDamageFromBurstSkillAmountReduction",
+      "topic": "B03-B09 流派",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "petDamageIncLevel1",
+      "topic": "B03-B09 流派",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "petDamageIncLevel2",
+      "topic": "B03-B09 流派",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "petDamageMult",
+      "topic": "B03-B09 流派",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "petGoldGunCharge",
+      "topic": "B03-B09 流派",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "petGoldStageScaleExpo",
+      "topic": "B03-B09 流派",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "petHomGoldMult",
+      "topic": "B03-B09 流派",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "petImprovementLevelDelta",
+      "topic": "B03-B09 流派",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "petImprovementLevelStart",
+      "topic": "B03-B09 流派",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "petMashQTERescheduleSeconds",
+      "topic": "B03-B09 流派",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "petMashQTEStartOfBattleSeconds",
+      "topic": "B03-B09 流派",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "petMidasBonusExpo",
+      "topic": "B03-B09 流派",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "petParadiseRewardXp",
+      "topic": "B03-B09 流派",
+      "bundled": true,
+      "source": "ServerVarOverride"
+    },
+    {
+      "field": "petPassiveLevelGap",
+      "topic": "B03-B09 流派",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "petPassiveLevelIncrement",
+      "topic": "B03-B09 流派",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "petQuestDiamondCostPerQuestReroll",
+      "topic": "B03-B09 流派",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "petQuestRerollCostPromotionMult",
+      "topic": "B03-B09 流派",
+      "bundled": true,
+      "source": "ServerVarsInfo"
+    },
+    {
+      "field": "petQuestRerollPromotion",
+      "topic": "B03-B09 流派",
+      "bundled": true,
+      "source": "ServerVarsInfo"
+    },
+    {
+      "field": "petQuestsTotalPetsRequired",
+      "topic": "B03-B09 流派",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "petTapAmount",
+      "topic": "B03-B09 流派",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "petXpRequiredToLevel",
+      "topic": "B03-B09 流派",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "pet_paradise_max_shovels",
+      "topic": "B03-B09 流派",
+      "bundled": true,
+      "source": "ServerVarOverride"
+    },
+    {
+      "field": "pet_paradise_shovel_diamond_cost",
+      "topic": "B03-B09 流派",
+      "bundled": true,
+      "source": "ServerVarOverride"
+    },
+    {
+      "field": "pet_paradise_shovel_purchase_amount",
+      "topic": "B03-B09 流派",
+      "bundled": true,
+      "source": "ServerVarOverride"
+    },
+    {
+      "field": "pet_paradise_shovel_purchase_daily_limit",
+      "topic": "B03-B09 流派",
+      "bundled": true,
+      "source": "ServerVarOverride"
+    },
+    {
+      "field": "playerAvatarCollectionAchievementCountsCacheExpiryTimeInSeconds",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "playerCritChance",
+      "topic": "C01 暴擊",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "playerCritMult",
+      "topic": "C01 暴擊",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "playerDamageMult",
+      "topic": "C02 劍術大師",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "playerPollFinalizationIntervalCheck",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "playerPollMinPrestigeCount",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "playerProfileCacheExpiryTimeInSeconds",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "playerUpgradeCostBase",
+      "topic": "C02 劍術大師",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "playerUpgradeCostGrowth",
+      "topic": "C02 劍術大師",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "posTutorialPrestige",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "posTutorialTriggerStage",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "practiceEnemyHPMult",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "practiceTeamTacticsBuffer",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "prestigeMsPercentRequirement",
+      "topic": "E01-E05 蛻變與神器",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "prestigeRaceMinigameFarmingRewardAmount",
+      "topic": "E01-E05 蛻變與神器",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "prestigeRaceMinigameFarmingStagePercentage",
+      "topic": "E01-E05 蛻變與神器",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "prestigeRaceMinigamePrestigeRewardLimit",
+      "topic": "E01-E05 蛻變與神器",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "prestigeReminderFrequency",
+      "topic": "E01-E05 蛻變與神器",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "previewDurationTournament",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "previewDurationWeekendPrestige",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "profileBackgroundImagesURL",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "progressionAchievementTestDiamondReward",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "promptStage",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "promptTimes",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "raidAttackResetDelay",
+      "topic": "M04-M08 突襲與賽事",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "raidAttackShareVersion",
+      "topic": "M04-M08 突襲與賽事",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "raidAttackSubmissionRetries",
+      "topic": "M04-M08 突襲與賽事",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "raidAttackSubmissionRetryMaxDelayInMinutes",
+      "topic": "M04-M08 突襲與賽事",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "raidAttackSubmissionRetryTimerSeconds",
+      "topic": "M04-M08 突襲與賽事",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "raidAttacksIncompleteNotificationEnabled",
+      "topic": "M04-M08 突襲與賽事",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "raidAttacksNotificationEnabled",
+      "topic": "M04-M08 突襲與賽事",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "raidCardCrystalLevelRank",
+      "topic": "M04-M08 突襲與賽事",
+      "bundled": true,
+      "source": "ServerVarOverride"
+    },
+    {
+      "field": "raidCardCrystalUnlockLevel",
+      "topic": "M04-M08 突襲與賽事",
+      "bundled": true,
+      "source": "ServerVarOverride"
+    },
+    {
+      "field": "raidCompletionDays",
+      "topic": "M04-M08 突襲與賽事",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "raidCurrentAttackResetEnabled",
+      "topic": "M04-M08 突襲與賽事",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "raidCurrentClanQuestButtonEnabled",
+      "topic": "M04-M08 突襲與賽事",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "raidCurrentDeckSelectEnabled",
+      "topic": "M04-M08 突襲與賽事",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "raidCurrentGameStartEnabled",
+      "topic": "M04-M08 突襲與賽事",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "raidCurrentPrepToAttackEnabled",
+      "topic": "M04-M08 突襲與賽事",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "raidCurrentRefreshButtonEnabled",
+      "topic": "M04-M08 突襲與賽事",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "raidDOTTickDelay",
+      "topic": "M04-M08 突襲與賽事",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "raidLeaderDaysOfInactivityUntilDemotion",
+      "topic": "M04-M08 突襲與賽事",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "raidLeaderDemotionWarningDays1",
+      "topic": "M04-M08 突襲與賽事",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "raidLeaderDemotionWarningDays2",
+      "topic": "M04-M08 突襲與賽事",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "raidLevelFilterIncrement",
+      "topic": "M04-M08 突襲與賽事",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "raidMasterTierBronzeTopVal",
+      "topic": "M04-M08 突襲與賽事",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "raidMasterTierGoldTopVal",
+      "topic": "M04-M08 突襲與賽事",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "raidMasterTierPlatinumTopVal",
+      "topic": "M04-M08 突襲與賽事",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "raidMasterTierSilverTopVal",
+      "topic": "M04-M08 突襲與賽事",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "raidMaxInitializationsPerWeek",
+      "topic": "M04-M08 突襲與賽事",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "raidMaxTickets",
+      "topic": "M04-M08 突襲與賽事",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "raidPreValidationEnabled",
+      "topic": "M04-M08 突襲與賽事",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "raidPrepTimerDelay",
+      "topic": "M04-M08 突襲與賽事",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "raidRefreshCooldown",
+      "topic": "M04-M08 突襲與賽事",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "raidRetryEnabled",
+      "topic": "M04-M08 突襲與賽事",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "raidRewardClanHopRewardTimer",
+      "topic": "M04-M08 突襲與賽事",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "raidRewardMaxPlayerLevelFreeClanHop",
+      "topic": "M04-M08 突襲與賽事",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "raidSkeletonMultiplier",
+      "topic": "M04-M08 突襲與賽事",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "raidSkillVarianceOffset",
+      "topic": "M04-M08 突襲與賽事",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "raidStarterDecks",
+      "topic": "M04-M08 突襲與賽事",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "raidXPPrestigeMSMult",
+      "topic": "M04-M08 突襲與賽事",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "rateGameDiamonds",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "rateGamePopupStages",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "recommendedEquipmentsEvent",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "recommendedEquipmentsLegendary",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "recommendedEquipmentsMythic",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "recommendedEquipmentsRare",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "recommendedEquipmentsUnique",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "redditFollowDiamonds",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "redditLink",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "relicStageBase",
+      "topic": "E01-E05 蛻變與神器",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "relicStageBase2",
+      "topic": "E01-E05 蛻變與神器",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "relicStageExpo",
+      "topic": "E01-E05 蛻變與神器",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "relicStageExpo2",
+      "topic": "E01-E05 蛻變與神器",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "relicStageExpo3",
+      "topic": "E01-E05 蛻變與神器",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "relicStageExpoMax3",
+      "topic": "E01-E05 蛻變與神器",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "relicStageMult1",
+      "topic": "E01-E05 蛻變與神器",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "relicStageMult2",
+      "topic": "E01-E05 蛻變與神器",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "relicStageMult3",
+      "topic": "E01-E05 蛻變與神器",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "relicStageOffset",
+      "topic": "E01-E05 蛻變與神器",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "relicsStageMax",
+      "topic": "E01-E05 蛻變與神器",
+      "bundled": true,
+      "source": "ServerVarOverride"
+    },
+    {
+      "field": "remindHelperTutorialUnderStage",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "removeShopBundleAfterPurchased",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "resyncDiamondsOnNotEnoughDiamondsError",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "retentionDays",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "retentionNotificationEnabled",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "rewardedVideoFailsafeTime",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "rewardedVideoFirstLoadDelayTime",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "rewardedVideoMaxLoadingTime",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "scheduledEventGetInfoCacheDurationSeconds",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "seasonArtifactSalvageCost",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "seasonPassUpgradeValue",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "seasonPassValue",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "seasonalRelicMuliplierPrestigeFarmStagePercent",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "seasonalRelicMultiplierBase",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "seasonalRelicMultiplierFarmIncrBy",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "seasonalRelicMultiplierPrestigeMaxDaily",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "seasonalRelicStageBase",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "seasonalRelicStageExpMult",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "seasonalRelicStageMult",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "seasonalRelicStageOffset",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "secondsBeforeClanQuest",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "secondsBetweenNewSession",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "secondsBetweenTrySendingDwEvents",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "secondsBetweenTrySendingDwEventsNewPlayer",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "secondsToRejectTimeSync",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "secretDoorsIgnoreCompletionRequirementSwitch",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "secretDoorsRequiredForCompletionSwitch",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "selectiveCraftingEnabled",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "sendSaveFileOnCrash",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "sendTextTutorialEventsRightAway",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "shadowCloneCritSplashThroughBossBase",
+      "topic": "C01 暴擊",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "shipCritChanceExpo",
+      "topic": "C01 暴擊",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "shopDaysTilNextDialogue",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "shopImagesURL",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "shopJSONOverride",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "shopMaxNetworkJitterSeconds",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "shopReSyncMinSeconds",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "showEventCoins",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "silentMarchNotificationEnabled",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "skillPointsPrestigeDelta",
+      "topic": "B01-B02 法術",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "skillPointsPrestigeMax",
+      "topic": "B01-B02 法術",
+      "bundled": true,
+      "source": "ServerVarOverride"
+    },
+    {
+      "field": "skillPointsPrestigeMin",
+      "topic": "B01-B02 法術",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "skillPointsStageDelta",
+      "topic": "B01-B02 法術",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "skillPointsStageMin",
+      "topic": "B01-B02 法術",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "skillResetTokenMax",
+      "topic": "B01-B02 法術",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "skillTreeMinRestrictStage",
+      "topic": "B01-B02 法術",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "skillTreeResetOncePerPrestige",
+      "topic": "B01-B02 法術",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "skillTreeResetPercentMS",
+      "topic": "B01-B02 法術",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "skillTreeShareVersion",
+      "topic": "B01-B02 法術",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "skipMiniBossTextSpawns",
+      "topic": "C06 濺射與跳關",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "skipTransitionScreen",
+      "topic": "C06 濺射與跳關",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "smallClanCrateMult",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "soloRaidAttackDamageBonus",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "soloRaidCurrentCacheExpirySeconds",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "soloRaidDifficultyVariants",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "soloRaidLeaderboardCacheExpirySeconds",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "soloRaidNotJoinedHoursBeforesNotification",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "soloRaidNotificationEnabled",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "soloRaidPortalVariants",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "soloRaidWorldVariants",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "spawnInvulnerabilityDuration",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "specialMonsterInvulnerableSecs",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "splashMidasBonusExpo",
+      "topic": "C06 濺射與跳關",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "stageRushToRelicMultiplier",
+      "topic": "C05 泰坦與金幣",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "stageScaleExpo",
+      "topic": "C05 泰坦與金幣",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "stageScaleMinAmount",
+      "topic": "C05 泰坦與金幣",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "stageScaleSlope",
+      "topic": "C05 泰坦與金幣",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "stageSkipMonsterCooldown",
+      "topic": "C05 泰坦與金幣",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "stageSkipMonsterMaxStagePercent",
+      "topic": "C05 泰坦與金幣",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "stageSkipMonsterMaxStageSkipAmount",
+      "topic": "C05 泰坦與金幣",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "stageSkipMonsterSpawnChance",
+      "topic": "C05 泰坦與金幣",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "stageTransitionHardUnloadInterval",
+      "topic": "C05 泰坦與金幣",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "startMessageButtonLink",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "startMessageCanClose",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "startMessageHeaderLink",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "startMessageId",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "streamOfBladesTargetDurationBase",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "streamOfBladesTargetHitCount",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "summonAmounts",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "superSeasonPassValue",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "swipeAttackSpeed",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "swordAttackDaggerExpo",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "swordAttackGoldGunExpo",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "swordAttackHSExpo",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "swordAttackToClonePower",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "syncShopBuyItem",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "syncShopMaxStageChanged",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "syncShopPrestige",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "syncShopPurchaseValid",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "syncShopReconnect",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "tapToCloneTapDPSPower",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "tapToDaggerTapDPSPower",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "tapToGoldGunTapDPSPower",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "tapsPerSecond",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "themeMultiplierSequence",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "titanCardDiamondCost",
+      "topic": "C05 泰坦與金幣",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "titanCardInstantSummonUnlockLevel",
+      "topic": "C05 泰坦與金幣",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "titanCardSoulsCost",
+      "topic": "C05 泰坦與金幣",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "titanGoldGunCharge",
+      "topic": "C05 泰坦與金幣",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "titanSoulsBaseDropChance",
+      "topic": "C05 泰坦與金幣",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "titanSoulsMaxPerDay",
+      "topic": "C05 泰坦與金幣",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "titanSoulsMaxPerPrestige",
+      "topic": "C05 泰坦與金幣",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "titanSoulsStartingAmount",
+      "topic": "C05 泰坦與金幣",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "titanSoulsUnlockDays",
+      "topic": "C05 泰坦與金幣",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "titanSoulsUnlockStage",
+      "topic": "C05 泰坦與金幣",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "titanTakeoverNotificationEnabled",
+      "topic": "C05 泰坦與金幣",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "tournamentCollectCooldown",
+      "topic": "M04-M08 突襲與賽事",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "tournamentEndingSoonMinutes",
+      "topic": "M04-M08 突襲與賽事",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "tournamentForceUpdateScore",
+      "topic": "M04-M08 突襲與賽事",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "tournamentGetPrizeIDCacheExpirySeconds",
+      "topic": "M04-M08 突襲與賽事",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "tournamentJoinMemoryBoost",
+      "topic": "M04-M08 突襲與賽事",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "tournamentJoinReductionSeconds",
+      "topic": "M04-M08 突襲與賽事",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "tournamentNextInfoMismatchResync",
+      "topic": "M04-M08 突襲與賽事",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "tournamentNotJoinedHoursBeforesNotification",
+      "topic": "M04-M08 突襲與賽事",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "tournamentNotJoinedNotificationEnabled",
+      "topic": "M04-M08 突襲與賽事",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "tournamentOfflineStageCap",
+      "topic": "M04-M08 突襲與賽事",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "tournamentScoreAutoResubmitOnErrorCooldown",
+      "topic": "M04-M08 突襲與賽事",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "tournamentScoreRetireResync",
+      "topic": "M04-M08 突襲與賽事",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "tournamentServerClientMismatchResync",
+      "topic": "M04-M08 突襲與賽事",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "tournamentStartNotificationEnabled",
+      "topic": "M04-M08 突襲與賽事",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "tournamentSurpassMaxAdvancementResync",
+      "topic": "M04-M08 突襲與賽事",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "tournamentUnlockStage",
+      "topic": "M04-M08 突襲與賽事",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "tournamentUpdateAttemptCooldown",
+      "topic": "M04-M08 突襲與賽事",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "tournamentUpdateCooldown",
+      "topic": "M04-M08 突襲與賽事",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "transmorphStageRequirement",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "treasureGold",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "tt1PromoEndDate",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "tutorialFingerDuration",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "tutorialMinMaxStageSecondPrestige",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "tutorialTapToContinueDelaySecs",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "twilightFairyGloomMaxCount",
+      "topic": "B03-B09 流派",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "twilightFairyMultiActivationRadius",
+      "topic": "B03-B09 流派",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "twitterFollowDiamonds",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "twitterLink",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "twoPetsTotalPetsRequired",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "ultraDaggerDamageFromShadowCloneSkillAmountReduction",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "uniqueTitanLordArmParts",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "uniqueTitanLordLegParts",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "uniqueTitanLordParts",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "unlockBackgroundLockStage",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "unlockStageAnnouncement",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "unlockStageClan",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "unlockStageCraftingPower",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "unlockStageDailyAchievements",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "unlockStageDailyRewards",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "unlockStageShop",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "unlockStageSoloRaid",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "unreadMessagePollingRate",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "updateInfodocsForcedResetDuration",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "updateInfodocsHiddenResetDurationMax",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "updateInfodocsHiddenResetDurationMin",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "updateInfodocsPanelDuration",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "upgradeAllHelperOnPrestige",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "upgradeAllHelperRefundPercent",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "upgradeAllHelperStageRequirement",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "usdToVIPPoints",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "useDamagePerkEnvironment",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "useDoomPerkEnvironment",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "useGoogleIAP",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "useManaPerkEnvironment",
+      "topic": "C07 魔力",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "usePetSpeedModifier",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "videoAdExpiryMinutes",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "videoAllSkillsUnlockRequirement",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "videoFairyStartStage",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "vipPointsPerLevel",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "vipStatusMaxLoadoutSlotsAdditive",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "vipStatusMaxPetEggsAdditive",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "websiteLink",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "welcomeBackSkillsChance",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "wipeVersion",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    },
+    {
+      "field": "xsollaLink",
+      "topic": "未分類",
+      "bundled": false,
+      "source": null
+    }
+  ]
+}
