@@ -44,6 +44,21 @@ test('cloud restore backs up local progress and rejects stale tabs',async()=>{
  assert.equal((await readBrowserSave()).name,'雲端勇者');
 });
 
+// A cloud snapshot an older build wrote has shorter arrays; restoring must normalise, not reject.
+test('restoring an older cloud snapshot fills its slots instead of failing',async()=>{
+ const {readBrowserSave,restoreBrowserSave}=await import('../lib/browser-storage.ts');
+ const before=await readBrowserSave();const state=structuredClone(before.state);
+ state.heroes=[7,8,9];state.artifacts=[1,2];state.skillLevels=[];state.best=456;
+ delete state.ruleset;delete state.tt2;
+ await restoreBrowserSave({name:'舊版勇者',state},before.revision);
+ const restored=await readBrowserSave();
+ assert.equal(restored.state.heroes.length,33);assert.equal(restored.state.artifacts.length,30);
+ assert.equal(restored.state.skillLevels.length,6);
+ assert.deepEqual(restored.state.heroes.slice(0,3),[7,8,9]);
+ assert.equal(restored.state.best,456);assert.ok(restored.state.tt2);
+ assert.equal((await readBrowserSave('before-cloud-restore')).state.best,before.state.best);
+});
+
 test('TT2 migration keeps a complete original backup and increments revision only once',async()=>{
  const {readBrowserSave}=await import('../lib/browser-storage.ts');
  const old=await readBrowserSave();delete old.state.ruleset;delete old.state.tt2;old.state.artifacts[0]=7;old.state.artifactSpent[0]=49;
