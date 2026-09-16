@@ -2,6 +2,7 @@ import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {fresh,apply,hydrate,stateEffect,manaMax,critChance,tapDamage} from '../lib/engine.ts';
 import {TT2_TREE} from '../lib/tt2-data.ts';
+import {B,N} from './amounts.mjs';
 const insight=TT2_TREE.findIndex(k=>k.id==='HelperBoost');
 const commander=TT2_TREE.findIndex(k=>k.id==='AllHelperDmg');
 const near=(a,b)=>assert.ok(Math.abs(a-b)<1e-10,`${a} != ${b}`);
@@ -12,7 +13,7 @@ test('Tactical Insight affects individual unlocked powers, not base player stats
  s.heroes[0]=500;
  near(manaMax(s),203.06);near(critChance(s),.02102);
  near(stateEffect(s,'CritDamage'),1.1*1.0032);
- near(tapDamage(s),1.1*1.0032);
+ near(N(tapDamage(s)),1.1*1.0032);
  s.heroes[1]=100;
  near(stateEffect(s,'CritDamage'),(1.1*1.0032)**2);
 });
@@ -41,5 +42,5 @@ test('unimplemented effects are not activated by high-level Tactical Insight',()
  const s=fresh(1000);s.heroes.fill(2000);s.tt2.extraHeroes.fill(2000);s.tt2.tree[insight]=30;
  assert.equal(stateEffect(s,'TapDamageFromHelpers'),0);
  const independent=fresh(1000);assert.equal(stateEffect(independent,'CritDamage'),1);
- assert.ok(Number.isFinite(tapDamage(s)));
+ assert.ok(Number.isFinite(N(tapDamage(s))));
 });

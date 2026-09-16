@@ -1,4 +1,5 @@
-import {hydrate, type State} from './engine.ts';
+import {hydrate, toAmount, type State} from './engine.ts';
+import {toNumber, isBig} from './big-number.ts';
 export type Snapshot = {name:string;state:State};
 export type CloudResult = {ok:boolean;error?:string;revision:number;updated:number;snapshot?:Snapshot};
 export function validEndpoint(value:string) {
@@ -7,13 +8,25 @@ export function validEndpoint(value:string) {
 export function recoveryKey() {
   return Array.from(crypto.getRandomValues(new Uint8Array(32)),b=>b.toString(16).padStart(2,'0')).join('');
 }
+// Players run their own copy of the Apps Script, and every deployed copy validates state.gold as
+// a finite number. So the wire keeps that number, saturated, and carries the exact magnitude in
+// goldAmount next to it: an older deployment stores the extra field without reading it, and
+// hydrate prefers it on the way back. Nothing else the script validates changed shape.
+export function toSheetsWire(state:State) {
+  const gold=toAmount(state.gold);
+  return {...state,gold:toNumber(gold),goldAmount:{s:gold.s,e:gold.e}};
+}
+const wireBody=(body:Record<string,unknown>)=>{
+  const snapshot=body.snapshot as Snapshot|undefined;
+  return snapshot?.state?{...body,snapshot:{...snapshot,state:toSheetsWire(snapshot.state)}}:body;
+};
 export async function cloudCall(endpoint:string,body:Record<string,unknown>):Promise<CloudResult> {
   if (!validEndpoint(endpoint)) throw Error('請使用雲端儲存服務的正式部署網址');
   const controller=new AbortController();const timer=setTimeout(()=>controller.abort(),25000);
   try {
     // Simple POST avoids an unsupported Apps Script OPTIONS preflight. Never
     // use no-cors: an opaque response cannot confirm a save was accepted.
-    const response=await fetch(endpoint,{method:'POST',credentials:'omit',redirect:'follow',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(body),signal:controller.signal});
+    const response=await fetch(endpoint,{method:'POST',credentials:'omit',redirect:'follow',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(wireBody(body)),signal:controller.signal});
     if(!response.ok)throw Error('雲端服務暫時無法連線');
     const data=await response.json() as CloudResult;
     if(!data.ok)throw Error(data.error||'雲端存檔失敗');
@@ -28,6 +41,7 @@ export async function cloudCall(endpoint:string,body:Record<string,unknown>):Pro
 export function validateSnapshot(value:Snapshot,options:{slots?:'strict'|'lenient'}={}) {
   if(!value||typeof value.name!=='string'||!value.name.trim()||value.name.length>24||!value.state||value.state.version!==2||!Array.isArray(value.state.heroes)||!Array.isArray(value.state.artifacts))throw Error('存檔格式不正確');
   if(options.slots!=='lenient'&&(value.state.heroes.length!==33||value.state.artifacts.length!==30))throw Error('存檔格式不正確');
+  if(options.slots!=='lenient'&&!isBig(value.state.gold))throw Error('存檔格式不正確');
   const visit=(v:unknown,depth=0):void=>{if(depth>12)throw Error('存檔格式不正確');if(typeof v==='number'&&!Number.isFinite(v))throw Error('存檔數值不正確');if(v&&typeof v==='object')for(const child of Object.values(v))visit(child,depth+1);};visit(value);
   if(JSON.stringify(value).length>40000)throw Error('存檔超過容量限制');
 }

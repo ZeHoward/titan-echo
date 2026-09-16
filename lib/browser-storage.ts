@@ -1,4 +1,5 @@
-import { advance, apply, fresh, hydrate, type Action, type State } from './engine.ts';
+import { advance, apply, fresh, hydrate, toAmount, type Action, type State } from './engine.ts';
+import { subtract } from './big-number.ts';
 import {validateSnapshot} from './sheets-cloud.ts';
 
 export type Save = { id: string; name: string; state: State; revision: number; instanceId?:string; lastWriteId?:string };
@@ -52,9 +53,9 @@ export async function browserRequest(url: string, init?: RequestInit): Promise<R
             response = Response.json({ ...saved, now });
           }
         } else if (url === '/api/game') {
-          const before = saved.state.gold;
+          const before = toAmount(saved.state.gold);
           advance(saved.state, now);
-          response = Response.json({ ...saved, now, offlineGold: saved.state.gold - before });
+          response = Response.json({ ...saved, now, offlineGold: subtract(saved.state.gold, before) });
         } else response = Response.json({ error: 'Not found' }, { status: 404 });
       } catch (error) { tx.abort(); reject(error); }
     };

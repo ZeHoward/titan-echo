@@ -4,7 +4,7 @@ import {readFileSync} from 'node:fs';
 import vm from 'node:vm';
 import {createHash} from 'node:crypto';
 import {fresh} from '../lib/engine.ts';
-import {validEndpoint,validateSnapshot,cloudCall} from '../lib/sheets-cloud.ts';
+import {validEndpoint,validateSnapshot,cloudCall,toSheetsWire} from '../lib/sheets-cloud.ts';
 const source=readFileSync(new URL('../public/google-sheets/Code.gs',import.meta.url),'utf8');
 function server(){
  const rows=[];let exists=false,locked=false;
@@ -14,7 +14,7 @@ function server(){
  const call=b=>JSON.parse(ctx.doPost({postData:{contents:JSON.stringify(b)}}));
  return {ctx,rows,call};
 }
-const key='a'.repeat(64),snapshot=()=>({name:'勇者',state:fresh(100000)}),requestId='request-0000000001';
+const key='a'.repeat(64),snapshot=()=>({name:'勇者',state:toSheetsWire(fresh(100000))}),requestId='request-0000000001';
 const create=(s,k=key)=>s.call({op:'create',key:k,requestId,snapshot:snapshot()});
 test('setup is non-destructive and validates existing schema',()=>{const s=server();s.ctx.setup();create(s);s.ctx.setup();assert.equal(s.rows.length,2);s.rows[0][0]='changed';assert.throws(()=>s.ctx.setup(),/SCHEMA_MISMATCH/);});
 test('uninitialized backend returns NOT_READY, never creates tabs from anonymous requests',()=>{const s=server();assert.equal(create(s).error,'NOT_READY');assert.equal(s.rows.length,0);});
@@ -24,5 +24,12 @@ test('retrying a committed request is idempotent',()=>{const s=server();s.ctx.se
 test('invalid credential and malformed payload are rejected',()=>{const s=server();s.ctx.setup();assert.equal(create(s,'short').error,'INVALID_KEY');assert.equal(s.call({op:'create',key,requestId,snapshot:{name:'x',state:{}}}).error,'INVALID_SAVE');assert.equal(s.call({op:'load',key}).error,'NOT_FOUND');assert.equal(JSON.parse(s.ctx.doPost({postData:{contents:'bad json'}})).ok,false);});
 test('snapshot capacity and missing player writes are rejected',()=>{const s=server();s.ctx.setup();assert.equal(s.call({op:'save',key,revision:0,requestId,snapshot:snapshot()}).error,'NOT_FOUND');const big=snapshot();big.state.log=['a'.repeat(41000)];assert.equal(s.call({op:'create',key,requestId,snapshot:big}).error,'INVALID_SAVE');});
 test('deployment URL validation blocks arbitrary destinations',()=>{assert.equal(validEndpoint('https://script.google.com/macros/s/AKfy-abc/exec'),true);for(const bad of ['https://example.com/exec','https://script.google.com.evil.test/macros/s/a/exec','https://script.google.com/macros/s/a/dev'])assert.equal(validEndpoint(bad),false);});
-test('client snapshot validation rejects invalid sizes and nonfinite numbers',()=>{validateSnapshot(snapshot());const s=snapshot();s.state.gold=Infinity;assert.throws(()=>validateSnapshot(s));assert.throws(()=>validateSnapshot({name:'',state:fresh()}));});
+test('client snapshot validation rejects invalid sizes and nonfinite numbers',()=>{
+ const live={name:'勇者',state:fresh(100000)};validateSnapshot(live);
+ // What goes to Sheets keeps gold as a plain number for the deployed script, so it is the
+ // lenient shape on the way back, never the shape this build is allowed to hold in memory.
+ validateSnapshot(snapshot(),{slots:'lenient'});assert.throws(()=>validateSnapshot(snapshot()));
+ const infinite=structuredClone(live);infinite.state.gold={s:Infinity,e:0};assert.throws(()=>validateSnapshot(infinite));
+ const nested=structuredClone(live);nested.state.hp={s:NaN,e:0};assert.throws(()=>validateSnapshot(nested));
+ assert.throws(()=>validateSnapshot({name:'',state:fresh()}));});
 test('cloud transport uses readable simple POST, credentials never placed in URL',async()=>{const original=globalThis.fetch;try{globalThis.fetch=async(url,init)=>{assert.equal(url,'https://script.google.com/macros/s/test/exec');assert.equal(init.headers['Content-Type'],'text/plain;charset=utf-8');assert.equal(init.credentials,'omit');assert.notEqual(init.mode,'no-cors');return Response.json({ok:true,revision:1,updated:1});};assert.equal((await cloudCall('https://script.google.com/macros/s/test/exec',{op:'load',key})).revision,1);}finally{globalThis.fetch=original;}});

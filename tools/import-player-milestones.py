@@ -1,23 +1,43 @@
-"""Import numerical milestone facts after checking the two reference snapshots."""
-import csv
-import decimal
-import hashlib
+"""Rebuild the Sword Master milestone table from the committed 8.2.0 reference records.
+
+The reference JSON keeps every cell as the exact source text, so the table can be rebuilt
+without the package itself. TotalNew reaches 9.07E+363, past the range of a double, which is
+why the value is carried as its source text and parsed into a significand/exponent pair.
+"""
 import json
 import pathlib
-import sys
+import re
 
-root = pathlib.Path(__file__).resolve().parents[1]
-source = next(pathlib.Path(sys.argv[1]).glob('*_PlayerImprovementsInfo.txt'))
-rows = list(csv.DictReader(source.read_text(encoding='utf-8-sig').splitlines()))
-baseline = list(csv.DictReader((root / 'work/tt2-csv/csv/PlayerImprovementsInfo.csv').read_text(encoding='utf-8-sig').splitlines()))
-assert rows == baseline, 'Player milestone snapshots differ; review before importing'
-facts = []
-for row in rows:
-    facts.append(dict(level=int(row['Level']), step=float(row['AmountNew']),
-                      total=float(min(decimal.Decimal(row['TotalNew']), decimal.Decimal('1e240')))))
-assert all(a['level'] < b['level'] for a, b in zip(facts, facts[1:]))
-header = '// PlayerImprovementsInfo: verified Level / AmountNew / TotalNew reader in APK 8.2.0.\n'
-header += '// Identical 7.5 table; values capped at the web engine limit, 1e240.\n'
-header += '// TextAsset SHA256: ' + hashlib.sha256(source.read_bytes()).hexdigest() + '\n'
-(root / 'lib/tt2-player-milestones.ts').write_text(header + 'export const PLAYER_MILESTONES=' + json.dumps(facts, separators=(',', ':')) + ';\n', encoding='utf-8')
-print(f'Imported {len(facts)} milestone rows')
+ROOT = pathlib.Path(__file__).resolve().parents[1]
+REFERENCE = ROOT / 'reference/tt2/8.2.0/PlayerImprovementsInfo.json'
+SCIENTIFIC = re.compile(r'^-?\d+(?:\.\d+)?[eE][+-]?\d+$')
+
+
+def main():
+    table = json.loads(REFERENCE.read_text(encoding='utf-8'))
+    manifest = json.loads((ROOT / 'reference/tt2/8.2.0/manifest.json').read_text(encoding='utf-8'))
+    entry = next(t for t in manifest['tables'] if t['table'] == 'PlayerImprovementsInfo')
+    if entry['rows'] != len(table['records']):
+        raise ValueError('reference record count disagrees with the manifest')
+    facts = []
+    for record in table['records']:
+        total = record['values']['TotalNew'].strip()
+        if not SCIENTIFIC.match(total):
+            raise ValueError(f'unexpected TotalNew format: {total!r}')
+        facts.append(dict(level=int(record['values']['Level']),
+                          step=float(record['values']['AmountNew']), total=total))
+    if not all(a['level'] < b['level'] for a, b in zip(facts, facts[1:])):
+        raise ValueError('milestone levels are not strictly increasing')
+    beyond = [f for f in facts if float(f['total']) > 1e240]
+    header = ('// PlayerImprovementsInfo: verified Level / AmountNew / TotalNew reader in APK 8.2.0.\n'
+              '// Rebuilt by tools/import-player-milestones.py from the committed reference records.\n'
+              f'// TotalNew is kept as its source text: {len(beyond)} of {len(facts)} rows exceed 1e240\n'
+              '// and the last one, 9.07E+363, has no double representation at all.\n'
+              f"// Source: reference/tt2/8.2.0/PlayerImprovementsInfo.json ({entry['sourceSha256']}).\n")
+    body = 'export const PLAYER_MILESTONES=' + json.dumps(facts, separators=(',', ':')) + ' as const;\n'
+    (ROOT / 'lib/tt2-player-milestones.ts').write_text(header + body, encoding='utf-8')
+    print(f'Imported {len(facts)} milestone rows, {len(beyond)} of them past the old 1e240 cap')
+
+
+if __name__ == '__main__':
+    main()

@@ -1,6 +1,7 @@
 import { getChatGPTUser } from '../../chatgpt-auth';
 import { database } from '../../../lib/storage';
-import { fresh, advance, apply, ACTION_TYPES, type State, type Action } from '../../../lib/engine';
+import { fresh, advance, apply, toAmount, ACTION_TYPES, type State, type Action } from '../../../lib/engine';
+import { subtract } from '../../../lib/big-number';
 export const dynamic='force-dynamic';
 type Player={state:string;name:string;revision:number};
 const json=(body:unknown,status=200)=>Response.json(body,{status,headers:{'Cache-Control':'no-store'}});
@@ -9,9 +10,9 @@ export async function GET(){
  const db=database(),now=Date.now();const defaultName='冒險者 '+crypto.randomUUID().slice(0,4).toUpperCase();
  await db.prepare('INSERT OR IGNORE INTO players (id,name,state,revision,best,prestiges,updated) VALUES (?,?,?,0,1,0,?)').bind(user.userId,defaultName,JSON.stringify(fresh(now)),now).run();
  const row=await db.prepare('SELECT state,name,revision FROM players WHERE id=?').bind(user.userId).first<Player>();if(!row)return json({error:'Unable to load player'},500);
- const s:State=JSON.parse(row.state),oldGold=s.gold;advance(s,now);
+ const s:State=JSON.parse(row.state),oldGold=toAmount(s.gold);advance(s,now);
  // Return the advanced view; POST replays from the durable row and commits once.
- return json({state:s,name:row.name,revision:row.revision,now,offlineGold:s.gold-oldGold});
+ return json({state:s,name:row.name,revision:row.revision,now,offlineGold:subtract(s.gold,oldGold)});
 }
 export async function POST(request:Request){
  const user=await getChatGPTUser();if(!user)return json({error:'Sign in required'},401);

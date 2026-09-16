@@ -2,47 +2,48 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { apply, fresh, health, reward } from '../lib/engine.ts';
+import { STAGE_CAP } from '../lib/tt2-limits.ts';
+import { ZERO, toNumber } from '../lib/big-number.ts';
 import { referenceRoot } from '../tools/reference-validation.mjs';
 
-const CAP = 1e240;
 const at = (stage, fn) => {
   const state = fresh(1000);
   state.stage = stage; state.best = stage; state.worldBest = [stage, stage];
   return fn(state);
 };
-/** Lowest stage at which the value already sits on the engine ceiling. */
-function firstCapped(fn) {
-  let low = 1, high = 20000;
-  while (low < high) {
-    const middle = (low + high) >> 1;
-    if (at(middle, fn) >= CAP) high = middle; else low = middle + 1;
-  }
-  return low;
-}
 
-test('the stage counter stops at 1800, which is the limit players actually meet', () => {
-  const state = fresh(1000);
-  state.stage = 1800; state.best = 1800; state.kills = 999; state.farming = false;
-  // Clearing a boss at the cap must not move the stage past it.
-  const after = apply({ ...state, hp: 0 }, { type: 'tap', at: state.last + 1000 });
-  assert.ok(after.stage <= 1800);
-  assert.equal(at(1800, health) < CAP, true, '1800 關的血量仍在封頂之下');
-});
-
-test('monster health and gold flatten only just past the reachable stage cap', () => {
-  // Measured headroom: the numbers survive to 1982 and 2307, the stage counter stops at 1800.
-  assert.equal(firstCapped(health), 1982);
-  assert.equal(firstCapped(reward), 2307);
-  const headroom = 240 - Math.log10(at(1800, health));
-  assert.ok(headroom > 21 && headroom < 23, `1800 關距封頂 ${headroom} 個數量級`);
-});
-
-test('the reachable cap is two percent of the stage limit the package records', () => {
+test('the stage counter stops where the package says it does, not at an invented 1800', () => {
   const rows = JSON.parse(readFileSync(new URL('ServerVarsInfo.json', referenceRoot), 'utf8')).records;
-  const maxStage = rows.find(row => row.id === 'maxStage');
-  assert.equal(maxStage.values.iOS, '98000');
-  // Removing the 1800 cap without a larger number representation would only buy ~180 stages,
-  // because health reaches the engine ceiling at 1982. The two limits have to move together.
-  assert.ok(1800 / 98000 < 0.02);
-  assert.ok(firstCapped(health) - 1800 < 200);
+  assert.equal(STAGE_CAP, Number(rows.find(row => row.id === 'maxStage').values.iOS));
+  assert.equal(STAGE_CAP, 98000);
+  const state = fresh(1000);
+  state.stage = STAGE_CAP; state.best = STAGE_CAP; state.kills = 999; state.farming = false;
+  // Clearing a boss at the cap must not move the stage past it.
+  const after = apply({ ...state, hp: { ...ZERO } }, { type: 'tap', at: state.last + 1000 });
+  assert.equal(after.stage, STAGE_CAP);
+});
+
+test('monster health and gold stay exact at the last stage instead of flattening', () => {
+  // The old ceiling flattened health at stage 1982 and gold at 2307, both short of the cap.
+  for (const stage of [1982, 2307, STAGE_CAP]) {
+    for (const [label, value] of [['血量', at(stage, health)], ['金幣', at(stage, reward)]]) {
+      assert.ok(Number.isFinite(value.s) && Number.isFinite(value.e), `${stage} 關${label}`);
+      assert.ok(value.s >= 1 && value.s < 10, `${stage} 關${label}尾數 ${value.s}`);
+    }
+  }
+  // Each stage still multiplies the previous one; nothing is clamped along the way.
+  const growth = at(1983, health).e - at(1982, health).e;
+  assert.ok(growth === 0 || growth === 1);
+  assert.ok(at(STAGE_CAP, health).e > at(STAGE_CAP - 1, health).e - 1);
+});
+
+test('the last stage is past what a double holds, which is why the value is a pair', () => {
+  const last = at(STAGE_CAP, health);
+  // 18 x 1.32^97999: about 10^11817, roughly 11,500 orders of magnitude past Number.MAX_VALUE.
+  assert.equal(last.e, 11817);
+  assert.ok(last.e > 308);
+  assert.equal(toNumber(last), Number.MAX_VALUE);
+  assert.equal(at(STAGE_CAP, reward).e, 10173);
+  // Before the change these two both sat on 1e240 from stage 2307 onwards.
+  assert.ok(at(STAGE_CAP, health).e > 240 && at(STAGE_CAP, reward).e > 240);
 });

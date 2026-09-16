@@ -1,7 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { ONE, ZERO, add, compare, divide, fromNumber, fromStorage, multiply, negate, normalise, power,
-  subtract, toNumber, toStorage } from '../lib/big-number.ts';
+import { ONE, ZERO, add, atLeastZero, big, ceil, compare, divide, fromNumber, fromStorage, fromText,
+  isBig, max, min, multiply, negate, normalise, pow, power, ratio, scale, subtract, sum, toNumber,
+  toStorage } from '../lib/big-number.ts';
 
 const close = (actual, expected, tolerance = 1e-9) =>
   assert.ok(Math.abs(actual - expected) <= Math.abs(expected) * tolerance + Number.EPSILON,
@@ -96,4 +97,69 @@ test('the representation matches the native number type this project recorded', 
   assert.deepEqual(native.representation.parts, ['exponent', 'significand']);
   // Same two parts, so a later migration can map one to the other without inventing a shape.
   assert.deepEqual(Object.keys(fromNumber(5)).sort(), ['e', 's']);
+});
+
+test('powers stay exact while a double can hold them, and keep going past it', () => {
+  // The log-space form rounds the last digits, which a later ceil() turns into a whole unit,
+  // so anything a double represents must come back bit-for-bit.
+  for (const [base, exponent] of [[1.075, 1], [1.075, 20], [1.32, 100], [1.035, 29], [10, 5], [2, 53]]) {
+    assert.equal(toNumber(pow(base, exponent)), base ** exponent, `${base}^${exponent}`);
+  }
+  // Past the double range it keeps the significand and grows the exponent instead of overflowing.
+  const huge = pow(1.32, 97999);
+  assert.equal(huge.e, 11816);
+  assert.ok(huge.s >= 1 && huge.s < 10);
+  assert.equal(toNumber(pow(1.075, 12500)), Number.MAX_VALUE);
+  assert.equal(pow(1.075, 0).s, 1);
+});
+
+test('sum adds the largest terms first so small ones are not dropped early', () => {
+  const values = [fromNumber(1), fromNumber(1e-5), fromNumber(1e6), fromNumber(3)];
+  assert.ok(Math.abs(toNumber(sum(values)) - 1000004.00001) < 1e-6);
+  assert.deepEqual(sum([]), { s: 0, e: 0 });
+  assert.deepEqual(sum([fromNumber(0), fromNumber(0)]), { s: 0, e: 0 });
+  // A term too small to change the total is dropped, not turned into a rounding error.
+  assert.deepEqual(sum([{ s: 1, e: 400 }, fromNumber(2)]), { s: 1, e: 400 });
+});
+
+test('ceil rounds only while a whole number still means something', () => {
+  assert.equal(toNumber(ceil(fromNumber(30.0000001))), 31);
+  assert.equal(toNumber(ceil(fromNumber(30))), 30);
+  assert.deepEqual(ceil({ s: 0, e: 0 }), { s: 0, e: 0 });
+  // Past 1e15 a double has no fractional part left to round, so the value is returned unchanged.
+  const large = { s: 1.2345, e: 200 };
+  assert.deepEqual(ceil(large), large);
+});
+
+test('the helpers around comparison behave at the edges', () => {
+  assert.deepEqual(max(fromNumber(3), fromNumber(5)), fromNumber(5));
+  assert.deepEqual(min(fromNumber(3), fromNumber(5)), fromNumber(3));
+  assert.deepEqual(atLeastZero({ s: -2, e: 5 }), { s: 0, e: 0 });
+  assert.deepEqual(atLeastZero(fromNumber(2)), fromNumber(2));
+  assert.equal(ratio(fromNumber(10), fromNumber(4)), 2.5);
+  assert.equal(ratio(fromNumber(10), { s: 0, e: 0 }), 0);
+  // A ratio far below the double range reads as zero rather than throwing.
+  assert.equal(ratio({ s: 1, e: 10 }, { s: 1, e: 5000 }), 0);
+  assert.deepEqual(scale(fromNumber(4), 0), { s: 0, e: 0 });
+  assert.equal(toNumber(scale({ s: 2, e: 400 }, 3)), Number.MAX_VALUE);
+  assert.equal(scale({ s: 2, e: 400 }, 3).e, 400);
+});
+
+test('text parsing keeps magnitudes no double can hold', () => {
+  assert.deepEqual(fromText('9.07E+363'), { s: 9.07, e: 363 });
+  assert.deepEqual(fromText('2.00E+00'), { s: 2, e: 0 });
+  assert.deepEqual(fromText('4.61E+03'), { s: 4.61, e: 3 });
+  assert.deepEqual(fromText('1.5e-7'), fromNumber(1.5e-7));
+  assert.deepEqual(fromText('42'), fromNumber(42));
+  assert.throws(() => fromText('nonsense'));
+  assert.equal(toNumber(fromText('9.07E+363')), Number.MAX_VALUE);
+});
+
+test('big() accepts either form and isBig tells them apart', () => {
+  assert.deepEqual(big(30), { s: 3, e: 1 });
+  assert.deepEqual(big({ s: 30, e: 0 }), { s: 3, e: 1 });
+  assert.ok(isBig({ s: 1, e: 2 }));
+  for (const value of [1, '1', null, undefined, {}, { s: 1 }, { e: 1 }, [1, 2]]) {
+    assert.equal(isBig(value), false, JSON.stringify(value) ?? 'undefined');
+  }
 });

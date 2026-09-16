@@ -3,14 +3,15 @@ import assert from 'node:assert/strict';
 import {fresh,hydrate,apply,petAttackDamage} from '../lib/engine.ts';
 import {petRequiredTaps,petDamageFactor} from '../lib/tt2-pet-combat.ts';
 import {TT2_TREE,TT2_ARTIFACTS} from '../lib/tt2-data.ts';
+import {B,N} from './amounts.mjs';
 
 test('the twentieth accepted tap fires a pet attack and subtracts real enemy health',()=>{
- let s=fresh(1000);s.tt2.petLevels[0]=1;s.tt2.activePets[0]=0;s.hp=1e9;
+ let s=fresh(1000);s.tt2.petLevels[0]=1;s.tt2.activePets[0]=0;s.hp=B(1e9);
  for(let i=0;i<19;i++)s=apply(s,{type:'tap',at:1000+i*50});
  assert.equal(s.tt2.petCharge,19);assert.equal(s.tt2.petAttacks,0);
- const hp=s.hp;s=apply(s,{type:'tap',at:1950});
- assert.equal(s.tt2.petCharge,0);assert.equal(s.tt2.petAttacks,1);assert.ok(s.tt2.lastPetHit>0);
- assert.ok(Math.abs((hp-s.hp)-s.tt2.lastHit-s.tt2.lastPetHit)<1e-6);
+ const hp=N(s.hp);s=apply(s,{type:'tap',at:1950});
+ assert.equal(s.tt2.petCharge,0);assert.equal(s.tt2.petAttacks,1);assert.ok(N(s.tt2.lastPetHit)>0);
+ assert.ok(Math.abs((hp-N(s.hp))-N(s.tt2.lastHit)-N(s.tt2.lastPetHit))<1e-6);
 });
 test('rejected taps and absent pets cannot generate pet attacks',()=>{
  let s=fresh(1000);for(let i=0;i<30;i++)s=apply(s,{type:'tap',at:1000+i*50});
@@ -26,11 +27,11 @@ test('pet evolution reduces charge requirement using the pinned skill table',()=
 test('pet coefficients follow 40 and 80 level boundaries and damage artifacts apply',()=>{
  const s=fresh(1000);s.tt2.activePets[0]=0;
  for(const [level,expected] of [[40,1+6+40*.38],[80,1+6+80*.38],[81,1+6+80*.38+.12]]){s.tt2.petLevels[0]=level;assert.equal(petDamageFactor(s.tt2),expected);}
- const before=petAttackDamage(s);s.tt2.artifacts[TT2_ARTIFACTS.findIndex(a=>a.effect==='PetDamage')]=1;assert.ok(petAttackDamage(s)>before);
+ const before=N(petAttackDamage(s));s.tt2.artifacts[TT2_ARTIFACTS.findIndex(a=>a.effect==='PetDamage')]=1;assert.ok(N(petAttackDamage(s))>before);
 });
 test('partial charge survives hydration but prestige starts a new charge',()=>{
  let s=fresh(1000);s.tt2.petCharge=9;s.tt2.petAttacks=17;s.best=60;
  s=hydrate(JSON.parse(JSON.stringify(s)));assert.equal(s.tt2.petCharge,9);
  s=apply(s,{type:'prestige',at:1000});assert.equal(s.tt2.petCharge,0);assert.equal(s.tt2.petAttacks,17);
- delete s.tt2.petCharge;delete s.tt2.petAttacks;delete s.tt2.lastPetHit;hydrate(s);assert.equal(s.tt2.petCharge,0);
+ delete s.tt2.petCharge;delete s.tt2.petAttacks;delete N(s.tt2.lastPetHit);hydrate(s);assert.equal(s.tt2.petCharge,0);
 });

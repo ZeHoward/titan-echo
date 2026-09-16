@@ -1,7 +1,8 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {freshTT2,TT2_ARTIFACTS,TT2_TREE,TT2_SETS,effect,artifactValue,buildMultiplier,effectText} from '../lib/tt2-rules.ts';
-const close=(a,b)=>assert.ok(Math.abs(a-b)<=Math.max(1,Math.abs(b))*1e-10,`${a} != ${b}`);
+import {B,N} from './amounts.mjs';
+const close=(a,b)=>assert.ok(Math.abs(N(a)-N(b))<=Math.max(1,Math.abs(N(b)))*1e-10,`${N(a)} != ${N(b)}`);
 const index=name=>TT2_ARTIFACTS.findIndex(a=>a.english===name);
 test('pinned TT2 catalog has unique 103 artifacts, 66 talents and set data',()=>{assert.equal(TT2_ARTIFACTS.length,103);assert.equal(new Set(TT2_ARTIFACTS.map(a=>a.id)).size,103);assert.equal(TT2_TREE.length,66);assert.equal(TT2_SETS.length,181);});
 test('Book of Shadows uses 0.05 level^1.087 and distinct artifact damage',()=>{const t=freshTT2(1);t.artifacts[0]=100;close(artifactValue(t,0),1+.05*100**1.087);close(effect(t,'PrestigeRelic'),1+.05*100**1.087);assert.equal(effect(t,'GoldAll'),1);});

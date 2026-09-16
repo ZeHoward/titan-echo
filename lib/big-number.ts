@@ -1,7 +1,8 @@
 // A magnitude that outgrows a JavaScript number, stored the way the native client stores one:
 // a significand and a separate exponent (see reference/tt2/8.2.0/native-number-type.json).
-// Nothing in the engine uses this yet; adopting it changes the saved number format and needs
-// its own migration. This module only provides the arithmetic and its tests.
+// The engine stores monster health, gold and the last hit this way, so a magnitude keeps growing
+// where a double would saturate. Saves written before that carry plain numbers; hydrate converts
+// them in place, which is why every entry point accepts either form.
 
 /** Normalised as significand in [1, 10) times 10^exponent, or an exact zero. */
 export type Big = { s: number; e: number };
@@ -71,6 +72,12 @@ export function power(a: Big, exponent: number): Big {
   if (exponent === 0) return { ...ONE };
   if (isZero(a)) return { ...ZERO };
   if (a.s < 0 && !Number.isInteger(exponent)) throw Error('負數不支援非整數次方');
+  // Exact while the result fits a double. The log-space form below rounds the last digit or
+  // two, which a later ceil() would turn into a whole unit, so it is the fallback, not the rule.
+  if (Math.abs(a.e * exponent) < 300) {
+    const direct = toNumber(a) ** exponent;
+    if (Number.isFinite(direct) && direct !== 0) return fromNumber(direct);
+  }
   const sign = a.s < 0 && Math.abs(exponent % 2) === 1 ? -1 : 1;
   const logs = (Math.log10(Math.abs(a.s)) + a.e) * exponent;
   const whole = Math.floor(logs);
@@ -97,4 +104,64 @@ export function fromStorage(text: string): Big {
   const match = /^(-?\d+(?:\.\d+)?)e(-?\d+)$/.exec(text);
   if (!match) throw Error(`無法解析的大數值：${text}`);
   return normalise(Number(match[1]), Number(match[2]));
+}
+
+/** Either form a value can arrive in: a plain number, or a pair a save already holds. */
+export type BigLike = number | Big;
+
+export function isBig(value: unknown): value is Big {
+  return !!value && typeof value === 'object' && typeof (value as Big).s === 'number'
+    && typeof (value as Big).e === 'number';
+}
+
+/** Coerce either form to a normalised pair. */
+export function big(value: BigLike): Big {
+  return isBig(value) ? normalise(value.s, value.e) : fromNumber(value);
+}
+
+export function max(a: Big, b: Big): Big {
+  return compare(a, b) >= 0 ? { ...a } : { ...b };
+}
+
+export function min(a: Big, b: Big): Big {
+  return compare(a, b) <= 0 ? { ...a } : { ...b };
+}
+
+export function sum(values: Big[]): Big {
+  // Largest first, so the running total never drops a term it could still have absorbed.
+  return [...values].sort((x, y) => compare(y, x)).reduce(add, { ...ZERO });
+}
+
+/** A plain base raised to a plain exponent, without passing through a double in between. */
+export function pow(base: number, exponent: number): Big {
+  return power(fromNumber(base), exponent);
+}
+
+/** Multiply by a plain factor, the common case where only one side is oversized. */
+export function scale(a: Big, factor: number): Big {
+  return factor === 0 ? { ...ZERO } : multiply(a, fromNumber(factor));
+}
+
+/** Negative magnitudes are not a thing the economy holds; floor at zero. */
+export function atLeastZero(a: Big): Big {
+  return a.s < 0 ? { ...ZERO } : { ...a };
+}
+
+/** Round up, but only while the value is small enough for a whole number to mean anything. */
+export function ceil(a: Big): Big {
+  return a.e >= 15 || a.s === 0 ? { ...a } : fromNumber(Math.ceil(toNumber(a)));
+}
+
+/** a / b as a plain number, for ratios that are known to be small. */
+export function ratio(a: Big, b: Big): number {
+  return isZero(b) ? 0 : toNumber(divide(a, b));
+}
+
+/** Parse a decimal or scientific literal exactly, including magnitudes a double cannot hold. */
+export function fromText(text: string): Big {
+  const match = /^(-?\d+(?:\.\d+)?)[eE]([+-]?\d+)$/.exec(text.trim());
+  if (match) return normalise(Number(match[1]), Number(match[2]));
+  const value = Number(text);
+  if (!Number.isFinite(value)) throw Error(`無法解析的大數值：${text}`);
+  return fromNumber(value);
 }
