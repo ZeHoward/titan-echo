@@ -2,6 +2,7 @@
 import { readFileSync, writeFileSync } from 'node:fs';
 import { pathToFileURL } from 'node:url';
 import { parseRewardReference } from './reward-reference.mjs';
+import { REWARD_FIELDS, compareRewardColumns, parseTournamentRewardList } from './tournament-reference.mjs';
 
 export const referenceRoot = new URL('../reference/tt2/8.2.0/', import.meta.url);
 export function loadCatalogs() {
@@ -45,6 +46,10 @@ export function classify(table, row, catalogs) {
   if (/^(Raid|SoloRaid)/.test(table)) {
     scope = 'raid';
     evidence.push(`table=${table}`);
+  }
+  if (/Tournament/.test(table)) {
+    scope = /^(Challenge|SuperChallenge)/.test(table) ? 'challenge-tournament' : 'tournament';
+    evidence.push(`table=${table}`, 'live-schedule=unknown');
   }
   if (['AvatarInfo', 'AvatarFrameInfo', 'PlayerTitleInfo', 'AvatarParticleInfo'].includes(table)) {
     scope = 'cosmetic-unlock-definition';
@@ -129,6 +134,7 @@ export function loadNativeCosmetics() {
 export function auditCatalogs(catalogs, nativeBonuses = loadNativeBonuses(), nativeCosmetics = loadNativeCosmetics()) {
   const nativeRewards = JSON.parse(readFileSync(new URL('native-reward-types.json', referenceRoot), 'utf8')).values;
   const errors = [], unresolved = [], nativeOnly = [], deferredReferences = [], rewardReferences = [], classifications = {}, referenceCounts = {};
+  const tournamentRewards = [], tournamentColumnChecks = [];
   const cosmeticTypes = nativeCosmetics.types ?? {}, cosmeticTables = nativeCosmetics.tableTypes ?? {};
   const ids = Object.fromEntries(Object.entries(catalogs).map(([name, data]) => [name, new Set(data.records.map(r => r.id))]));
   function ref(table, row, field, target, multiple = false, quantities = false) {
@@ -224,6 +230,36 @@ export function auditCatalogs(catalogs, nativeBonuses = loadNativeBonuses(), nat
           if (row.values[field] !== undefined && !/^[1-9]\d*$/.test(row.values[field])) {
             errors.push(`${label}.${field}: invalid positive integer`);
           }
+        }
+      }
+      if (REWARD_FIELDS[table]) {
+        for (const field of REWARD_FIELDS[table]) {
+          if (none(row.values[field])) continue;
+          try {
+            const entries = parseTournamentRewardList(row.values[field], nativeRewards);
+            tournamentRewards.push({ table, id: row.id, field, entries,
+              interpretation: 'sheet-token-list-not-native-reward-grammar',
+              deliveryRules: 'unverified', activation: 'unverified', runtimeEnabled: false });
+            for (const entry of entries) {
+              if (entry.type !== 'Avatar' || entry.itemId === null) continue;
+              const known = ids.AvatarInfo?.has(entry.itemId);
+              const enumIds = cosmeticTypes[cosmeticTables.AvatarInfo?.idType] ?? {};
+              if (known) continue;
+              if (Object.hasOwn(enumIds, entry.itemId)) errors.push(`${label}.${field}: unknown AvatarInfo ID: ${entry.itemId}`);
+              else deferredReferences.push({ table, id: row.id, field, value: entry.itemId, target: 'AvatarInfo',
+                reason: 'absent from both the AvatarInfo catalog and the native AvatarID enum in this package' });
+            }
+          } catch (error) { errors.push(`${label}.${field}: ${error.message}`); }
+        }
+        const comparison = compareRewardColumns(table, row, nativeRewards);
+        if (comparison) tournamentColumnChecks.push({ table, id: row.id, ...comparison });
+      }
+      if (table === 'ChallengeTournamentArtifactPools') {
+        ref(table, row, 'ArtifactID', 'ArtifactInfo');
+        // A to E are per-pool weights, not membership flags; 0 means the artifact is absent from that pool.
+        for (const pool of ['A', 'B', 'C', 'D', 'E']) {
+          const value = row.values[pool];
+          if (value !== undefined && !/^\d+$/.test(value)) errors.push(`${label}.${pool}: invalid pool weight`);
         }
       }
       if (table === 'RaidResearchInfo') {
@@ -379,6 +415,38 @@ export function auditCatalogs(catalogs, nativeBonuses = loadNativeBonuses(), nat
     active.delete(id); finished.add(id);
   }
   for (const id of tree.keys()) visit(id);
+  // Pool weights are summarised, including artifacts weighted out of every pool; that is data, not an error.
+  const poolRows = catalogs.ChallengeTournamentArtifactPools?.records ?? [];
+  const challengeArtifactPools = !poolRows.length ? [] : ['A', 'B', 'C', 'D', 'E'].map(pool => ({
+    pool, artifacts: poolRows.length,
+    weighted: poolRows.filter(row => row.values[pool] !== '0').length,
+    weights: Object.fromEntries([...poolRows.reduce((counts, row) =>
+      counts.set(row.values[pool], (counts.get(row.values[pool]) ?? 0) + 1), new Map())].sort()),
+    activation: 'unverified', runtimeEnabled: false,
+  })).concat([{ pool: 'none', artifacts: poolRows.length,
+    weighted: poolRows.filter(row => ['A', 'B', 'C', 'D', 'E'].every(p => row.values[p] === '0')).length,
+    excluded: poolRows.filter(row => ['A', 'B', 'C', 'D', 'E'].every(p => row.values[p] === '0')).map(row => row.id).sort(),
+    activation: 'unverified', runtimeEnabled: false }]);
+  // The sheet vocabulary is published as-is; a token without a native RewardID is recorded, never renamed.
+  const tournamentVocabulary = Object.entries(tournamentRewards.reduce((tally, row) => {
+    for (const entry of row.entries) {
+      const key = entry.type;
+      (tally[key] ??= { type: key, nativeRewardId: entry.nativeRewardId, uses: 0, tables: new Set() });
+      tally[key].uses += 1;
+      tally[key].tables.add(row.table);
+    }
+    return tally;
+  }, {})).map(([, value]) => ({ ...value, tables: [...value.tables].sort() })).sort((a, b) => a.type < b.type ? -1 : 1);
+  const tournamentColumnAgreement = Object.entries(tournamentColumnChecks.reduce((tally, row) => {
+    const entry = (tally[row.table] ??= { table: row.table, field: row.field, rows: 0, agreed: 0, divergedRows: 0, divergedColumns: {} });
+    entry.rows += 1;
+    entry.agreed += row.agreed.length;
+    if (row.diverged.length) {
+      entry.divergedRows += 1;
+      for (const item of row.diverged) entry.divergedColumns[item.column] = (entry.divergedColumns[item.column] ?? 0) + 1;
+    }
+    return tally;
+  }, {})).map(([, value]) => value).sort((a, b) => a.table < b.table ? -1 : 1);
   // Alternate sources are reported side by side; picking one as the live rule needs server evidence.
   const sourceVariants = Object.entries(catalogs).filter(([, data]) => data.variantOfSource)
     .map(([table, data]) => ({ table, ...data.variantOfSource, records: data.records.length,
@@ -396,7 +464,7 @@ export function auditCatalogs(catalogs, nativeBonuses = loadNativeBonuses(), nat
       unlockTypes: tally(spec.unlockColumn), categories: tally(spec.categoryColumn),
       activation: 'unverified', runtimeEnabled: false };
   });
-  return { version: '8.2.0', runtimeEnabled: false, errors, unresolved, nativeOnly, deferredReferences, rewardReferences, referenceCounts, classifications, cosmeticCoverage, sourceVariants };
+  return { version: '8.2.0', runtimeEnabled: false, errors, unresolved, nativeOnly, deferredReferences, rewardReferences, referenceCounts, classifications, cosmeticCoverage, sourceVariants, tournamentRewards, tournamentVocabulary, tournamentColumnAgreement, challengeArtifactPools };
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {

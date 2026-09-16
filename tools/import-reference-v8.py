@@ -32,10 +32,18 @@ TABLES = ['ArtifactInfo', 'ArtifactCostInfo', 'ActiveSkillInfo', 'ActiveSkillMul
           'RaidFastCompletionBonusStagesInfo', 'RaidMasterTierFastCompletionBonusStagesInfo',
           'RaidLoyaltyInfo', 'RaidTicketBoostInfo', 'RaidResearchInfo', 'RaidMasterTierLevelInfo',
           'RaidMasterTierRewardInfo', 'RaidMasterTierRewardInfo_1',
-          'SoloRaidLevelInfo', 'SoloRaidFarmingLevelInfo']
+          'SoloRaidLevelInfo', 'SoloRaidFarmingLevelInfo',
+          'TournamentRewardInfo', 'SuperTournamentRewardInfo', 'NewPlayerTournamentRewardInfo',
+          'ChallengeTournamentRewardInfo', 'SuperChallengeTournamentRewardInfo',
+          'ChallengeTournamentProgressionRewardInfo', 'ChallengeTournamentArtifactPools']
 # Composite stable keys where a single source column repeats across rows.
 KEYS = {'HelperImprovementsInfo': ['Ascension', 'Level'], 'RaidLevelInfo': ['TierID', 'LevelID'],
-        'RaidMasterTierLevelInfo': ['TierID', 'LevelID'], 'SoloRaidLevelInfo': ['WorldID', 'LevelID']}
+        'RaidMasterTierLevelInfo': ['TierID', 'LevelID'], 'SoloRaidLevelInfo': ['WorldID', 'LevelID'],
+        'TournamentRewardInfo': ['PrizeID', 'TierID', 'StartRank', 'PrizeType'],
+        'SuperTournamentRewardInfo': ['PrizeID', 'TierID', 'StartRank', 'PrizeType'],
+        'ChallengeTournamentRewardInfo': ['StartRank', 'PrizeType'],
+        'SuperChallengeTournamentRewardInfo': ['StartRank', 'PrizeType'],
+        'ChallengeTournamentProgressionRewardInfo': ['TourneyID', 'RewardStage']}
 # Sheets whose header repeats a column name. Allowed only with the verified InfoDoc column policy.
 DUPLICATE_COLUMN_TABLES = {'RaidTicketBoostInfo', 'RaidResearchInfo'}
 # Same-shaped alternate sources for a base table. Kept separate; the live choice is not in the package.

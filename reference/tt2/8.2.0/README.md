@@ -2,7 +2,7 @@
 
 這是資料準備成果，尚未接入遊戲或改寫存檔。現行遊戲仍為 2.6.0／7.5 數值基準。
 
-`manifest.json` 記錄安裝包、71 張已解析表（19,292 個表內有效 ID）的 SHA-256，以及 372 個 TextAsset 的大小與雜湊。未解析的資源只列索引，不宣稱它們皆為 CSV 或已完成 schema。
+`manifest.json` 記錄安裝包、78 張已解析表（20,226 個表內有效 ID）的 SHA-256，以及 372 個 TextAsset 的大小與雜湊。未解析的資源只列索引，不宣稱它們皆為 CSV 或已完成 schema。
 
 每張表以來源 ID 為鍵；英雄里程碑使用 `[Ascension,Level]` 複合鍵。`sourceOrdinal` 僅作來源定位，不能用來覆蓋玩家陣列。`legacy-2.6.json` 固定目前七組核心陣列的原始 ID 順序；不存在於目標表的 ID 映射為 null，後續遷移必須保留及處理，不能改配其他內容。
 
@@ -12,7 +12,7 @@
 
 重建：使用本機已忽略的原始資料執行 `python tools/import-reference-v8.py`，再執行 `node tools/reference-validation.mjs`。工具驗證安裝包、既有全資源索引、原生列舉與解析器證據雜湊。除了下列已取得原生證據的表以外，拒絕重複鍵與重複欄位名；不完整 CSV 列一律拒絕。CI 透過 `npm test` 驗證提交資料完整性、舊 ID 對照、換序、超大數值、跨表引用與活動證據，並執行 `python3 -m unittest discover -s tests -p '*_test.py'` 驗證實際 Python 匯入規則。未知效果 ID、壞掉的前置引用、循環技能前置、非法數字及不成對的成就階段皆有反例測試。
 
-目前檢查 30,124 處引用；其中 33 處不在 BonusInfo，但在原生 BonusType 列舉中存在，記錄在 `nativeOnly`；其中 21 處是四份泰坦縮放來源變體重複引用同一個 MonsterHPScaling。`native-bonus-types.json` 僅保存列舉 ID／數字與來源雜湊，不能用來推定效果公式。沒有未解析的引用 ID，不代表所有公式或所有資源都已驗證。
+目前檢查 30,227 處引用；其中 33 處不在 BonusInfo，但在原生 BonusType 列舉中存在，記錄在 `nativeOnly`；其中 21 處是四份泰坦縮放來源變體重複引用同一個 MonsterHPScaling。`native-bonus-types.json` 僅保存列舉 ID／數字與來源雜湊，不能用來推定效果公式。沒有未解析的引用 ID，不代表所有公式或所有資源都已驗證。
 
 裝備副屬性表已解除隔離：原生 `ParseEquipmentEnhancementScalingInfo`（RVA 0x218994c）按遞增列號讀取；五個 TryGetCell 都成功才呼叫字典 set_Item，後者使用 OverwriteExisting。故同 ID 最後成功解析的列生效。59 筆來源列整理為 58 個 ID，AllActiveSkillAmount 的 PowerExp 從第 9 列的 0.4 被第 57 列的 1.002 覆寫（列號從 0 起）。兩筆都保留在表內 rowResolution.duplicateHistory，sourceOrdinal 指向最後生效列。這項結論只適用於目前安裝包資料，不推定歷史 7.5 解析器或線上覆蓋值。
 
@@ -77,3 +77,11 @@ RaidTicketBoostInfo 的 Amount5 與 RaidResearchInfo 的 Total Levels 各重複�
 **發現版本落差**：RaidMasterTierRewardInfo 與其 _1 變體的 RankReward 引用 AvatarClanMasterTierSeason17Top10／25／50／100，這四個 ID 既不在 AvatarInfo 也不在原生 AvatarID 列舉中（列舉只到較早的賽季）。這 8 筆記在 `deferredReferences`，不自行建立頭像。規則為：目標表有 ID 列舉且該 ID 也不在列舉中，才視為來源缺口；若列舉有、目錄沒有，代表匯入遺漏，仍視為錯誤。同一批獎勵字串中的稱號 581 至 584 確實存在，該列照常解析。
 
 RaidResearchInfo 有 17 列的 RequiredResearchID 指向不存在的 999。這些列的 BonusType 為 None、MaxLevel 與 ResearchPointsPerLevel 皆為 0，屬於無效果且無法升級的列，因此記入 `deferredReferences`；若同樣懸空的前置出現在有效果或可升級的列上，仍列為 unresolved 並使驗證失敗。
+
+本次追加錦標賽 7 張表：TournamentRewardInfo 273 筆、SuperTournamentRewardInfo 297 筆（兩者以 PrizeID＋TierID＋StartRank＋PrizeType 為複合鍵，StartRank 單獨並不唯一）、NewPlayerTournamentRewardInfo 5 筆、ChallengeTournamentRewardInfo 與 SuperChallengeTournamentRewardInfo 各 30 筆（StartRank＋PrizeType）、ChallengeTournamentProgressionRewardInfo 196 筆（TourneyID＋RewardStage）、ChallengeTournamentArtifactPools 103 筆。
+
+**錦標賽的獎勵字串不是原生 RewardID 文法**：14 種代號中 FortuneHelperWeapon（485 處）與 RandomLevelPet（96 處）在 RewardID 列舉裡不存在，只以原生字串形式出現。因此這些欄位改由 [tournament-reference.mjs](../../../tools/tournament-reference.mjs) 逐代號切分並記錄 `nativeRewardId`（找不到時為 null），不送進 RewardID 解析器、不改名、不推定發放行為；`interpretation` 固定為 sheet-token-list-not-native-reward-grammar。
+
+獎勵字串與同列的數值欄位互相印證：TournamentRewardInfo（273 列）、ChallengeTournamentRewardInfo 與 SuperChallengeTournamentRewardInfo（各 30 列）完全一致，零分歧。**SuperTournamentRewardInfo 例外**：297 列中有 198 列分歧，Perk 欄 99 處、PremiumWeapon 欄 198 處與字串內容不符（例如字串寫 PerkTicket:4000 而 Perk 欄為 400，字串未列 FortuneHelperWeapon 但 PremiumWeapon 欄非零）。兩邊都原樣保存，不判定哪一邊正確。該表的 Rewards 恆等於 AvatarReward 加 ResourceRewards。
+
+ChallengeTournamentArtifactPools 的 A 至 E 是每個發現池的權重（0 到 7），不是成員旗標；權重 0 代表該池不含此神器。`validation.json` 的 `challengeArtifactPools` 逐池統計權重分佈，並列出五個池權重皆為 0 的 Artifact20、Artifact29、Artifact35。103 個 ArtifactID 全部可在 ArtifactInfo 解析。錦標賽時程、分組與實際發獎仍未驗證。

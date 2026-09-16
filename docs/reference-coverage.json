@@ -468,7 +468,7 @@
     {
       "name": "NewPlayerTournamentRewardInfo",
       "sourceSha256": "f19bf8b521a607d2913d6da379bfc1fd75db809d32184df8bea35fc824e14073",
-      "status": "not-imported",
+      "status": "imported",
       "route": "M07"
     },
     {
@@ -630,7 +630,7 @@
     {
       "name": "TournamentRewardInfo",
       "sourceSha256": "623d1df6e8e0c9b8daac51a5863f62b5edeef7209572dcaace36963805757b8d",
-      "status": "not-imported",
+      "status": "imported",
       "route": "M07"
     },
     {
@@ -972,7 +972,7 @@
     {
       "name": "SuperTournamentRewardInfo",
       "sourceSha256": "6b6d77591660670472d0489b66f86114d69632a5d827b4f21dd3e3b74d24f575",
-      "status": "not-imported",
+      "status": "imported",
       "route": "M07"
     },
     {
@@ -1362,7 +1362,7 @@
     {
       "name": "ChallengeTournamentArtifactPools",
       "sourceSha256": "a3fde4fbeb9c8dfbc6f0cf0075c6fbea19988d1ac39bca3d50d637edcf003d34",
-      "status": "not-imported",
+      "status": "imported",
       "route": "M08"
     },
     {
@@ -1452,7 +1452,7 @@
     {
       "name": "ChallengeTournamentRewardInfo",
       "sourceSha256": "1bc1dc8ff3db2de98a884e4554817441ac33a1c66142ac8db999e0ad2874080e",
-      "status": "not-imported",
+      "status": "imported",
       "route": "M08"
     },
     {
@@ -2046,7 +2046,7 @@
     {
       "name": "SuperChallengeTournamentRewardInfo",
       "sourceSha256": "3cd320af7eb262c7eeacc4a7ee2de969fbf790248311f736b57d9c63c6527874",
-      "status": "not-imported",
+      "status": "imported",
       "route": "M08"
     },
     {
@@ -2184,7 +2184,7 @@
     {
       "name": "ChallengeTournamentProgressionRewardInfo",
       "sourceSha256": "9fac49975aaf8905fd90c975de72996ac8e39c054602e70377454117cc03819d",
-      "status": "not-imported",
+      "status": "imported",
       "route": "M08"
     },
     {
