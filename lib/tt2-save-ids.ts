@@ -1,8 +1,8 @@
 // Save arrays are positional. This module names the catalog ID behind every slot so a
 // future data version can move progress by ID instead of by array position.
 // It does not change gameplay, balance or the saved format.
-import { TT2_HEROES } from './tt2-data.ts';
-import { TT2_ARTIFACTS, TT2_ACTIVE, TT2_RULESET } from './tt2-rules.ts';
+import { TT2_HEROES, TT2_PETS, TT2_SETS } from './tt2-data.ts';
+import { TT2_ARTIFACTS, TT2_ACTIVE, TT2_TREE, TT2_RULESET } from './tt2-rules.ts';
 
 // Slot counts the Sheets snapshot format pins. Changing them needs a tested migration first.
 export const SAVE_SLOTS = { heroes: 33, artifacts: 30, skillLevels: 6 } as const;
@@ -69,4 +69,55 @@ export function describeSaveIds(ruleset = TT2_RULESET) {
   const order = saveIdOrder(ruleset);
   return { ruleset, slots: SAVE_SLOTS,
     arrays: Object.fromEntries(SAVE_ARRAY_KEYS.map(key => [key, order[key]])) };
+}
+
+// The TT2 block keeps its own positional arrays against the full catalogs.
+export type Tt2IdOrder = { artifacts: string[]; spent: string[]; tree: string[]; petLevels: string[]; scrolls: string[] };
+function currentTt2Order(): Tt2IdOrder {
+  const artifacts = TT2_ARTIFACTS.map(a => a.id);
+  return { artifacts, spent: artifacts, tree: TT2_TREE.map(t => t.id),
+    petLevels: TT2_PETS.map(p => p.id), scrolls: TT2_HEROES.map(h => h.id) };
+}
+export const TT2_ID_ORDERS: Record<string, Tt2IdOrder> = { [TT2_RULESET]: currentTt2Order() };
+export const TT2_ARRAY_KEYS = Object.keys(currentTt2Order()) as (keyof Tt2IdOrder)[];
+
+export function tt2IdOrder(ruleset: string): Tt2IdOrder {
+  const order = TT2_ID_ORDERS[ruleset];
+  if (!order) throw Error(`未知的規則版本：${ruleset}`);
+  return order;
+}
+
+/** Catalog ID order behind the index lists the TT2 block stores, such as completed sets. */
+export function indexListOrder(ruleset: string) {
+  if (ruleset !== TT2_RULESET) throw Error(`未知的規則版本：${ruleset}`);
+  return { sets: TT2_SETS.map(s => s.id), pieces: TT2_SETS.map(s => s.id), enchanted: TT2_ARTIFACTS.map(a => a.id) };
+}
+
+/**
+ * Move a stored list of catalog indices to the target order.
+ * Indices whose ID the target no longer has are dropped and reported, not left pointing elsewhere.
+ */
+export function migrateIndexList(list: readonly number[] | undefined, fromIds: readonly string[],
+    toIds: readonly string[]): { list: number[]; dropped: string[] } {
+  const migrated: number[] = [], dropped: string[] = [];
+  for (const index of list ?? []) {
+    const id = fromIds[index];
+    if (id === undefined) { dropped.push(`索引 ${index}`); continue; }
+    const next = toIds.indexOf(id);
+    if (next === -1) dropped.push(id); else migrated.push(next);
+  }
+  return { list: migrated, dropped };
+}
+
+/** Same move for the {set, slot} pieces list, which also stores a catalog index. */
+export function migrateSetPieces(pieces: readonly { set: number; slot: number }[] | undefined,
+    fromIds: readonly string[], toIds: readonly string[]) {
+  const migrated: { set: number; slot: number }[] = [], dropped: string[] = [];
+  for (const piece of pieces ?? []) {
+    const id = fromIds[piece.set];
+    if (id === undefined) { dropped.push(`索引 ${piece.set}`); continue; }
+    const next = toIds.indexOf(id);
+    if (next === -1) dropped.push(id); else migrated.push({ set: next, slot: piece.slot });
+  }
+  return { pieces: migrated, dropped };
 }
