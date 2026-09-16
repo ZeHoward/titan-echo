@@ -1,0 +1,210 @@
+{
+  "version": "8.2.0",
+  "packageSha256": "8d78c9aa877e6c0b291ee2116cab855bd26c59c1d080bc654f88ecf1ff268b5f",
+  "binarySha256": "c13fc44321b1214c71ab0277a134fc3401fd7392c74a0bbb3935671c55a8713a",
+  "scriptSha256": "62c2eeb8472bb107de516e4b6ae69d3dcdf5013fb1caa87223d82a54dd203f8b",
+  "curves": {
+    "health": {
+      "method": "MonsterModel.GetMonsterBaseHP",
+      "rva": "0x2325968",
+      "bytesSha256": "1d4117afdd8b241bcb546c97716541530d11549f1103a3cc6cd5ee7aa883a633",
+      "serverVars": [
+        "monsterHPLevelOff",
+        "monsterTransendenceHPLevelOff",
+        "monsterHPMult",
+        "monsterHPBase1",
+        "monsterHPBase2",
+        "monsterHPBase3",
+        "monsterHPExpo1",
+        "monsterHPExpo2",
+        "monsterHPExpo3",
+        "monsterHPExpo4"
+      ]
+    },
+    "gold": {
+      "method": "MonsterModel.GetMonsterBaseGold",
+      "rva": "0x2325ed8",
+      "bytesSha256": "422c6aca7f5e1c285fb4236977fe5bdb2ce74fa9a236603ed67b78cde7a0aa59",
+      "serverVars": [
+        "monsterGoldLevelOff",
+        "monsterTransendenceGoldLevelOff",
+        "monsterGoldMult",
+        "monsterGoldBase1",
+        "monsterGoldBase2",
+        "monsterGoldBase3",
+        "monsterGoldExpo1",
+        "monsterGoldExpo2",
+        "monsterGoldExpo3",
+        "monsterGoldExpo4"
+      ]
+    }
+  },
+  "sharedCurve": {
+    "method": "MonsterModel.GetMonsterBase",
+    "rva": "0x2325c4c",
+    "signature": "private GHDouble GetMonsterBase(int stageNum, int levelOff, int transcendenceLevelOff, GHDouble mult, GHDouble base1, GHDouble base2, GHDouble base3, double expo1, double expo2, double expo3, double expo4)"
+  },
+  "staticBlock": [
+    {
+      "offset": "0x890",
+      "name": "monsterCountBase",
+      "type": "int"
+    },
+    {
+      "offset": "0x894",
+      "name": "monsterCountInc",
+      "type": "int"
+    },
+    {
+      "offset": "0x898",
+      "name": "monsterCountStageDelta",
+      "type": "int"
+    },
+    {
+      "offset": "0x89c",
+      "name": "monsterHPLevelOff",
+      "type": "int"
+    },
+    {
+      "offset": "0x8a0",
+      "name": "monsterTransendenceHPLevelOff",
+      "type": "int"
+    },
+    {
+      "offset": "0x8a8",
+      "name": "monsterHPMult",
+      "type": "GHDouble"
+    },
+    {
+      "offset": "0x8c0",
+      "name": "monsterHPBase1",
+      "type": "GHDouble"
+    },
+    {
+      "offset": "0x8d8",
+      "name": "monsterHPBase2",
+      "type": "GHDouble"
+    },
+    {
+      "offset": "0x8f0",
+      "name": "monsterHPBase3",
+      "type": "GHDouble"
+    },
+    {
+      "offset": "0x908",
+      "name": "monsterHPExpo1",
+      "type": "double"
+    },
+    {
+      "offset": "0x910",
+      "name": "monsterHPExpo2",
+      "type": "double"
+    },
+    {
+      "offset": "0x918",
+      "name": "monsterHPExpo3",
+      "type": "double"
+    },
+    {
+      "offset": "0x920",
+      "name": "monsterHPExpo4",
+      "type": "double"
+    },
+    {
+      "offset": "0x928",
+      "name": "monsterGoldLevelOff",
+      "type": "int"
+    },
+    {
+      "offset": "0x92c",
+      "name": "monsterTransendenceGoldLevelOff",
+      "type": "int"
+    },
+    {
+      "offset": "0x930",
+      "name": "monsterGoldMult",
+      "type": "GHDouble"
+    },
+    {
+      "offset": "0x948",
+      "name": "monsterGoldBase1",
+      "type": "GHDouble"
+    },
+    {
+      "offset": "0x960",
+      "name": "monsterGoldBase2",
+      "type": "GHDouble"
+    },
+    {
+      "offset": "0x978",
+      "name": "monsterGoldBase3",
+      "type": "GHDouble"
+    },
+    {
+      "offset": "0x990",
+      "name": "monsterGoldExpo1",
+      "type": "double"
+    },
+    {
+      "offset": "0x998",
+      "name": "monsterGoldExpo2",
+      "type": "double"
+    },
+    {
+      "offset": "0x9a0",
+      "name": "monsterGoldExpo3",
+      "type": "double"
+    },
+    {
+      "offset": "0x9a8",
+      "name": "monsterGoldExpo4",
+      "type": "double"
+    },
+    {
+      "offset": "0x9b0",
+      "name": "bossHPModBase",
+      "type": "float"
+    },
+    {
+      "offset": "0x9b4",
+      "name": "bossHPModStageMult",
+      "type": "float"
+    },
+    {
+      "offset": "0x9b8",
+      "name": "monsterMinGoldDrop",
+      "type": "GHDouble"
+    }
+  ],
+  "bundledValues": {
+    "monsterGoldBase1": [],
+    "monsterGoldBase2": [],
+    "monsterGoldBase3": [],
+    "monsterGoldExpo1": [],
+    "monsterGoldExpo2": [],
+    "monsterGoldExpo3": [],
+    "monsterGoldExpo4": [],
+    "monsterGoldLevelOff": [],
+    "monsterGoldMult": [],
+    "monsterHPBase1": [],
+    "monsterHPBase2": [],
+    "monsterHPBase3": [],
+    "monsterHPExpo1": [],
+    "monsterHPExpo2": [],
+    "monsterHPExpo3": [],
+    "monsterHPExpo4": [],
+    "monsterHPLevelOff": [],
+    "monsterHPMult": [],
+    "monsterTransendenceGoldLevelOff": [],
+    "monsterTransendenceHPLevelOff": []
+  },
+  "evidence": {
+    "honourOffset": "關卡先加上 HonourModel.ActiveHonourAmount × honourStageOffset 才進入曲線",
+    "shape": "兩條曲線共用 GetMonsterBase，參數為 levelOff、transcendenceLevelOff、mult、base1–3 與 expo1–4",
+    "consequence": "怪物血量與金幣曲線的每一個係數都是 [ServerVar]，安裝包沒有帶值"
+  },
+  "limits": [
+    "只證明公式讀哪些具名變數，不證明線上使用的數值",
+    "GetMonsterBase 內部如何組合這些參數尚未逐式還原"
+  ]
+}

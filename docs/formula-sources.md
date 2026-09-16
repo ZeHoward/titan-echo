@@ -2,17 +2,17 @@
 
 每個核心公式的來源登記表：資料表、原生方法、原生預設值，或明確標記為 7.5 基準沿用、專案自訂或伺服器供給。
 
-版本 8.2.0。共 26 條公式、44 項來源條目。
+版本 8.2.0。共 28 條公式、46 項來源條目。
 
 | 狀態 | 意義 | 條目數 |
 |---|---|---|
 | `native` | 由反組譯證據確認 | 4 |
 | `table` | 取自安裝包資料表 | 14 |
 | `default` | 原生靜態預設值，線上可覆蓋 | 2 |
-| `baseline-75` | 沿用 7.5 基準，尚未對 8.2 核實 | 11 |
+| `baseline-75` | 沿用 7.5 基準，尚未對 8.2 核實 | 9 |
 | `table-differs` | 安裝包有值但引擎目前未照做 | 1 |
 | `invented` | 本專案自訂，安裝包未提供 | 8 |
-| `server` | 原生為伺服器變數，安裝包未帶值 | 4 |
+| `server` | 原生為伺服器變數，安裝包未帶值 | 8 |
 
 ## 逐條登記
 
@@ -23,7 +23,7 @@
 | 來源條目 | 狀態 | 依據 |
 |---|---|---|
 | 頭目倍率序列 [2,3,4,5,8] | `table-differs` | `reference/tt2/8.2.0/TitanScalingInfo.json`；安裝包的 ThemeMultiplierSequence 分四段：關卡 1–5 為 2,3,4,5,8、6–39 為 4,6,8,15,24、40–59 為 8,12,16,30,48、60 起回到 2,3,4,5,8，四個來源變體（含 A／B／C）在這四列完全一致。引擎對所有關卡只用第一段，因此 6–59 關的頭目血量偏低。尚未套用的原因：選列由 MonsterModel 存的索引決定（GetCurrentScalingInfo 只做邊界檢查後取 list[index]），該索引如何更新尚未查證，且 themeMultiplierSequence 同時是 ServerVarsModel 的 [ServerVar] 靜態欄位，線上可整份覆蓋。 |
-| 基礎值 18 與每關成長率 1.32 | `baseline-75` | 沿用 7.5 基準。安裝包的 MonsterHPScaling 只給倍率修正而非基礎曲線，且 A／B 變體不同（B 在關卡 1–3 為 0.3／0.4／0.475），屬 A／B 指派結果，無法從安裝包單獨確定。 |
+| 基礎值 18 與每關成長率 1.32 | `server` | `reference/tt2/8.2.0/monster-curve-evidence.json`；原生沒有「基礎值 × 成長率^關卡」這種寫法：MonsterModel.GetMonsterBaseHP 把關卡先加上 ActiveHonourAmount × honourStageOffset（安裝包值 250），再呼叫共用的 GetMonsterBase，參數是 monsterHPLevelOff、monsterTransendenceHPLevelOff、monsterHPMult、monsterHPBase1–3 與 monsterHPExpo1–4 共十個具名 [ServerVar]，**安裝包一個值都沒帶**。目前的 18 與 1.32 是 7.5 基準的近似，不是原版係數。另外 MonsterHPScaling 的 A／B 變體彼此不同（B 在關卡 1–3 為 0.3／0.4／0.475），屬 A／B 指派結果。 |
 | MonsterHP 減免上限 0.9 | `invented` | 引擎自訂的安全上限，避免血量歸零；安裝包未見對應上限。 |
 
 ### monsterGold · `lib/engine.ts` 的 `goldReward`
@@ -32,9 +32,25 @@
 
 | 來源條目 | 狀態 | 依據 |
 |---|---|---|
-| 基礎值 5 與成長率 1.27 | `baseline-75` | 沿用 7.5 基準，安裝包未找到對應的逐關金幣曲線表。 |
+| 基礎值 5 與成長率 1.27 | `server` | `reference/tt2/8.2.0/monster-curve-evidence.json`；原生 MonsterModel.GetMonsterBaseGold 走的是與血量同一條 GetMonsterBase，參數為 monsterGoldLevelOff、monsterTransendenceGoldLevelOff、monsterGoldMult、monsterGoldBase1–3 與 monsterGoldExpo1–4 共十個具名 [ServerVar]，安裝包同樣未帶值。目前的 5 與 1.27 是 7.5 基準的近似。 |
 | 加成代號（GoldAll、JackpotGold、ChestAmount…） | `table` | `reference/tt2/8.2.0/native-bonus-types.json`；代號對照原生 BonusType 列舉，數值來自神器與天賦資料表。 |
 | 寶箱泰坦基礎機率 0.02 | `server` | 原生對應欄位是 [ServerVar]，安裝包未帶值。 |
+
+### monsterCount · `lib/engine.ts` 的 `monsterCount`
+
+每關固定 10 隻小怪
+
+| 來源條目 | 狀態 | 依據 |
+|---|---|---|
+| 固定值 10 | `server` | `reference/tt2/8.2.0/monster-curve-evidence.json`；原生以 monsterCountBase、monsterCountInc、monsterCountStageDelta 三個 [ServerVar] 決定隻數且隨關卡變動，安裝包未帶值；本專案先以固定 10 代替。 |
+
+### bossHealthMod · `lib/engine.ts` 的 `health`
+
+頭目血量在小怪基礎上再乘一組倍率
+
+| 來源條目 | 狀態 | 依據 |
+|---|---|---|
+| bossHPModBase 與 bossHPModStageMult | `server` | `reference/tt2/8.2.0/monster-curve-evidence.json`；原生除了 ThemeMultiplierSequence 另有這兩個 [ServerVar] 參與頭目血量，安裝包未帶值，本專案未實作。 |
 
 ### heroDamage · `lib/engine.ts` 的 `heroDps`
 

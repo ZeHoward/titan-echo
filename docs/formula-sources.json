@@ -25,8 +25,9 @@
         },
         {
           "part": "基礎值 18 與每關成長率 1.32",
-          "status": "baseline-75",
-          "note": "沿用 7.5 基準。安裝包的 MonsterHPScaling 只給倍率修正而非基礎曲線，且 A／B 變體不同（B 在關卡 1–3 為 0.3／0.4／0.475），屬 A／B 指派結果，無法從安裝包單獨確定。"
+          "status": "server",
+          "ref": "monster-curve-evidence.json",
+          "note": "原生沒有「基礎值 × 成長率^關卡」這種寫法：MonsterModel.GetMonsterBaseHP 把關卡先加上 ActiveHonourAmount × honourStageOffset（安裝包值 250），再呼叫共用的 GetMonsterBase，參數是 monsterHPLevelOff、monsterTransendenceHPLevelOff、monsterHPMult、monsterHPBase1–3 與 monsterHPExpo1–4 共十個具名 [ServerVar]，**安裝包一個值都沒帶**。目前的 18 與 1.32 是 7.5 基準的近似，不是原版係數。另外 MonsterHPScaling 的 A／B 變體彼此不同（B 在關卡 1–3 為 0.3／0.4／0.475），屬 A／B 指派結果。"
         },
         {
           "part": "MonsterHP 減免上限 0.9",
@@ -43,8 +44,9 @@
       "parts": [
         {
           "part": "基礎值 5 與成長率 1.27",
-          "status": "baseline-75",
-          "note": "沿用 7.5 基準，安裝包未找到對應的逐關金幣曲線表。"
+          "status": "server",
+          "ref": "monster-curve-evidence.json",
+          "note": "原生 MonsterModel.GetMonsterBaseGold 走的是與血量同一條 GetMonsterBase，參數為 monsterGoldLevelOff、monsterTransendenceGoldLevelOff、monsterGoldMult、monsterGoldBase1–3 與 monsterGoldExpo1–4 共十個具名 [ServerVar]，安裝包同樣未帶值。目前的 5 與 1.27 是 7.5 基準的近似。"
         },
         {
           "part": "加成代號（GoldAll、JackpotGold、ChestAmount…）",
@@ -56,6 +58,34 @@
           "part": "寶箱泰坦基礎機率 0.02",
           "status": "server",
           "note": "原生對應欄位是 [ServerVar]，安裝包未帶值。"
+        }
+      ]
+    },
+    {
+      "id": "monsterCount",
+      "module": "lib/engine.ts",
+      "export": "monsterCount",
+      "expression": "每關固定 10 隻小怪",
+      "parts": [
+        {
+          "part": "固定值 10",
+          "status": "server",
+          "ref": "monster-curve-evidence.json",
+          "note": "原生以 monsterCountBase、monsterCountInc、monsterCountStageDelta 三個 [ServerVar] 決定隻數且隨關卡變動，安裝包未帶值；本專案先以固定 10 代替。"
+        }
+      ]
+    },
+    {
+      "id": "bossHealthMod",
+      "module": "lib/engine.ts",
+      "export": "health",
+      "expression": "頭目血量在小怪基礎上再乘一組倍率",
+      "parts": [
+        {
+          "part": "bossHPModBase 與 bossHPModStageMult",
+          "status": "server",
+          "ref": "monster-curve-evidence.json",
+          "note": "原生除了 ThemeMultiplierSequence 另有這兩個 [ServerVar] 參與頭目血量，安裝包未帶值，本專案未實作。"
         }
       ]
     },
