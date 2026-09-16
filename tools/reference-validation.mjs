@@ -127,6 +127,10 @@ export function loadNativeBonuses() {
   return JSON.parse(readFileSync(new URL('native-bonus-types.json', referenceRoot), 'utf8')).values;
 }
 
+export function loadNativeServerVarFields() {
+  return new Set(JSON.parse(readFileSync(new URL('native-server-var-fields.json', referenceRoot), 'utf8')).fields);
+}
+
 export function loadNativeCosmetics() {
   return JSON.parse(readFileSync(new URL('native-cosmetic-types.json', referenceRoot), 'utf8'));
 }
@@ -136,6 +140,8 @@ export function auditCatalogs(catalogs, nativeBonuses = loadNativeBonuses(), nat
   const errors = [], unresolved = [], nativeOnly = [], deferredReferences = [], rewardReferences = [], classifications = {}, referenceCounts = {};
   const tournamentRewards = [], tournamentColumnChecks = [];
   const cosmeticTypes = nativeCosmetics.types ?? {}, cosmeticTables = nativeCosmetics.tableTypes ?? {};
+  const serverVarFields = loadNativeServerVarFields(), serverVarBinding = [];
+  const challengeStartingChecks = [];
   const ids = Object.fromEntries(Object.entries(catalogs).map(([name, data]) => [name, new Set(data.records.map(r => r.id))]));
   function ref(table, row, field, target, multiple = false, quantities = false) {
     const raw = row.values[field];
@@ -186,7 +192,10 @@ export function auditCatalogs(catalogs, nativeBonuses = loadNativeBonuses(), nat
         if (row.values[field] !== undefined && !bool(row.values[field])) errors.push(`${label}.${field}: invalid flag`);
       }
       if (row.values.MaxLevel !== undefined && !/^\d+$/.test(row.values.MaxLevel)) errors.push(`${label}: invalid MaxLevel`);
+      // This sheet stores "BonusID:amount" pairs in its BonusType columns, not bare bonus IDs.
+      const pairedBonuses = table === 'ChallengeTournamentStartingInfo';
       for (const field of Object.keys(row.values)) {
+        if (pairedBonuses) break;
         if (/^(BonusType(?:[A-J]|[1-3])?|ClassBonusType|SpatialBonusType)$/.test(field)) ref(table, row, field, 'BonusInfo');
       }
       if (table === 'RaidLevelInfo') {
@@ -253,6 +262,48 @@ export function auditCatalogs(catalogs, nativeBonuses = loadNativeBonuses(), nat
         }
         const comparison = compareRewardColumns(table, row, nativeRewards);
         if (comparison) tournamentColumnChecks.push({ table, id: row.id, ...comparison });
+      }
+      if (table === 'ChallengeTournamentStartingInfo') {
+        const pairs = 'ABCDEFGHI'.split('').map(slot => row.values[`BonusType${slot}`]).filter(value => value);
+        if (pairs.join(',') !== row.values.StartingBonusTypes) {
+          errors.push(`${label}: BonusType columns do not rebuild StartingBonusTypes`);
+        }
+        for (const pair of [...pairs, ...list(row.values.StartingBonusTypes)]) {
+          const [id, amount] = pair.split(':');
+          const link = 'ChallengeTournamentStartingInfo.BonusType -> BonusInfo';
+          referenceCounts[link] = (referenceCounts[link] ?? 0) + 1;
+          if (!ids.BonusInfo?.has(id)) unresolved.push({ table, id: row.id, field: 'BonusType', value: id, target: 'BonusInfo' });
+          if (amount === undefined || !decimal.test(amount)) errors.push(`${label}: invalid bonus amount in ${pair}`);
+        }
+        const passives = list(row.values.StartingPassiveLevels).map(pair => pair.split(':'));
+        for (const [name, value] of passives) {
+          if (row.values[name] === undefined) errors.push(`${label}.StartingPassiveLevels: ${name} has no column`);
+          else if (row.values[name] !== value) errors.push(`${label}.StartingPassiveLevels: ${name} disagrees with its column`);
+        }
+        const pool = row.values.DiscoveryPool;
+        const poolLink = 'ChallengeTournamentStartingInfo.DiscoveryPool -> ChallengeTournamentArtifactPools';
+        referenceCounts[poolLink] = (referenceCounts[poolLink] ?? 0) + 1;
+        if (!Object.hasOwn(catalogs.ChallengeTournamentArtifactPools?.schema ?? {}, pool)) {
+          unresolved.push({ table, id: row.id, field: 'DiscoveryPool', value: pool, target: 'ChallengeTournamentArtifactPools' });
+        }
+        for (const field of ['StartingPlayerInventory', 'DisplayedInventory', 'HiddenInventory', 'EquippedInventory']) {
+          for (const token of list(row.values[field])) {
+            const [type, value] = token.split(':');
+            const target = type === 'Equipment' ? 'C_EquipmentInfo' : type === 'Pet' ? 'PetInfo' : null;
+            if (!target) continue;
+            const link = `ChallengeTournamentStartingInfo.${field} -> ${target}`;
+            referenceCounts[link] = (referenceCounts[link] ?? 0) + 1;
+            if (!ids[target]?.has(value)) unresolved.push({ table, id: row.id, field, value, target });
+          }
+        }
+        const overrides = list(row.values.ServerVarOverrides).map(pair => pair.split(';')[0]);
+        for (const key of overrides) {
+          const link = 'ChallengeTournamentStartingInfo.ServerVarOverrides -> native ServerVar field';
+          referenceCounts[link] = (referenceCounts[link] ?? 0) + 1;
+          if (!serverVarFields.has(key)) unresolved.push({ table, id: row.id, field: 'ServerVarOverrides', value: key, target: 'native ServerVar field' });
+        }
+        challengeStartingChecks.push({ id: row.id, bonusSlots: pairs.length, passives: passives.length,
+          discoveryPool: pool, serverVarOverrides: overrides, isSuper: row.values.isSuper });
       }
       if (table === 'ChallengeTournamentArtifactPools') {
         ref(table, row, 'ArtifactID', 'ArtifactInfo');
@@ -369,6 +420,8 @@ export function auditCatalogs(catalogs, nativeBonuses = loadNativeBonuses(), nat
       if (['ServerVarsInfo', 'ServerVarOverride'].includes(table)) {
         if (!row.values.ServerVarsKey?.trim()) errors.push(`${label}: blank server var key`);
         if (table === 'ServerVarOverride' && missing(row.values.Value)) errors.push(`${label}.Value: missing server var value`);
+        // A sheet key only takes effect if the client has a [ServerVar] field with that exact name.
+        serverVarBinding.push({ table, key: row.id, boundToNativeField: serverVarFields.has(row.id) });
       }
       if (/^TitanScalingInfo(_[ABC])?$/.test(table)) {
         if (!/^[1-9]\d*$/.test(row.values.Stage)) errors.push(`${label}.Stage: invalid positive integer`);
@@ -415,6 +468,12 @@ export function auditCatalogs(catalogs, nativeBonuses = loadNativeBonuses(), nat
     active.delete(id); finished.add(id);
   }
   for (const id of tree.keys()) visit(id);
+  // Sheet keys with no matching client field cannot bind; that is recorded, not silently dropped.
+  const unboundServerVars = serverVarBinding.filter(entry => !entry.boundToNativeField);
+  const serverVarBindingSummary = { checked: serverVarBinding.length, bound: serverVarBinding.length - unboundServerVars.length,
+    unbound: unboundServerVars.map(entry => ({ table: entry.table, key: entry.key })),
+    nativeFields: serverVarFields.size,
+    note: 'an unbound key has no [ServerVar] field in this build, so SetVarsFromAttributes cannot apply it' };
   // Pool weights are summarised, including artifacts weighted out of every pool; that is data, not an error.
   const poolRows = catalogs.ChallengeTournamentArtifactPools?.records ?? [];
   const challengeArtifactPools = !poolRows.length ? [] : ['A', 'B', 'C', 'D', 'E'].map(pool => ({
@@ -464,7 +523,7 @@ export function auditCatalogs(catalogs, nativeBonuses = loadNativeBonuses(), nat
       unlockTypes: tally(spec.unlockColumn), categories: tally(spec.categoryColumn),
       activation: 'unverified', runtimeEnabled: false };
   });
-  return { version: '8.2.0', runtimeEnabled: false, errors, unresolved, nativeOnly, deferredReferences, rewardReferences, referenceCounts, classifications, cosmeticCoverage, sourceVariants, tournamentRewards, tournamentVocabulary, tournamentColumnAgreement, challengeArtifactPools };
+  return { version: '8.2.0', runtimeEnabled: false, errors, unresolved, nativeOnly, deferredReferences, rewardReferences, referenceCounts, classifications, cosmeticCoverage, sourceVariants, tournamentRewards, tournamentVocabulary, tournamentColumnAgreement, challengeArtifactPools, serverVarBinding: serverVarBindingSummary, challengeStartingChecks };
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {

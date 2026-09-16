@@ -35,7 +35,8 @@ TABLES = ['ArtifactInfo', 'ArtifactCostInfo', 'ActiveSkillInfo', 'ActiveSkillMul
           'SoloRaidLevelInfo', 'SoloRaidFarmingLevelInfo',
           'TournamentRewardInfo', 'SuperTournamentRewardInfo', 'NewPlayerTournamentRewardInfo',
           'ChallengeTournamentRewardInfo', 'SuperChallengeTournamentRewardInfo',
-          'ChallengeTournamentProgressionRewardInfo', 'ChallengeTournamentArtifactPools']
+          'ChallengeTournamentProgressionRewardInfo', 'ChallengeTournamentArtifactPools',
+          'ChallengeTournamentStartingInfo']
 # Composite stable keys where a single source column repeats across rows.
 KEYS = {'HelperImprovementsInfo': ['Ascension', 'Level'], 'RaidLevelInfo': ['TierID', 'LevelID'],
         'RaidMasterTierLevelInfo': ['TierID', 'LevelID'], 'SoloRaidLevelInfo': ['WorldID', 'LevelID'],
@@ -75,7 +76,7 @@ OMIT = {'Name', 'Note', 'Notes', 'Description', 'PetName', 'NameColor', 'BonusIc
         'Color', 'EnchantColor', 'BestAgainst', 'Title', 'LongDescription', 'CatchDescription',
         'MissedDescription', 'BundleImageOverride', 'BgColor', 'BgColorSecondary', 'BannerPrefabPath',
         'CatchDescColor', 'GlowColor', 'BorderColor', 'OverlayColor', 'FogBackMin', 'FogBackMax',
-        'FogFrontMin', 'FogFrontMax', 'LeaderboardPosition', 'IncrementBgColor', 'TextColor'}
+        'FogFrontMin', 'FogFrontMax', 'LeaderboardPosition', 'IncrementBgColor', 'TextColor', 'TourneyType'}
 DECIMAL = re.compile(r'[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?\Z')
 
 def sha(path):
@@ -284,6 +285,14 @@ def main():
           type='BonusType', values=dict(enum_rows),
           evidenceScope='Enum identity only; not a formula, enabled flag or live server value'))
     reward_ids = dict(re.findall(r'public const RewardID (\w+) = (-?\d+);', dump_text))
+    # Server var sheet keys bind to these attributed static fields by name.
+    server_var_fields = re.findall(r'\[ServerVar\("[^"]*"\)\]\n\tpublic static [\w<>.\[\],? ]+? (\w+);', dump_text)
+    if not server_var_fields or len(set(server_var_fields)) != len(server_var_fields):
+        raise ValueError('missing or duplicate native ServerVar fields')
+    write('native-server-var-fields.json', dict(version='8.2.0', attribute='ServerVar',
+          fields=sorted(server_var_fields), dumpSha256=sha(dump_path),
+          metadataSha256=sha(ROOT/'work/apk-analysis/global-metadata.dat'),
+          evidenceScope='Field identity only; not a value, default or live server payload'))
     write('native-reward-types.json', dict(version='8.2.0', values=reward_ids,
           dumpSha256=sha(dump_path), metadataSha256=sha(ROOT/'work/apk-analysis/global-metadata.dat'),
           evidenceScope='RewardID identity only; reward grammar and delivery behavior require separate verification'))

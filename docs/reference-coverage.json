@@ -1020,7 +1020,7 @@
     {
       "name": "ChallengeTournamentStartingInfo",
       "sourceSha256": "5cb0128b0872442222ab0f5fd8d7483c42b97b5e8acdc8e6ea755001eaa2f19b",
-      "status": "not-imported",
+      "status": "imported",
       "route": "M08"
     },
     {

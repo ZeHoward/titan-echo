@@ -2,7 +2,7 @@
 
 這是資料準備成果，尚未接入遊戲或改寫存檔。現行遊戲仍為 2.6.0／7.5 數值基準。
 
-`manifest.json` 記錄安裝包、78 張已解析表（20,226 個表內有效 ID）的 SHA-256，以及 372 個 TextAsset 的大小與雜湊。未解析的資源只列索引，不宣稱它們皆為 CSV 或已完成 schema。
+`manifest.json` 記錄安裝包、79 張已解析表（20,242 個表內有效 ID）的 SHA-256，以及 372 個 TextAsset 的大小與雜湊。未解析的資源只列索引，不宣稱它們皆為 CSV 或已完成 schema。
 
 每張表以來源 ID 為鍵；英雄里程碑使用 `[Ascension,Level]` 複合鍵。`sourceOrdinal` 僅作來源定位，不能用來覆蓋玩家陣列。`legacy-2.6.json` 固定目前七組核心陣列的原始 ID 順序；不存在於目標表的 ID 映射為 null，後續遷移必須保留及處理，不能改配其他內容。
 
@@ -12,7 +12,7 @@
 
 重建：使用本機已忽略的原始資料執行 `python tools/import-reference-v8.py`，再執行 `node tools/reference-validation.mjs`。工具驗證安裝包、既有全資源索引、原生列舉與解析器證據雜湊。除了下列已取得原生證據的表以外，拒絕重複鍵與重複欄位名；不完整 CSV 列一律拒絕。CI 透過 `npm test` 驗證提交資料完整性、舊 ID 對照、換序、超大數值、跨表引用與活動證據，並執行 `python3 -m unittest discover -s tests -p '*_test.py'` 驗證實際 Python 匯入規則。未知效果 ID、壞掉的前置引用、循環技能前置、非法數字及不成對的成就階段皆有反例測試。
 
-目前檢查 30,227 處引用；其中 33 處不在 BonusInfo，但在原生 BonusType 列舉中存在，記錄在 `nativeOnly`；其中 21 處是四份泰坦縮放來源變體重複引用同一個 MonsterHPScaling。`native-bonus-types.json` 僅保存列舉 ID／數字與來源雜湊，不能用來推定效果公式。沒有未解析的引用 ID，不代表所有公式或所有資源都已驗證。
+目前檢查 30,883 處引用；其中 33 處不在 BonusInfo，但在原生 BonusType 列舉中存在，記錄在 `nativeOnly`；其中 21 處是四份泰坦縮放來源變體重複引用同一個 MonsterHPScaling。`native-bonus-types.json` 僅保存列舉 ID／數字與來源雜湊，不能用來推定效果公式。沒有未解析的引用 ID，不代表所有公式或所有資源都已驗證。
 
 裝備副屬性表已解除隔離：原生 `ParseEquipmentEnhancementScalingInfo`（RVA 0x218994c）按遞增列號讀取；五個 TryGetCell 都成功才呼叫字典 set_Item，後者使用 OverwriteExisting。故同 ID 最後成功解析的列生效。59 筆來源列整理為 58 個 ID，AllActiveSkillAmount 的 PowerExp 從第 9 列的 0.4 被第 57 列的 1.002 覆寫（列號從 0 起）。兩筆都保留在表內 rowResolution.duplicateHistory，sourceOrdinal 指向最後生效列。這項結論只適用於目前安裝包資料，不推定歷史 7.5 解析器或線上覆蓋值。
 
@@ -85,3 +85,11 @@ RaidResearchInfo 有 17 列的 RequiredResearchID 指向不存在的 999。這�
 獎勵字串與同列的數值欄位互相印證：TournamentRewardInfo（273 列）、ChallengeTournamentRewardInfo 與 SuperChallengeTournamentRewardInfo（各 30 列）完全一致，零分歧。**SuperTournamentRewardInfo 例外**：297 列中有 198 列分歧，Perk 欄 99 處、PremiumWeapon 欄 198 處與字串內容不符（例如字串寫 PerkTicket:4000 而 Perk 欄為 400，字串未列 FortuneHelperWeapon 但 PremiumWeapon 欄非零）。兩邊都原樣保存，不判定哪一邊正確。該表的 Rewards 恆等於 AvatarReward 加 ResourceRewards。
 
 ChallengeTournamentArtifactPools 的 A 至 E 是每個發現池的權重（0 到 7），不是成員旗標；權重 0 代表該池不含此神器。`validation.json` 的 `challengeArtifactPools` 逐池統計權重分佈，並列出五個池權重皆為 0 的 Artifact20、Artifact29、Artifact35。103 個 ArtifactID 全部可在 ArtifactInfo 解析。錦標賽時程、分組與實際發獎仍未驗證。
+
+本次追加 ChallengeTournamentStartingInfo 16 筆，並新增 [native-server-var-fields.json](native-server-var-fields.json)：從原生 `[ServerVar]` 屬性抽出 953 個靜態欄位名稱，作為伺服器變數鍵的身分依據。顯示用的 TourneyType 欄（例如「Time Storm!」）依既有規則列入 omittedColumns，不匯入名稱文字。
+
+此表的 BonusTypeA 至 I 存的是「BonusID:數值」成對字串，不是裸 BonusType ID，因此排除在通用 BonusType 引用規則之外，改為先拆對再核對：九個欄位非空者依序以逗號串接必須等於 StartingBonusTypes（16 筆全數相符），每個 ID 都要在 BonusInfo 解析，數值必須是合法十進位。StartingPassiveLevels 的八個名稱必須各有同名欄位且數值一致（16 筆全數相符）。
+
+DiscoveryPool 的值是 ChallengeTournamentArtifactPools 的欄位名（目前使用 A 與 C），已逐列核對。StartingPlayerInventory、DisplayedInventory、HiddenInventory、EquippedInventory 的 Equipment 與 Pet 代號全部可在 C_EquipmentInfo 與 PetInfo 解析；其餘代號沿用錦標賽詞彙，不推定發放。
+
+**伺服器變數鍵的綁定狀況已核對**：37 個鍵中 28 個在原生 `[ServerVar]` 欄位存在，9 個不存在——ServerVarsInfo 的 useChestSpecial、chestSpecialRelicsBonus、chestSpecialSkillPointBonus、chestSpecialMythicShardsBonus、chestSpecialDustBonus、skillTreeResetPromotion、skillTreeRestCostPromotionMult，以及 ServerVarOverride 的 EquipmentLevelReductionMin、EquipmentLevelReductionAmount。這些鍵在此版客戶端沒有可綁定的欄位，SetVarsFromAttributes 無法套用；記在 `validation.json` 的 `serverVarBinding`，資料列照常保留，不刪除也不改名。ChallengeTournamentStartingInfo 的 ServerVarOverrides 鍵則全部可對應到原生欄位。

@@ -1,11 +1,11 @@
 # Titan Echo 完整復刻代辦清單
 
-更新：2026-09-16。遊戲目前為 **2.6.0**，最近完整測試 **128 項 Node 測試＋23 項 Python 匯入測試通過**。此文件是後續工作的主清單；`TT2-RULES.md` 保留歷史研究紀錄，不以舊敘述判斷目前完成度。
+更新：2026-09-16。遊戲目前為 **2.6.0**，最近完整測試 **134 項 Node 測試＋23 項 Python 匯入測試通過**。此文件是後續工作的主清單；`TT2-RULES.md` 保留歷史研究紀錄，不以舊敘述判斷目前完成度。
 
 ## 目前位置
 
 - **已完成 R01：固定目標、盤點差異、建立來源基準。** 產物：[來源與雜湊清單](docs/reference-baseline.json)、本清單與工作約定。
-- **下一項：R02，將資料與匯入工具統一到 8.2.0，先建立穩定 ID 映射，再做相容遷移。** 已完成 78 張表、20,226 個有效 ID 的精確字串資料、七組舊 ID 對照及 30,227 處引用檢查，尚未切換線上資料版本。
+- **下一項：R02，將資料與匯入工具統一到 8.2.0，先建立穩定 ID 映射，再做相容遷移。** 已完成 79 張表、20,242 個有效 ID 的精確字串資料、七組舊 ID 對照及 30,883 處引用檢查，尚未切換線上資料版本。
 - 接續順序：R02 → R03 → R04 → C01，之後依下表執行。
 - 尚未有任何一個大型系統通過「與原版同版本完整一致」驗收。已有功能不會重寫成空白，但必須逐項校正與驗證。
 
@@ -86,7 +86,11 @@ ScheduledBonusInfo 不匯入，記入 quarantine.json：原生沒有此表的 In
 
 獎勵字串與同列數值欄位的一致性已逐列比對：一般錦標賽、挑戰賽與超級挑戰賽三張表零分歧；**SuperTournamentRewardInfo 有 198 列分歧**（Perk 欄 99 處、PremiumWeapon 欄 198 處），兩邊都保留不判定對錯。挑戰賽神器池的 A 至 E 是權重而非旗標，Artifact20／29／35 在五個池權重皆為 0，已逐池統計記錄。未改遊戲執行資料、存檔或版本號。
 
-**下一個子步驟仍為 R02 收尾**：ChallengeTournamentStartingInfo（32 欄，含 BonusID:數值 成對欄位、ServerVarOverrides 的 key;value 清單、StartingPlayerInventory 裝備清單與 DiscoveryPool 對應神器池欄位），再處理 L02 商店（ShopInfo 系列為 JSON，需先判定格式）、PetParadiseLevelInfo 與 V01-V02 活動小遊戲表。Equipment 與 Helpers 是 LWF 動畫二進位、HelperLayout 是圖集 JSON，不作 CSV 匯入；UpdateInfo 是版本更新說明文字，不是玩法資料表。線上季節版本選用、每日配送內容與 A／B 指派維持待外部證據。完成資料整備後才進入 R03。
+本次追加 ChallengeTournamentStartingInfo 16 筆與 native-server-var-fields.json（953 個原生 [ServerVar] 欄位名）。此表的 BonusTypeA 至 I 是「BonusID:數值」成對字串而非裸 ID，已排除在通用 BonusType 規則外並改為拆對核對：九個欄位串接必須等於 StartingBonusTypes、ID 必須在 BonusInfo、數值必須合法，16 筆全數相符。StartingPassiveLevels 的八個名稱與同名欄位數值也全數一致。DiscoveryPool 對應神器池欄位，裝備與寵物代號全部可解析。引用檢查 30,883 處，errors 與 unresolved 皆為 0。
+
+**伺服器變數鍵綁定已核對**：37 個鍵中 28 個對得上原生 [ServerVar] 欄位，9 個對不上（ServerVarsInfo 的 useChestSpecial 等 7 個、ServerVarOverride 的 EquipmentLevelReductionMin 與 EquipmentLevelReductionAmount）。這些鍵在此版客戶端沒有可綁定欄位，SetVarsFromAttributes 無法套用，記入 validation.json 的 serverVarBinding，資料列保留不刪。未改遊戲執行資料、存檔或版本號。
+
+**下一個子步驟仍為 R02 收尾**：L02 商店資料（ShopDisplayInfo、AdChestInfo、NewPrizeInfoDoc 為 CSV；ShopInfo 系列四個為 JSON，需先判定格式與是否為伺服器回應樣本），接著 PetParadiseLevelInfo 與 V01-V02 活動小遊戲共 34 個資源。Equipment 與 Helpers 是 LWF 動畫二進位、HelperLayout 是圖集 JSON，不作 CSV 匯入；UpdateInfo 是版本更新說明文字，不是玩法資料表。線上季節版本選用、每日配送內容與 A／B 指派維持待外部證據。完成資料整備後才進入 R03。
 
 ## 第二階段：核心戰鬥與升級
 
@@ -197,6 +201,7 @@ ScheduledBonusInfo 不匯入，記入 quarantine.json：原生沒有此表的 In
 
 | 日期 | 項目 | 證據／結果 |
 |---|---|---|
+| 2026-09-16 | R02 挑戰賽設定與變數綁定 | 匯入 ChallengeTournamentStartingInfo 16 筆與 953 個原生 [ServerVar] 欄位名；拆解 BonusID:數值 成對欄位並驗證九欄串接、前置名稱與同名欄位一致、發現池與裝備寵物引用，引用檢查 30,883 處且 errors／unresolved 為 0；查出 9 個伺服器變數鍵在此版沒有可綁定的客戶端欄位並記錄。134 項 Node 測試＋23 項 Python 測試通過，tsc --noEmit 無誤。遊戲執行資料與版本未變。 |
 | 2026-09-16 | R02 錦標賽資料 | 匯入錦標賽 7 張表（四組複合鍵），引用檢查 30,227 處且 errors／unresolved 為 0；確認錦標賽獎勵字串使用非 RewardID 的代號詞彙（FortuneHelperWeapon、RandomLevelPet），改以專責模組記錄；逐列比對字串與數值欄位，找出 SuperTournamentRewardInfo 的 198 列分歧並雙邊保留。128 項 Node 測試＋23 項 Python 測試通過，tsc --noEmit 無誤。遊戲執行資料與版本未變。 |
 | 2026-09-16 | R02 突襲進度資料 | 匯入突襲進度 13 張表（含兩組複合鍵），引用檢查增至 30,124 且 errors／unresolved 為 0；以 10 處指令核對確認 InfoDoc 重複欄位名的最後一欄政策並保留被遮蔽儲存格；記錄第 17 季大師階級頭像與 999 前置兩處來源缺口，未自行補造。123 項 Node 測試＋23 項 Python 測試通過，tsc --noEmit 無誤。遊戲執行資料與版本未變。 |
 | 2026-09-16 | R02 伺服器變數與來源變體 | 匯入 ServerVarsInfo、ServerVarOverride、ArtifactCostInfo_A、TitanScalingInfo_A／B／C 共 6 張表；以 28 處指令核對確認覆蓋表的最後有效列政策與泰坦縮放的 A／B 表選用，七組來源變體逐 ID 比對，ScheduledBonusInfo 依原生字典解析證據不匯入。117 項 Node 測試＋18 項 Python 測試通過，tsc --noEmit 無誤，核對與匯入重跑結果一致。遊戲執行資料與版本未變。 |
