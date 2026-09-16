@@ -96,3 +96,33 @@ test('migration keeps every saved array at the slot count the Sheets format pins
   assert.deepEqual(state.heroes.slice(3), Array(30).fill(0));
   assert.doesNotThrow(() => validateSnapshot({ name: '冒險者', state }));
 });
+
+test('a cloud snapshot an older build wrote is readable, but never writable in that shape', () => {
+  const state = legacySave();
+  state.heroes = [1, 2, 3];
+  state.artifacts = [4, 5];
+  const snapshot = { name: '冒險者', state };
+  // The upload path must refuse a snapshot outside the pinned Sheets slot counts.
+  assert.throws(() => validateSnapshot(snapshot), /存檔格式不正確/);
+  // The read path accepts it, hydrate normalises the slots, and the result is then strictly valid.
+  assert.doesNotThrow(() => validateSnapshot(snapshot, { slots: 'lenient' }));
+  hydrate(snapshot.state);
+  assert.equal(snapshot.state.heroes.length, 33);
+  assert.equal(snapshot.state.artifacts.length, 30);
+  assert.deepEqual(snapshot.state.heroes.slice(0, 3), [1, 2, 3]);
+  assert.doesNotThrow(() => validateSnapshot(snapshot));
+});
+
+test('lenient reading still rejects the things that make a snapshot unusable', () => {
+  const base = () => ({ name: '冒險者', state: structuredClone(fresh(1000)) });
+  const wrongVersion = base(); wrongVersion.state.version = 1;
+  const notArray = base(); notArray.state.heroes = 'lots';
+  const nonFinite = base(); nonFinite.state.gold = Number.POSITIVE_INFINITY;
+  const noName = base(); noName.name = '   ';
+  for (const bad of [wrongVersion, notArray, noName]) {
+    assert.throws(() => validateSnapshot(bad, { slots: 'lenient' }), /存檔格式不正確/);
+  }
+  assert.throws(() => validateSnapshot(nonFinite, { slots: 'lenient' }), /存檔數值不正確/);
+  const huge = base(); huge.state.log = Array(500).fill('x'.repeat(200));
+  assert.throws(() => validateSnapshot(huge, { slots: 'lenient' }), /存檔超過容量限制/);
+});

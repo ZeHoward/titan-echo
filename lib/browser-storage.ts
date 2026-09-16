@@ -89,7 +89,8 @@ export async function saveBrowserSnapshot(state:State,expectedRevision:number,wr
 // Keep a pre-restore backup and change the revision atomically. Stale tabs will
 // receive 409 instead of overwriting the restored cloud progress.
 export async function restoreBrowserSave(snapshot:{name:string;state:State},expectedRevision:number) {
-  validateSnapshot(snapshot);
+  // A restore may carry an older cloud snapshot; normalise its slots before the strict check.
+  validateSnapshot(snapshot,{slots:'lenient'});hydrate(snapshot.state);validateSnapshot(snapshot);
   const db=await database();
   return new Promise<void>((resolve,reject)=>{
     const tx=db.transaction('saves','readwrite');const store=tx.objectStore('saves');const read=store.get('player');
