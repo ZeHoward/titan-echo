@@ -1,11 +1,11 @@
 # Titan Echo 完整復刻代辦清單
 
-更新：2026-09-16。遊戲目前為 **2.6.0**，最近完整測試 **148 項 Node 測試＋23 項 Python 匯入測試通過**。此文件是後續工作的主清單；`TT2-RULES.md` 保留歷史研究紀錄，不以舊敘述判斷目前完成度。
+更新：2026-09-16。遊戲目前為 **2.6.0**，最近完整測試 **153 項 Node 測試＋23 項 Python 匯入測試通過**。此文件是後續工作的主清單；`TT2-RULES.md` 保留歷史研究紀錄，不以舊敘述判斷目前完成度。
 
 ## 目前位置
 
 - **已完成 R01：固定目標、盤點差異、建立來源基準。** 產物：[來源與雜湊清單](docs/reference-baseline.json)、本清單與工作約定。
-- **下一項：R02，將資料與匯入工具統一到 8.2.0，先建立穩定 ID 映射，再做相容遷移。** 已完成 117 張表、26,796 個有效 ID 的精確字串資料、七組舊 ID 對照及 31,357 處引用檢查，尚未切換線上資料版本。
+- **下一項：R02，將資料與匯入工具統一到 8.2.0，先建立穩定 ID 映射，再做相容遷移。** 已完成 133 張表、31,451 個有效 ID 的精確字串資料、七組舊 ID 對照及 31,758 處引用檢查，尚未切換線上資料版本。
 - 接續順序：R02 → R03 → R04 → C01，之後依下表執行。
 - 尚未有任何一個大型系統通過「與原版同版本完整一致」驗收。已有功能不會重寫成空白，但必須逐項校正與驗證。
 
@@ -108,7 +108,13 @@ NewPrizeInfoDoc 與 TournamentRewardInfo 的 273 個複合鍵完全相同，納�
 
 獎勵詞彙模組改名 sheet-reward-reference.mjs：非 RewardID 詞彙不只在錦標賽，炸彈遊戲關卡獎勵也用 FortuneHelperWeapon，該欄改走表單詞彙記錄。目前 17 種表單代號中 FortuneHelperWeapon（494 處、4 張表）與 RandomLevelPet（96 處）無原生 RewardID。其餘活動獎勵 149 筆仍走原生文法，並補上 HelperWeapon、Perk、HolidayCurrency 純量代號。未改遊戲執行資料、存檔或版本號。
 
-**下一個子步驟仍為 R02 收尾**：V05 在地化 17 檔（含繁中）需先判定格式與鍵值結構，再決定是否納入參考目錄或只作術語對照來源；之後盤點 needs-manual-triage 群組中實際為資料表的資源（如 FairyRewardTableInfo、TitanSummonBannerInfo、TitanSummonLevelCost、SummonLevelTitanCardRateInfo、SeasonRankingsInfo、StickerInfo、QTEInfo、BuildGuideInfo、TutorialEventInfo 系列）。Equipment 與 Helpers 是 LWF 動畫二進位、HelperLayout 是圖集 JSON，不作 CSV 匯入；UpdateInfo 是版本更新說明文字。線上活動時程、每日配送與 A／B 指派維持待外部證據。完成資料整備後才進入 R03。
+本次從需人工判別的 227 個資源挑出 16 張真正的資料表匯入：泰坦召喚等級成本 3,000 筆、召喚卡片機率 1,000 筆、妖精獎勵表 256 筆、背景 70 筆與循環 48 筆、影片妖精出現 56 筆、貼圖 27 筆、教學事件 51 筆與其 _A／_B 變體、支援選項 11 筆、建構指南 9 筆、QTE 9 筆、賽季排名 5 筆、面板變體 4 筆。其餘不是資料表：約 86 份 AnimationFlags 與 14 份 TrackFlags 是無標題動畫時序、Font*Asian 是 BMFont 描述、LineBreaking_* 是斷行字元清單。引用檢查 31,758 處，errors 與 unresolved 皆為 0。
+
+匯入器新增「鍵欄位永不省略」規則（SupportInfo 以 Description 為鍵），並把 StickerImage 併入圖片省略清單。新增 native-fairy-reward-types.json（FairyReward 列舉 24 個成員），影片妖精的 8 種 FairyID 全部對上。QTE 天賦與冷卻加成、賽季排名的徽章與 14 組成對加成、建構指南的 165 件裝備／45 個天賦／75 件神器、召喚成本的商店禮包、召喚旗幟對泰坦卡 SubType 等引用全部解析。教學事件 Objective 僅接受四種形式。
+
+TutorialEventInfo 的 _A 有 27 列與基準不同、_B 與基準完全相同，兩份都保留不去重。未改遊戲執行資料、存檔或版本號。
+
+**下一個子步驟：R02 最後一項**，處理 V05 在地化 17 檔（含繁中），先判定鍵值結構，再決定納入參考目錄或只作 V05 術語對照來源；同時把剩餘的非資料表資源（動畫時序、字型、斷行字元、圖集與二進位）在盤點文件標成不匯入並附理由，讓 R02 的「尚未匯入」數字只剩真正待辦的項目。完成後即可進入 R03 存檔遷移。
 
 ## 第二階段：核心戰鬥與升級
 
@@ -219,6 +225,7 @@ NewPrizeInfoDoc 與 TournamentRewardInfo 的 273 個複合鍵完全相同，納�
 
 | 日期 | 項目 | 證據／結果 |
 |---|---|---|
+| 2026-09-16 | R02 其餘玩法資料表 | 從 227 個待判別資源挑出 16 張資料表匯入（含 3,000 筆召喚成本與 1,000 筆卡片機率），引用檢查 31,758 處且 errors／unresolved 為 0；新增鍵欄位永不省略規則與原生 FairyReward 列舉證據；教學事件兩個變體納入比較（_A 有 27 列差異、_B 完全相同）。153 項 Node 測試＋23 項 Python 測試通過，tsc --noEmit 無誤。遊戲執行資料與版本未變。 |
 | 2026-09-16 | R02 節慶與全球活動資料 | 匯入節慶與全球活動 10 張表（含三欄複合鍵的目標區表），引用檢查 31,357 處且 errors／unresolved 為 0；查出節慶全球突襲頭目使用獨立部位名稱並記錄，不與突襲部位目錄混用；獎勵詞彙模組改名並涵蓋炸彈遊戲的非 RewardID 代號。148 項 Node 測試＋23 項 Python 測試通過，tsc --noEmit 無誤。遊戲執行資料與版本未變。 |
 | 2026-09-16 | R02 小遊戲與周年賽資料 | 匯入小遊戲與周年賽 24 張表，引用檢查 30,987 處且 errors／unresolved 為 0；獎勵解析新增 RewardedBonus 三段形式（BonusID 加小數比例，不記為數量）與兩個純量代號，1,334 筆小遊戲獎勵全部解析成功；活動任務改用階段配對檢查；再記錄 AvatarAnniversary10 這處來源缺口。144 項 Node 測試＋23 項 Python 測試通過，tsc --noEmit 無誤。遊戲執行資料與版本未變。 |
 | 2026-09-16 | R02 商店與寵物樂園資料 | 匯入 ShopDisplayInfo、AdChestInfo、NewPrizeInfoDoc、PetParadiseLevelInfo 共 4 張表，引用檢查 30,966 處且 errors／unresolved 為 0；判定四個商店 JSON 為回應測試樣本而非資料表並只記錄形狀（其中 ShopInfo 非嚴格 JSON）；NewPrizeInfoDoc 納入來源變體比較並修正變體欄位比較只取保留欄位。139 項 Node 測試＋23 項 Python 測試通過，tsc --noEmit 無誤。遊戲執行資料與版本未變。 |

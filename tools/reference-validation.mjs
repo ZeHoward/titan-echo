@@ -140,6 +140,10 @@ export function loadNativeBonuses() {
   return JSON.parse(readFileSync(new URL('native-bonus-types.json', referenceRoot), 'utf8')).values;
 }
 
+export function loadNativeFairyRewards() {
+  return JSON.parse(readFileSync(new URL('native-fairy-reward-types.json', referenceRoot), 'utf8')).values;
+}
+
 export function loadNativeServerVarFields() {
   return new Set(JSON.parse(readFileSync(new URL('native-server-var-fields.json', referenceRoot), 'utf8')).fields);
 }
@@ -154,6 +158,7 @@ export function auditCatalogs(catalogs, nativeBonuses = loadNativeBonuses(), nat
   const sheetRewards = [], sheetColumnChecks = [];
   const cosmeticTypes = nativeCosmetics.types ?? {}, cosmeticTables = nativeCosmetics.tableTypes ?? {};
   const serverVarFields = loadNativeServerVarFields(), serverVarBinding = [];
+  const nativeFairyRewards = loadNativeFairyRewards();
   const challengeStartingChecks = [];
   const ids = Object.fromEntries(Object.entries(catalogs).map(([name, data]) => [name, new Set(data.records.map(r => r.id))]));
   function ref(table, row, field, target, multiple = false, quantities = false) {
@@ -305,6 +310,64 @@ export function auditCatalogs(catalogs, nativeBonuses = loadNativeBonuses(), nat
         ref(table, row, 'Part', 'RaidEnemyPartInfo');
         const destroyed = Number(row.values.DestroyedOn);
         if (!Number.isFinite(destroyed) || destroyed < 0 || destroyed > 1) errors.push(`${label}.DestroyedOn: invalid fraction`);
+      }
+      if (table === 'QTEInfo') {
+        ref(table, row, 'TalentID', 'SkillTreeInfo2.0');
+        ref(table, row, 'CooldownBonusType', 'BonusInfo');
+      }
+      if (table === 'SeasonRankingsInfo') {
+        ref(table, row, 'BadgeBonusType', 'BonusInfo');
+        if (!none(row.values.RankTitle)) ref(table, row, 'RankTitle', 'PlayerTitleInfo');
+        // RankBonuses stores BonusID:amount pairs, like the challenge tournament starting sheet.
+        for (const pair of list(row.values.RankBonuses)) {
+          const [id, amount] = pair.split(':');
+          const link = 'SeasonRankingsInfo.RankBonuses -> BonusInfo';
+          referenceCounts[link] = (referenceCounts[link] ?? 0) + 1;
+          if (!ids.BonusInfo?.has(id)) unresolved.push({ table, id: row.id, field: 'RankBonuses', value: id, target: 'BonusInfo' });
+          if (amount === undefined || !decimal.test(amount)) errors.push(`${label}: invalid rank bonus amount in ${pair}`);
+        }
+      }
+      if (table === 'BuildGuideInfo') {
+        ref(table, row, 'EquipmentCollection', 'C_EquipmentInfo', true);
+        ref(table, row, 'TalentIDCollection', 'SkillTreeInfo2.0', true);
+        ref(table, row, 'ArtifactIDCollection', 'ArtifactInfo', true);
+        for (const field of ['EquipmentCollectionReward', 'TalentIDCollectionReward', 'ArtifactIDCollectionReward']) {
+          if (none(row.values[field])) continue;
+          try {
+            rewardReferences.push({ table, id: row.id, field, activation: 'unverified',
+              ...parseRewardReference(row.values[field], field, catalogs, nativeRewards) });
+          } catch (error) { errors.push(`${label}.${field}: ${error.message}`); }
+        }
+      }
+      if (table === 'TitanSummonLevelCost') ref(table, row, 'SummonProgressionBundle', 'ShopBundleInfo');
+      if (table === 'TitanSummonBannerInfo') {
+        // A banner boosts one card subtype, or Random for no specific subtype.
+        const subtypes = new Set((catalogs.TitanCardInfo?.records ?? []).map(r => r.values.SubType));
+        const boosted = row.values.BoostCardsOfType;
+        const link = 'TitanSummonBannerInfo.BoostCardsOfType -> TitanCardInfo.SubType';
+        referenceCounts[link] = (referenceCounts[link] ?? 0) + 1;
+        if (boosted !== 'Random' && !subtypes.has(boosted)) {
+          unresolved.push({ table, id: row.id, field: 'BoostCardsOfType', value: boosted, target: 'TitanCardInfo.SubType' });
+        }
+      }
+      if (table === 'VideoFairySpawnInfo') {
+        const link = 'VideoFairySpawnInfo.FairyID -> native FairyReward';
+        referenceCounts[link] = (referenceCounts[link] ?? 0) + 1;
+        if (!Object.hasOwn(nativeFairyRewards, row.values.FairyID)) {
+          unresolved.push({ table, id: row.id, field: 'FairyID', value: row.values.FairyID, target: 'native FairyReward' });
+        }
+        for (const field of ['MinStage', 'MaxStage', 'SpawnWeight']) {
+          if (!/^\d+$/.test(row.values[field])) errors.push(`${label}.${field}: invalid nonnegative integer`);
+        }
+        if (Number(row.values.MinStage) > Number(row.values.MaxStage)) errors.push(`${label}: stage range is inverted`);
+      }
+      if (/^TutorialEventInfo(_[AB])?$/.test(table)) {
+        const [kind, amount] = (row.values.Objective ?? '').split(':');
+        if (!['TapCount', 'SwordMasterLevel', 'UnlockHelperCount', 'ReachStage'].includes(kind) ||
+            amount === undefined || !/^\d+$/.test(amount)) {
+          errors.push(`${label}.Objective: unsupported tutorial objective`);
+        }
+        if (!bool(row.values.ShowProgress)) errors.push(`${label}.ShowProgress: invalid flag`);
       }
       if (table === 'GlobalEventInfo') {
         ref(table, row, 'TaskNames', 'GlobalEventTasksInfo', true);

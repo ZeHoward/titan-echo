@@ -2,7 +2,7 @@
 
 這是資料準備成果，尚未接入遊戲或改寫存檔。現行遊戲仍為 2.6.0／7.5 數值基準。
 
-`manifest.json` 記錄安裝包、117 張已解析表（26,796 個表內有效 ID）的 SHA-256，以及 372 個 TextAsset 的大小與雜湊。未解析的資源只列索引，不宣稱它們皆為 CSV 或已完成 schema。
+`manifest.json` 記錄安裝包、133 張已解析表（31,451 個表內有效 ID）的 SHA-256，以及 372 個 TextAsset 的大小與雜湊。未解析的資源只列索引，不宣稱它們皆為 CSV 或已完成 schema。
 
 每張表以來源 ID 為鍵；英雄里程碑使用 `[Ascension,Level]` 複合鍵。`sourceOrdinal` 僅作來源定位，不能用來覆蓋玩家陣列。`legacy-2.6.json` 固定目前七組核心陣列的原始 ID 順序；不存在於目標表的 ID 映射為 null，後續遷移必須保留及處理，不能改配其他內容。
 
@@ -12,7 +12,7 @@
 
 重建：使用本機已忽略的原始資料執行 `python tools/import-reference-v8.py`，再執行 `node tools/reference-validation.mjs`。工具驗證安裝包、既有全資源索引、原生列舉與解析器證據雜湊。除了下列已取得原生證據的表以外，拒絕重複鍵與重複欄位名；不完整 CSV 列一律拒絕。CI 透過 `npm test` 驗證提交資料完整性、舊 ID 對照、換序、超大數值、跨表引用與活動證據，並執行 `python3 -m unittest discover -s tests -p '*_test.py'` 驗證實際 Python 匯入規則。未知效果 ID、壞掉的前置引用、循環技能前置、非法數字及不成對的成就階段皆有反例測試。
 
-目前檢查 31,357 處引用；其中 33 處不在 BonusInfo，但在原生 BonusType 列舉中存在，記錄在 `nativeOnly`；其中 21 處是四份泰坦縮放來源變體重複引用同一個 MonsterHPScaling。`native-bonus-types.json` 僅保存列舉 ID／數字與來源雜湊，不能用來推定效果公式。沒有未解析的引用 ID，不代表所有公式或所有資源都已驗證。
+目前檢查 31,758 處引用；其中 33 處不在 BonusInfo，但在原生 BonusType 列舉中存在，記錄在 `nativeOnly`；其中 21 處是四份泰坦縮放來源變體重複引用同一個 MonsterHPScaling。`native-bonus-types.json` 僅保存列舉 ID／數字與來源雜湊，不能用來推定效果公式。沒有未解析的引用 ID，不代表所有公式或所有資源都已驗證。
 
 裝備副屬性表已解除隔離：原生 `ParseEquipmentEnhancementScalingInfo`（RVA 0x218994c）按遞增列號讀取；五個 TryGetCell 都成功才呼叫字典 set_Item，後者使用 OverwriteExisting。故同 ID 最後成功解析的列生效。59 筆來源列整理為 58 個 ID，AllActiveSkillAmount 的 PowerExp 從第 9 列的 0.4 被第 57 列的 1.002 覆寫（列號從 0 起）。兩筆都保留在表內 rowResolution.duplicateHistory，sourceOrdinal 指向最後生效列。這項結論只適用於目前安裝包資料，不推定歷史 7.5 解析器或線上覆蓋值。
 
@@ -119,3 +119,13 @@ MinigameEventQuestInfo 的 Requirement 與 Reward 是成對的純數字階段清
 獎勵詞彙模組改名為 [sheet-reward-reference.mjs](../../../tools/sheet-reward-reference.mjs)，因為非 RewardID 詞彙不只出現在錦標賽：HolidayEventBombGameLevelInfo 的 RewardString 也使用 FortuneHelperWeapon，故該欄改走表單詞彙記錄而非 RewardID 文法。目前共 17 種表單代號，其中 FortuneHelperWeapon（494 處，橫跨 4 張表）與 RandomLevelPet（96 處）沒有原生 RewardID。驗證報告欄位同步改名為 sheetRewards、sheetRewardVocabulary、sheetColumnAgreement。
 
 其餘活動獎勵欄位（RankReward、RewardString、HolidayReward）共 149 筆仍以原生 RewardID 文法解析，並補上 HelperWeapon、Perk、HolidayCurrency 三個純量代號與 HolidayReward 欄位名。活動時程、貨幣兌換與實際發獎仍未驗證；GlobalEventInfo 只有一筆 2017 年情人節的歷史設定，不代表現行活動。
+
+本次從需人工判別的 227 個資源中挑出 16 個真正的資料表匯入：泰坦召喚等級成本 3,000 筆、召喚卡片機率 1,000 筆、妖精獎勵表 256 筆、背景 70 筆與背景循環 48 筆、影片妖精出現 56 筆（FairyID＋MinStage 複合鍵）、貼圖 27 筆、教學事件 51 筆及其 _A／_B 變體、支援選項 11 筆、建構指南 9 筆、QTE 9 筆、賽季排名 5 筆、面板變體 4 筆。其餘資源不是資料表：約 86 份 AnimationFlags 與 14 份 TrackFlags 是無標題的動畫時序、四份 Font*Asian 是 BMFont 描述、LineBreaking_* 是斷行字元清單。
+
+**匯入器新增「鍵欄位永不省略」規則**：SupportInfo 以 Description 為鍵，而 Description 屬於既有的文字省略清單；現在鍵欄位一律保留，omittedColumns 也不再把鍵列進去。SeasonRankingsInfo 的 Description 不是鍵，仍照常省略。另把 StickerImage 併入圖片省略清單。
+
+新增 [native-fairy-reward-types.json](native-fairy-reward-types.json)：原生 FairyReward 列舉 24 個成員。VideoFairySpawnInfo 的 8 種 FairyID（VideoAdsCoins、VideoAdsDiamonds 等）全部對得上該列舉，並驗證 MinStage 不大於 MaxStage。
+
+跨表引用新增並全部解析：QTEInfo 的 TalentID 對技能樹（9 列中妖精列無天賦，故 8 處）與 CooldownBonusType 對 BonusInfo；SeasonRankingsInfo 的 BadgeBonusType、RankTitle 對稱號、RankBonuses 的 14 組 BonusID:數值 成對值；BuildGuideInfo 的 165 件裝備、45 個天賦、75 件神器與三個 Diamonds 獎勵欄；TitanSummonLevelCost 的商店禮包；TitanSummonBannerInfo 的 BoostCardsOfType 對泰坦卡 SubType（Random 表示不指定）。教學事件的 Objective 僅接受 TapCount、SwordMasterLevel、UnlockHelperCount、ReachStage 四種形式。
+
+TutorialEventInfo 的兩個變體已納入來源變體比較：_A 有 27 列與基準不同，_B 與基準完全相同。兩份都保留，不去重、不選用。

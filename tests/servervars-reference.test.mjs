@@ -77,7 +77,7 @@ test('every imported alternate source is diffed against its base table', () => {
   const variants = report.sourceVariants.map(entry => entry.table).sort();
   assert.deepEqual(variants, ['ArtifactCostInfo_A', 'EndgamePetInfo_1', 'EndgameSeasonArtifactInfo_1',
     'EndgameSeasonRewardInfo_1', 'NewPrizeInfoDoc', 'RaidMasterTierRewardInfo_1', 'TitanScalingInfo_A',
-    'TitanScalingInfo_B', 'TitanScalingInfo_C']);
+    'TitanScalingInfo_B', 'TitanScalingInfo_C', 'TutorialEventInfo_A', 'TutorialEventInfo_B']);
   for (const entry of report.sourceVariants) {
     assert.ok(catalogs[entry.baseTable], entry.table);
     // Column sets may differ between alternate sources, so the diff states exactly what it compared.

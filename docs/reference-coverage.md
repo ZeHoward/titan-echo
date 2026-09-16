@@ -1,6 +1,6 @@
 # 剩餘參考資源盤點
 
-共 372 個 TextAsset；117 張表已匯入，1 個圖集已記錄 ID，其餘 254 個資源尚未匯入。這些資源包含非資料表內容，不能當成待做系統數或完成率。
+共 372 個 TextAsset；133 張表已匯入，1 個圖集已記錄 ID，其餘 238 個資源尚未匯入。這些資源包含非資料表內容，不能當成待做系統數或完成率。
 
 以下依檔名分派到 ROADMAP 項目，僅作查找順序，不是格式或玩法判定。每日配送內容與線上季節選用仍待外部證據；同名不同來源變體不得直接覆寫。
 
@@ -137,8 +137,6 @@
 - AnimationFlags
 - AnimationFlags
 - AnimationFlagsCannon
-- BackgroundCycleInfo
-- BackgroundInfo
 - BallOfFury_089_090_091
 - BallieMcBallFace_132_133
 - Beast_020_021_022
@@ -154,7 +152,6 @@
 - BossTripleTree_137
 - BossWizardAxeEar_140
 - Buggy_033_034_035
-- BuildGuideInfo
 - Cannon
 - CardFolks_052_053
 - ChestLWF
@@ -176,7 +173,6 @@
 - FXFront
 - FairyJar
 - FairyLWF
-- FairyRewardTableInfo
 - Flower_026_027_028_029
 - FlyBoy_093_094
 - FontBattleAsian
@@ -201,7 +197,6 @@
 - NinjaStar_147
 - Octaman_001_002_003
 - Oger_044_045
-- PanelVariantInfo
 - Patrick_023_024_025
 - PerformanceTestRunInfo
 - PerformanceTestRunSettings
@@ -216,28 +211,21 @@
 - PoorGuy_062_063_064_065
 - Portar
 - Puppet_069_070_071
-- QTEInfo
 - Ramstein_141
 - RoboTom_072_073_074
 - RockFruit_030_031_032
 - RockOwl_007_008
 - SaltySam_056_057_058
-- SeasonRankingsInfo
 - SerpentFace_106_107_108_109_110_111
 - SkillBook
 - Slardeer_092_142
 - SpikyEye_120_121_122
 - SquareHead_101_102_103_104_105
 - Squidz_143
-- StickerInfo
 - StormCloud_
-- SummonLevelTitanCardRateInfo
 - Summoner_009_010
-- SupportInfo
 - Swipe
 - Tanticlor_081_082_083
-- TitanSummonBannerInfo
-- TitanSummonLevelCost
 - Tomatoman_059_060_061
 - TrackFlags
 - TrackFlags
@@ -255,12 +243,8 @@
 - TrackFlags_11
 - Trapezoid_126_127_128
 - Tritopus_129_130_131
-- TutorialEventInfo
-- TutorialEventInfo_A
-- TutorialEventInfo_B
 - UniversalDeepLink
 - Vamp_014_015_016
-- VideoFairySpawnInfo
 - Viper_066_067_068
 - Walker_017_018_019
 - Woody_046_047_048

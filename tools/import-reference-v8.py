@@ -51,7 +51,11 @@ TABLES = ['ArtifactInfo', 'ArtifactCostInfo', 'ActiveSkillInfo', 'ActiveSkillMul
           'HolidayEventBombGameLevelInfo', 'HolidayEventBombGameRewardInfo',
           'HolidayEventGlobalRaidLevelInfo', 'HolidayEventGlobalRaidRewardInfo',
           'HolidayEventGlobalRaidPartDestroyOrder', 'HolidayEventGlobalRaidSoloContributionRewards',
-          'HolidayEventGlobalRaidTargetZoneInfo']
+          'HolidayEventGlobalRaidTargetZoneInfo',
+          'BackgroundInfo', 'BackgroundCycleInfo', 'BuildGuideInfo', 'FairyRewardTableInfo',
+          'PanelVariantInfo', 'QTEInfo', 'SeasonRankingsInfo', 'StickerInfo',
+          'SummonLevelTitanCardRateInfo', 'SupportInfo', 'TitanSummonBannerInfo', 'TitanSummonLevelCost',
+          'TutorialEventInfo', 'TutorialEventInfo_A', 'TutorialEventInfo_B', 'VideoFairySpawnInfo']
 # Shop server-response samples: not gameplay tables, so only their shape is indexed.
 SHOP_SAMPLES = ['ShopInfo', 'ShopInfoServerTest', 'ShopInfoServerTest_all_dailyDeals', 'ShopInfoServerTest_copy']
 # Composite stable keys where a single source column repeats across rows.
@@ -66,7 +70,8 @@ KEYS = {'HelperImprovementsInfo': ['Ascension', 'Level'], 'RaidLevelInfo': ['Tie
         'AdChestInfo': ['ChestType', 'Tier', 'RewardCategoryTier', 'RewardTier'],
         'HolidayEventGlobalRaidLevelInfo': ['HolidayEventID', 'Phase'],
         'HolidayEventGlobalRaidRewardInfo': ['HolidayEventID', 'Phase'],
-        'HolidayEventGlobalRaidTargetZoneInfo': ['AttackNumber', 'Time', 'TargetPartID']}
+        'HolidayEventGlobalRaidTargetZoneInfo': ['AttackNumber', 'Time', 'TargetPartID'],
+        'VideoFairySpawnInfo': ['FairyID', 'MinStage']}
 # Sheets whose header repeats a column name. Allowed only with the verified InfoDoc column policy.
 DUPLICATE_COLUMN_TABLES = {'RaidTicketBoostInfo', 'RaidResearchInfo'}
 # Same-shaped alternate sources for a base table. Kept separate; the live choice is not in the package.
@@ -75,7 +80,8 @@ VARIANTS = {'ArtifactCostInfo_A': 'ArtifactCostInfo', 'TitanScalingInfo_A': 'Tit
             'EndgamePetInfo_1': 'EndgamePetInfo', 'EndgameSeasonArtifactInfo_1': 'EndgameSeasonArtifactInfo',
             'EndgameSeasonRewardInfo_1': 'EndgameSeasonRewardInfo',
             'RaidMasterTierRewardInfo_1': 'RaidMasterTierRewardInfo',
-            'NewPrizeInfoDoc': 'TournamentRewardInfo'}
+            'NewPrizeInfoDoc': 'TournamentRewardInfo',
+            'TutorialEventInfo_A': 'TutorialEventInfo', 'TutorialEventInfo_B': 'TutorialEventInfo'}
 # Native cosmetic typing: which enum backs each catalog column. None = no native enum for that column.
 COSMETIC_TABLES = {
     'AvatarInfo': dict(idColumn='AvatarID', idType='AvatarID', unlockColumn='AvatarUnlockType', unlockType='AvatarUnlockType'),
@@ -99,7 +105,8 @@ OMIT = {'Name', 'Note', 'Notes', 'Description', 'PetName', 'NameColor', 'BonusIc
         'Color', 'EnchantColor', 'BestAgainst', 'Title', 'LongDescription', 'CatchDescription',
         'MissedDescription', 'BundleImageOverride', 'BgColor', 'BgColorSecondary', 'BannerPrefabPath',
         'CatchDescColor', 'GlowColor', 'BorderColor', 'OverlayColor', 'FogBackMin', 'FogBackMax',
-        'FogFrontMin', 'FogFrontMax', 'LeaderboardPosition', 'IncrementBgColor', 'TextColor', 'TourneyType'}
+        'FogFrontMin', 'FogFrontMax', 'LeaderboardPosition', 'IncrementBgColor', 'TextColor', 'TourneyType',
+        'StickerImage'}
 DECIMAL = re.compile(r'[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?\Z')
 
 def sha(path):
@@ -217,7 +224,8 @@ def main():
         else:
             indexed = index(rows, keys)
             source_ordinals = {identity: ordinal for ordinal, identity in enumerate(indexed)}
-        retained = list(dict.fromkeys(f for f in fields if f not in OMIT))
+        # A key column is never omitted, even when its name matches an omitted text column.
+        retained = list(dict.fromkeys(f for f in fields if f not in OMIT or f in keys))
         schema = {}
         for field in retained:
             values = {r[field] for r in rows} - {'', '-'}
@@ -252,7 +260,7 @@ def main():
             diff = dict(added=sorted(indexed.keys()-before.keys()), removed=sorted(before.keys()-indexed.keys()),
                         changed=sorted(k for k in indexed.keys() & before.keys() if any(indexed[k][f] != before[k][f] for f in shared)),
                         addedColumns=sorted(set(fields)-set(old_fields)), removedColumns=sorted(set(old_fields)-set(fields)))
-        data = dict(version='8.2.0', table=table, keys=keys, schema=schema, omittedColumns=sorted(set(fields)&OMIT),
+        data = dict(version='8.2.0', table=table, keys=keys, schema=schema, omittedColumns=sorted(set(fields)&OMIT-set(keys)),
                     missingValues=['', '-'], records=records, differenceFrom75=diff)
         if columns:
             data['columnResolution'] = columns
@@ -321,6 +329,10 @@ def main():
           fields=sorted(server_var_fields), dumpSha256=sha(dump_path),
           metadataSha256=sha(ROOT/'work/apk-analysis/global-metadata.dat'),
           evidenceScope='Field identity only; not a value, default or live server payload'))
+    write('native-fairy-reward-types.json', dict(version='8.2.0', type='FairyReward',
+          values=enum_values(dump_text, 'FairyReward'), dumpSha256=sha(dump_path),
+          metadataSha256=sha(ROOT/'work/apk-analysis/global-metadata.dat'),
+          evidenceScope='Enum identity only; not a drop rate, ad placement or live availability'))
     write('native-reward-types.json', dict(version='8.2.0', values=reward_ids,
           dumpSha256=sha(dump_path), metadataSha256=sha(ROOT/'work/apk-analysis/global-metadata.dat'),
           evidenceScope='RewardID identity only; reward grammar and delivery behavior require separate verification'))

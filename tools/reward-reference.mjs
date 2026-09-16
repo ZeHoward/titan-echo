@@ -14,7 +14,8 @@ const decimalAmount = /^[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?$/;
 export function parseRewardReference(text, field, catalogs, nativeRewardIds, options = {}) {
   if (typeof text !== 'string') throw new Error('reward must be a string');
   if (!['RewardString', 'RankReward', 'ClanGift', 'Reward', 'NewPlayerReward', 'CompletionRewardString',
-    'RewardTier', 'RewardStringForRarity4', 'HolidayReward', 'SelectionSlotContents1', 'SelectionSlotContents2',
+    'RewardTier', 'RewardStringForRarity4', 'HolidayReward', 'EquipmentCollectionReward',
+    'TalentIDCollectionReward', 'ArtifactIDCollectionReward', 'SelectionSlotContents1', 'SelectionSlotContents2',
     'SelectionSlotContents3', 'SelectionSlotContents4'].includes(field)) throw new Error('unsupported reward field');
   const mode = field.startsWith('SelectionSlotContents') ? 'choice-candidates' : field === 'ClanGift' ? 'clan-gift-list' : 'reward-list';
   const entries = [], candidates = [], missingTargets = [];

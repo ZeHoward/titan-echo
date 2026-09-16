@@ -6,7 +6,7 @@
     {
       "name": "FairyRewardTableInfo",
       "sourceSha256": "d38a8db8b9db94f00aaaf62c8549aa389f0fc39031b1dbe40163f7771f36ade1",
-      "status": "not-imported",
+      "status": "imported",
       "route": "needs-manual-triage"
     },
     {
@@ -90,7 +90,7 @@
     {
       "name": "TutorialEventInfo_A",
       "sourceSha256": "cb2c53ea73b026c800e3b42bda2b7e066051ccba2abdcea1de7790dae11e2d24",
-      "status": "not-imported",
+      "status": "imported",
       "route": "needs-manual-triage"
     },
     {
@@ -186,7 +186,7 @@
     {
       "name": "BuildGuideInfo",
       "sourceSha256": "ace280d705f8adb4346f703a7d0a2be096bca043fd0b231ecc5707120ad7a7d4",
-      "status": "not-imported",
+      "status": "imported",
       "route": "needs-manual-triage"
     },
     {
@@ -198,7 +198,7 @@
     {
       "name": "SeasonRankingsInfo",
       "sourceSha256": "0ac000e20447d2237df87a196e328412261444854e216d90f437273cdbe18ae2",
-      "status": "not-imported",
+      "status": "imported",
       "route": "needs-manual-triage"
     },
     {
@@ -306,7 +306,7 @@
     {
       "name": "PanelVariantInfo",
       "sourceSha256": "c9f62cd20a57f0a11a2639c52633bf4b8ad3a464d62d41c4bd9b63cbf33a42f1",
-      "status": "not-imported",
+      "status": "imported",
       "route": "needs-manual-triage"
     },
     {
@@ -588,7 +588,7 @@
     {
       "name": "TitanSummonLevelCost",
       "sourceSha256": "fdbb51555ed08e55842e7e170f8712ffb72011dd4d64b3b8458583af4875a4ea",
-      "status": "not-imported",
+      "status": "imported",
       "route": "needs-manual-triage"
     },
     {
@@ -1014,7 +1014,7 @@
     {
       "name": "TutorialEventInfo",
       "sourceSha256": "3b8784e524b0e76a38320fd5e975df17c24ae0f09746487d173b537fd7b882af",
-      "status": "not-imported",
+      "status": "imported",
       "route": "needs-manual-triage"
     },
     {
@@ -1134,7 +1134,7 @@
     {
       "name": "TitanSummonBannerInfo",
       "sourceSha256": "06fc52f797b9c9f972dbc67908c52797a44b201a1f689e305686a54a1d253e1f",
-      "status": "not-imported",
+      "status": "imported",
       "route": "needs-manual-triage"
     },
     {
@@ -1194,7 +1194,7 @@
     {
       "name": "VideoFairySpawnInfo",
       "sourceSha256": "db671ea6afdb29837a393f261f00dfdb53ad5508c7f2899f85c6c40d2cb4af5e",
-      "status": "not-imported",
+      "status": "imported",
       "route": "needs-manual-triage"
     },
     {
@@ -1422,7 +1422,7 @@
     {
       "name": "BackgroundCycleInfo",
       "sourceSha256": "a1706fe9bd7903406d2e0c5c96642d8fa86d3f4d8cbfd65fa640dff66ea955d4",
-      "status": "not-imported",
+      "status": "imported",
       "route": "needs-manual-triage"
     },
     {
@@ -1530,7 +1530,7 @@
     {
       "name": "SupportInfo",
       "sourceSha256": "411a216c01785646069eada08cf83dc4bab6d3a9a81a0c913aeb7557570bc215",
-      "status": "not-imported",
+      "status": "imported",
       "route": "needs-manual-triage"
     },
     {
@@ -1578,13 +1578,13 @@
     {
       "name": "TutorialEventInfo_B",
       "sourceSha256": "3b8784e524b0e76a38320fd5e975df17c24ae0f09746487d173b537fd7b882af",
-      "status": "not-imported",
+      "status": "imported",
       "route": "needs-manual-triage"
     },
     {
       "name": "StickerInfo",
       "sourceSha256": "9fddfe3602654264bc3dd81be275a1d139f08018c59378bce39d36f06c247f14",
-      "status": "not-imported",
+      "status": "imported",
       "route": "needs-manual-triage"
     },
     {
@@ -1698,7 +1698,7 @@
     {
       "name": "QTEInfo",
       "sourceSha256": "85ff502a188d9410d82254f7ea4eaf3f69ccb25b450151e85684364939a2dabf",
-      "status": "not-imported",
+      "status": "imported",
       "route": "needs-manual-triage"
     },
     {
@@ -1908,7 +1908,7 @@
     {
       "name": "SummonLevelTitanCardRateInfo",
       "sourceSha256": "0b918da015eb0c49a56fd80144b603139a84c9ab0c5dfccf160feb8de694eab2",
-      "status": "not-imported",
+      "status": "imported",
       "route": "needs-manual-triage"
     },
     {
@@ -1998,7 +1998,7 @@
     {
       "name": "BackgroundInfo",
       "sourceSha256": "e25aeae086bfeefa1df91d7ea54b734adac45ca790cae49aef2ba533d0b83e70",
-      "status": "not-imported",
+      "status": "imported",
       "route": "needs-manual-triage"
     },
     {
