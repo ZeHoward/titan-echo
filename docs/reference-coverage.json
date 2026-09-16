@@ -1,2239 +1,2626 @@
 {
   "version": "8.2.0",
-  "classificationBasis": "resource-name-routing-only",
-  "caveat": "Not all TextAssets are data tables; routing does not imply verified format, mechanics or activation",
+  "classificationBasis": "resource-name-routing plus first-bytes format check",
+  "caveat": "Format detection says what a file is, not that its meaning, mechanics or activation are verified",
+  "byStatus": {
+    "imported": 133,
+    "not-a-data-table": 214,
+    "localization-indexed": 17,
+    "quarantined": 3,
+    "atlas-ids-indexed": 1,
+    "sample-indexed": 4
+  },
+  "nonTableKinds": {
+    "headerless-positional-rows": 103,
+    "binary-resource": 91,
+    "json-document": 13,
+    "bitmap-font-descriptor": 4,
+    "single-line-character-list": 3
+  },
   "resources": [
     {
       "name": "FairyRewardTableInfo",
       "sourceSha256": "d38a8db8b9db94f00aaaf62c8549aa389f0fc39031b1dbe40163f7771f36ade1",
+      "route": "needs-manual-triage",
       "status": "imported",
-      "route": "needs-manual-triage"
+      "kind": "data-table"
     },
     {
       "name": "AvatarParticleInfo",
       "sourceSha256": "8909d8443d2674a3550cb14cabf9a285cb7a6c74557a692f77fefb4586ff00fb",
+      "route": "V03",
       "status": "imported",
-      "route": "V03"
+      "kind": "data-table"
     },
     {
       "name": "AnimationFlags",
       "sourceSha256": "8cdf9e888c94e7f5b33d65f223c2c34c77e717161b4a976e786df20f218ce334",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "headerless-positional-rows"
     },
     {
       "name": "AnimationFlags",
       "sourceSha256": "69b78a871ee16839d10f312f1634b3419a40535c0d72f735e059554303d1f77f",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "headerless-positional-rows"
     },
     {
       "name": "FXBack",
       "sourceSha256": "9373b005ad264c75cc9ac0ed1d1827778d7c0b08dffbc3ef6fef2602762218e7",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "binary-resource"
     },
     {
       "name": "AnimationFlags",
       "sourceSha256": "49cfbf86bbfefc2715a21b594af00020a07fe34dd2ceec9eb40d694f4884fdf9",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "headerless-positional-rows"
     },
     {
       "name": "AnimationFlags",
       "sourceSha256": "90be97516b431e9dd60d2ca81c5cc211506dd222e9433daac5b1b8abe18b6c24",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "headerless-positional-rows"
     },
     {
       "name": "HolidayEventGlobalRaidSoloContributionRewards",
       "sourceSha256": "59e3057b09caad8342e8aa30c8d0121490875252e66934a70cbfedd4a20e7dfc",
+      "route": "V01-V02",
       "status": "imported",
-      "route": "V01-V02"
+      "kind": "data-table"
     },
     {
       "name": "LocalizationInfo_ChineseTrad",
       "sourceSha256": "6cd0af86bd04117fcc4e33b67e6bb7c228da6eab5f48f7e3c123941ce160af3d",
-      "status": "not-imported",
-      "route": "V05"
+      "route": "V05",
+      "status": "localization-indexed",
+      "kind": "localization-strings"
     },
     {
       "name": "AnimationFlags",
       "sourceSha256": "43a8719a310068b9fa1d1e163f11d27db194424b44ca2642d39f8c1d4966d4e9",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "headerless-positional-rows"
     },
     {
       "name": "SaltySam_056_057_058",
       "sourceSha256": "85d7eabc6a102166958c285f86a5d2e1a7edf08e816854cc3bb2c72d701d616c",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "binary-resource"
     },
     {
       "name": "MinigameClanVaultContributionRewards",
       "sourceSha256": "c6ec6107620846b974446a7cbf81bbc27c6bc04031e9841b769ebf6328117e2a",
+      "route": "V01-V02",
       "status": "imported",
-      "route": "V01-V02"
+      "kind": "data-table"
     },
     {
       "name": "ServerVarOverride",
       "sourceSha256": "5cc6a00296940be945646051d90e8446d9c96c8a567332098f0da9ed0dd38e88",
+      "route": "R01-R05",
       "status": "imported",
-      "route": "R01-R05"
+      "kind": "data-table"
     },
     {
       "name": "AnimationFlags",
       "sourceSha256": "1bfb795790521fe73773883eb56fc031972848e6ae7818ed87602837f3392bcc",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "headerless-positional-rows"
     },
     {
       "name": "TutorialEventInfo_A",
       "sourceSha256": "cb2c53ea73b026c800e3b42bda2b7e066051ccba2abdcea1de7790dae11e2d24",
+      "route": "needs-manual-triage",
       "status": "imported",
-      "route": "needs-manual-triage"
+      "kind": "data-table"
     },
     {
       "name": "HolidayEventGlobalRaidLevelInfo",
       "sourceSha256": "7447ed1af0736d58f916dd8f395de9b2d0904eb602941e62487abc1c39adcbff",
+      "route": "V01-V02",
       "status": "imported",
-      "route": "V01-V02"
+      "kind": "data-table"
     },
     {
       "name": "BossGearz_139",
       "sourceSha256": "cbbbcde65881f5788112970fda2597a1f69c98a8d7fddc0510aa2982e42e6e29",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "binary-resource"
     },
     {
       "name": "AnimationFlags",
       "sourceSha256": "3436c587cdbcee9fb998c4e75af637946295a103c3e8a5b8c78529057505ea4e",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "headerless-positional-rows"
     },
     {
       "name": "RaidEnemyInfo",
       "sourceSha256": "4439d638be36543dad96fbfbefd200dfe166c856ac48162f86fae207d344fafa",
+      "route": "M04-M06",
       "status": "imported",
-      "route": "M04-M06"
+      "kind": "data-table"
     },
     {
       "name": "RaidMasterTierRewardInfo_1",
       "sourceSha256": "417ccf157d364cfdf175ff6a5d580f52cbda95e3f68cd170351ae5d24c1a3b03",
+      "route": "M04-M06",
       "status": "imported",
-      "route": "M04-M06"
+      "kind": "data-table"
     },
     {
       "name": "SquareHead_101_102_103_104_105",
       "sourceSha256": "3347e23e83b436e5dee9ae7dc0cf3e6f70ff303e23e12b0dc3454101b411f3da",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "binary-resource"
     },
     {
       "name": "EndgamePetInfo",
       "sourceSha256": "4730f9d4f816f6686cdd15a5d470890b379c9f73622834e2a7f6b22abbf42ed6",
+      "route": "L05",
       "status": "imported",
-      "route": "L05"
+      "kind": "data-table"
     },
     {
       "name": "RaidCardBoostedSlotInfo",
       "sourceSha256": "4d9bb1ab6ddb2ed05b61c37dbd41ab4c586dcd8c9f62db03a0b6c26a91e521c6",
+      "route": "M04-M06",
       "status": "imported",
-      "route": "M04-M06"
+      "kind": "data-table"
     },
     {
       "name": "AnimationFlags",
       "sourceSha256": "abf8d278c61225c9499431a80ed7fb3f5a11c883fee15cc5484d910f8c35b13c",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "headerless-positional-rows"
     },
     {
       "name": "AnimationFlags",
       "sourceSha256": "6d0ac486477ef89d4e510445a0b8c56eaece63a0dee5c3abc6699ec2ba9792b5",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "headerless-positional-rows"
     },
     {
       "name": "ArtifactInfo",
       "sourceSha256": "6627d23a8b55dddea2cf1bfebd4b12b0644646716db51a63103af839937e5f2b",
+      "route": "core-reference",
       "status": "imported",
-      "route": "core-reference"
+      "kind": "data-table"
     },
     {
       "name": "PooMan_078_079_080",
       "sourceSha256": "37865f990fb832d4a9f4c1010477250975dea50407c647ee28d88701e264afc2",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "binary-resource"
     },
     {
       "name": "AnimationFlags",
       "sourceSha256": "969c21741077e7716c589c1d1ab39dc72641e709b18f48955ac49b456d712cd6",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "headerless-positional-rows"
     },
     {
       "name": "FXFront",
       "sourceSha256": "56ef55f5ef911e2dde3aebe986d3961217d4e417f842e0a84539eaf61f31b9c5",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "binary-resource"
     },
     {
       "name": "RaidEnemyPartInfo",
       "sourceSha256": "8fad625190245a93f55397521b5e48f79c885b240b74ad0eb01b75095ba598df",
+      "route": "M04-M06",
       "status": "imported",
-      "route": "M04-M06"
+      "kind": "data-table"
     },
     {
       "name": "BuildGuideInfo",
       "sourceSha256": "ace280d705f8adb4346f703a7d0a2be096bca043fd0b231ecc5707120ad7a7d4",
+      "route": "needs-manual-triage",
       "status": "imported",
-      "route": "needs-manual-triage"
+      "kind": "data-table"
     },
     {
       "name": "AnimationFlags",
       "sourceSha256": "fbfc234eec386fadf9486ec1c4a23cd01447700ce7c1db8e8889e022b2015b2a",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "headerless-positional-rows"
     },
     {
       "name": "SeasonRankingsInfo",
       "sourceSha256": "0ac000e20447d2237df87a196e328412261444854e216d90f437273cdbe18ae2",
+      "route": "needs-manual-triage",
       "status": "imported",
-      "route": "needs-manual-triage"
+      "kind": "data-table"
     },
     {
       "name": "AnimationFlags",
       "sourceSha256": "2dcf3326749beaf502134677071495df643dc2dddf9033d0b610d5de72f24d6e",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "headerless-positional-rows"
     },
     {
       "name": "MinigameHuntingBeastInfo",
       "sourceSha256": "3de6d43d9225297975e8e1e62a6da10baf802c5cd9eb329e58913f23b7fc5cbb",
+      "route": "V01-V02",
       "status": "imported",
-      "route": "V01-V02"
+      "kind": "data-table"
     },
     {
       "name": "SkillBook",
       "sourceSha256": "cff002d8d2cb0b804738a67a5e3261f99960f88a3a2d9b99b9e57bf26ddeca2e",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "binary-resource"
     },
     {
       "name": "PetIntro",
       "sourceSha256": "589d409d8512daa555120fe5a5da91cfc34ce2b3d8d3ef2b9aa0c189a6c73b2c",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "binary-resource"
     },
     {
       "name": "Puppet_069_070_071",
       "sourceSha256": "aa8b27288840509a15265276f07ae2cb75eec2998318785f49aad7b97be37e3b",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "binary-resource"
     },
     {
       "name": "ScheduledBonusInfo",
       "sourceSha256": "346a589e36b3044afe947bea3f7bd5a27c725592c117d9b8974098b647604b12",
-      "status": "not-imported",
-      "route": "R01-R05"
+      "route": "R01-R05",
+      "status": "quarantined",
+      "kind": "recorded-with-reason"
     },
     {
       "name": "AnimationFlags",
       "sourceSha256": "8cdf9e888c94e7f5b33d65f223c2c34c77e717161b4a976e786df20f218ce334",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "headerless-positional-rows"
     },
     {
       "name": "Ramstein_141",
       "sourceSha256": "40d47d2f9ecb62a392a28f582846c85f856ff20ad7aa23c9c316da3fb4fcf6a9",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "binary-resource"
     },
     {
       "name": "PlayerLayout_Old",
       "sourceSha256": "340aa98941d10721ad4844854c640ad04d082c415e57ebccce4cbedc5472cfd7",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "json-document"
     },
     {
       "name": "RaidCardLevelRewardInfo",
       "sourceSha256": "bd02953dd5d61c694db6f371088e336e221005f872efcec06a8b7470c5765373",
+      "route": "M04-M06",
       "status": "imported",
-      "route": "M04-M06"
+      "kind": "data-table"
     },
     {
       "name": "FontGold10XAsian",
       "sourceSha256": "9b3c69bc6278a4e92503c2838efa78eec70a6b09a7204f774ffd737b795ff249",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "bitmap-font-descriptor"
     },
     {
       "name": "LocalizationInfo_Dutch",
       "sourceSha256": "213b74aa34ea5c2c722e900ad6fa9f0ffcaa22a0cdfa27e82b3c9a46624bce0d",
-      "status": "not-imported",
-      "route": "V05"
+      "route": "V05",
+      "status": "localization-indexed",
+      "kind": "localization-strings"
     },
     {
       "name": "TrackFlags",
       "sourceSha256": "e0fb0b1f4b924b6983285b335da8b227128f8f1936a79432f37cb0d496cffa16",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "headerless-positional-rows"
     },
     {
       "name": "MinigameDigsiteRewardInfo",
       "sourceSha256": "a2a753a88b9489ed507bfb710b652adeeb7831e93fe5288977e7826fa5d7c497",
+      "route": "V01-V02",
       "status": "imported",
-      "route": "V01-V02"
+      "kind": "data-table"
     },
     {
       "name": "FlyBoy_093_094",
       "sourceSha256": "2227a79569a63dc8c2768d4646c7d9de255da3cfe20569c0e873a7cdfa975df1",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "binary-resource"
     },
     {
       "name": "ActiveSkillMultiCastInfo",
       "sourceSha256": "1caac6c0709803dbf4a234a14861923c738e4a7dc0b03d6c8316b5c5bc1cf3d2",
+      "route": "core-reference",
       "status": "imported",
-      "route": "core-reference"
+      "kind": "data-table"
     },
     {
       "name": "Pet",
       "sourceSha256": "7a485baf376f6320c25c0e286d2df09e2abc62879c289b1c01da923807a84bec",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "binary-resource"
     },
     {
       "name": "PanelVariantInfo",
       "sourceSha256": "c9f62cd20a57f0a11a2639c52633bf4b8ad3a464d62d41c4bd9b63cbf33a42f1",
+      "route": "needs-manual-triage",
       "status": "imported",
-      "route": "needs-manual-triage"
+      "kind": "data-table"
     },
     {
       "name": "Patrick_023_024_025",
       "sourceSha256": "9c4d5aca89b7c7054befd7a2ab04b6677387ff049d2c3bc7e765e571ee62daf2",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "binary-resource"
     },
     {
       "name": "AnimationFlags",
       "sourceSha256": "13f618a05336df722fe4ecbf7c436c97028290d1e7e5d616613dceb7aa2bdcaf",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "headerless-positional-rows"
     },
     {
       "name": "Portar",
       "sourceSha256": "805d3471a0dc989a85218103bb46e69df91a85006c43f0f055795aa931512c05",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "binary-resource"
     },
     {
       "name": "Helpers",
       "sourceSha256": "e784447af72cf134e3d583289354e049861eb4b5160238745a62bfb2c58acf1a",
-      "status": "not-imported",
-      "route": "core-reference"
+      "route": "core-reference",
+      "status": "not-a-data-table",
+      "kind": "binary-resource"
     },
     {
       "name": "AnimationFlags",
       "sourceSha256": "8cdf9e888c94e7f5b33d65f223c2c34c77e717161b4a976e786df20f218ce334",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "headerless-positional-rows"
     },
     {
       "name": "GigaChesterson",
       "sourceSha256": "08f09f818e5be8c7602e4e6b41c44b6fd169df4f82b653db82b38eed562ccd89",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "binary-resource"
     },
     {
       "name": "AvatarInfo",
       "sourceSha256": "f7ebf5228672f19df1385f687d9c266f81be9cf71386e1d4382316e3d8255c8c",
+      "route": "V03",
       "status": "imported",
-      "route": "V03"
+      "kind": "data-table"
     },
     {
       "name": "RaidPlayerInfo",
       "sourceSha256": "6baecd0bac578b0cf76dffd9bf473002c007c5227f61aaedb441a353d7191664",
+      "route": "M04-M06",
       "status": "imported",
-      "route": "M04-M06"
+      "kind": "data-table"
     },
     {
       "name": "AnimationFlags",
       "sourceSha256": "5d6f3e74074949058a58ad851bbcfb307d32f1701152dab8171fb4cbc01edeee",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "headerless-positional-rows"
     },
     {
       "name": "AnimationFlags",
       "sourceSha256": "5d6f3e74074949058a58ad851bbcfb307d32f1701152dab8171fb4cbc01edeee",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "headerless-positional-rows"
     },
     {
       "name": "GemstoneLevelCost",
       "sourceSha256": "2808019edd400715dcd32692478f52b363bff63577a65a5a0333efb99e636521",
+      "route": "L04",
       "status": "imported",
-      "route": "L04"
+      "kind": "data-table"
     },
     {
       "name": "RockOwl_007_008",
       "sourceSha256": "6ac9b2dcebb1420a61fb829220c55e2a3fc58285e3d976cc9d4f41ad111550c5",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "binary-resource"
     },
     {
       "name": "CardFolks_052_053",
       "sourceSha256": "28d913f2eaf7d77c167bd9f993ffc01afe7a30457a7e5fa77d774938c30d2de2",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "binary-resource"
     },
     {
       "name": "LocalizationInfo_Italian",
       "sourceSha256": "c78cc3f38917976f20514873a787c1471e95748ee49f0e7f9f7d9b55a1fec757",
-      "status": "not-imported",
-      "route": "V05"
+      "route": "V05",
+      "status": "localization-indexed",
+      "kind": "localization-strings"
     },
     {
       "name": "UniversalDeepLink",
       "sourceSha256": "e92c69ae65f3d138d5315cf460d2cd8b2511da42e9b8cfb8128de2d1df988537",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "json-document"
     },
     {
       "name": "MegaBomb",
       "sourceSha256": "6a0b141d8ecbd2e6bed2dba9bfd013a19169bc9a759ef0680b2bba5b5840045a",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "binary-resource"
     },
     {
       "name": "AnimationFlags",
       "sourceSha256": "0d45a38a791ed6a3ebe78c674b5566a42544fdea99c0d257704a0fac133ea457",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "headerless-positional-rows"
     },
     {
       "name": "BallieMcBallFace_132_133",
       "sourceSha256": "12fec18dca4637dc37101c2bc4a626571aec0e5a52100e70df7422314ebd2a70",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "binary-resource"
     },
     {
       "name": "AnimationFlags",
       "sourceSha256": "40569adbaa40d931afa7afd7faf23419067f1790708f214320fbe225cafa2cfd",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "headerless-positional-rows"
     },
     {
       "name": "BossBrownTree_134",
       "sourceSha256": "a82c9f53a89838eb72667396c6f0691306ea4f42e67d2cea6faba132c684db23",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "binary-resource"
     },
     {
       "name": "AnimationFlags",
       "sourceSha256": "5d6f3e74074949058a58ad851bbcfb307d32f1701152dab8171fb4cbc01edeee",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "headerless-positional-rows"
     },
     {
       "name": "PlayerLayout",
       "sourceSha256": "65477bc28556c7ac73efe4e6669af3a5e2d3a6a914eda8fd797f46090d3bd96f",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "json-document"
     },
     {
       "name": "MinigameFishingDerbySoloContributionRewards",
       "sourceSha256": "18d192253fd75f16e3ed1a271944be11573a9ef7c16dcdb3cc3a6426cc0ae1f0",
+      "route": "V01-V02",
       "status": "imported",
-      "route": "V01-V02"
+      "kind": "data-table"
     },
     {
       "name": "DarkLord_138",
       "sourceSha256": "ed7f30a6843c0bacb486eaf5b307b3e509bc50de993323ef16c3de318ffceb81",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "binary-resource"
     },
     {
       "name": "PetInfo",
       "sourceSha256": "0e86cd5c1125981c73db2a50780530937e431a6bfaa4591b082842de97745c51",
+      "route": "core-reference",
       "status": "imported",
-      "route": "core-reference"
+      "kind": "data-table"
     },
     {
       "name": "MinigameFishingDerbyUpgradeInfo",
       "sourceSha256": "2a73fac21472a59867aeb714993a8d434922d29da5f6083d19c5db8df10701d7",
+      "route": "V01-V02",
       "status": "imported",
-      "route": "V01-V02"
+      "kind": "data-table"
     },
     {
       "name": "NewPlayerTournamentRewardInfo",
       "sourceSha256": "f19bf8b521a607d2913d6da379bfc1fd75db809d32184df8bea35fc824e14073",
+      "route": "M07",
       "status": "imported",
-      "route": "M07"
+      "kind": "data-table"
     },
     {
       "name": "BigBird_123_124_125",
       "sourceSha256": "5a58606b52158f45afe70a69be8757ae50f9d210644fa8cb80b65efe20ef8410",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "binary-resource"
     },
     {
       "name": "TitanCardUpgradeCostInfo",
       "sourceSha256": "7bf7e0b791920d3b4e40319b2e3d1f9bc184a2c0d75b01d2aa7144900ec9142d",
+      "route": "needs-manual-triage",
       "status": "imported",
-      "route": "needs-manual-triage"
+      "kind": "data-table"
     },
     {
       "name": "AnimationFlags",
       "sourceSha256": "3b0a42c790b41221a5d1afa810e3fd3b41687aa2adb194307a2f87f595038894",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "headerless-positional-rows"
     },
     {
       "name": "Bob_095_096_097",
       "sourceSha256": "28ade0d5173bda7d1aa1c2a5488b9ff38249969da33d21af3e2de84da2e15922",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "binary-resource"
     },
     {
       "name": "AnimationFlags",
       "sourceSha256": "fd0d1b4710f0562fca836cfe3abb91ae378f7b131523f11b6509eb310cc1b5e2",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "headerless-positional-rows"
     },
     {
       "name": "AnimationFlags",
       "sourceSha256": "d6a5e22b38859248f9acb59dd5123acc1780fc72ef9721cf4db2e627713084da",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "headerless-positional-rows"
     },
     {
       "name": "AnimationFlags",
       "sourceSha256": "c2e4a538e3acb253feebe3c91290c72908aa837d0ef3bc6b0c61dc618f036c4c",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "headerless-positional-rows"
     },
     {
       "name": "GemstoneRarityInfo",
       "sourceSha256": "7d4ee358daf17d28325e79ebcf7b790ab0a87901e654a0b44f8f733c4913f01f",
+      "route": "L04",
       "status": "imported",
-      "route": "L04"
+      "kind": "data-table"
     },
     {
       "name": "Crate",
       "sourceSha256": "7e8bbd2fa26839d999a938174b16aa90162838e0053ef55bcc5f9fdcf8a03aed",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "binary-resource"
     },
     {
       "name": "AnimationFlags",
       "sourceSha256": "5d6f3e74074949058a58ad851bbcfb307d32f1701152dab8171fb4cbc01edeee",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "headerless-positional-rows"
     },
     {
       "name": "EquipmentSetInfo",
       "sourceSha256": "22e581bbfd4b374300699d7d114a06b8bb2ce84d82dcf0555e05039c4076c3e6",
+      "route": "core-reference",
       "status": "imported",
-      "route": "core-reference"
+      "kind": "data-table"
     },
     {
       "name": "HelperLayout",
       "sourceSha256": "3b878f5ee6daadb3667fcd35529e42ba0e6fc354793cfad693731cc4e727e121",
-      "status": "not-imported",
-      "route": "core-reference"
+      "route": "core-reference",
+      "status": "not-a-data-table",
+      "kind": "json-document"
     },
     {
       "name": "TrackFlags_02",
       "sourceSha256": "6a56ad25a237f84a970f2e170f25734971ae2d2583e998bc5a82f5f717e2e80a",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "headerless-positional-rows"
     },
     {
       "name": "AngryBird_112_113_114_115",
       "sourceSha256": "ac4e6babe45e211d7f8f0318d56f34b1ce6861c7f121c2590a25d57b6028cc81",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "binary-resource"
     },
     {
       "name": "MinigameFishingDerbyRewardInfo",
       "sourceSha256": "5aa8578d4d5c76590eb545dfc36c98d136f355a3ed38139eb11dae65a1fb8395",
+      "route": "V01-V02",
       "status": "imported",
-      "route": "V01-V02"
+      "kind": "data-table"
     },
     {
       "name": "AnimationFlags",
       "sourceSha256": "6d0ac486477ef89d4e510445a0b8c56eaece63a0dee5c3abc6699ec2ba9792b5",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "headerless-positional-rows"
     },
     {
       "name": "UpdateInfo",
       "sourceSha256": "9184813baee675a347cc2146dec305939b5093d590cd6594f38d3f47cb8654f7",
-      "status": "not-imported",
-      "route": "R01-R05"
+      "route": "R01-R05",
+      "status": "quarantined",
+      "kind": "recorded-with-reason"
     },
     {
       "name": "RaidEnemyLayout",
       "sourceSha256": "cc410b48f23749e149f684c21df695f9377ec89dcd17d0de857bc640cdf19983",
+      "route": "M04-M06",
       "status": "atlas-ids-indexed",
-      "route": "M04-M06"
+      "kind": "sprite-atlas-json"
     },
     {
       "name": "Buggy_033_034_035",
       "sourceSha256": "0281fe496573eff0628fa5a129a4108a071b4ac3b555e072024e58638d1c8786",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "binary-resource"
     },
     {
       "name": "TitanSummonLevelCost",
       "sourceSha256": "fdbb51555ed08e55842e7e170f8712ffb72011dd4d64b3b8458583af4875a4ea",
+      "route": "needs-manual-triage",
       "status": "imported",
-      "route": "needs-manual-triage"
+      "kind": "data-table"
     },
     {
       "name": "FairyLWF",
       "sourceSha256": "4ebad72269d2ecadac554fa17365bed0522a184c7a12c57e851b9ea7b007cf9c",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "binary-resource"
     },
     {
       "name": "GemstoneLevelSummonRateInfo",
       "sourceSha256": "14d501bf4444d146f863cbb2cd1b633dbdfb3ffba7d533ef0f843bacfccf6ce9",
+      "route": "L04",
       "status": "imported",
-      "route": "L04"
+      "kind": "data-table"
     },
     {
       "name": "AnimationFlags",
       "sourceSha256": "fcac077f3b4d2b9e62a0a7e9db0167ef564424416a5d8ca9c85e773c9f5340f0",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "headerless-positional-rows"
     },
     {
       "name": "AnimationFlags",
       "sourceSha256": "751023c39ef7f1107ecfe99b0c642e86d91354e63a796919ec0aba6f00d0d33a",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "headerless-positional-rows"
     },
     {
       "name": "Blobby_116_117_118_119",
       "sourceSha256": "a7e41cb1f7919bce18841ab96f30c308bdd5b926ffb4cc0ad6e5825e760adc53",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "binary-resource"
     },
     {
       "name": "TrackFlags_04",
       "sourceSha256": "d217b5bbb4b578d5065cadf026ded234dc28560ddc0ca59551c676eed505cea1",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "headerless-positional-rows"
     },
     {
       "name": "TournamentRewardInfo",
       "sourceSha256": "623d1df6e8e0c9b8daac51a5863f62b5edeef7209572dcaace36963805757b8d",
+      "route": "M07",
       "status": "imported",
-      "route": "M07"
+      "kind": "data-table"
     },
     {
       "name": "BossTripleTree_137",
       "sourceSha256": "e364dbac4f690f17fe9325f9de55704e3717dd7fb216129206b6130ea9bb13ef",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "binary-resource"
     },
     {
       "name": "Beast_020_021_022",
       "sourceSha256": "d113da9dcdb897faaab36957b4599d1ac58295e54032749e63d017e8356dfe1a",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "binary-resource"
     },
     {
       "name": "AnimationFlags",
       "sourceSha256": "5d6f3e74074949058a58ad851bbcfb307d32f1701152dab8171fb4cbc01edeee",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "headerless-positional-rows"
     },
     {
       "name": "MrScarf_135",
       "sourceSha256": "27d657b8ae0cbda0403edea38a279cafb4aabf97c2f6a6a26fa2c6e28a1bb432",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "binary-resource"
     },
     {
       "name": "AnimationFlags",
       "sourceSha256": "b8b836eb5c9c06a5fa9e078ca7378889848936805023f41eea2f86f4b200e7b6",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "headerless-positional-rows"
     },
     {
       "name": "PerformanceTestRunSettings",
       "sourceSha256": "600c5c3dab7e18e51c28aad096457da91fcf60a3eedd908b6bf30194dae2b55b",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "json-document"
     },
     {
       "name": "Doom",
       "sourceSha256": "d0e17fc2978841be9be9766bed76885c3af235928c3bfbb83ead448419b75f59",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "binary-resource"
     },
     {
       "name": "BossBigSpikes_144",
       "sourceSha256": "a2f8945c7ec7c8017456c949ec4ee8c2f7845f6f7f7fd08fc930c30c6ee06142",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "binary-resource"
     },
     {
       "name": "LocalizationInfo_Portuguese",
       "sourceSha256": "d6db933dda37927566ce8925b33e7e36b5aa3d0165e05a3dfa58a7f2403750bd",
-      "status": "not-imported",
-      "route": "V05"
+      "route": "V05",
+      "status": "localization-indexed",
+      "kind": "localization-strings"
     },
     {
       "name": "PetQuestLevelInfo",
       "sourceSha256": "bbfc66eb75e09c0751f3562be2c9db9bd43aab266aacf75729d17a3809cb236f",
+      "route": "I06",
       "status": "imported",
-      "route": "I06"
+      "kind": "data-table"
     },
     {
       "name": "AnimationFlags",
       "sourceSha256": "3436c587cdbcee9fb998c4e75af637946295a103c3e8a5b8c78529057505ea4e",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "headerless-positional-rows"
     },
     {
       "name": "texture",
       "sourceSha256": "5576e30bedb99c581efc6e4f5a5695dbfed71d8d49bbdb0672645a07b3989047",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "json-document"
     },
     {
       "name": "RaidMasterTierLevelInfo",
       "sourceSha256": "a9be98434abe5a94a3fbe6dde6a57bcbc194afeecdc08680c9f17929935653d8",
+      "route": "M04-M06",
       "status": "imported",
-      "route": "M04-M06"
+      "kind": "data-table"
     },
     {
       "name": "FontBattleAsian",
       "sourceSha256": "19328f8584b4f396073ee31d8c668de7f3a14619a53f721ae40ca5429f4aea73",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "bitmap-font-descriptor"
     },
     {
       "name": "BossWizardAxeEar_140",
       "sourceSha256": "8f1ffc1c9b79c35f5e08103155f0756a8b73228d452f75716c67090920518c0d",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "binary-resource"
     },
     {
       "name": "ChestLWF",
       "sourceSha256": "b3ec72de8b47b26360c502f095d5bf362d5b2dd20fcc2eaab92af7f224562973",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "binary-resource"
     },
     {
       "name": "Summoner_009_010",
       "sourceSha256": "309367fe2708fe7f8e8280272ae7ddcd4e94aa6cd782393052052b03732c59fb",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "binary-resource"
     },
     {
       "name": "EarthGuru_087_088",
       "sourceSha256": "d99c77cbd9988c7df7742ac8e4231f26a4f95d471a720c06291d878c31c60a9f",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "binary-resource"
     },
     {
       "name": "AnimationFlags",
       "sourceSha256": "1045857a4cbc0959bad5494388979e0efafaf1620ed6b82a0dc0d1b5ed3d98cc",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "headerless-positional-rows"
     },
     {
       "name": "AnimationFlags",
       "sourceSha256": "969c21741077e7716c589c1d1ab39dc72641e709b18f48955ac49b456d712cd6",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "headerless-positional-rows"
     },
     {
       "name": "LocalizationInfo_Swedish",
       "sourceSha256": "9e2fa96038c961fb9d64897351d782fab7ddb6daac3a3c63a7fba4bd73581bd1",
-      "status": "not-imported",
-      "route": "V05"
+      "route": "V05",
+      "status": "localization-indexed",
+      "kind": "localization-strings"
     },
     {
       "name": "HelperImprovementsInfo",
       "sourceSha256": "f5211ec85af7cd2665380d7000706a393eea6f358a78ffa799a1729b46b22d7d",
+      "route": "core-reference",
       "status": "imported",
-      "route": "core-reference"
+      "kind": "data-table"
     },
     {
       "name": "AnimationFlags",
       "sourceSha256": "581a9439ba13ac9ecb5e76bc2bd7be7cc67af7c157ee18aac7274c34323eec6b",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "headerless-positional-rows"
     },
     {
       "name": "Trapezoid_126_127_128",
       "sourceSha256": "8e1b282d3e906a917962739b72ebdea2a8f67becac001df6b5c5dbd5dbc763af",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "binary-resource"
     },
     {
       "name": "SoloRaidFarmingLevelInfo",
       "sourceSha256": "dc87a04a14748aad2cc560e0e74cf12eaeb8ad6d722d56d6d60f30599f614929",
+      "route": "M04-M06",
       "status": "imported",
-      "route": "M04-M06"
+      "kind": "data-table"
     },
     {
       "name": "ServerVarsInfo",
       "sourceSha256": "c839c697c1e1cc7cb4d819f94ceb5f44f889485686491e52c7c9095d550a0fad",
+      "route": "R01-R05",
       "status": "imported",
-      "route": "R01-R05"
+      "kind": "data-table"
     },
     {
       "name": "TrackFlags_07",
       "sourceSha256": "5d779042153b5ea459e573c576bd90c8727a627d61b9e74a87a957ef3e9a431b",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "headerless-positional-rows"
     },
     {
       "name": "C_EquipmentInfo",
       "sourceSha256": "3434c63fe880bafbe6d87439041ebfee0af174e635ba733ace1179b83e8fa655",
+      "route": "core-reference",
       "status": "imported",
-      "route": "core-reference"
+      "kind": "data-table"
     },
     {
       "name": "Mask_036_037_038",
       "sourceSha256": "821abcec09b659f729f9cce7302d48c482a20fefc9d7ee9bb7471200543a80d7",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "binary-resource"
     },
     {
       "name": "TrackFlags_09",
       "sourceSha256": "66a28927a283c61c5827d7c885bcbcdd4169d0e2c235e8a6a1c66f03d6a6eb02",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "headerless-positional-rows"
     },
     {
       "name": "AnimationFlags",
       "sourceSha256": "969c21741077e7716c589c1d1ab39dc72641e709b18f48955ac49b456d712cd6",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "headerless-positional-rows"
     },
     {
       "name": "AnimationFlags",
       "sourceSha256": "1045857a4cbc0959bad5494388979e0efafaf1620ed6b82a0dc0d1b5ed3d98cc",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "headerless-positional-rows"
     },
     {
       "name": "MinigameMazeRewardInfo",
       "sourceSha256": "274d1d093ca4b4ba3ccd5d26364b55f45f505ac070ebc7a8980927bb6062e9c7",
+      "route": "V01-V02",
       "status": "imported",
-      "route": "V01-V02"
+      "kind": "data-table"
     },
     {
       "name": "ClanScrollInfo",
       "sourceSha256": "e03119de2376f09c67abf0f076669ab25910bad6c588468506f9bc509d390c0a",
+      "route": "core-reference",
       "status": "imported",
-      "route": "core-reference"
+      "kind": "data-table"
     },
     {
       "name": "TrackFlags_11",
       "sourceSha256": "0fd364965a4f178e4aaa78bf2bba98d5ee9d578fd44cbb1967787ba51b197c38",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "headerless-positional-rows"
     },
     {
       "name": "AnimationFlags",
       "sourceSha256": "1045857a4cbc0959bad5494388979e0efafaf1620ed6b82a0dc0d1b5ed3d98cc",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "headerless-positional-rows"
     },
     {
       "name": "TrackFlags_03",
       "sourceSha256": "9ed733c5ae495c16c5a07d39199b6b3087dea42c1fc4f8f6de9a9394c0ced32d",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "headerless-positional-rows"
     },
     {
       "name": "BonusInfo",
       "sourceSha256": "c1449a8ebe13b3a4cb7284986c7f43fec2817cd314f84bd7fa696f3204054eb8",
+      "route": "core-reference",
       "status": "imported",
-      "route": "core-reference"
+      "kind": "data-table"
     },
     {
       "name": "C_EquipmentEnhancementScalingInfo",
       "sourceSha256": "86de81cd381c8fe2fcebed0252c608c5eaeb074c9e9ad32d8f6d319dd6b1b667",
+      "route": "core-reference",
       "status": "imported",
-      "route": "core-reference"
+      "kind": "data-table"
     },
     {
       "name": "Viper_066_067_068",
       "sourceSha256": "cda64e80a0ced2458f863217456030c327796418172eef3346f14d7da19af169",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "binary-resource"
     },
     {
       "name": "Squidz_143",
       "sourceSha256": "f64fabc4e020eb64d04b7154715a1404a49ea75421ca434da9dafcba789baacf",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "binary-resource"
     },
     {
       "name": "RaidResearchInfo",
       "sourceSha256": "4005f48aa381f41b3bc3d352a82e29fe2628186893e599e35568eb4a5ea590d2",
+      "route": "M04-M06",
       "status": "imported",
-      "route": "M04-M06"
+      "kind": "data-table"
     },
     {
       "name": "DailyAchievementInfo",
       "sourceSha256": "7707cd15bfcc9ba1beadbcda4f99d567c3a2dc056b47021e8271593d451c3668",
+      "route": "core-reference",
       "status": "imported",
-      "route": "core-reference"
+      "kind": "data-table"
     },
     {
       "name": "AnniversaryTournamentSoloContributionRewards",
       "sourceSha256": "d6b7eaa10fdaddcacc7e0b7ea70a001eb1774ad87681c44d1a11c84f5a9302df",
+      "route": "V01-V02",
       "status": "imported",
-      "route": "V01-V02"
+      "kind": "data-table"
     },
     {
       "name": "RaidLevelInfo",
       "sourceSha256": "fb3516b2b01b16bb115d9e7ed8726fa91abce89a2d541163878c46c6c8468e85",
+      "route": "M04-M06",
       "status": "imported",
-      "route": "M04-M06"
+      "kind": "data-table"
     },
     {
       "name": "AnimationFlags",
       "sourceSha256": "8e65ee5a9d07feabb955e806854125ad4c6ea028fdd6e779f3d9cd14c7024a83",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "headerless-positional-rows"
     },
     {
       "name": "EndgamePetInfo_1",
       "sourceSha256": "92a3420c11ce6207f4abe14ecbabed8fe2c6633c2cca5361ea63bda1cece1166",
+      "route": "L05",
       "status": "imported",
-      "route": "L05"
+      "kind": "data-table"
     },
     {
       "name": "BossMustachio_145",
       "sourceSha256": "6602bbcea4bfde48b985be89cd08237b8da83ff39a621e6655fbc473b8c06737",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "binary-resource"
     },
     {
       "name": "ShopInfoServerTest",
       "sourceSha256": "5d77d101368a43a0f543766752623031b0331a1369084c77fab5193300e9684e",
-      "status": "not-imported",
-      "route": "L02"
+      "route": "L02",
+      "status": "sample-indexed",
+      "kind": "shop-server-response-sample"
     },
     {
       "name": "PetPaneIntro",
       "sourceSha256": "6746888bbca1e55257f662d1237a51c4080f835184f0660bc2bc2a93b64c5394",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "binary-resource"
     },
     {
       "name": "Yeti_084_085_086",
       "sourceSha256": "63f1d9777fef9f2cf95c217befc008aa33cea901074d101aa68d3637c078f191",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "binary-resource"
     },
     {
       "name": "RoboTom_072_073_074",
       "sourceSha256": "9d72ec39e7721088b47253010206e7b64452ebd632625148ef56035441acec2d",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "binary-resource"
     },
     {
       "name": "SoloRaidLevelInfo",
       "sourceSha256": "d1db91a13c981a7926875bec9c7b26d14e688a4de4dca25c3e0b8a9168534928",
+      "route": "M04-M06",
       "status": "imported",
-      "route": "M04-M06"
+      "kind": "data-table"
     },
     {
       "name": "LocalizationInfo_Spanish",
       "sourceSha256": "00293a1fab625d6a9261e15a38975a13ca321cc3e9769bc0f6fa4a0b28cc6183",
-      "status": "not-imported",
-      "route": "V05"
+      "route": "V05",
+      "status": "localization-indexed",
+      "kind": "localization-strings"
     },
     {
       "name": "MinigameHuntingUpgradeInfo",
       "sourceSha256": "e6ec0e50ce2b80ebb7efc4962e8beec8412631873f1a023992e6422762f9e6c7",
+      "route": "V01-V02",
       "status": "imported",
-      "route": "V01-V02"
+      "kind": "data-table"
     },
     {
       "name": "AchievementInfo",
       "sourceSha256": "3b6c2f339e5a56986069fa645cb67f91a462e170a8e69ce668a218d0b6b02563",
+      "route": "needs-manual-triage",
       "status": "imported",
-      "route": "needs-manual-triage"
+      "kind": "data-table"
     },
     {
       "name": "SuperTournamentRewardInfo",
       "sourceSha256": "6b6d77591660670472d0489b66f86114d69632a5d827b4f21dd3e3b74d24f575",
+      "route": "M07",
       "status": "imported",
-      "route": "M07"
+      "kind": "data-table"
     },
     {
       "name": "TrackFlags",
       "sourceSha256": "2764ee814427a181bfac7e9ec7551a62a8a76c8037ee96b001da6a61a54c66d6",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "headerless-positional-rows"
     },
     {
       "name": "GemstoneResearchInfo",
       "sourceSha256": "245b7cdd68a38c6098b44dc4f59c20203336a9db79b1c455e2c1a05988ad3457",
+      "route": "L04",
       "status": "imported",
-      "route": "L04"
+      "kind": "data-table"
     },
     {
       "name": "ShopDisplayInfo",
       "sourceSha256": "ecbe3344363170fbd88a7962bec5044a3c164457edd29e1e26bfe1bf27efd745",
+      "route": "L02",
       "status": "imported",
-      "route": "L02"
+      "kind": "data-table"
     },
     {
       "name": "ShopInfoServerTest_all_dailyDeals",
       "sourceSha256": "9fae51b5c384ad0db54ef2cdbc865af85af4d3a731e33df9c836aff37d195d01",
-      "status": "not-imported",
-      "route": "L02"
+      "route": "L02",
+      "status": "sample-indexed",
+      "kind": "shop-server-response-sample"
     },
     {
       "name": "AnimationFlags",
       "sourceSha256": "805dafa318e76e04e5b0da906b92193ccf7d74310cb4d9b63a4dbf1a84d9b3c2",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "headerless-positional-rows"
     },
     {
       "name": "PerkInfo",
       "sourceSha256": "f202b113e8741e1f5b3222f2e9d2a569fb04a7ec85f6f51a4cfa773e8cb610e8",
+      "route": "needs-manual-triage",
       "status": "imported",
-      "route": "needs-manual-triage"
+      "kind": "data-table"
     },
     {
       "name": "TutorialEventInfo",
       "sourceSha256": "3b8784e524b0e76a38320fd5e975df17c24ae0f09746487d173b537fd7b882af",
+      "route": "needs-manual-triage",
       "status": "imported",
-      "route": "needs-manual-triage"
+      "kind": "data-table"
     },
     {
       "name": "ChallengeTournamentStartingInfo",
       "sourceSha256": "5cb0128b0872442222ab0f5fd8d7483c42b97b5e8acdc8e6ea755001eaa2f19b",
+      "route": "M08",
       "status": "imported",
-      "route": "M08"
+      "kind": "data-table"
     },
     {
       "name": "HolidayEventBombGameRewardInfo",
       "sourceSha256": "3cfb6b971128e0e26d875506d2bf411f3e9f944f3bd4ce06b41cd0ce7bbbe953",
+      "route": "V01-V02",
       "status": "imported",
-      "route": "V01-V02"
+      "kind": "data-table"
     },
     {
       "name": "AnimationFlags",
       "sourceSha256": "8cdf9e888c94e7f5b33d65f223c2c34c77e717161b4a976e786df20f218ce334",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "headerless-positional-rows"
     },
     {
       "name": "StormCloud_",
       "sourceSha256": "f8bedf51d3cc2f3c82f41e6713e2ee087afddad6045674c0082ba755b721c684",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "binary-resource"
     },
     {
       "name": "AnimationFlags",
       "sourceSha256": "1672ac338221f108dc733b6ea7d797b88406308d8f4f240f41a3cf3a0231fdda",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "headerless-positional-rows"
     },
     {
       "name": "MinigameFishingDerbyFishInfo",
       "sourceSha256": "b71de5e0c50200458e0e2c82471a4ede16821f44bbc213fa473c3dd16a97e5dc",
+      "route": "V01-V02",
       "status": "imported",
-      "route": "V01-V02"
+      "kind": "data-table"
     },
     {
       "name": "PassiveSkillInfo",
       "sourceSha256": "fc3181443a4b9d11d578e8fb4832892f9ee452fa02469a7bcc045d3436738ce0",
+      "route": "core-reference",
       "status": "imported",
-      "route": "core-reference"
+      "kind": "data-table"
     },
     {
       "name": "AnimationFlags",
       "sourceSha256": "4e75f106ac53b8d3b6f0be206de140e98b1b7d3de25425cf89e43de87816bc99",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "headerless-positional-rows"
     },
     {
       "name": "ActiveSkillInfo",
       "sourceSha256": "7eccdce065d96658142a2f1f3962d7a233083ceacb3781c11f6979599c9fcba8",
+      "route": "core-reference",
       "status": "imported",
-      "route": "core-reference"
+      "kind": "data-table"
     },
     {
       "name": "MidasPot",
       "sourceSha256": "d1351239c8a84ad3173a329ab5a3f2f747dee5d7c60ca3ae6d215710cfd11c7d",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "binary-resource"
     },
     {
       "name": "MinigameFishingDerbyRarityInfo",
       "sourceSha256": "9ce824d12ffd7a80fb3339240c9d1835f7335fcdeeeac33c324496a022ba3cf5",
+      "route": "V01-V02",
       "status": "imported",
-      "route": "V01-V02"
+      "kind": "data-table"
     },
     {
       "name": "DailyRewardsInfo",
       "sourceSha256": "403c909635025bddd189b8d061f271398dfdbcecc55fc34cd294b9fec199fba8",
+      "route": "core-reference",
       "status": "imported",
-      "route": "core-reference"
+      "kind": "data-table"
     },
     {
       "name": "AnimationFlags",
       "sourceSha256": "969c21741077e7716c589c1d1ab39dc72641e709b18f48955ac49b456d712cd6",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "headerless-positional-rows"
     },
     {
       "name": "AnimationFlags",
       "sourceSha256": "90ce39d7983368293f6b4a6a9186022d877477f4c761c51aff28c5df323b2838",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "headerless-positional-rows"
     },
     {
       "name": "Slardeer_092_142",
       "sourceSha256": "c7ad3dc4618332cb8a2f0fe5667718847f78a7b8f0c2a38bd18c991b70efff5d",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "binary-resource"
     },
     {
       "name": "HolidayEventGlobalRaidTargetZoneInfo",
       "sourceSha256": "e573b56b75cf674d63a58ba6b016ab8b34c61af2109ba962cd5c161acb9c054e",
+      "route": "V01-V02",
       "status": "imported",
-      "route": "V01-V02"
+      "kind": "data-table"
     },
     {
       "name": "LocalizationInfo_Danish",
       "sourceSha256": "76d6a0d5f436066fae92a3c06606e5f992c8553c7ee59a73418bc9880e424b21",
-      "status": "not-imported",
-      "route": "V05"
+      "route": "V05",
+      "status": "localization-indexed",
+      "kind": "localization-strings"
     },
     {
       "name": "Animal_098_099_100",
       "sourceSha256": "108ec64007a5dd041fda76c68b1754d056f6f1c4be0993de434147a2ba6329cf",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "binary-resource"
     },
     {
       "name": "RaidSkillInfo",
       "sourceSha256": "2660f538c012c423a22e838201712357093672e32c78202d11ba40f598db1e36",
+      "route": "M04-M06",
       "status": "imported",
-      "route": "M04-M06"
+      "kind": "data-table"
     },
     {
       "name": "TitanSummonBannerInfo",
       "sourceSha256": "06fc52f797b9c9f972dbc67908c52797a44b201a1f689e305686a54a1d253e1f",
+      "route": "needs-manual-triage",
       "status": "imported",
-      "route": "needs-manual-triage"
+      "kind": "data-table"
     },
     {
       "name": "AnimationFlags",
       "sourceSha256": "969c21741077e7716c589c1d1ab39dc72641e709b18f48955ac49b456d712cd6",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "headerless-positional-rows"
     },
     {
       "name": "DungeonSilhouetteHeroesLWF",
       "sourceSha256": "faaab61a9bc3ef5e2a31c67b1b81b49273ac8aae56d64d78268ecbbdeb74c782",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "binary-resource"
     },
     {
       "name": "AnimationFlags",
       "sourceSha256": "9902f256eec16053982c1f2efbd455a8f6c7535d3993c23430208a5a0a725d08",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "headerless-positional-rows"
     },
     {
       "name": "HolidayEventGlobalRaidRewardInfo",
       "sourceSha256": "10f820f15d47c7a1fafaa83f29b57104ada1b6cbca8bc3fb6d717c444466c20e",
+      "route": "V01-V02",
       "status": "imported",
-      "route": "V01-V02"
+      "kind": "data-table"
     },
     {
       "name": "Tanticlor_081_082_083",
       "sourceSha256": "2be395779e984873001d68bcaa433b33686d10d3cbe0f801475deaf8ee3f0500",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "binary-resource"
     },
     {
       "name": "LocalizationInfo_Korean",
       "sourceSha256": "56a3a76fb1c384356c1435c30eff2dbe109115a5d56809f3c17f61c95d3dfcd2",
-      "status": "not-imported",
-      "route": "V05"
+      "route": "V05",
+      "status": "localization-indexed",
+      "kind": "localization-strings"
     },
     {
       "name": "AnimationFlags",
       "sourceSha256": "6d0ac486477ef89d4e510445a0b8c56eaece63a0dee5c3abc6699ec2ba9792b5",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "headerless-positional-rows"
     },
     {
       "name": "AnimationFlags",
       "sourceSha256": "5cf0d490a461ab29da0f81937107221a4dea9acca989e9aa46227e8d6d6bbd5c",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "headerless-positional-rows"
     },
     {
       "name": "TitanScalingInfo",
       "sourceSha256": "f1c6db9fe1032363a23d28ffb5f72e5e09600b256cb028ebf22b9f29d31efece",
+      "route": "core-reference",
       "status": "imported",
-      "route": "core-reference"
+      "kind": "data-table"
     },
     {
       "name": "VideoFairySpawnInfo",
       "sourceSha256": "db671ea6afdb29837a393f261f00dfdb53ad5508c7f2899f85c6c40d2cb4af5e",
+      "route": "needs-manual-triage",
       "status": "imported",
-      "route": "needs-manual-triage"
+      "kind": "data-table"
     },
     {
       "name": "ArtifactCostInfo",
       "sourceSha256": "1a4a86cd0be268bb8d9f41cdac1f4f4ae93c6171268bded6f257919ddecf82dc",
+      "route": "core-reference",
       "status": "imported",
-      "route": "core-reference"
+      "kind": "data-table"
     },
     {
       "name": "AnimationFlags",
       "sourceSha256": "969c21741077e7716c589c1d1ab39dc72641e709b18f48955ac49b456d712cd6",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "headerless-positional-rows"
     },
     {
       "name": "AnimationFlags",
       "sourceSha256": "5d6f3e74074949058a58ad851bbcfb307d32f1701152dab8171fb4cbc01edeee",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "headerless-positional-rows"
     },
     {
       "name": "DarkKnight_039_040",
       "sourceSha256": "124b142d105d2038baf9928b9e07d3533c0763c4b696c243624305ddb866512f",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "binary-resource"
     },
     {
       "name": "PoorGuy_062_063_064_065",
       "sourceSha256": "91e409e594e49bdab0deaf468a23ce02adb90f335d775a7b0fb92d5ad080864c",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "binary-resource"
     },
     {
       "name": "LocalizationInfo_Norwegian",
       "sourceSha256": "c02713e5e2d1736e3a247cecf746f0808ea9819b37c7fd382bdc7b1892f39c8e",
-      "status": "not-imported",
-      "route": "V05"
+      "route": "V05",
+      "status": "localization-indexed",
+      "kind": "localization-strings"
     },
     {
       "name": "LocalizationInfo_Russian",
       "sourceSha256": "c86572ab92a233c42c6d825d710280b7e366c665201c12aad5d619bd757a3b71",
-      "status": "not-imported",
-      "route": "V05"
+      "route": "V05",
+      "status": "localization-indexed",
+      "kind": "localization-strings"
     },
     {
       "name": "GlobalEventTasksInfo",
       "sourceSha256": "2e61ccc512594ab6a86e5c1c3a152fc3e2a7a56921a67c5969c35cb9613a8614",
+      "route": "V01-V02",
       "status": "imported",
-      "route": "V01-V02"
+      "kind": "data-table"
     },
     {
       "name": "AnimationFlagsCannon",
       "sourceSha256": "9902f256eec16053982c1f2efbd455a8f6c7535d3993c23430208a5a0a725d08",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "headerless-positional-rows"
     },
     {
       "name": "AnimationFlags",
       "sourceSha256": "ebdbce35e8d8c3657f774973180bdeaffc6d75e848efc31997f903ffb426cfca",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "headerless-positional-rows"
     },
     {
       "name": "AnimationFlags",
       "sourceSha256": "fcac077f3b4d2b9e62a0a7e9db0167ef564424416a5d8ca9c85e773c9f5340f0",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "headerless-positional-rows"
     },
     {
       "name": "TitanScalingInfo_C",
       "sourceSha256": "f1c6db9fe1032363a23d28ffb5f72e5e09600b256cb028ebf22b9f29d31efece",
+      "route": "core-reference",
       "status": "imported",
-      "route": "core-reference"
+      "kind": "data-table"
     },
     {
       "name": "AnimationFlags",
       "sourceSha256": "6ea1ea15c4c8094d42e7137c4ccd54eed63067f4796a0f7ecd6c4d359ca2a92f",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "headerless-positional-rows"
     },
     {
       "name": "MinigameFishingDerbyXPInfo",
       "sourceSha256": "2b32ee9f5922909368af9064d52e18c5bc2ca423e327013db11bad3a85ae40fe",
+      "route": "V01-V02",
       "status": "imported",
-      "route": "V01-V02"
+      "kind": "data-table"
     },
     {
       "name": "AnimationFlags",
       "sourceSha256": "fcac077f3b4d2b9e62a0a7e9db0167ef564424416a5d8ca9c85e773c9f5340f0",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "headerless-positional-rows"
     },
     {
       "name": "Tritopus_129_130_131",
       "sourceSha256": "21d3bcf73c1a9be6e34af54b258add0fb6a0b525e20ca9abfa35ee26fa6f2948",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "binary-resource"
     },
     {
       "name": "HolidayEventTypeInfo",
       "sourceSha256": "92e0df566c55f9dccba5dd6ae3b58be7e7c3811f226d1d3d447908f5e652ae38",
+      "route": "V01-V02",
       "status": "imported",
-      "route": "V01-V02"
+      "kind": "data-table"
     },
     {
       "name": "BallOfFury_089_090_091",
       "sourceSha256": "b689fabca10c1b924e85ef21c6653bd47c857d2e9e990721fcff37c231795b62",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "binary-resource"
     },
     {
       "name": "BillingMode",
       "sourceSha256": "7b15cfeef90aebae19207b130175fbc1726b66f7d42d105abc0426cee002ba92",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "json-document"
     },
     {
       "name": "LocalizationInfo_Japanese",
       "sourceSha256": "12a8ef9b14e83fd24b431ee9974068745735df4de16ddf4bee04da5e00dbecdd",
-      "status": "not-imported",
-      "route": "V05"
+      "route": "V05",
+      "status": "localization-indexed",
+      "kind": "localization-strings"
     },
     {
       "name": "Flower_026_027_028_029",
       "sourceSha256": "c4d29f1831c38d1c01c0fd1e890480bea8ca8e37a75871f576bd1d758810c7dd",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "binary-resource"
     },
     {
       "name": "AnniversaryTournamentRankRewardInfo",
       "sourceSha256": "f574ff2c34fdb80f1a3e5b12ba00a87f417410b34de0540707d2494bf08ea3fa",
+      "route": "V01-V02",
       "status": "imported",
-      "route": "V01-V02"
+      "kind": "data-table"
     },
     {
       "name": "AnimationFlags",
       "sourceSha256": "969c21741077e7716c589c1d1ab39dc72641e709b18f48955ac49b456d712cd6",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "headerless-positional-rows"
     },
     {
       "name": "RockFruit_030_031_032",
       "sourceSha256": "fa12e4f4c141838add4fdbe93c6340767aae751ba27d5145ac6ec17b0358afad",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "binary-resource"
     },
     {
       "name": "LocalizationInfo_German",
       "sourceSha256": "6e21ec2351ceaaa52ac7abb9fb8424673d880b18a23b6476c304928b1d4971b4",
-      "status": "not-imported",
-      "route": "V05"
+      "route": "V05",
+      "status": "localization-indexed",
+      "kind": "localization-strings"
     },
     {
       "name": "Doppio_049_050_51",
       "sourceSha256": "4041fc60dc8438e8755c247b03a2d8bdff10a05ca060eab8c7554528c86e0599",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "binary-resource"
     },
     {
       "name": "ExplosionLWF",
       "sourceSha256": "361631786a219018d0c77bd19a6027749bc36242d24a6223d643f5e15b0ea2c4",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "binary-resource"
     },
     {
       "name": "ChallengeTournamentArtifactPools",
       "sourceSha256": "a3fde4fbeb9c8dfbc6f0cf0075c6fbea19988d1ac39bca3d50d637edcf003d34",
+      "route": "M08",
       "status": "imported",
-      "route": "M08"
+      "kind": "data-table"
     },
     {
       "name": "MinigameHuntingRarityInfo",
       "sourceSha256": "4918326c2891e0d7fef6c531ebcffe32ebfe9619ecce54aba6bf6dd5285bb6ed",
+      "route": "V01-V02",
       "status": "imported",
-      "route": "V01-V02"
+      "kind": "data-table"
     },
     {
       "name": "Player",
       "sourceSha256": "a4ae76691f9b3158d758d08c8b6b2cf81440e890b256dbd9a1696dc7a7ea0446",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "binary-resource"
     },
     {
       "name": "Abominable_146",
       "sourceSha256": "696b218cc7aca592860597accf3524c0ef77806bea4f68ee9b00f4b9781dc631",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "binary-resource"
     },
     {
       "name": "Woody_046_047_048",
       "sourceSha256": "13d3617d4e5b1ba3bf1b40faae7b27cfcda311c25c1bde1970a3e4036b01c7c2",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "binary-resource"
     },
     {
       "name": "ClanShipCannon",
       "sourceSha256": "bef5bc8342cdb82a0e39522c42e4f5436508b44f2c74c5480ced83dfb3c22c7b",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "binary-resource"
     },
     {
       "name": "Equipment",
       "sourceSha256": "4cc128ae4a45f70598d744045c327001bfc816c7656e8ed0d1b68e4f89659f07",
-      "status": "not-imported",
-      "route": "core-reference"
+      "route": "core-reference",
+      "status": "not-a-data-table",
+      "kind": "binary-resource"
     },
     {
       "name": "EndgameSeasonArtifactCostInfo",
       "sourceSha256": "759e1c9bf81cf6ee779ceff4e4a7e70edc25efa6251b51c5afd1846da92c7a3a",
+      "route": "L05",
       "status": "imported",
-      "route": "L05"
+      "kind": "data-table"
     },
     {
       "name": "AnimationFlags",
       "sourceSha256": "5d6f3e74074949058a58ad851bbcfb307d32f1701152dab8171fb4cbc01edeee",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "headerless-positional-rows"
     },
     {
       "name": "MinigameClanPrestigeGameRewardInfo",
       "sourceSha256": "686341bb36f50eb21209688682f1299e3537ce9c840359eb1e0d0bb026a486e2",
+      "route": "V01-V02",
       "status": "imported",
-      "route": "V01-V02"
+      "kind": "data-table"
     },
     {
       "name": "BackgroundCycleInfo",
       "sourceSha256": "a1706fe9bd7903406d2e0c5c96642d8fa86d3f4d8cbfd65fa640dff66ea955d4",
+      "route": "needs-manual-triage",
       "status": "imported",
-      "route": "needs-manual-triage"
+      "kind": "data-table"
     },
     {
       "name": "HolidayEventBombGameLevelInfo",
       "sourceSha256": "8a2d6969220ddb9a55302e5b57d2c99f0897bd1dd0398a066e7f6ca2142a5209",
+      "route": "V01-V02",
       "status": "imported",
-      "route": "V01-V02"
+      "kind": "data-table"
     },
     {
       "name": "AnimationFlags",
       "sourceSha256": "969c21741077e7716c589c1d1ab39dc72641e709b18f48955ac49b456d712cd6",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "headerless-positional-rows"
     },
     {
       "name": "MinigameBallDropSoloContributionRewards",
       "sourceSha256": "d6b7eaa10fdaddcacc7e0b7ea70a001eb1774ad87681c44d1a11c84f5a9302df",
+      "route": "V01-V02",
       "status": "imported",
-      "route": "V01-V02"
+      "kind": "data-table"
     },
     {
       "name": "AnimationFlags",
       "sourceSha256": "3436c587cdbcee9fb998c4e75af637946295a103c3e8a5b8c78529057505ea4e",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "headerless-positional-rows"
     },
     {
       "name": "ChallengeTournamentRewardInfo",
       "sourceSha256": "1bc1dc8ff3db2de98a884e4554817441ac33a1c66142ac8db999e0ad2874080e",
+      "route": "M08",
       "status": "imported",
-      "route": "M08"
+      "kind": "data-table"
     },
     {
       "name": "AnimationFlags",
       "sourceSha256": "5d6f3e74074949058a58ad851bbcfb307d32f1701152dab8171fb4cbc01edeee",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "headerless-positional-rows"
     },
     {
       "name": "ChallengeTournamentInfo",
       "sourceSha256": "05fc7bac3ef9ca7c2fc7f8a2a99d50e75ce454c935a551b311c7bffe7a4e8796",
+      "route": "M08",
       "status": "imported",
-      "route": "M08"
+      "kind": "data-table"
     },
     {
       "name": "TrackFlags_01",
       "sourceSha256": "d094217607d6124b8b12ef9ebf237ea0206b89153f162dbbfc40d48485fcd813",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "headerless-positional-rows"
     },
     {
       "name": "PetParadiseLevelInfo",
       "sourceSha256": "31913ab5bda387881426c355796c30b17c70d1091af5fb99e6a1a2c5058e22e8",
+      "route": "I06",
       "status": "imported",
-      "route": "I06"
+      "kind": "data-table"
     },
     {
       "name": "MinigameHuntingRewardInfo",
       "sourceSha256": "37c42ec6715af4cdbee445ac7736a020a3afabe5038a6a84c190fb7190c77d51",
+      "route": "V01-V02",
       "status": "imported",
-      "route": "V01-V02"
+      "kind": "data-table"
     },
     {
       "name": "Vamp_014_015_016",
       "sourceSha256": "61c5fc22f958c59a54ef02c12787c9175becea1fd8bbf2b7097861936a51fbe5",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "binary-resource"
     },
     {
       "name": "AnimationFlags",
       "sourceSha256": "5d6f3e74074949058a58ad851bbcfb307d32f1701152dab8171fb4cbc01edeee",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "headerless-positional-rows"
     },
     {
       "name": "RaidAreaInfo",
       "sourceSha256": "0c69cee37f42ddced69b7f4c845b398ded84cf7c53248a743c3ca84eaf0d7a7a",
+      "route": "M04-M06",
       "status": "imported",
-      "route": "M04-M06"
+      "kind": "data-table"
     },
     {
       "name": "AnimationFlags",
       "sourceSha256": "969c21741077e7716c589c1d1ab39dc72641e709b18f48955ac49b456d712cd6",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "headerless-positional-rows"
     },
     {
       "name": "Oger_044_045",
       "sourceSha256": "ba220132f5497f05c197d19728ac234dc7f8e4695ba1b6255ceece904815036d",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "binary-resource"
     },
     {
       "name": "TitanResearchInfo",
       "sourceSha256": "2f73df63b295b7f48ab6b7a09ecafe99dd1af1005f1adb1ed5d0c7622e322cdd",
+      "route": "needs-manual-triage",
       "status": "imported",
-      "route": "needs-manual-triage"
+      "kind": "data-table"
     },
     {
       "name": "AnimationFlags",
       "sourceSha256": "78a4339b46f0f67ce34e1b25bd92a58a0d5f4f9dc6ebc4d5a3c3605b9ea5b8b0",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "headerless-positional-rows"
     },
     {
       "name": "SupportInfo",
       "sourceSha256": "411a216c01785646069eada08cf83dc4bab6d3a9a81a0c913aeb7557570bc215",
+      "route": "needs-manual-triage",
       "status": "imported",
-      "route": "needs-manual-triage"
+      "kind": "data-table"
     },
     {
       "name": "texture",
       "sourceSha256": "4a3a6bd6ac590a655dd83d3c271e6952a358293385ea26ef4b5e403973ca0e8a",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "json-document"
     },
     {
       "name": "LocalizationInfo_English",
       "sourceSha256": "2e27c175249142578985582851b67c0589cef1645578a3702e998922520acd72",
-      "status": "not-imported",
-      "route": "V05"
+      "route": "V05",
+      "status": "localization-indexed",
+      "kind": "localization-strings"
     },
     {
       "name": "texture",
       "sourceSha256": "8ab1cc539985ad73aae48a7aef515755f6d7ffc9acdd25958c63c760acc5504b",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "json-document"
     },
     {
       "name": "EndgameSeasonRewardInfo_1",
       "sourceSha256": "39f9595205e53b5bcac9217fca50424b2345a0a66e43179c89e1085e99acab27",
+      "route": "L05",
       "status": "imported",
-      "route": "L05"
+      "kind": "data-table"
     },
     {
       "name": "MinigameBallDropUpgradeInfo",
       "sourceSha256": "5f53bdc911773521307324237c06c41c6f5992d6df6f45e2b72c5bd8be2f8444",
+      "route": "V01-V02",
       "status": "imported",
-      "route": "V01-V02"
+      "kind": "data-table"
     },
     {
       "name": "AdChestInfo",
       "sourceSha256": "423c6bdf82456c309acbf1f7c3fe8d33170af4c4dd3562cbbf4195c8547376ea",
+      "route": "L02",
       "status": "imported",
-      "route": "L02"
+      "kind": "data-table"
     },
     {
       "name": "TitanScalingInfo_A",
       "sourceSha256": "2b165c42479c87ac1e7a85e2707a1ac688c686ab38eeda7dada2b9f4f0f7fe49",
+      "route": "core-reference",
       "status": "imported",
-      "route": "core-reference"
+      "kind": "data-table"
     },
     {
       "name": "TutorialEventInfo_B",
       "sourceSha256": "3b8784e524b0e76a38320fd5e975df17c24ae0f09746487d173b537fd7b882af",
+      "route": "needs-manual-triage",
       "status": "imported",
-      "route": "needs-manual-triage"
+      "kind": "data-table"
     },
     {
       "name": "StickerInfo",
       "sourceSha256": "9fddfe3602654264bc3dd81be275a1d139f08018c59378bce39d36f06c247f14",
+      "route": "needs-manual-triage",
       "status": "imported",
-      "route": "needs-manual-triage"
+      "kind": "data-table"
     },
     {
       "name": "TrackFlags",
       "sourceSha256": "1f2d1dd4e29e80114c8d00f6a61224d0dda78b292827f08586008b26626a941e",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "headerless-positional-rows"
     },
     {
       "name": "AnimationFlags",
       "sourceSha256": "5d6f3e74074949058a58ad851bbcfb307d32f1701152dab8171fb4cbc01edeee",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "headerless-positional-rows"
     },
     {
       "name": "RaidTicketBoostInfo",
       "sourceSha256": "13a1b28600884d192bb705584568f0d11dfb2357d3777615067bf81263652e7f",
+      "route": "M04-M06",
       "status": "imported",
-      "route": "M04-M06"
+      "kind": "data-table"
     },
     {
       "name": "ClanShip",
       "sourceSha256": "46cdd0d16a37a27c8a52ec8b9cba543f84a756b285fe29ffc245fccedb7f784c",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "binary-resource"
     },
     {
       "name": "NinjaStar_147",
       "sourceSha256": "adbd747834014a87a207cf4ee1ed74830f4e4a27f61ea9d605ff501f9dc43a38",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "binary-resource"
     },
     {
       "name": "TrackFlags_06",
       "sourceSha256": "2415dda1a45fd65c10ea0ecaee7bc93bd4e98cdc22e11d3393b32b0b88cd55fb",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "headerless-positional-rows"
     },
     {
       "name": "RaidSkillCardCostInfo",
       "sourceSha256": "6861b9fc25ee9341bbda10deeb4eb0c40b1834162dfc0700cdd6c7a2bc001c76",
+      "route": "M04-M06",
       "status": "imported",
-      "route": "M04-M06"
+      "kind": "data-table"
     },
     {
       "name": "AnimationFlags",
       "sourceSha256": "fcac077f3b4d2b9e62a0a7e9db0167ef564424416a5d8ca9c85e773c9f5340f0",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "headerless-positional-rows"
     },
     {
       "name": "EndgameSeasonArtifactInfo",
       "sourceSha256": "c35b92096ca619786885bcf20775e89f931ee58423cd83a1a4cd7c54d18ffe17",
+      "route": "L05",
       "status": "imported",
-      "route": "L05"
+      "kind": "data-table"
     },
     {
       "name": "Chesterson",
       "sourceSha256": "af08d29187cf3a3bef991f9fc1c36d42d2214cecce3100c69571907fbd1a9e2b",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "binary-resource"
     },
     {
       "name": "MinigameDigsiteTrinketInfo",
       "sourceSha256": "90d2c6955b330078373cedec84b972e6a1d5c354f2436601ea96bb94f15d9e40",
+      "route": "V01-V02",
       "status": "imported",
-      "route": "V01-V02"
+      "kind": "data-table"
     },
     {
       "name": "ShopInfoServerTest_copy",
       "sourceSha256": "b69e8de0096d37d715a161de5bfc2e0ca7c9c86c770a980691c53f0e478aa85f",
-      "status": "not-imported",
-      "route": "L02"
+      "route": "L02",
+      "status": "sample-indexed",
+      "kind": "shop-server-response-sample"
     },
     {
       "name": "Swipe",
       "sourceSha256": "1d880c38fb9317e39d6d5cadd8164d9646506508a8601ba70dfe9b588660efb3",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "binary-resource"
     },
     {
       "name": "RaidMasterTierRewardInfo",
       "sourceSha256": "417ccf157d364cfdf175ff6a5d580f52cbda95e3f68cd170351ae5d24c1a3b03",
+      "route": "M04-M06",
       "status": "imported",
-      "route": "M04-M06"
+      "kind": "data-table"
     },
     {
       "name": "TrackFlags_10",
       "sourceSha256": "789c32a8ce6788a77ef105b42dbcaf2c6bca2b6f4519ec05d33d10ad9569e38d",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "headerless-positional-rows"
     },
     {
       "name": "PlayerTitleInfo",
       "sourceSha256": "cf241bc88197191d563c2409de9373a455f4fa9b528d0ccdb9626bfa17bd45bc",
+      "route": "V03",
       "status": "imported",
-      "route": "V03"
+      "kind": "data-table"
     },
     {
       "name": "Tomatoman_059_060_061",
       "sourceSha256": "3766a3a17b07f217b61c4ba7f7ee3d5bde082171fb880004bd30097e623fda49",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "binary-resource"
     },
     {
       "name": "PetCage",
       "sourceSha256": "119bfa47cf35be979b711685a401c94149aa11b9bb110693b082a5d7a15ade10",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "binary-resource"
     },
     {
       "name": "QTEInfo",
       "sourceSha256": "85ff502a188d9410d82254f7ea4eaf3f69ccb25b450151e85684364939a2dabf",
+      "route": "needs-manual-triage",
       "status": "imported",
-      "route": "needs-manual-triage"
+      "kind": "data-table"
     },
     {
       "name": "Mummy_011_012_013",
       "sourceSha256": "d61a914015d9b62aa06b86555c19a33d2b3d14a714569a43d87bd9ac37c5c79e",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "binary-resource"
     },
     {
       "name": "HelperInfo",
       "sourceSha256": "03eb66e09e0bd1e1556f4cfd6a8d45e12702c3afdcba6a9985d02122a12d8259",
+      "route": "core-reference",
       "status": "imported",
-      "route": "core-reference"
+      "kind": "data-table"
     },
     {
       "name": "FontMiniBossAsian",
       "sourceSha256": "149ec39c3d57c12e043453c614769a300af81c5a21e36e3d906a84cb971ee820",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "bitmap-font-descriptor"
     },
     {
       "name": "Walker_017_018_019",
       "sourceSha256": "b4e00b88fc0983c736e66cf80c8bfafeda77c142633e111be9aade673ee2e0f1",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "binary-resource"
     },
     {
       "name": "AnimationFlags",
       "sourceSha256": "a4225bbe106ec9624649667df798e1306f0e1863d2a6f982876da1b1dbae0f01",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "headerless-positional-rows"
     },
     {
       "name": "FairyJar",
       "sourceSha256": "ee7a2080aac29804218644ddd0d929db50f25efd1954ab37ebbfacc0eba8ccb6",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "binary-resource"
     },
     {
       "name": "MinigameSoloPrestigeGameRewardInfo",
       "sourceSha256": "8b003e2109b51a1bd273cb4b23fc0d188125d6a238939bc4dfde71bc04725c34",
+      "route": "V01-V02",
       "status": "imported",
-      "route": "V01-V02"
+      "kind": "data-table"
     },
     {
       "name": "texture",
       "sourceSha256": "ab89d49ab56363cf470e9b89ddebccdb17a7f16b5f325fece0aa802b727f3fe2",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "json-document"
     },
     {
       "name": "FontBigBossAsian",
       "sourceSha256": "b69078fb4068bf11646c67072457a35d2e431d2be919e831ebe868791023603a",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "bitmap-font-descriptor"
     },
     {
       "name": "AnimationFlags",
       "sourceSha256": "921ece83909d7b1941069e4bbe120b3005a01b8fe6c131545d95de2f75a410bf",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "headerless-positional-rows"
     },
     {
       "name": "SerpentFace_106_107_108_109_110_111",
       "sourceSha256": "e0e51a1e8cdaa90a54007ff4e179ac93650e8f7f754ee6e7d9aa789eb4e131a7",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "binary-resource"
     },
     {
       "name": "AnimationFlags",
       "sourceSha256": "5d6f3e74074949058a58ad851bbcfb307d32f1701152dab8171fb4cbc01edeee",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "headerless-positional-rows"
     },
     {
       "name": "AnimationFlags",
       "sourceSha256": "fcac077f3b4d2b9e62a0a7e9db0167ef564424416a5d8ca9c85e773c9f5340f0",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "headerless-positional-rows"
     },
     {
       "name": "SpikyEye_120_121_122",
       "sourceSha256": "8dde85ef92fa307ccb8a815d403aa145e9dc9594f2b6a104338eb9ff77bcb2d2",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "binary-resource"
     },
     {
       "name": "MinigameBallDropRewardInfo",
       "sourceSha256": "40584b7997d5d37a86fe2ac74eb9a4fe9cef3626951f2256ecb1671dbaab309c",
+      "route": "V01-V02",
       "status": "imported",
-      "route": "V01-V02"
+      "kind": "data-table"
     },
     {
       "name": "Manni",
       "sourceSha256": "3c5ca129f3c98ef7c4337a0f420e3f198c5acb608e0a2a209ed6b6c09c05cb06",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "binary-resource"
     },
     {
       "name": "remote_config_defaults",
       "sourceSha256": "31a0c44f84fe23f6525c2912d392677f7c92d7292119ee085c0b3609b96771a9",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "json-document"
     },
     {
       "name": "DungeonBossLWF",
       "sourceSha256": "80176553b7e38e9a63e4a41b666cca770979605c081d50dc67aab7d75391388f",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "binary-resource"
     },
     {
       "name": "NewPrizeInfoDoc",
       "sourceSha256": "f6a610561ad2daeda0644b39346d309a3c0d7ab540a7a1f354fc13eac198c967",
+      "route": "L02",
       "status": "imported",
-      "route": "L02"
+      "kind": "data-table"
     },
     {
       "name": "GlobalEventInfo",
       "sourceSha256": "8be05fbda8c021656bc7884ac5af40acbe0569a10050d2a4b6fe36dfdc00c4ec",
+      "route": "V01-V02",
       "status": "imported",
-      "route": "V01-V02"
+      "kind": "data-table"
     },
     {
       "name": "ShopBundleInfo",
       "sourceSha256": "e1d88d27c91b1bb165c123fb6efb0528edf621fa627a82dae4e865a05bfe999b",
+      "route": "L02",
       "status": "imported",
-      "route": "L02"
+      "kind": "data-table"
     },
     {
       "name": "RaidFastCompletionBonusStagesInfo",
       "sourceSha256": "834f143131d1ff79b7d3190c6e0246108e7e8d7903ac2cf8755d04bca39f78bd",
+      "route": "M04-M06",
       "status": "imported",
-      "route": "M04-M06"
+      "kind": "data-table"
     },
     {
       "name": "ArtifactCostInfo_A",
       "sourceSha256": "1a4a86cd0be268bb8d9f41cdac1f4f4ae93c6171268bded6f257919ddecf82dc",
+      "route": "core-reference",
       "status": "imported",
-      "route": "core-reference"
+      "kind": "data-table"
     },
     {
       "name": "MinigameDigsiteLevelInfo",
       "sourceSha256": "f12087916156a77d72ca51f5c3e045a14f5d8c0ab56ada01a4e531a8f2f30234",
+      "route": "V01-V02",
       "status": "imported",
-      "route": "V01-V02"
+      "kind": "data-table"
     },
     {
       "name": "AnimationFlags",
       "sourceSha256": "581a9439ba13ac9ecb5e76bc2bd7be7cc67af7c157ee18aac7274c34323eec6b",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "headerless-positional-rows"
     },
     {
       "name": "MinigameHuntingSoloContributionRewards",
       "sourceSha256": "de0eebd2551fd89daa19dd36f41c0f66004d02bb64c5031b27fa9550d63bd760",
+      "route": "V01-V02",
       "status": "imported",
-      "route": "V01-V02"
+      "kind": "data-table"
     },
     {
       "name": "AnimationFlags",
       "sourceSha256": "969c21741077e7716c589c1d1ab39dc72641e709b18f48955ac49b456d712cd6",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "headerless-positional-rows"
     },
     {
       "name": "Octaman_001_002_003",
       "sourceSha256": "89df8236d716646aaf10af2aae5932a50dc41261d37f62e8989030ce7ba35b10",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "binary-resource"
     },
     {
       "name": "AnimationFlags",
       "sourceSha256": "fcac077f3b4d2b9e62a0a7e9db0167ef564424416a5d8ca9c85e773c9f5340f0",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "headerless-positional-rows"
     },
     {
       "name": "SkillTreeInfo2.0",
       "sourceSha256": "a44b77b01564f140ae8753d1cbd102a862ed054e35e643217c5f6c88b1bdaf4c",
+      "route": "core-reference",
       "status": "imported",
-      "route": "core-reference"
+      "kind": "data-table"
     },
     {
       "name": "HolidayEventGlobalRaidPartDestroyOrder",
       "sourceSha256": "0d47ef1a718629f01a1426f2cc12aaec592bb2c291bacd3955c5d54f3bd7991d",
+      "route": "V01-V02",
       "status": "imported",
-      "route": "V01-V02"
+      "kind": "data-table"
     },
     {
       "name": "AvatarFrameInfo",
       "sourceSha256": "e0a3596ba10541b46465688c4a40d19061667c89456058e139289a61a07aa7e3",
+      "route": "V03",
       "status": "imported",
-      "route": "V03"
+      "kind": "data-table"
     },
     {
       "name": "GameIntro",
       "sourceSha256": "74eb17d75d4d4f69426fee450ee17e9463b53d15fbb77c8a8c9aaa84b5ea177b",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "binary-resource"
     },
     {
       "name": "AnimationFlags",
       "sourceSha256": "5d6f3e74074949058a58ad851bbcfb307d32f1701152dab8171fb4cbc01edeee",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "headerless-positional-rows"
     },
     {
       "name": "SummonLevelTitanCardRateInfo",
       "sourceSha256": "0b918da015eb0c49a56fd80144b603139a84c9ab0c5dfccf160feb8de694eab2",
+      "route": "needs-manual-triage",
       "status": "imported",
-      "route": "needs-manual-triage"
+      "kind": "data-table"
     },
     {
       "name": "AnimationFlags",
       "sourceSha256": "969c21741077e7716c589c1d1ab39dc72641e709b18f48955ac49b456d712cd6",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "headerless-positional-rows"
     },
     {
       "name": "AnimationFlags",
       "sourceSha256": "969c21741077e7716c589c1d1ab39dc72641e709b18f48955ac49b456d712cd6",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "headerless-positional-rows"
     },
     {
       "name": "LineBreaking_Leading_Characters",
       "sourceSha256": "62d3f4d5f64aaf885692d2d13a8313f6918e6e4c5aeb3990a43f614652bfd89c",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "single-line-character-list"
     },
     {
       "name": "AnimationFlags",
       "sourceSha256": "969c21741077e7716c589c1d1ab39dc72641e709b18f48955ac49b456d712cd6",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "headerless-positional-rows"
     },
     {
       "name": "ProfileBackgroundInfo",
       "sourceSha256": "40e3f49aab0ad3d942228de34a51906cde4d08427996b3788c3b57d7d402fe04",
+      "route": "V03",
       "status": "imported",
-      "route": "V03"
+      "kind": "data-table"
     },
     {
       "name": "LocalizationInfo_ChineseSimp",
       "sourceSha256": "5ee08bb02cf13b69128a38e6728ddd4f316a4e1c7cdbe5ac1300253a8ccb6763",
-      "status": "not-imported",
-      "route": "V05"
+      "route": "V05",
+      "status": "localization-indexed",
+      "kind": "localization-strings"
     },
     {
       "name": "ShopInfo",
       "sourceSha256": "6277d63291cdea463f960a4f63916fc678f7f183a9f03e2b58c6061ac6c6acc6",
-      "status": "not-imported",
-      "route": "L02"
+      "route": "L02",
+      "status": "sample-indexed",
+      "kind": "shop-server-response-sample"
     },
     {
       "name": "MinigameEventQuestInfo",
       "sourceSha256": "fd2a5ebe94f4df924335e8797360df43cbdf9003d65dc8d67c4811e8c534792d",
+      "route": "V01-V02",
       "status": "imported",
-      "route": "V01-V02"
+      "kind": "data-table"
     },
     {
       "name": "MushSpider_075_076_077",
       "sourceSha256": "1bd3a486e78c2d77eb1918fec9c9e325c9a18c9d26cc15345b1e8fa8d3f56154",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "binary-resource"
     },
     {
       "name": "AnimationFlags",
       "sourceSha256": "3436c587cdbcee9fb998c4e75af637946295a103c3e8a5b8c78529057505ea4e",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "headerless-positional-rows"
     },
     {
       "name": "LocalizationInfoLoadingScene",
       "sourceSha256": "6e847b22e15bf028bfcdced6dc107fc5de2a7dfd93e2ef4bab1a58fcf821cb3c",
-      "status": "not-imported",
-      "route": "V05"
+      "route": "V05",
+      "status": "localization-indexed",
+      "kind": "localization-strings"
     },
     {
       "name": "LocalizationInfo_French",
       "sourceSha256": "64cc92041abe32a39a5c80760606a55b8fd59974e52f4d0014a6c960c0754cc5",
-      "status": "not-imported",
-      "route": "V05"
+      "route": "V05",
+      "status": "localization-indexed",
+      "kind": "localization-strings"
     },
     {
       "name": "TrackFlags_05",
       "sourceSha256": "5cea20016a5cb3cdbef5233cedcaa21ab5b6f6e71ca64df613b8791c86ee9247",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "headerless-positional-rows"
     },
     {
       "name": "Knight_004_005_006",
       "sourceSha256": "7c9ac1b6592e910120371d9e0a4ad4d01ef1e7802e4a93aed66863e885f82103",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "binary-resource"
     },
     {
       "name": "BackgroundInfo",
       "sourceSha256": "e25aeae086bfeefa1df91d7ea54b734adac45ca790cae49aef2ba533d0b83e70",
+      "route": "needs-manual-triage",
       "status": "imported",
-      "route": "needs-manual-triage"
+      "kind": "data-table"
     },
     {
       "name": "TrackFlags_08",
       "sourceSha256": "8a93cf85d2db4c611c1bb81a5934570f4fdd2f0afdfca0e94a91a7ecea715c26",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "headerless-positional-rows"
     },
     {
       "name": "AnimationFlags",
       "sourceSha256": "8661b1ddf85d0f7d7f27794d270e86556bda93aaa5624c35195b171349a3adab",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "headerless-positional-rows"
     },
     {
       "name": "HolidayEventCurrencyAmounts",
       "sourceSha256": "7088cf2385d08b1afefbc157837627d932fa06599f95e9cd3ae702d6c1b6b078",
+      "route": "V01-V02",
       "status": "imported",
-      "route": "V01-V02"
+      "kind": "data-table"
     },
     {
       "name": "AnimationFlags",
       "sourceSha256": "969c21741077e7716c589c1d1ab39dc72641e709b18f48955ac49b456d712cd6",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "headerless-positional-rows"
     },
     {
       "name": "Golem_",
       "sourceSha256": "1f1eb8474f4f290678572b7653929b383b620338260498b0424277a1d84ea10a",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "binary-resource"
     },
     {
       "name": "TitanScalingInfo_B",
       "sourceSha256": "b79dbbc73906d51d6c5ce65ebff120e48029844a61fdb72dcf9614e3b314cb46",
+      "route": "core-reference",
       "status": "imported",
-      "route": "core-reference"
+      "kind": "data-table"
     },
     {
       "name": "EquipmentTest",
       "sourceSha256": "4a834448af0b75777d8494ebd23fa65607b03ebf8556829184aff04e6adf1ac9",
-      "status": "not-imported",
-      "route": "core-reference"
+      "route": "core-reference",
+      "status": "quarantined",
+      "kind": "recorded-with-reason"
     },
     {
       "name": "SuperChallengeTournamentRewardInfo",
       "sourceSha256": "3cd320af7eb262c7eeacc4a7ee2de969fbf790248311f736b57d9c63c6527874",
+      "route": "M08",
       "status": "imported",
-      "route": "M08"
+      "kind": "data-table"
     },
     {
       "name": "AnimationFlags",
       "sourceSha256": "b92753ed1de3bd62b464348803c85adff7e091e0ef9eb38046b5acfe42d5675c",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "headerless-positional-rows"
     },
     {
       "name": "PerformanceTestRunInfo",
       "sourceSha256": "238b031badfbcfc0b962a9b29f4eaf2db039ceef806ff2a2ff7c67e059ee9d4b",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "json-document"
     },
     {
       "name": "AnimationFlags",
       "sourceSha256": "6062e794b567901c36b6f1853d2e27775259d48890ba5c95bdac0c82c0c119ff",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "headerless-positional-rows"
     },
     {
       "name": "texture",
       "sourceSha256": "3d6b4523ad4b3693150c9f7852c563097a18c24f483caa8fe0b017878767d1d8",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "json-document"
     },
     {
       "name": "RaidLoyaltyInfo",
       "sourceSha256": "af9b0892fc27753e0be49f0b2cdd13ce6a175d99e1c0d8b9db4d4b2fffb87b98",
+      "route": "M04-M06",
       "status": "imported",
-      "route": "M04-M06"
+      "kind": "data-table"
     },
     {
       "name": "AnimationFlags",
       "sourceSha256": "8488f39d64e39655cdafef3919b031a30419afb70bd97e6d0f1c3f7987447bd3",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "headerless-positional-rows"
     },
     {
       "name": "BossGigaPet_136",
       "sourceSha256": "8e5fbd6ec55f303838589e52a96602dece29fc1401d0bcddf83609d5096df802",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "binary-resource"
     },
     {
       "name": "AnimationFlags",
       "sourceSha256": "97b7e4403cba262c9bfa6443601984aa280347e75179135df3ee9049f562d069",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "headerless-positional-rows"
     },
     {
       "name": "Cannon",
       "sourceSha256": "46cdd0d16a37a27c8a52ec8b9cba543f84a756b285fe29ffc245fccedb7f784c",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "binary-resource"
     },
     {
       "name": "EndgameSeasonRewardInfo",
       "sourceSha256": "fe1b9e6429360a23f9ea1667211160cd87424e1e2cdd437d8b68edc90ed13c56",
+      "route": "L05",
       "status": "imported",
-      "route": "L05"
+      "kind": "data-table"
     },
     {
       "name": "HelperSkillInfo",
       "sourceSha256": "5a712cb4d7e985e5447e7641b4454b61700d9eebf28599903532d3cc0d40fcbc",
+      "route": "core-reference",
       "status": "imported",
-      "route": "core-reference"
+      "kind": "data-table"
     },
     {
       "name": "GH1000_054_055",
       "sourceSha256": "4560a27e9a7510a36f6412ccceb54bf7dab227c2389764d48b3ca0fbf1f5c04c",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "binary-resource"
     },
     {
       "name": "AnimationFlags",
       "sourceSha256": "9b0d153c4591e8bade19dc7eb2f254cf31f7b3739837ed8c36d4915abd014752",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "headerless-positional-rows"
     },
     {
       "name": "LocalizationInfo_Turkish",
       "sourceSha256": "02bc28787765fdb065dedc4393ffad0ac175e41481dcff69c4d5169339f14110",
-      "status": "not-imported",
-      "route": "V05"
+      "route": "V05",
+      "status": "localization-indexed",
+      "kind": "localization-strings"
     },
     {
       "name": "RaidMasterTierFastCompletionBonusStagesInfo",
       "sourceSha256": "5da58b3df1367e60f7e225299f25d001f8eb1f4a2b0caae7d3243b275a74788a",
+      "route": "M04-M06",
       "status": "imported",
-      "route": "M04-M06"
+      "kind": "data-table"
     },
     {
       "name": "TitanCardInfo",
       "sourceSha256": "a59ce2eadb8b1f90ff9a3a6834277a3017a0b97094e624057992111db3e22e2f",
+      "route": "needs-manual-triage",
       "status": "imported",
-      "route": "needs-manual-triage"
+      "kind": "data-table"
     },
     {
       "name": "AnimationFlags",
       "sourceSha256": "3a128b9c1abd104c963f1e927175a0bce919dbea8caf8df0a0cc7f6e74c3b5a2",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "headerless-positional-rows"
     },
     {
       "name": "RaidEnemyEnchantmentInfo",
       "sourceSha256": "a63cc704527c33906fac73c3d6e5adb065c46af1fdb49e6f1d97791895af6496",
+      "route": "M04-M06",
       "status": "imported",
-      "route": "M04-M06"
+      "kind": "data-table"
     },
     {
       "name": "DualPet",
       "sourceSha256": "7a485baf376f6320c25c0e286d2df09e2abc62879c289b1c01da923807a84bec",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "binary-resource"
     },
     {
       "name": "GemstoneBonusTypeScalingInfo",
       "sourceSha256": "45910b6ae5418f955bde16d5412434f6a82ac06bb8d9c5615cef51f80b49ed2c",
+      "route": "L04",
       "status": "imported",
-      "route": "L04"
+      "kind": "data-table"
     },
     {
       "name": "AnimationFlags",
       "sourceSha256": "c88a78530f60b2273a9d092b402363747c68245211658d1744c293784e645390",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "headerless-positional-rows"
     },
     {
       "name": "LineBreaking_Following_Characters",
       "sourceSha256": "3a73e5ffe2510756dd3c2e982fdc1218b4be82c6e21abde88070d6860e1bc8e6",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "single-line-character-list"
     },
     {
       "name": "ChallengeTournamentProgressionRewardInfo",
       "sourceSha256": "9fac49975aaf8905fd90c975de72996ac8e39c054602e70377454117cc03819d",
+      "route": "M08",
       "status": "imported",
-      "route": "M08"
+      "kind": "data-table"
     },
     {
       "name": "Mountain_041_042_043",
       "sourceSha256": "35c43f7bae66298f8ac16b25ffec94adf89c7d7506835df887a9f4d0e2788cae",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "binary-resource"
     },
     {
       "name": "remoteConfig",
       "sourceSha256": "f38766c99213ffc7a86e983113d8fdeeaf9450e10718c0dafeb40cb0155da55d",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "single-line-character-list"
     },
     {
       "name": "PlayerImprovementsInfo",
       "sourceSha256": "5291480ec18430081281132a3a207a7fd38ae64d9c78d65546b8109abcdabfea",
+      "route": "core-reference",
       "status": "imported",
-      "route": "core-reference"
+      "kind": "data-table"
     },
     {
       "name": "ClanDungeonShipLWF",
       "sourceSha256": "bccd691db65d4797f7718411eebed25d8638fd79f9bf176c33bd31bfd2b13933",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "binary-resource"
     },
     {
       "name": "AnimationFlags",
       "sourceSha256": "43a8719a310068b9fa1d1e163f11d27db194424b44ca2642d39f8c1d4966d4e9",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "headerless-positional-rows"
     },
     {
       "name": "AnimationFlags",
       "sourceSha256": "380946b86add35e9f14edae662e9883a5fc7e2ad9c6e394dcde8e3db0b43a6c3",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "headerless-positional-rows"
     },
     {
       "name": "AnimationFlags",
       "sourceSha256": "9833fe79a6f59d8ff952d249731eb4d5d338fb6b5b97e74a9fb3eedaa4f10d7c",
-      "status": "not-imported",
-      "route": "needs-manual-triage"
+      "route": "needs-manual-triage",
+      "status": "not-a-data-table",
+      "kind": "headerless-positional-rows"
     },
     {
       "name": "EndgameSeasonArtifactInfo_1",
       "sourceSha256": "34fa6eaa6bbf66b1eb4503fdc38565fb7f41b8aa0e985d23889584ac30aaaba0",
+      "route": "L05",
       "status": "imported",
-      "route": "L05"
+      "kind": "data-table"
     }
   ]
 }

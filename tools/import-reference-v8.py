@@ -125,6 +125,12 @@ def native_rva(text, signature):
         raise ValueError(f'native member not uniquely located: {signature}')
     return found[0]
 
+def deferred_sheet(name, reason, evidence):
+    path = next(ASSETS.glob('*_' + name + '.txt'))
+    fields, rows = parse(path)
+    return dict(table=name, status='not-imported', reason=reason, evidence=evidence,
+                sourceSha256=sha(path), sourceRows=len(rows), columns=fields, runtimeEnabled=False)
+
 def parse(path):
     reader = csv.DictReader(io.StringIO(path.read_text(encoding='utf-8-sig')))
     fields = reader.fieldnames
@@ -300,7 +306,11 @@ def main():
           rowsWithKey=sum(1 for r in scheduled_rows if r[scheduled_fields[0]]),
           noteOnlyRows=sum(1 for r in scheduled_rows if not r[scheduled_fields[0]]),
           nativeMembers=[dict(signature=m, rva=native_rva(dump_text, m)) for m in scheduled_members],
-          blockedBy='live schedule payload unavailable', runtimeEnabled=False)],
+          blockedBy='live schedule payload unavailable', runtimeEnabled=False),
+          deferred_sheet('UpdateInfo', 'release note text, not gameplay data',
+                         'Changes is free-form English release copy'),
+          deferred_sheet('EquipmentTest', 'test fixture, not shipped equipment',
+                         'none of its ItemID values exist in C_EquipmentInfo')],
           resolved=[dict(table=ENHANCEMENT_TABLE,
           reason='native-overwrite-policy-verified', evidence='enhancement-parser-evidence.json',
           historyLocation=ENHANCEMENT_TABLE+'.json#rowResolution', runtimeEnabled=False),
@@ -368,6 +378,46 @@ def main():
             role='shop-server-response-sample', runtimeEnabled=False,
             limits='test fixture shape only; not a live shop listing, price, schedule or daily delivery source'))
     write('shop-payload-samples.json', dict(version='8.2.0', packageSha256=audit['package']['sha256'], samples=samples))
+    # Localization files are translated prose. Index their keys and gaps; never copy the text in here.
+    localizations, reference_keys = [], None
+    for path in sorted(ASSETS.glob('*_Localization*.txt')):
+        name = path.name.split('_', 1)[1][:-4]
+        if sha(path) != resource_pins[path.name]:
+            raise ValueError(f'{name}: indexed resource hash mismatch')
+        text = path.read_text(encoding='utf-8-sig')
+        try:
+            payload = json.loads(text)
+            if not isinstance(payload, dict):
+                raise ValueError(f'{name}: localization payload is not a key map')
+            entry = dict(name=name, format='json-key-map', keys=len(payload))
+            if name == 'LocalizationInfo_English':
+                reference_keys = set(payload)
+        except json.JSONDecodeError:
+            fields, rows = parse(path)
+            payload = None
+            entry = dict(name=name, format='csv-per-language-columns', keys=len(rows),
+                         columns=fields, stringIds=[r[fields[0]] for r in rows])
+        entry.update(sourceSha256=sha(path), bytes=path.stat().st_size, runtimeEnabled=False)
+        localizations.append((entry, payload))
+    if reference_keys is None:
+        raise ValueError('English localization missing; key coverage cannot be measured')
+    english = dict(json.loads(next(ASSETS.glob('*_LocalizationInfo_English.txt')).read_text(encoding='utf-8-sig')))
+    localization_index = []
+    for entry, payload in localizations:
+        if payload is not None and entry['name'] != 'LocalizationInfo_English':
+            keys = set(payload)
+            entry['missingEnglishKeys'] = sorted(reference_keys - keys)
+            entry['extraKeys'] = sorted(keys - reference_keys)
+            entry['emptyValueKeys'] = sorted(k for k, v in payload.items() if not str(v).strip())
+            # An empty cell is already reported above, so "untranslated" means a real English string was kept.
+            entry['untranslatedKeys'] = sorted(k for k, v in payload.items()
+                                               if str(v).strip() and k in english
+                                               and str(v).strip() == str(english[k]).strip())
+        localization_index.append(entry)
+    write('localization-index.json', dict(version='8.2.0', packageSha256=audit['package']['sha256'],
+          referenceLanguage='LocalizationInfo_English', referenceKeys=len(reference_keys), files=localization_index,
+          role='key-coverage-index-only',
+          limits='key names and counts only; translated text is deliberately not copied into this catalog'))
     layout_path = next(ASSETS.glob('*_RaidEnemyLayout.txt'))
     if sha(layout_path) != resource_pins[layout_path.name]:
         raise ValueError('raid atlas source changed')

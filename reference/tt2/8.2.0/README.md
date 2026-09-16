@@ -2,7 +2,7 @@
 
 這是資料準備成果，尚未接入遊戲或改寫存檔。現行遊戲仍為 2.6.0／7.5 數值基準。
 
-`manifest.json` 記錄安裝包、133 張已解析表（31,451 個表內有效 ID）的 SHA-256，以及 372 個 TextAsset 的大小與雜湊。未解析的資源只列索引，不宣稱它們皆為 CSV 或已完成 schema。
+`manifest.json` 記錄安裝包、133 張已解析表（31,451 個表內有效 ID）的 SHA-256，以及 372 個 TextAsset 的大小與雜湊。372 個資源現已全部歸類：133 張表已匯入、17 個在地化檔已索引鍵、4 個商店回應樣本與 1 個圖集已記錄形狀、3 個附理由不匯入，其餘 214 個經格式判定不是資料表。
 
 每張表以來源 ID 為鍵；英雄里程碑使用 `[Ascension,Level]` 複合鍵。`sourceOrdinal` 僅作來源定位，不能用來覆蓋玩家陣列。`legacy-2.6.json` 固定目前七組核心陣列的原始 ID 順序；不存在於目標表的 ID 映射為 null，後續遷移必須保留及處理，不能改配其他內容。
 
@@ -129,3 +129,11 @@ MinigameEventQuestInfo 的 Requirement 與 Reward 是成對的純數字階段清
 跨表引用新增並全部解析：QTEInfo 的 TalentID 對技能樹（9 列中妖精列無天賦，故 8 處）與 CooldownBonusType 對 BonusInfo；SeasonRankingsInfo 的 BadgeBonusType、RankTitle 對稱號、RankBonuses 的 14 組 BonusID:數值 成對值；BuildGuideInfo 的 165 件裝備、45 個天賦、75 件神器與三個 Diamonds 獎勵欄；TitanSummonLevelCost 的商店禮包；TitanSummonBannerInfo 的 BoostCardsOfType 對泰坦卡 SubType（Random 表示不指定）。教學事件的 Objective 僅接受 TapCount、SwordMasterLevel、UnlockHelperCount、ReachStage 四種形式。
 
 TutorialEventInfo 的兩個變體已納入來源變體比較：_A 有 27 列與基準不同，_B 與基準完全相同。兩份都保留，不去重、不選用。
+
+本次完成在地化盤點。16 個語言檔是 JSON 鍵值字典、LocalizationInfoLoadingScene 是逐語言欄位的 CSV，全部只索引鍵不複製譯文：新增 [localization-index.json](localization-index.json)，記錄每個檔的雜湊、位元組、鍵數，以及相對英文的缺鍵、多餘鍵、空值鍵與「值與英文完全相同」的未翻譯鍵。英文 13,122 鍵，其餘 15 種語言一律 13,114 鍵、無多餘鍵、各缺同樣 8 個英文鍵（Tortoise 套裝 5 件、EQUIPMENT_SET_Tortoise、REWARD_FORTUNERAIDCARD、AVATAR_UNLOCKED_HolidayThemePark2026）。
+
+**繁體中文的實際缺口**：8 個鍵完全不存在、2 個鍵值為空（CLAN_HOLIDAY_UPDATE_TIME、EQUIPMENT_FARMING_FULL_PER_DAY_TITLE）、另有 178 個鍵仍保留英文原文（例如 Weapon_Mech、BONUS_DESC_ArtifactDamage）。未翻譯的判定只計非空且與英文完全相同者，因此與空值清單互斥。這份逐鍵清單就是 V05 的待辦來源，索引本身不含任何譯文。
+
+剩餘資源盤點改為依實際位元組判定格式，不再只看檔名：214 個非資料表細分為二進位資源 91、無標題定位列 103（AnimationFlags 與 TrackFlags 這類動畫時序）、JSON 文件 13、BMFont 描述 4、單行字元清單 3。判定規則是標題列不得含純數字欄位，且單行檔一律視為字元清單。
+
+`quarantine.json` 的 tables 現有 3 筆附理由不匯入：ScheduledBonusInfo（原生由伺服器字典解析）、UpdateInfo（156 個版本的英文更新說明文字，非玩法資料）、EquipmentTest（6 列測試夾具，ItemID 全部不在 C_EquipmentInfo）。至此 372 個資源全部有明確歸類，「尚未處理」為 0。
