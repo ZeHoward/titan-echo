@@ -29,23 +29,27 @@ test('no export in a covered module escapes classification', () => {
 
 test('the counts are recorded, so a source changing status is a visible change', () => {
   assert.deepEqual(report.counts, {
-    'table-differs': 1, 'baseline-75': 6, invented: 11, table: 16, default: 2, server: 14, native: 6,
+    'table-differs': 2, 'baseline-75': 5, invented: 11, table: 16, default: 2, server: 14, native: 6,
   });
   // Over a third of the sources are still the 7.5 baseline or this project's own choice.
   const unverified = report.counts['baseline-75'] + report.counts.invented + report.counts.server;
-  assert.equal(unverified, 31);
+  assert.equal(unverified, 30);
   assert.ok(unverified / report.parts > 0.5, '待核實比例應如實記錄');
 });
 
-test('the one place the package disagrees with the engine is written down', () => {
+test('每一處與安裝包不一致的地方都寫下來了', () => {
   const differs = register.formulas.flatMap(formula =>
     formula.parts.filter(part => part.status === 'table-differs').map(part => ({ formula, part })));
-  assert.equal(differs.length, 1);
-  assert.equal(differs[0].formula.id, 'monsterHealth');
+  assert.equal(differs.length, 2);
+  const boss = differs.find(entry => entry.formula.id === 'monsterHealth');
   // The boss multiplier sequence is banded by stage in the package; the engine uses one band.
-  assert.match(differs[0].part.note, /4,6,8,15,24/);
-  assert.match(differs[0].part.note, /ServerVar/);
-  assert.equal(differs[0].part.ref, 'TitanScalingInfo.json');
+  assert.match(boss.part.note, /4,6,8,15,24/);
+  assert.match(boss.part.note, /ServerVar/);
+  assert.equal(boss.part.ref, 'TitanScalingInfo.json');
+  const growth = differs.find(entry => entry.formula.id === 'heroDamage');
+  // The native hero curve is the milestone table alone; the engine adds a 7.5-era growth rate.
+  assert.match(growth.part.note, /GetRawDPS/);
+  assert.equal(growth.part.ref, 'hero-dps-evidence.json');
 });
 
 test('the readable copy matches the register it was rendered from', () => {

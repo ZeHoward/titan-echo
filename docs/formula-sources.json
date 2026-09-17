@@ -105,13 +105,13 @@
           "part": "里程碑倍率",
           "status": "table",
           "ref": "HelperImprovementsInfo.json",
-          "note": "依等級取最後一列的累計倍率，資料表最高 6000 級。"
+          "note": "依等級取最後一列的累計倍率，資料表最高 6000 級；對上原生 LevelCurve.GetTotalImprovementByLevel 取的那一格，TT2_HERO_MILESTONES 就是該表 Ascension 0 的 PrecalculatedAmount 三欄。"
         },
         {
           "part": "每級成長率 1.035",
-          "status": "baseline-75",
-          "ref": "HelperImprovementsInfo.json",
-          "note": "沿用 7.5 基準，安裝包未見對應欄位。"
+          "status": "table-differs",
+          "ref": "hero-dps-evidence.json",
+          "note": "原生沒有這一項：HelperInfo.GetRawDPS 就是 LevelCurve.GetTotalImprovementByLevel(昇階, 等級) × 等級 × GetBaseDamage(昇階) 三個因子相乘，完整的 GetDPS 在外面只再乘武器、全體英雄加成與強化倍率；兩個方法的機器碼裡一個浮點常數都沒有載入，所以逐級成長率不可能藏在裡面——里程碑累計倍率本身就是整條曲線（Ascension 0 共 145 段，6000 級累計 1.18×10^189）。**尚未移除**：1.035 是 7.5 基準的產物，與同為 7.5 近似的怪物血量曲線（18 × 1.32^關卡，十個具名 [ServerVar] 在包內都沒有值）配套；單獨拿掉會讓英雄傷害在 1000 級時少 8.4×10^14 倍，等於在沒有原版難度基準的情況下只改一邊，因此保留現值並記在這裡。"
         }
       ]
     },

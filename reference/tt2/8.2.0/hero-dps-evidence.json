@@ -1,0 +1,103 @@
+{
+  "version": "8.2.0",
+  "role": "英雄傷害由哪些因子相乘：原生的呼叫順序、兩個方法載入的每一個浮點常數，以及成長曲線表的形狀。",
+  "packageSha256": "8d78c9aa877e6c0b291ee2116cab855bd26c59c1d080bc654f88ecf1ff268b5f",
+  "binarySha256": "c13fc44321b1214c71ab0277a134fc3401fd7392c74a0bbb3935671c55a8713a",
+  "scriptSha256": "62c2eeb8472bb107de516e4b6ae69d3dcdf5013fb1caa87223d82a54dd203f8b",
+  "finding": "HelperInfo.GetRawDPS 就是 LevelCurve.GetTotalImprovementByLevel(昇階, 等級) × 等級 × GetBaseDamage(昇階)，三個因子相乘，沒有第四項；完整的 GetDPS 在外面再乘武器、全體英雄加成與強化倍率。兩個方法載入的浮點常數只有 0 與 1，**沒有任何逐級成長率**——里程碑累計倍率本身就是整條曲線。",
+  "consequence": "引擎現行的 heroDps 另外乘了 1.035^(等級−1)，這一項在安裝包裡沒有對應來源。它是 7.5 基準的產物，且與同為 7.5 近似的怪物血量曲線（18 × 1.32^關卡）配套；單獨移除會讓英雄傷害在 1000 級時少 8.4×10^14 倍，直接改變關卡難度，因此登記為 table-differs 並保留現值，不在沒有原版怪物曲線的情況下只改一邊。",
+  "rawDps": {
+    "method": {
+      "name": "HelperInfo$$GetRawDPS",
+      "rva": "0x22491ac",
+      "bytesSha256": "c6b910d4d236a43f8a431e5c664b1c251b527b4e7ee56a180247fbdab24bf105"
+    },
+    "calls": [
+      "HelperInfo$$GetLevellingCurve",
+      "LevelCurve$$GetTotalImprovementByLevel",
+      "GHDouble$$op_Implicit",
+      "GHDouble$$op_Multiply",
+      "HelperInfo$$GetBaseDamage",
+      "GHDouble$$op_Multiply"
+    ],
+    "formula": "GetTotalImprovementByLevel(ascension, level) × level × GetBaseDamage(ascension)",
+    "floatConstants": []
+  },
+  "fullDps": {
+    "method": {
+      "name": "HelperInfo$$GetDPS",
+      "rva": "0x22484e0",
+      "bytesSha256": "18a8fabe0d351c9c4801ba0e218dbaee9eebeb1e2914ccfcbd1f491588683965"
+    },
+    "calls": [
+      "CodeStage.AntiCheat.ObscuredTypes.ObscuredInt$$op_Implicit",
+      "HelperInfo$$GetLevellingCurve",
+      "LevelCurve$$GetTotalImprovementByLevel",
+      "GHDouble$$op_Implicit",
+      "GHDouble$$op_Multiply",
+      "GHDouble$$op_Multiply",
+      "HelperInfo$$GetBaseDamage",
+      "GHDouble$$op_Multiply",
+      "HelperInfo$$GetWeaponLevel",
+      "HelperInfo$$GetWeaponDamage",
+      "GHDouble$$op_Multiply",
+      "HelperModel$$GetAllHelperDPS",
+      "HelperModel$$GetIndividualEnhancedMultiplier",
+      "GHDouble$$op_Multiply",
+      "GHDouble$$op_Addition"
+    ],
+    "floatConstants": []
+  },
+  "levelCurve": {
+    "method": {
+      "name": "LevelCurve$$GetTotalImprovementByLevel",
+      "rva": "0x2248828",
+      "bytesSha256": "0394e6370f8cc9f84a346246cb95c1d0960a54585c41ff6b96f36da28905421a"
+    },
+    "fields": [
+      {
+        "type": "Dictionary<int, List<int>>",
+        "name": "levels"
+      },
+      {
+        "type": "Dictionary<int, List<GHDouble>>",
+        "name": "incrementalImprovAmounts"
+      },
+      {
+        "type": "Dictionary<int, List<GHDouble>>",
+        "name": "totalImprovAmounts"
+      },
+      {
+        "type": "int",
+        "name": "maxParsedAscension"
+      },
+      {
+        "type": "int",
+        "name": "minParsedAscension"
+      }
+    ],
+    "note": "曲線以 (昇階, 等級) 為鍵保存每一段的增量與累計倍率，GetTotalImprovementByLevel 先用 GetLevelIndex 找到該等級落在哪一段，再取累計值。"
+  },
+  "improvementTable": {
+    "file": "HelperImprovementsInfo.json",
+    "rows": 1015,
+    "rowsPerAscension": {
+      "0": 145,
+      "1": 145,
+      "2": 145,
+      "3": 145,
+      "4": 145,
+      "5": 145,
+      "6": 145
+    },
+    "ascension0Rows": 145,
+    "ascension0TopLevel": "6000",
+    "ascension0TopMelee": "1.18E+189",
+    "note": "本專案只實作昇階 0，lib/tt2-data.ts 的 TT2_HERO_MILESTONES 就是這張表 Ascension 0 的 PrecalculatedAmount 三欄。"
+  },
+  "limits": [
+    "GetBaseDamage 依昇階從一個 List<GHDouble> 取值，本專案只用得到昇階 0 的那一格",
+    "本表只說明因子與順序；每個因子的數值仍可能被伺服器參數改變",
+    "怪物血量與金幣曲線同為 7.5 近似（十個具名 [ServerVar] 在包內都沒有值），所以「照原生改英雄成長」無法在包內找到對應的難度基準"
+  ]
+}

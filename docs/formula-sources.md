@@ -9,8 +9,8 @@
 | `native` | 由反組譯證據確認 | 6 |
 | `table` | 取自安裝包資料表 | 16 |
 | `default` | 原生靜態預設值，線上可覆蓋 | 2 |
-| `baseline-75` | 沿用 7.5 基準，尚未對 8.2 核實 | 6 |
-| `table-differs` | 安裝包有值但引擎目前未照做 | 1 |
+| `baseline-75` | 沿用 7.5 基準，尚未對 8.2 核實 | 5 |
+| `table-differs` | 安裝包有值但引擎目前未照做 | 2 |
 | `invented` | 本專案自訂，安裝包未提供 | 11 |
 | `server` | 原生為伺服器變數，安裝包未帶值 | 14 |
 
@@ -59,8 +59,8 @@
 | 來源條目 | 狀態 | 依據 |
 |---|---|---|
 | 英雄基礎傷害 | `table` | `reference/tt2/8.2.0/HelperInfo.json`；DefaultDamageAmount 欄。 |
-| 里程碑倍率 | `table` | `reference/tt2/8.2.0/HelperImprovementsInfo.json`；依等級取最後一列的累計倍率，資料表最高 6000 級。 |
-| 每級成長率 1.035 | `baseline-75` | `reference/tt2/8.2.0/HelperImprovementsInfo.json`；沿用 7.5 基準，安裝包未見對應欄位。 |
+| 里程碑倍率 | `table` | `reference/tt2/8.2.0/HelperImprovementsInfo.json`；依等級取最後一列的累計倍率，資料表最高 6000 級；對上原生 LevelCurve.GetTotalImprovementByLevel 取的那一格，TT2_HERO_MILESTONES 就是該表 Ascension 0 的 PrecalculatedAmount 三欄。 |
+| 每級成長率 1.035 | `table-differs` | `reference/tt2/8.2.0/hero-dps-evidence.json`；原生沒有這一項：HelperInfo.GetRawDPS 就是 LevelCurve.GetTotalImprovementByLevel(昇階, 等級) × 等級 × GetBaseDamage(昇階) 三個因子相乘，完整的 GetDPS 在外面只再乘武器、全體英雄加成與強化倍率；兩個方法的機器碼裡一個浮點常數都沒有載入，所以逐級成長率不可能藏在裡面——里程碑累計倍率本身就是整條曲線（Ascension 0 共 145 段，6000 級累計 1.18×10^189）。**尚未移除**：1.035 是 7.5 基準的產物，與同為 7.5 近似的怪物血量曲線（18 × 1.32^關卡，十個具名 [ServerVar] 在包內都沒有值）配套；單獨拿掉會讓英雄傷害在 1000 級時少 8.4×10^14 倍，等於在沒有原版難度基準的情況下只改一邊，因此保留現值並記在這裡。 |
 
 ### heroCost · `lib/engine.ts` 的 `cost`
 
