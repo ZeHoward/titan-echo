@@ -2,17 +2,17 @@
 
 每個核心公式的來源登記表：資料表、原生方法、原生預設值，或明確標記為 7.5 基準沿用、專案自訂或伺服器供給。
 
-版本 8.2.0。共 30 條公式、56 項來源條目。
+版本 8.2.0。共 30 條公式、58 項來源條目。
 
 | 狀態 | 意義 | 條目數 |
 |---|---|---|
 | `native` | 由反組譯證據確認 | 6 |
 | `table` | 取自安裝包資料表 | 16 |
-| `default` | 原生靜態預設值，線上可覆蓋 | 8 |
-| `baseline-75` | 沿用 7.5 基準，尚未對 8.2 核實 | 4 |
-| `table-differs` | 安裝包有值但引擎目前未照做 | 7 |
+| `default` | 原生靜態預設值，線上可覆蓋 | 10 |
+| `baseline-75` | 沿用 7.5 基準，尚未對 8.2 核實 | 3 |
+| `table-differs` | 安裝包有值但引擎目前未照做 | 9 |
 | `invented` | 本專案自訂，安裝包未提供 | 10 |
-| `server` | 原生為伺服器變數，安裝包未帶值 | 5 |
+| `server` | 原生為伺服器變數，安裝包未帶值 | 4 |
 
 ## 逐條登記
 
@@ -145,7 +145,8 @@ round(8 + 關卡 × 148 ÷ (32000 + 關卡))
 
 | 來源條目 | 狀態 | 依據 |
 |---|---|---|
-| 基礎上限 200 與基礎回復 2 | `server` | 對應原生欄位是 [ServerVar]，安裝包未帶值；沿用 7.5 基準。 |
+| 基礎上限 200 | `table-differs` | `reference/tt2/8.2.0/servervar-defaults.json`；原生沒有固定上限：PlayerModel.RefreshManaCap 呼叫 ActiveSkillModel.GetSkillManaCapAmount，後者從 manaCapInitial 起算、每一個已解鎖的主動技能加上 manaCapPerSkill，再套用 ManaPoolCap 與 ManaPoolCapPercent 兩個加成。編譯期預設值是 manaCapInitial 0、manaCapPerSkill 35，所以六個技能全解鎖是 210，早期則遠低於引擎固定的 200。**尚未採用**：改了會讓早期魔力上限只有 35–70，而魔力回復那一半的算式還沒讀完，兩者是配套的。 |
+| 基礎回復 2 | `table-differs` | `reference/tt2/8.2.0/servervar-defaults.json`；原生 PlayerModel.RefreshManaRegen 以 [ServerVar] manaRegenBaseInMinutes （編譯期預設值 2）為底，加上 Bonus(ManaRegen)、乘上 Bonus(ManaRegenMult)，最後還有一次除法與一次乘法把它換算成每秒回復量——**那兩步尚未讀完**，所以不確定 2 的單位是「每分鐘回復點數」還是「回滿所需分鐘數」。引擎目前照 7.5 基準當成每分鐘 2 點。 |
 
 ### bossTimer · `lib/engine.ts` 的 `bossDuration`
 
@@ -189,8 +190,9 @@ max(1, floor(關卡^1.7 ÷ 100 × PrestigeRelic))，最高關卡到 60 後開放
 
 | 來源條目 | 狀態 | 依據 |
 |---|---|---|
-| 分段係數 | `baseline-75` | `reference/tt2/8.2.0/PetInfo.json`；以 7.5 的 PetInfo 為準，8.2 對應欄位尚未逐格核對。 |
-| 每 20 次有效點擊發動一次 | `baseline-75` | 沿用 7.5 基準；PetTapCountToAttack 加成可減少次數，但基準 20 未對 8.2 核實。 |
+| 等級分段的兩個門檻 40 與 80 | `default` | `reference/tt2/8.2.0/servervar-defaults.json`；引擎把寵物等級切成 0–40、40–80、80 以上三段各乘不同增量；原生的兩個門檻就是 [ServerVar] petDamageIncLevel1 與 petDamageIncLevel2，編譯期預設值是 40 與 80，**與引擎既有的分段完全相同**，不必改數值。 |
+| 每段的增量與出戰比例 | `baseline-75` | `reference/tt2/8.2.0/PetInfo.json`；每一段乘多少仍以 7.5 的 PetInfo 為準，8.2 對應欄位尚未逐格核對；未出戰寵物只取部分效果的比例也是本專案沿用的。 |
+| 每 20 次有效點擊發動一次 | `default` | `reference/tt2/8.2.0/servervar-defaults.json`；原生 [ServerVar] petTapAmount 的編譯期預設值就是 20，與引擎沿用的數字相同；PetTapCountToAttack 加成可減少次數。線上可覆蓋。 |
 
 ### eggs · `lib/tt2-collection.ts` 的 `advanceEggs`
 

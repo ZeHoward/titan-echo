@@ -270,9 +270,16 @@
       "expression": "魔力上限 200 + ManaPoolCap；每秒回復 (2 + ManaRegen) ÷ 60 × ManaRegenMult × 藥水倍率",
       "parts": [
         {
-          "part": "基礎上限 200 與基礎回復 2",
-          "status": "server",
-          "note": "對應原生欄位是 [ServerVar]，安裝包未帶值；沿用 7.5 基準。"
+          "part": "基礎上限 200",
+          "status": "table-differs",
+          "ref": "servervar-defaults.json",
+          "note": "原生沒有固定上限：PlayerModel.RefreshManaCap 呼叫 ActiveSkillModel.GetSkillManaCapAmount，後者從 manaCapInitial 起算、每一個已解鎖的主動技能加上 manaCapPerSkill，再套用 ManaPoolCap 與 ManaPoolCapPercent 兩個加成。編譯期預設值是 manaCapInitial 0、manaCapPerSkill 35，所以六個技能全解鎖是 210，早期則遠低於引擎固定的 200。**尚未採用**：改了會讓早期魔力上限只有 35–70，而魔力回復那一半的算式還沒讀完，兩者是配套的。"
+        },
+        {
+          "part": "基礎回復 2",
+          "status": "table-differs",
+          "ref": "servervar-defaults.json",
+          "note": "原生 PlayerModel.RefreshManaRegen 以 [ServerVar] manaRegenBaseInMinutes （編譯期預設值 2）為底，加上 Bonus(ManaRegen)、乘上 Bonus(ManaRegenMult)，最後還有一次除法與一次乘法把它換算成每秒回復量——**那兩步尚未讀完**，所以不確定 2 的單位是「每分鐘回復點數」還是「回滿所需分鐘數」。引擎目前照 7.5 基準當成每分鐘 2 點。"
         }
       ]
     },
@@ -360,15 +367,22 @@
       "expression": "寵物傷害係數依等級分段，出戰與未出戰分開計算",
       "parts": [
         {
-          "part": "分段係數",
+          "part": "等級分段的兩個門檻 40 與 80",
+          "status": "default",
+          "ref": "servervar-defaults.json",
+          "note": "引擎把寵物等級切成 0–40、40–80、80 以上三段各乘不同增量；原生的兩個門檻就是 [ServerVar] petDamageIncLevel1 與 petDamageIncLevel2，編譯期預設值是 40 與 80，**與引擎既有的分段完全相同**，不必改數值。"
+        },
+        {
+          "part": "每段的增量與出戰比例",
           "status": "baseline-75",
           "ref": "PetInfo.json",
-          "note": "以 7.5 的 PetInfo 為準，8.2 對應欄位尚未逐格核對。"
+          "note": "每一段乘多少仍以 7.5 的 PetInfo 為準，8.2 對應欄位尚未逐格核對；未出戰寵物只取部分效果的比例也是本專案沿用的。"
         },
         {
           "part": "每 20 次有效點擊發動一次",
-          "status": "baseline-75",
-          "note": "沿用 7.5 基準；PetTapCountToAttack 加成可減少次數，但基準 20 未對 8.2 核實。"
+          "status": "default",
+          "ref": "servervar-defaults.json",
+          "note": "原生 [ServerVar] petTapAmount 的編譯期預設值就是 20，與引擎沿用的數字相同；PetTapCountToAttack 加成可減少次數。線上可覆蓋。"
         }
       ]
     },
