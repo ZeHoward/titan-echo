@@ -30,8 +30,12 @@ from capstone import Cs, CS_ARCH_ARM64, CS_MODE_ARM
 from elftools.elf.elffile import ELFFile
 
 CCTOR = 0x24AA338                # ServerVarsModel..cctor
+GH_DOUBLE_CTOR = 0x21DD40C       # GHDouble..ctor(double)
 STATIC_FIELDS_OFFSET = 0xB8      # Il2CppClass.static_fields
-SCALARS = {'int', 'float', 'bool', 'double'}
+SCALARS = {'int', 'float', 'bool', 'double', 'GHDouble'}
+# GHDouble is { double significand; double exponent; int infinitySign; bool isNaN } — 24 bytes,
+# normalised as significand x 10^exponent, the same pair lib/big-number.ts keeps.
+GH_DOUBLE_SIZE = 0x18
 
 # Values this project already recovered by hand; if the walk disagrees, the walk is wrong.
 SELF_CHECK = {'helperUpgradeBase': 1.0800000429153442,
@@ -91,6 +95,12 @@ def main():
     vectors = {}    # qN/dN/sN -> raw bytes loaded from rodata
     bases = {}      # xN -> byte offset into the statics block
     written = {}    # statics offset -> raw bytes
+    # A GHDouble static is built by calling GHDouble..ctor(double) into a stack slot and copying the
+    # 24 bytes out. What matters is the double it was built from, not the normalised pair.
+    stack_slots = {}   # xN -> sp offset
+    built = {}         # sp offset -> the double passed to the constructor
+    carried = {}       # qN/dN -> sp offset the bytes were read back from
+    gh_written = {}    # statics offset -> the double behind that GHDouble
 
     def forget(register):
         for table in (pages, words, vectors, bases):
@@ -113,6 +123,12 @@ def main():
         if mnemonic == 'adrp' and m:
             forget(m.group(1))
             pages[m.group(1)] = int(m.group(2), 16)
+            continue
+
+        m = re.fullmatch(r'(x\d+), sp, #(0x[0-9a-f]+|\d+)', op)
+        if mnemonic == 'add' and m:
+            forget(m.group(1))
+            stack_slots[m.group(1)] = int(m.group(2), 0)
             continue
 
         m = re.fullmatch(r'([wx]\d+), ([wx]\d+), #(0x[0-9a-f]+|\d+)', op)
@@ -156,6 +172,16 @@ def main():
             vectors[m.group(1)] = read(pages[m.group(2)] + int(m.group(3) or '0', 16), width)
             continue
 
+        m = re.fullmatch(r'([ds]\d+), #(-?[\d.]+)', op)
+        if mnemonic == 'fmov' and m:
+            vectors[m.group(1)] = struct.pack('<d', float(m.group(2)))
+            continue
+
+        m = re.fullmatch(r'([ds]\d+), ([ds]\d+)', op)
+        if mnemonic == 'fmov' and m and m.group(2) in vectors:
+            vectors[m.group(1)] = vectors[m.group(2)]
+            continue
+
         m = re.fullmatch(r'v(\d+)\.2d, (x\d+)', op)
         if mnemonic == 'dup' and m:
             lane = words.get(m.group(2))
@@ -169,6 +195,22 @@ def main():
         if mnemonic == 'ldr' and m:
             width = {'q': 16, 'd': 8, 's': 4}[m.group(1)[0]]
             vectors[m.group(1)] = read(int(m.group(2), 16), width)
+            continue
+
+        if mnemonic == 'bl' and int(op.lstrip('#'), 16) == GH_DOUBLE_CTOR:
+            slot, value = stack_slots.get('x0'), vectors.get('d0')
+            if slot is not None and value is not None:
+                built[slot] = struct.unpack('<d', value[:8])[0]
+            # A call clobbers the caller-saved registers we track by value.
+            for register in [r for r in list(words) if r in ('x0', 'x1', 'x8', 'x9', 'x10', 'w0', 'w1',
+                                                             'w8', 'w9', 'w10')]:
+                words.pop(register, None)
+            continue
+
+        m = re.fullmatch(r'([qd]\d+), \[sp(?:, #(0x[0-9a-f]+|\d+))?\]', op)
+        if mnemonic in ('ldr', 'ldur') and m:
+            carried[m.group(1)] = int(m.group(2) or '0', 0)
+            vectors.pop(m.group(1), None)
             continue
 
         # Stores into the statics block, by register class.
@@ -186,8 +228,19 @@ def main():
             continue
 
         m = re.fullmatch(r'([qds]\d+), \[(x\d+)(?:, #(0x[0-9a-f]+))?\]', op)
-        if mnemonic in ('str', 'stur') and m and m.group(2) in bases and m.group(1) in vectors:
-            store(bases[m.group(2)] + int(m.group(3) or '0', 16), vectors[m.group(1)])
+        if mnemonic in ('str', 'stur') and m and m.group(2) in bases:
+            offset = bases[m.group(2)] + int(m.group(3) or '0', 16)
+            if m.group(1) in vectors:
+                store(offset, vectors[m.group(1)])
+            elif m.group(1) in carried and carried[m.group(1)] in built:
+                gh_written[offset] = built[carried[m.group(1)]]
+            continue
+
+        # The same copy, but through a register that already points at a field (add xN, x8, #off).
+        m = re.fullmatch(r'([qds]\d+), \[(x\d+)\]', op)
+        if mnemonic in ('str', 'stur') and m and m.group(2) in bases and m.group(1) in carried \
+                and carried[m.group(1)] in built:
+            gh_written[bases[m.group(2)]] = built[carried[m.group(1)]]
             continue
 
         m = re.fullmatch(r'([qds]\d+), ([qds]\d+), \[(x\d+)(?:, #(0x[0-9a-f]+))?\]', op)
@@ -225,6 +278,10 @@ def main():
                     vectors.pop(prefix+first.group(1)[1:], None)
 
     def value_of(offset, kind):
+        if kind == 'GHDouble':
+            # The static holds a normalised pair, but it is built from one plain double and that is
+            # the value worth publishing.
+            return gh_written.get(offset)
         raw = written.get(offset)
         if raw is None:
             return None
@@ -254,7 +311,7 @@ def main():
 
     for name, expected in SELF_CHECK.items():
         got = recovered.get(name, {}).get('value')
-        if got is None or abs(got - expected) > 1e-9:
+        if not isinstance(got, (int, float)) or abs(got - expected) > 1e-9:
             raise ValueError(f'self-check failed for {name}: {got!r} != {expected!r}')
 
     # Which of these the package's own tables override, so the two lines of evidence stay distinct.

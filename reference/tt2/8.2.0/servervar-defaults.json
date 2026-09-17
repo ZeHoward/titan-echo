@@ -4,14 +4,14 @@
   "packageSha256": "8d78c9aa877e6c0b291ee2116cab855bd26c59c1d080bc654f88ecf1ff268b5f",
   "binarySha256": "c13fc44321b1214c71ab0277a134fc3401fd7392c74a0bbb3935671c55a8713a",
   "scriptSha256": "62c2eeb8472bb107de516e4b6ae69d3dcdf5013fb1caa87223d82a54dd203f8b",
-  "finding": "ServerVarsModel 有 954 個靜態欄位，其中純量（int／float／bool／double）可從類別建構式解出 745 個的編譯期預設值。這與「安裝包的兩張變數表只帶 28 個值」是兩條不同的線索：變數表是資料，這裡是程式裡寫死的預設值，兩者同時存在的只有 26 個。",
+  "finding": "ServerVarsModel 有 954 個靜態欄位，其中純量（int／float／bool／double）可從類別建構式解出 753 個的編譯期預設值。這與「安裝包的兩張變數表只帶 28 個值」是兩條不同的線索：變數表是資料，這裡是程式裡寫死的預設值，兩者同時存在的只有 26 個。",
   "consequence": "先前標記為「原生為伺服器變數、安裝包未帶值」的項目，有一部分其實有預設值可對照；但預設值不是線上值——每一個都是 [ServerVar]，伺服器可以整份覆蓋，因此引用它時狀態是 default（原生靜態預設值，線上可覆蓋），不是 native。",
   "selfCheck": {
     "helperUpgradeBase": 1.0800000429153442,
     "playerUpgradeCostBase": 5.0,
     "playerUpgradeCostGrowth": 1.0750000476837158
   },
-  "recoveredCount": 745,
+  "recoveredCount": 753,
   "recovered": {
     "maxStage": {
       "type": "int",
@@ -1868,6 +1868,26 @@
       "offset": "0x89c",
       "value": 100
     },
+    "monsterHPMult": {
+      "type": "GHDouble",
+      "offset": "0x8a8",
+      "value": 17.5
+    },
+    "monsterHPBase1": {
+      "type": "GHDouble",
+      "offset": "0x8c0",
+      "value": 1.38
+    },
+    "monsterHPBase2": {
+      "type": "GHDouble",
+      "offset": "0x8d8",
+      "value": 10.0
+    },
+    "monsterHPBase3": {
+      "type": "GHDouble",
+      "offset": "0x8f0",
+      "value": 10.0
+    },
     "monsterHPExpo1": {
       "type": "double",
       "offset": "0x908",
@@ -1897,6 +1917,26 @@
       "type": "int",
       "offset": "0x92c",
       "value": 180000
+    },
+    "monsterGoldMult": {
+      "type": "GHDouble",
+      "offset": "0x930",
+      "value": 17.5
+    },
+    "monsterGoldBase1": {
+      "type": "GHDouble",
+      "offset": "0x948",
+      "value": 1.38
+    },
+    "monsterGoldBase2": {
+      "type": "GHDouble",
+      "offset": "0x960",
+      "value": 10.0
+    },
+    "monsterGoldBase3": {
+      "type": "GHDouble",
+      "offset": "0x978",
+      "value": 10.0
     },
     "monsterGoldExpo1": {
       "type": "double",
@@ -3740,9 +3780,9 @@
     }
   },
   "unrecovered": {
-    "count": 209,
+    "count": 201,
     "byType": {
-      "GHDouble": 10,
+      "GHDouble": 2,
       "List<float>": 1,
       "TimeSpan": 2,
       "bool": 63,
@@ -3755,14 +3795,6 @@
     "names": {
       "GHDouble": [
         "maxGold",
-        "monsterGoldBase1",
-        "monsterGoldBase2",
-        "monsterGoldBase3",
-        "monsterGoldMult",
-        "monsterHPBase1",
-        "monsterHPBase2",
-        "monsterHPBase3",
-        "monsterHPMult",
         "monsterMinGoldDrop"
       ],
       "List<float>": [

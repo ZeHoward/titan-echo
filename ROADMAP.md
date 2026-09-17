@@ -1,6 +1,6 @@
 # Titan Echo 完整復刻代辦清單
 
-更新：2026-09-17。遊戲目前為 **2.12.9**，最近完整測試 **371 項 Node 測試＋23 項 Python 匯入測試通過**。此文件是後續工作的主清單；`TT2-RULES.md` 保留歷史研究紀錄，不以舊敘述判斷目前完成度。
+更新：2026-09-17。遊戲目前為 **2.12.9**，最近完整測試 **372 項 Node 測試＋23 項 Python 匯入測試通過**。此文件是後續工作的主清單；`TT2-RULES.md` 保留歷史研究紀錄，不以舊敘述判斷目前完成度。
 
 ## 目前位置
 
@@ -233,9 +233,11 @@ R04 子步驟：找出溢位與非有限值 → 以極大存檔釘住不變量 �
    C01 暴擊 10 個欄位 0 個有值、C02 劍術大師 4 個 0 個、C03-C04 英雄 22 個 0 個、C05 泰坦與金幣 67 個 0 個、
    C06 濺射與跳關 3 個 0 個、C07 魔力 18 個 0 個、I01-I03 裝備 26 個 0 個。
 2. **程式裡寫死的編譯期預設值**：`ServerVarsModel` 的類別建構式會在任何伺服器回應之前先賦值。
-   `tools/audit-servervar-defaults.py` 從中解出 **954 個靜態欄位裡的 745 個純量預設值**
-   （見 [靜態預設值總表](reference/tt2/8.2.0/servervar-defaults.json)），其餘 209 個逐項列名：
-   string 39、bool 63、int 57、int[] 12、float 20、GHDouble 10、double 5、TimeSpan 2、List&lt;float&gt; 1。
+   `tools/audit-servervar-defaults.py` 從中解出 **954 個靜態欄位裡的 753 個預設值**
+   （見 [靜態預設值總表](reference/tt2/8.2.0/servervar-defaults.json)），其餘 201 個逐項列名：
+   string 39、bool 63、int 57、int[] 12、float 20、double 5、TimeSpan 2、GHDouble 2、List&lt;float&gt; 1。
+   GHDouble 欄位另外處理：它是以 `GHDouble..ctor(double)` 建在堆疊上再複製進靜態區塊的，
+   解出來的是**建構時的那個 double**，怪物血量與金幣曲線的八個係數就是這樣拿到的。
    劍術大師的 `costBase`／`costGrowth` 與英雄的 `helperUpgradeBase` 本來就是從這裡取得的，
    三者同時作為這份解析的自我檢查。
 

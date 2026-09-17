@@ -15,18 +15,36 @@ test('證據取自釘住的那份安裝包，不是別的版本', () => {
   assert.match(evidence.binarySha256, /^[0-9a-f]{64}$/);
 });
 
-test('954 個靜態欄位裡解出 745 個純量預設值，其餘逐項列名而不是含混帶過', () => {
-  assert.equal(evidence.recoveredCount, 745);
-  assert.equal(Object.keys(evidence.recovered).length, 745);
+test('954 個靜態欄位裡解出 753 個預設值，其餘逐項列名而不是含混帶過', () => {
+  assert.equal(evidence.recoveredCount, 753);
+  assert.equal(Object.keys(evidence.recovered).length, 753);
   const unresolved = evidence.unrecovered;
-  assert.equal(unresolved.count, 209);
-  assert.equal(745 + 209, 954);
+  assert.equal(unresolved.count, 201);
+  assert.equal(753 + 201, 954);
   // Every unresolved field is named, so the gap can be chased rather than guessed at.
   const named = Object.values(unresolved.names).reduce((n, list) => n + list.length, 0);
   assert.equal(named, unresolved.count);
   for (const [kind, count] of Object.entries(unresolved.byType)) {
     assert.equal(unresolved.names[kind].length, count, kind);
   }
+});
+
+test('GHDouble 欄位解的是它被建構時的那個 double，怪物曲線的八個係數都在', () => {
+  // A GHDouble static is built by calling GHDouble..ctor(double) into a stack slot and copying the
+  // 24 bytes out; the plain double it was built from is the default worth recording.
+  assert.equal(evidence.recovered.monsterHPMult.value, 17.5);
+  assert.equal(evidence.recovered.monsterHPBase1.value, 1.38);
+  assert.equal(evidence.recovered.monsterHPBase2.value, 10);
+  assert.equal(evidence.recovered.monsterHPBase3.value, 10);
+  assert.equal(evidence.recovered.monsterGoldMult.value, 17.5);
+  assert.equal(evidence.recovered.monsterGoldBase1.value, 1.38);
+  // The exponents beside them are plain floats and came out in the same pass.
+  assert.equal(evidence.recovered.monsterHPExpo1.value, 0.03);
+  assert.ok(Math.abs(evidence.recovered.monsterHPExpo2.value - 1.098) < 1e-6);
+  assert.equal(evidence.recovered.monsterHPLevelOff.value, 100);
+  // Two GHDouble statics are still unresolved and named as such.
+  assert.equal(evidence.unrecovered.byType.GHDouble, 2);
+  assert.deepEqual(evidence.unrecovered.names.GHDouble.sort(), ['maxGold', 'monsterMinGoldDrop']);
 });
 
 test('三個本專案先前手工取得的值，走這條路也得到同一個數字', () => {
