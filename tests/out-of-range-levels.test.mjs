@@ -72,6 +72,17 @@ test('神器等級也夾回購買路徑能達到的上限，技能鍵不會顯�
   }
 });
 
+test('壞掉的技能計時器不會讓技能永遠處於施放中', () => {
+  const broken = JSON.parse(JSON.stringify(fresh(1000)));
+  broken.active[0] = 1e243;
+  broken.cooldowns[0] = 1e243;
+  broken.active[1] = Number.NaN;
+  const loaded = hydrate(broken);
+  assert.ok(loaded.active[0] <= loaded.last + 86_400_000, '施放中的時間戳沒有被夾回');
+  assert.ok(loaded.cooldowns[0] <= loaded.last + 86_400_000);
+  assert.equal(loaded.active[1], 0, '非數字的時間戳應視為沒有施放');
+});
+
 test('讀取存檔時把超界的等級夾回合法範圍，壞掉的存檔不會一直壞下去', () => {
   const broken = JSON.parse(JSON.stringify(overflowed()));
   const loaded = hydrate(broken);

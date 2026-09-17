@@ -53,6 +53,12 @@ function clampLevels(s:State){
  // the one apply() enforces when buying, so a save can only hold what play could have produced.
  if(Array.isArray(t.artifacts))t.artifacts=t.artifacts.map((level,i)=>
   Math.min(Math.max(0,Number.isFinite(level)?level:0),TT2_ARTIFACTS[i]?.max||1e6));
+ // A skill timer written while a bonus was out of range can sit 10^240 seconds in the future, which
+ // leaves the skill running for ever. Nothing legitimate lasts a day, so anything beyond that is an
+ // artefact of a broken save and is treated as already over.
+ const horizon=s.last+86400000;
+ s.active=s.active.map(at=>Number.isFinite(at)?Math.min(at,horizon):0);
+ s.cooldowns=s.cooldowns.map(at=>Number.isFinite(at)?Math.min(at,horizon):0);
 }const base=fresh(s.last||Date.now());const original={...s};Object.assign(s,base,original,{version:2});for(const key of ['heroes','weapons','evolutions','wounded','artifacts','artifactSpent','skillLevels'] as const){const length=key==='artifacts'||key==='artifactSpent'?30:key==='skillLevels'?6:33;const old=original[key]||[];s[key]=Array.from({length},(_,i)=>Number.isFinite(old[i])?old[i]:key==='skillLevels'?1:0);}if(!original.artifactSpent)s.artifactSpent=s.artifacts.map((n,i)=>i<3?n*n:0);s.worldBest[0]=s.best;s.tt2=freshTT2(s.last);s.ruleset=TT2_RULESET;
  normaliseAmounts(s);
  s.tt2.legacyArtifacts=[...s.artifacts];s.tt2.legacySpent=[...s.artifactSpent];s.relics=limit(s.relics+s.artifactSpent.reduce((a,b)=>a+b,0));
