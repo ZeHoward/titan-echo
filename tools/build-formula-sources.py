@@ -203,8 +203,21 @@ FORMULAS = [
                          '1.5 × (關卡 − 56)、3 × 1.21^(關卡^0.48)、'
                          '以及一段含 Math.Min 與多層 Math.Pow 的 1.002 系項——再以 GHDouble 組合，'
                          '尚未完整還原，因此引擎維持 7.5 近似的 1.7 與 100。'),
-              entry(part='開放門檻第 60 關', status='baseline-75',
-                    note='沿用 7.5 基準；安裝包未見對應的蛻變開放關卡欄位。'),
+              entry(part='開放門檻第 60 關', status='default', ref='prestige-unlock-evidence.json',
+                    note='不是 7.5 留下的猜測：[ServerVar] minimumPrestigeStage 的編譯期預設值就是 60，'
+                         '而且它正是 PrestigeModel.GetPrestigeStage 結尾那個 System.Math.Max 的第二個引數，'
+                         '也就是「這次蛻變要打到第幾關」的下限，CanPrestige 只是拿關卡和它比 >=。'
+                         '先前記為「安裝包未見對應欄位」是沒找到名字——改以指令編碼掃描'
+                         '（ldr Wt,[Xn,#0xbec] 除兩個暫存器欄位外完全固定）才找出全部三個讀取點。'
+                         '引擎把這個數字寫在 PRESTIGE_DEFAULTS.minimumStage，'
+                         'relicGain、discover 與 prestige 三處共用。線上可覆蓋，故為 default。'),
+              entry(part='門檻隨歷史最高關卡上升的那一層', status='table-differs',
+                    ref='prestige-unlock-evidence.json',
+                    note='原生的門檻不是固定 60：GetPrestigeStage = Math.Max(floor('
+                         'prestigeMsPercentRequirement × (基準 − 進階起點) + 進階起點), minimumPrestigeStage)，'
+                         '係數的編譯期預設值是 float 0.5，基準取自 maxPrestigeStageCount，'
+                         '也就是要推到歷史最高的一半才能再蛻變。引擎沒有這一層——歷史最高到過 60 就一直能蛻變。'
+                         '第一次蛻變前兩者等價。未採用，已列入 ROADMAP 待決定的取捨第 8 條。'),
               entry(part='至少一顆聖物的下限', status='invented',
                     note='引擎自訂：開放後即使在第一關蛻變也給一顆，安裝包未見對應下限。'),
               entry(part='額外的聖物乘數（累加、季節、新手）', status='server', ref='native-server-var-fields.json',
@@ -408,7 +421,7 @@ NOT_FORMULAS = {
         'HEROES', 'SKILLS', 'SKILL_DATA', 'SKILL_ORDER', 'TT2_RULESET', 'bonusDefinitions',
         'EFFECT_LABELS', 'effectLabel', 'BUILD_COEFFICIENTS', 'PLAYER_DEFAULTS', 'RESOURCE_PERKS',
         'EGG_INTERVAL', 'PENDING_HERO_EFFECTS', 'heroSkills', 'THEME_STAGES', 'TT2_THEMES', 'HELPER_DEFAULTS',
-        'BONUS_DEFAULTS', 'MANA_DEFAULTS',
+        'BONUS_DEFAULTS', 'MANA_DEFAULTS', 'PRESTIGE_DEFAULTS',
         'HERO_LEVEL_CAP', 'PLAYER_LEVEL_CAP', 'UNMEASURED_ACHIEVEMENTS', 'UNMEASURED_DAILY_TASKS',
         'DAILY_TASK_PAID', 'cap'],
     'arithmetic': [

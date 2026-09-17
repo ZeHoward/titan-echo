@@ -10,7 +10,7 @@ const readable = readFileSync(new URL('../docs/formula-sources.md', import.meta.
 test('every core formula names a source, and every source it names exists', () => {
   assert.deepEqual(report.problems, []);
   assert.equal(report.formulas, 31);
-  assert.equal(report.parts, 66);
+  assert.equal(report.parts, 67);
 });
 
 test('no export in a covered module escapes classification', () => {
@@ -29,19 +29,21 @@ test('no export in a covered module escapes classification', () => {
 
 test('the counts are recorded, so a source changing status is a visible change', () => {
   assert.deepEqual(report.counts, {
-    'table-differs': 9, 'baseline-75': 1, invented: 10, table: 18, default: 14, server: 4, native: 10,
+    'table-differs': 10, invented: 10, table: 18, default: 15, server: 4, native: 10,
   });
-  // Still unverified: the 7.5 baseline, this project's own choice, or a server value with no
-  // compiled-in default either. Five more sources are now known-but-not-followed instead.
-  const unverified = report.counts['baseline-75'] + report.counts.invented + report.counts.server;
-  assert.equal(unverified, 15);
-  assert.equal(report.counts['table-differs'], 9, '已知但未照做的項目要看得見');
+  // Nothing is left on the 7.5 baseline: every source has been checked against 8.2, and what
+  // could not be adopted is recorded as known-but-not-followed rather than as unchecked.
+  assert.equal(report.counts['baseline-75'] ?? 0, 0, '沿用 7.5 的條目已經全部查完');
+  // Still unverified: this project's own choice, or a server value with no compiled-in default.
+  const unverified = (report.counts['baseline-75'] ?? 0) + report.counts.invented + report.counts.server;
+  assert.equal(unverified, 14);
+  assert.equal(report.counts['table-differs'], 10, '已知但未照做的項目要看得見');
 });
 
 test('每一處與安裝包不一致的地方都寫下來了', () => {
   const differs = register.formulas.flatMap(formula =>
     formula.parts.filter(part => part.status === 'table-differs').map(part => ({ formula, part })));
-  assert.equal(differs.length, 9);
+  assert.equal(differs.length, 10);
   const boss = differs.find(entry => entry.formula.id === 'monsterHealth');
   // The boss multiplier sequence is banded by stage in the package; the engine uses one band.
   assert.match(boss.part.note, /4,6,8,15,24/);
@@ -54,7 +56,7 @@ test('每一處與安裝包不一致的地方都寫下來了', () => {
 });
 
 test('the readable copy matches the register it was rendered from', () => {
-  assert.match(readable, /共 31 條公式、66 項來源條目/);
+  assert.match(readable, /共 31 條公式、67 項來源條目/);
   for (const formula of register.formulas) assert.ok(readable.includes(formula.id), formula.id);
   for (const status of Object.keys(register.statuses)) assert.ok(readable.includes(`\`${status}\``), status);
 });

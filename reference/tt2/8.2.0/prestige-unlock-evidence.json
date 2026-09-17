@@ -1,0 +1,72 @@
+{
+  "version": "8.2.0",
+  "role": "蛻變開放門檻的原生來源：第 60 關出自哪個欄位，以及原生在它之上還有哪一層。",
+  "packageSha256": "8d78c9aa877e6c0b291ee2116cab855bd26c59c1d080bc654f88ecf1ff268b5f",
+  "binarySha256": "c13fc44321b1214c71ab0277a134fc3401fd7392c74a0bbb3935671c55a8713a",
+  "scriptSha256": "62c2eeb8472bb107de516e4b6ae69d3dcdf5013fb1caa87223d82a54dd203f8b",
+  "finding": "第 60 關不是 7.5 留下的猜測：[ServerVar] minimumPrestigeStage 的編譯期預設值就是 60，而且它正是 PrestigeModel.GetPrestigeStage 結尾那個 System.Math.Max 的第二個引數，也就是「這次蛻變需要打到第幾關」的下限；CanPrestige 只是拿目前關卡和它比 >=。先前登記寫「安裝包未見對應的蛻變開放關卡欄位」，那是沒找到名字——這次改以指令編碼掃描（ldr Wt,[Xn,#0xbec] 除了兩個暫存器欄位以外完全固定）才找到全部 3 個讀取點。",
+  "consequence": "引擎散在三處的 best >= 60 由 baseline-75 升為 default；但原生的門檻並非固定 60，上面還有一層乘數，那一層本專案沒有實作。",
+  "methods": {
+    "canPrestige": {
+      "name": "PrestigeModel$$CanPrestige",
+      "rva": "0x23f9264",
+      "bytesSha256": "d99972c707cb6325942dc0c0119fee780a8c47430167b18403460b613fc68117"
+    },
+    "prestigeStage": {
+      "name": "PrestigeModel$$GetPrestigeStage",
+      "rva": "0x23f9304",
+      "bytesSha256": "f1cafb2cabb44813f1b1d848411e14ff003345fe67bc1d1f4d65fd7136d34a8e"
+    },
+    "advancedStart": {
+      "name": "PrestigeModel$$GetAdvancedStartNextStage",
+      "rva": "0x23fe940",
+      "bytesSha256": "53fe2d1b0263cb4129b2abbdfb487632feb7dbf9c799c8ea7bff9e47cc90ac98"
+    }
+  },
+  "threshold": {
+    "field": "ServerVarsModel.minimumPrestigeStage",
+    "offset": "0xbec",
+    "value": 60,
+    "role": "GetPrestigeStage 尾端 System.Math.Max 的第二個引數，回傳值即為所需關卡",
+    "readers": [
+      {
+        "method": "AchievementPanelScript$$InitMilestonesPanel",
+        "at": "0x211a9d4"
+      },
+      {
+        "method": "PrestigeModel$$GetPrestigeStage",
+        "at": "0x23f9584"
+      },
+      {
+        "method": "TutorialEventModel$$CheckAlreadyCompleted",
+        "at": "0x25dac08"
+      }
+    ],
+    "note": "引擎在 relicGain、discover 與 prestige 三處都寫 best >= 60，數字與原生下限相同。它是 [ServerVar]，線上可覆蓋，所以狀態是 default 而非 native。"
+  },
+  "notImplemented": {
+    "percentRequirement": {
+      "field": "ServerVarsModel.prestigeMsPercentRequirement",
+      "offset": "0xbe8",
+      "value": 0.5,
+      "formula": "GetPrestigeStage = Math.Max(floor(prestigeMsPercentRequirement × (基準關卡 − GetAdvancedStartNextStage()) + GetAdvancedStartNextStage()), minimumPrestigeStage)",
+      "note": "基準關卡取自 PrestigeModel.maxPrestigeStageCount（歷史最高蛻變關卡），係數的編譯期預設值是 float 0.5，也就是**要推到歷史最高的一半才能再蛻變**。引擎沒有這一層：只要歷史最高到過 60，任何時候都能蛻變。第一次蛻變前兩者等價，都是第 60 關。"
+    },
+    "endgameFloor": {
+      "field": "ServerVarsModel.endgameMinPrestigeReqInc",
+      "value": 5000,
+      "note": "EndgameModel.IsInEndgame 為真時，基準與進階起點的差額還會先與這個值取 Max；末日紀元本專案未實作。"
+    },
+    "advancedStart": {
+      "method": "PrestigeModel$$GetAdvancedStartNextStage",
+      "note": "GetAdvancedStartNextStage 是蛻變後的起始關卡（高等玩家不從第 1 關開始），在上式中同時被減去又加回。本專案蛻變一律回到第 1 關，該方法未逐指令讀完。"
+    }
+  },
+  "limits": [
+    "minimumPrestigeStage 與 prestigeMsPercentRequirement 都是 [ServerVar]，本表用的是編譯期預設值，不是線上值",
+    "CanPrestige 比較的左運算元是從一個 Singleton 讀出的 ObscuredInt，未確認它是目前關卡還是別的關卡欄位",
+    "GetPrestigeStage 前半還有一條由某個 bool 開關選擇的分支，未讀完",
+    "GetAdvancedStartNextStage 未逐指令讀完，只記下它有參與",
+    "另外兩個讀取點（AchievementPanelScript.InitMilestonesPanel 與 TutorialEventModel.CheckAlreadyCompleted）只記下位置，未讀其用途"
+  ]
+}

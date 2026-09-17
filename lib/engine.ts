@@ -163,6 +163,11 @@ export function reward(s:State):Big{return goldReward(s,'monster');}
 // as a float there, and HelperInfo's constructor derives log(ratio) and ratio-1 from it, which is
 // the same geometric series this cost is. Recorded in reference/tt2/8.2.0/helper-cost-evidence.json.
 export const HELPER_DEFAULTS={costGrowth:Math.fround(1.08)} as const;
+// The floor of the native prestige requirement: [ServerVar] minimumPrestigeStage, whose
+// compiled-in default is 60 and which is the second argument of the Math.Max that ends
+// PrestigeModel.GetPrestigeStage. The multiplier above that floor — half the highest prestige
+// stage — is not implemented here, so reaching this stage once leaves prestige available.
+export const PRESTIGE_DEFAULTS={minimumStage:60} as const;
 export function cost(s:State,index=-1,count=1):Big{
  if(index<0)return scale(playerUpgradeCost(s.level,count),['SwordMasterUpgradeCost','AllUpgradeCost','AllUpgradeCostFairy'].reduce((n,id)=>n*Math.max(0,1-stateEffect(s,id)),1));
  const n=heroLevel(s,index),rate=HELPER_DEFAULTS.costGrowth;
@@ -171,7 +176,7 @@ export function cost(s:State,index=-1,count=1):Big{
  const run=scale(pow(rate,n),(rate**count-1)/(rate-1));
  return bigCeil(scale(run,HEROES[index].base*(1-Math.min(.9,stateEffect(s,'AllUpgradeCost')))*(1-Math.min(.9,stateEffect(s,'HelperUpgradeCost')))));
 }
-export function relicGain(s:State){return s.best>=60?Math.max(1,Math.floor(s.stage**1.7/100*stateEffect(s,'PrestigeRelic'))):0;}
+export function relicGain(s:State){return s.best>=PRESTIGE_DEFAULTS.minimumStage?Math.max(1,Math.floor(s.stage**1.7/100*stateEffect(s,'PrestigeRelic'))):0;}
 export function artifactCost(s:State,i:number){return s.tt2!.artifacts[i]?upgradeArtifactCost(s.tt2!,i):discoveryCost(s.tt2!);}
 export function evolveCost(s:State,i:number):Big{return scale(pow(1e4,s.evolutions[i]),HEROES[i].base*1e6);}
 export function skillCost(s:State,i:number){return SKILL_DATA[i].cost[Math.min(SKILL_DATA[i].cost.length-1,Math.max(0,s.skillLevels[i]))];}
@@ -325,12 +330,12 @@ export function apply(s:State,a:Action){advance(s,a.at);const i=a.index??0,t=s.t
   if(i===5){t.heavenlyStrikes++;damage(s,buildDamage(s,'heavenly'));s.active[i]=s.last;s.cooldowns[i]=s.last+skillCooldown(s,i)*1000;}
  }
  if(a.type==='skillUp'&&Number.isInteger(i)&&i>=0&&i<6&&s.level>=SKILLS[i].level&&s.skillLevels[i]<SKILL_DATA[i].max&&compare(s.gold,fromNumber(skillCost(s,i)))>=0){s.gold=atLeastZero(subtract(s.gold,fromNumber(skillCost(s,i))));s.skillLevels[i]++;}
- if(a.type==='discover'&&s.best>=60){const found=drawArtifact(t,s.relics);if(found){s.relics-=found.cost;note(s,`獲得神器：${TT2_ARTIFACTS[found.index].name}`);}}
+ if(a.type==='discover'&&s.best>=PRESTIGE_DEFAULTS.minimumStage){const found=drawArtifact(t,s.relics);if(found){s.relics-=found.cost;note(s,`獲得神器：${TT2_ARTIFACTS[found.index].name}`);}}
  if(a.type==='artifact'&&Number.isInteger(i)&&i>=0&&i<103&&t.artifacts[i]>0){const price=artifactCost(s,i),max=TT2_ARTIFACTS[i].max||1e6;if(s.relics>=price&&t.artifacts[i]<max){s.relics-=price;t.spent[i]+=price;t.artifacts[i]++;}}
  if(a.type==='talent'&&Number.isInteger(i)&&i>=0&&i<TT2_TREE.length&&canBuyTalent(t,i,s.best)){t.points-=TT2_TREE[i].cost[t.tree[i]];t.tree[i]++;}
  if(a.type==='resetTalents'){t.points+=spentPoints(t);t.tree.fill(0);t.mana=Math.min(t.mana,manaMax(s));note(s,'技能點已返還。網頁版目前提供免費重配。');}
  if(a.type==='build'&&Number.isInteger(i)&&i>=0&&i<7)t.build=(['tap','pet','ship','clone','dagger','heavenly','goldGun'] as Build[])[i];
- if(a.type==='prestige'&&s.best>=60&&!s.trial){const gain=relicGain(s),reset=fresh(s.last);for(const key of ['best','prestiges','taps','totalKills','diamonds','weapons','gear','equipped','dust','lootCounter','bossKills','seen','achievements','daily','loginDay','streak','weekly','worldBest','log'] as const)Object.assign(reset,{[key]:structuredClone(s[key])});reset.tt2=structuredClone(t);reset.tt2.extraHeroes.fill(0);reset.tt2.petCharge=0;reset.tt2.lastPetHit={...ZERO};reset.tt2.cloneAt=reset.last;reset.tt2.lastCloneHit={...ZERO};reset.tt2.mana=manaMax(reset);reset.prestiges++;reset.relics=s.relics+gain;reset.tt2.relicsCollected=t.relicsCollected+gain;reset.daily.prestiges++;reset.hp=health(reset);note(reset,`蛻變完成，獲得 ${gain} 聖物。`);return reset;}
+ if(a.type==='prestige'&&s.best>=PRESTIGE_DEFAULTS.minimumStage&&!s.trial){const gain=relicGain(s),reset=fresh(s.last);for(const key of ['best','prestiges','taps','totalKills','diamonds','weapons','gear','equipped','dust','lootCounter','bossKills','seen','achievements','daily','loginDay','streak','weekly','worldBest','log'] as const)Object.assign(reset,{[key]:structuredClone(s[key])});reset.tt2=structuredClone(t);reset.tt2.extraHeroes.fill(0);reset.tt2.petCharge=0;reset.tt2.lastPetHit={...ZERO};reset.tt2.cloneAt=reset.last;reset.tt2.lastCloneHit={...ZERO};reset.tt2.mana=manaMax(reset);reset.prestiges++;reset.relics=s.relics+gain;reset.tt2.relicsCollected=t.relicsCollected+gain;reset.daily.prestiges++;reset.hp=health(reset);note(reset,`蛻變完成，獲得 ${gain} 聖物。`);return reset;}
  if(a.type==='achievement'&&Number.isInteger(i)&&TT2_ACHIEVEMENTS[i]&&!UNMEASURED_ACHIEVEMENTS[TT2_ACHIEVEMENTS[i].type]){
   const tier=achievementTier(s,i),reward=achievementReward(s,i);
   if(reward>0){s.diamonds+=reward;s.achievements={...s.achievements,[TT2_ACHIEVEMENTS[i].type]:tier};

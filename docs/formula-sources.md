@@ -2,15 +2,15 @@
 
 每個核心公式的來源登記表：資料表、原生方法、原生預設值，或明確標記為 7.5 基準沿用、專案自訂或伺服器供給。
 
-版本 8.2.0。共 31 條公式、66 項來源條目。
+版本 8.2.0。共 31 條公式、67 項來源條目。
 
 | 狀態 | 意義 | 條目數 |
 |---|---|---|
 | `native` | 由反組譯證據確認 | 10 |
 | `table` | 取自安裝包資料表 | 18 |
-| `default` | 原生靜態預設值，線上可覆蓋 | 14 |
-| `baseline-75` | 沿用 7.5 基準，尚未對 8.2 核實 | 1 |
-| `table-differs` | 安裝包有值但引擎目前未照做 | 9 |
+| `default` | 原生靜態預設值，線上可覆蓋 | 15 |
+| `baseline-75` | 沿用 7.5 基準，尚未對 8.2 核實 | 0 |
+| `table-differs` | 安裝包有值但引擎目前未照做 | 10 |
 | `invented` | 本專案自訂，安裝包未提供 | 10 |
 | `server` | 原生為伺服器變數，安裝包未帶值 | 4 |
 
@@ -163,7 +163,8 @@ max(1, floor(關卡^1.7 ÷ 100 × PrestigeRelic))，最高關卡到 60 後開放
 | 來源條目 | 狀態 | 依據 |
 |---|---|---|
 | 指數 1.7 與除數 100 | `table-differs` | `reference/tt2/8.2.0/servervar-defaults.json`；原生沒有「關卡^指數 ÷ 常數」這種寫法：PrestigeModel.GetBonusRelicsFromStageCount （RVA 0x23ff6cc）把係數從 ServerVarsModel 的靜態區塊載入（ldr d9,[x8,#0x170] 等，偏移已逐一對上欄位名），不是程式裡的常數。對應的具名 [ServerVar] 欄位有十個——relicStageBase、relicStageBase2、relicStageExpo、relicStageExpo2、relicStageExpo3、relicStageExpoMax3、relicStageMult1–3 與 relicStageOffset。**先前記為「安裝包一個值都沒帶」，那是變數表的狀況；編譯期預設值都有**：relicStageMult1 3、relicStageMult2 1.5、relicStageMult3 5e-07、relicStageBase 1.21、relicStageBase2 1.002、relicStageExpo 0.48、relicStageExpo2 1.005、relicStageOffset −56。**算式只讀出一部分**：關卡先被 relicsStageMax 夾住，接著至少有三段——1.5 × (關卡 − 56)、3 × 1.21^(關卡^0.48)、以及一段含 Math.Min 與多層 Math.Pow 的 1.002 系項——再以 GHDouble 組合，尚未完整還原，因此引擎維持 7.5 近似的 1.7 與 100。 |
-| 開放門檻第 60 關 | `baseline-75` | 沿用 7.5 基準；安裝包未見對應的蛻變開放關卡欄位。 |
+| 開放門檻第 60 關 | `default` | `reference/tt2/8.2.0/prestige-unlock-evidence.json`；不是 7.5 留下的猜測：[ServerVar] minimumPrestigeStage 的編譯期預設值就是 60，而且它正是 PrestigeModel.GetPrestigeStage 結尾那個 System.Math.Max 的第二個引數，也就是「這次蛻變要打到第幾關」的下限，CanPrestige 只是拿關卡和它比 >=。先前記為「安裝包未見對應欄位」是沒找到名字——改以指令編碼掃描（ldr Wt,[Xn,#0xbec] 除兩個暫存器欄位外完全固定）才找出全部三個讀取點。引擎把這個數字寫在 PRESTIGE_DEFAULTS.minimumStage，relicGain、discover 與 prestige 三處共用。線上可覆蓋，故為 default。 |
+| 門檻隨歷史最高關卡上升的那一層 | `table-differs` | `reference/tt2/8.2.0/prestige-unlock-evidence.json`；原生的門檻不是固定 60：GetPrestigeStage = Math.Max(floor(prestigeMsPercentRequirement × (基準 − 進階起點) + 進階起點), minimumPrestigeStage)，係數的編譯期預設值是 float 0.5，基準取自 maxPrestigeStageCount，也就是要推到歷史最高的一半才能再蛻變。引擎沒有這一層——歷史最高到過 60 就一直能蛻變。第一次蛻變前兩者等價。未採用，已列入 ROADMAP 待決定的取捨第 8 條。 |
 | 至少一顆聖物的下限 | `invented` | 引擎自訂：開放後即使在第一關蛻變也給一顆，安裝包未見對應下限。 |
 | 額外的聖物乘數（累加、季節、新手） | `server` | `reference/tt2/8.2.0/native-server-var-fields.json`；原生另有 additiveRelicMultiplier、seasonalRelicMultiplier 與新手加成三條乘數，共 31 個含 relic 的 [ServerVar] 欄位，包內只有 additiveRelicMultiplierMax（150000）與 relicsStageMax（180000）兩個有值；本專案尚未實作這三條乘數。 |
 

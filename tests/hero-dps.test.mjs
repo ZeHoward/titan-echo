@@ -82,5 +82,5 @@ test('這個差異登記為 table-differs，理由與影響寫在登記表裡', 
     formula.parts.filter(part => part.status === 'table-differs').map(() => formula.id));
   assert.deepEqual(differs.sort(),
     ['bossHealthMod', 'heroDamage', 'monsterGold', 'monsterHealth', 'monsterHealth', 'perks',
-      'petBonus', 'prestigeRelics', 'skillPoints']);
+      'petBonus', 'prestigeRelics', 'prestigeRelics', 'skillPoints']);
 });
