@@ -17,3 +17,7 @@
 /* 戰鬥圖的底緣和傷害數值列是相接的，所以「點擊巨獸，揮劍出擊」放在圖內底部一樣會壓到。
    手機本來就是用點的，這句引導在底部說明列的「觸摸攻擊！」已經有了，這裡不再重複。 */
 @media(max-width:780px){.tap-prompt{display:none}}
+/* 資源列：換行會把整列撐高、壓到下面的怪物血條，但不換行又會把鑽石裁掉。
+   手機上改成把「金幣」「聖物」這些文字標籤收起來——每一項前面都有自己的圖示，
+   省下的寬度剛好讓三個數值單行放得下。 */
+@media(max-width:780px){.currency{flex-wrap:nowrap;gap:8px}.currency small{display:none}.currency strong{font-size:17px}}
