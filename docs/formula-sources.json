@@ -361,6 +361,32 @@
       ]
     },
     {
+      "id": "petBonus",
+      "module": "lib/tt2-rules.ts",
+      "export": "petBonus",
+      "expression": "單隻寵物的加成 = (bonusBase + bonusInc × 等級) × 改良乘數 ^ 段數，未出戰的只取 GetPassivePercentage 那一部分",
+      "parts": [
+        {
+          "part": "括號內與改良乘數的位置",
+          "status": "native",
+          "ref": "pet-growth-evidence.json",
+          "note": "原生 PetInfo.GetActiveBonus 先呼叫 GetImprovementBonus，再算 (bonusBase + bonusInc × 等級) × improvementBonus × Bonus(bonusType)，三個因子的位置與引擎相同。引擎乘的第三項是 <family>Pet<group>Effect 與 EquipmentPetEffect，是否等同原生的 Bonus(bonusType) 尚未逐項對照。"
+        },
+        {
+          "part": "被動加成繞著 identity 混合",
+          "status": "native",
+          "ref": "pet-growth-evidence.json",
+          "note": "原生 GetPassiveBonus = identity + (主動值 − identity) × 比例，identity 取自 BonusModel.GetBonusIdentity；與引擎的 additive ? full × fraction : 1 + (full − 1) × fraction 相同——加法型的 identity 是 0，乘法型是 1。"
+        },
+        {
+          "part": "改良段的間隔與上限",
+          "status": "table-differs",
+          "ref": "pet-growth-evidence.json",
+          "note": "原生是 Min(Floor((等級 − petImprovementLevelStart) ÷ petImprovementLevelDelta), maxImprovementLevels)，兩個 [ServerVar] 的編譯期預設值是 100 與 20；引擎用的是 max(0, floor((min(等級, maxImprovementLevels) − 100) ÷ 50))。三處不同：每段的等級間隔 20 對 50、maxImprovementLevels 原生夾的是段數而引擎夾的是等級、原生沒有把段數夾到 0 以上（等級低於 100 時乘數小於 1）。暫不套用：以 improvementBonus = 1.5 的 21 隻為例，等級 1 時原生只有引擎的 13%、100 級相同、200 級 3.4 倍、1000 級 5.7 萬倍、1600 級 8.4×10^7 倍，早期變弱後期暴增，等於整條寵物曲線重來，已列入 ROADMAP 的待決定取捨。PetType.Endgame 另走 endGamePetImprovementLevelStart／Delta（皆為 6），PetInfo 的 30 隻只有 Legacy 與 Exotic，用不到。"
+        }
+      ]
+    },
+    {
       "id": "petCombat",
       "module": "lib/tt2-pet-combat.ts",
       "export": "petDamageFactor",
@@ -373,10 +399,16 @@
           "note": "引擎把寵物等級切成 0–40、40–80、80 以上三段各乘不同增量；原生的兩個門檻就是 [ServerVar] petDamageIncLevel1 與 petDamageIncLevel2，編譯期預設值是 40 與 80，**與引擎既有的分段完全相同**，不必改數值。"
         },
         {
-          "part": "每段的增量與出戰比例",
-          "status": "baseline-75",
+          "part": "每段的增量",
+          "status": "table",
           "ref": "PetInfo.json",
-          "note": "每一段乘多少仍以 7.5 的 PetInfo 為準，8.2 對應欄位尚未逐格核對；未出戰寵物只取部分效果的比例也是本專案沿用的。"
+          "note": "引擎的 TT2_PETS 30 隻與 8.2 的 PetInfo 逐格核對：DamageBase 與三段 DamageInc1to40／41to80／80on，連同 BonusBase、BonusInc、ImprovementBonus、MaxImprovementLevels 與 UnlockStage 全部相同，沒有一格是 7.5 留下的。"
+        },
+        {
+          "part": "未出戰寵物只取部分效果的比例",
+          "status": "default",
+          "ref": "pet-growth-evidence.json",
+          "note": "原生 PetInfo.GetPassivePercentage 是 Min(1, gap × increment × (等級 ÷ gap))，除法是整數除法；[ServerVar] petPassiveLevelGap 的預設值是 5、petPassiveLevelIncrement 是 float 0.01，相乘後每 5 級加 0.05，與引擎的 min(1, floor(等級÷5) × 0.05) 相同。被動傷害就是主動傷害乘這個比例。"
         },
         {
           "part": "每 20 次有效點擊發動一次",
@@ -660,7 +692,6 @@
       "heroSkillValue",
       "equipmentEffect",
       "equipmentValue",
-      "petBonus",
       "artifactCost",
       "skillCost",
       "skillDuration",

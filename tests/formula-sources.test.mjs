@@ -9,8 +9,8 @@ const readable = readFileSync(new URL('../docs/formula-sources.md', import.meta.
 
 test('every core formula names a source, and every source it names exists', () => {
   assert.deepEqual(report.problems, []);
-  assert.equal(report.formulas, 30);
-  assert.equal(report.parts, 62);
+  assert.equal(report.formulas, 31);
+  assert.equal(report.parts, 66);
 });
 
 test('no export in a covered module escapes classification', () => {
@@ -29,19 +29,19 @@ test('no export in a covered module escapes classification', () => {
 
 test('the counts are recorded, so a source changing status is a visible change', () => {
   assert.deepEqual(report.counts, {
-    'table-differs': 8, 'baseline-75': 2, invented: 10, table: 17, default: 13, server: 4, native: 8,
+    'table-differs': 9, 'baseline-75': 1, invented: 10, table: 18, default: 14, server: 4, native: 10,
   });
   // Still unverified: the 7.5 baseline, this project's own choice, or a server value with no
   // compiled-in default either. Five more sources are now known-but-not-followed instead.
   const unverified = report.counts['baseline-75'] + report.counts.invented + report.counts.server;
-  assert.equal(unverified, 16);
-  assert.equal(report.counts['table-differs'], 8, '已知但未照做的項目要看得見');
+  assert.equal(unverified, 15);
+  assert.equal(report.counts['table-differs'], 9, '已知但未照做的項目要看得見');
 });
 
 test('每一處與安裝包不一致的地方都寫下來了', () => {
   const differs = register.formulas.flatMap(formula =>
     formula.parts.filter(part => part.status === 'table-differs').map(part => ({ formula, part })));
-  assert.equal(differs.length, 8);
+  assert.equal(differs.length, 9);
   const boss = differs.find(entry => entry.formula.id === 'monsterHealth');
   // The boss multiplier sequence is banded by stage in the package; the engine uses one band.
   assert.match(boss.part.note, /4,6,8,15,24/);
@@ -54,7 +54,7 @@ test('每一處與安裝包不一致的地方都寫下來了', () => {
 });
 
 test('the readable copy matches the register it was rendered from', () => {
-  assert.match(readable, /共 30 條公式、62 項來源條目/);
+  assert.match(readable, /共 31 條公式、66 項來源條目/);
   for (const formula of register.formulas) assert.ok(readable.includes(formula.id), formula.id);
   for (const status of Object.keys(register.statuses)) assert.ok(readable.includes(`\`${status}\``), status);
 });

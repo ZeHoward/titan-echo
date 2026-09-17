@@ -1,0 +1,181 @@
+{
+  "version": "8.2.0",
+  "role": "寵物成長的原生算式：三段傷害、改良段、未出戰比例，以及被動值如何由主動值縮放。",
+  "packageSha256": "8d78c9aa877e6c0b291ee2116cab855bd26c59c1d080bc654f88ecf1ff268b5f",
+  "binarySha256": "c13fc44321b1214c71ab0277a134fc3401fd7392c74a0bbb3935671c55a8713a",
+  "scriptSha256": "62c2eeb8472bb107de516e4b6ae69d3dcdf5013fb1caa87223d82a54dd203f8b",
+  "finding": "六個方法都讀得完。三段傷害的兩個門檻就是 petDamageIncLevel1／2（40／80），未出戰比例是 Min(1, gap × increment × (等級 ÷ gap))，gap = 5、increment = float 0.009999999776482582，兩者與引擎現況相同；被動傷害與被動加成也確實是主動值依該比例縮放（加成那側繞著 GetBonusIdentity）。**改良段不同**：原生是 Min(Floor((等級 − 100) ÷ 20), maxImprovementLevels)，引擎用的是 max(0, floor((min(等級, maxImprovementLevels) − 100) ÷ 50))，兩處都不一樣——每段的等級間隔是 20 不是 50，而 maxImprovementLevels 是段數上限而不是等級上限；原生也沒有把段數夾到 0 以上。",
+  "consequence": "資料本身（30 隻逐格）與傷害、比例、被動三條算式可由 baseline-75 升級；改良段的兩處差異會整條改寫寵物加成的強弱，列為不一致並交由使用者決定。",
+  "methods": {
+    "improvementBonus": {
+      "name": "PetInfo$$GetImprovementBonus",
+      "rva": "0x23b0700",
+      "bytesSha256": "a654dbc016495861fd2eb503eaa4f5e203fe5388be709b678aa08c35f049eba7"
+    },
+    "passivePercentage": {
+      "name": "PetInfo$$GetPassivePercentage",
+      "rva": "0x23b05f0",
+      "bytesSha256": "2ea3c534b90a30eff33c055e1666f667376a5795be0867016db80fb414d0b2a9"
+    },
+    "activeBonus": {
+      "name": "PetInfo$$GetActiveBonus",
+      "rva": "0x23b0e64",
+      "bytesSha256": "4aa4774419abb8607d64f5258c3b6d602b46219bb2b8c5d6b973aa3f4e5399c2"
+    },
+    "activeDamage": {
+      "name": "PetInfo$$GetActiveDamage",
+      "rva": "0x23b09a4",
+      "bytesSha256": "0a3d1b8c1afb555803e750d65cce0b708a191048d8ae17039fb5820984181555"
+    },
+    "passiveDamage": {
+      "name": "PetInfo$$GetPassiveDamage",
+      "rva": "0x23b1300",
+      "bytesSha256": "72be7dc111cd224649e3dba949136c4f2422eea419786919317740dce26caba8"
+    },
+    "passiveBonus": {
+      "name": "PetInfo$$GetPassiveBonus",
+      "rva": "0x23b13f8",
+      "bytesSha256": "b6ee5b6a3dcad068b747ef05c7f38d420e2be250d43b211c59eba73ba9de9f33"
+    }
+  },
+  "matchesEngine": {
+    "damageBands": {
+      "formula": "damageBase + inc1×min(等級, L1) + inc2×min(max(等級−L1, 0), L2−L1) + inc3×max(等級−L2, 0)",
+      "boundaries": {
+        "petDamageIncLevel1": 40,
+        "petDamageIncLevel2": 80
+      },
+      "note": "原生以兩次 op_LessThanOrEqual 分三段，逐段把前一段的整段量累加進來；引擎用 min／max 夾出同樣的三段，結果相同。"
+    },
+    "passiveShare": {
+      "formula": "Min(1, gap × increment × (等級 ÷ gap))，其中除法是整數除法",
+      "gap": 5,
+      "increment": 0.009999999776482582,
+      "note": "gap = 5、increment 是 float 0.009999999776482582，相乘後每 5 級加 0.05，與引擎的 min(1, floor(等級÷5)×0.05) 相同。"
+    },
+    "passiveGetters": {
+      "damage": "GetPassiveDamage = GetActiveDamage(等級) × GetPassivePercentage(Level)",
+      "bonus": "GetPassiveBonus = identity + (GetActiveBonus(等級) − identity) × GetPassivePercentage(等級)，identity 取自 BonusModel.GetBonusIdentity",
+      "note": "與引擎的 additive ? full×fraction : 1 + (full−1)×fraction 相同——加法型的 identity 是 0，乘法型是 1。"
+    },
+    "activeBonusShape": {
+      "formula": "(bonusBase + bonusInc × 等級) × improvementBonus × Bonus(bonusType)",
+      "note": "括號內與改良乘數的位置都與引擎相同；引擎乘的第三項是 <family>Pet<group>Effect 與 EquipmentPetEffect，未逐項核對是否等同原生的 Bonus(bonusType)，那是另一條線。"
+    },
+    "tableRows": {
+      "count": 30,
+      "note": "引擎的 TT2_PETS 30 隻與本表的 BonusBase、BonusInc、ImprovementBonus、MaxImprovementLevels、DamageBase、UnlockStage 與三段 DamageInc 逐格相同。"
+    }
+  },
+  "differsFromEngine": {
+    "improvementStep": {
+      "native": "Min(Floor((等級 − 100) ÷ 20), maxImprovementLevels)",
+      "engine": "max(0, floor((min(等級, maxImprovementLevels) − 100) ÷ 50))",
+      "differences": [
+        "每段的等級間隔：原生 20，引擎 50",
+        "maxImprovementLevels 的角色：原生夾的是段數，引擎夾的是等級",
+        "原生沒有把段數夾到 0 以上，所以等級低於起算值時乘數小於 1"
+      ],
+      "serverVars": {
+        "petImprovementLevelStart": {
+          "offset": "0xb18",
+          "value": 100
+        },
+        "petImprovementLevelDelta": {
+          "offset": "0xb1c",
+          "value": 20
+        },
+        "endGamePetImprovementLevelStart": {
+          "offset": "0xb20",
+          "value": 6
+        },
+        "endGamePetImprovementLevelDelta": {
+          "offset": "0xb24",
+          "value": 6
+        }
+      },
+      "endgameNote": "PetType.Endgame（值 3）另走 endGame 那一組（6 與 6）；本表 30 隻只有 Legacy 與 Exotic，用不到，末日紀元寵物在 EndgamePetInfo 另計。",
+      "tableValues": {
+        "maxImprovementLevels": [
+          0,
+          1600
+        ],
+        "improvementBonus": [
+          1.0,
+          1.01802,
+          1.5,
+          1.65
+        ]
+      },
+      "sampleSteps": {
+        "1": {
+          "nativeSteps": -5,
+          "engineSteps": 0,
+          "ratioWhenImprovementIs1_5": 0.13168724279835392
+        },
+        "20": {
+          "nativeSteps": -4,
+          "engineSteps": 0,
+          "ratioWhenImprovementIs1_5": 0.19753086419753085
+        },
+        "50": {
+          "nativeSteps": -3,
+          "engineSteps": 0,
+          "ratioWhenImprovementIs1_5": 0.2962962962962963
+        },
+        "99": {
+          "nativeSteps": -1,
+          "engineSteps": 0,
+          "ratioWhenImprovementIs1_5": 0.6666666666666666
+        },
+        "100": {
+          "nativeSteps": 0,
+          "engineSteps": 0,
+          "ratioWhenImprovementIs1_5": 1.0
+        },
+        "120": {
+          "nativeSteps": 1,
+          "engineSteps": 0,
+          "ratioWhenImprovementIs1_5": 1.5
+        },
+        "200": {
+          "nativeSteps": 5,
+          "engineSteps": 2,
+          "ratioWhenImprovementIs1_5": 3.375
+        },
+        "500": {
+          "nativeSteps": 20,
+          "engineSteps": 8,
+          "ratioWhenImprovementIs1_5": 129.746337890625
+        },
+        "1000": {
+          "nativeSteps": 45,
+          "engineSteps": 18,
+          "ratioWhenImprovementIs1_5": 56815.128661595285
+        },
+        "1600": {
+          "nativeSteps": 75,
+          "engineSteps": 30,
+          "ratioWhenImprovementIs1_5": 83966617.31213821
+        },
+        "3000": {
+          "nativeSteps": 145,
+          "engineSteps": 30,
+          "ratioWhenImprovementIs1_5": 1.7803065570871866e+20
+        },
+        "10000": {
+          "nativeSteps": 495,
+          "engineSteps": 30,
+          "ratioWhenImprovementIs1_5": 7.628435190123116e+81
+        }
+      },
+      "impact": "以 improvementBonus = 1.5、maxImprovementLevels = 1600 的 21 隻為例，等級 1 時原生只有引擎的 13%，100 級相同，200 級是 3.4 倍，1000 級 5.7 萬倍，1600 級 8.4×10^7 倍——早期變弱、後期暴增，等於整條寵物曲線重來。"
+    }
+  },
+  "limits": [
+    "八個欄位都是 [ServerVar]，本表用的是編譯期預設值，不是線上值",
+    "GetActiveBonus 尾端乘的 Bonus(bonusType) 與引擎的 <family>Pet<group>Effect 未逐項對照",
+    "GetActiveBonus 開頭的 op_GreaterThanOrEqual 判斷未讀完，只確認改良乘數有被套用",
+    "Endgame 寵物與 EndgamePetInfo 未查，本表只涵蓋 PetInfo 的 30 隻"
+  ]
+}

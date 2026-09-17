@@ -2,15 +2,15 @@
 
 每個核心公式的來源登記表：資料表、原生方法、原生預設值，或明確標記為 7.5 基準沿用、專案自訂或伺服器供給。
 
-版本 8.2.0。共 30 條公式、62 項來源條目。
+版本 8.2.0。共 31 條公式、66 項來源條目。
 
 | 狀態 | 意義 | 條目數 |
 |---|---|---|
-| `native` | 由反組譯證據確認 | 8 |
-| `table` | 取自安裝包資料表 | 17 |
-| `default` | 原生靜態預設值，線上可覆蓋 | 13 |
-| `baseline-75` | 沿用 7.5 基準，尚未對 8.2 核實 | 2 |
-| `table-differs` | 安裝包有值但引擎目前未照做 | 8 |
+| `native` | 由反組譯證據確認 | 10 |
+| `table` | 取自安裝包資料表 | 18 |
+| `default` | 原生靜態預設值，線上可覆蓋 | 14 |
+| `baseline-75` | 沿用 7.5 基準，尚未對 8.2 核實 | 1 |
+| `table-differs` | 安裝包有值但引擎目前未照做 | 9 |
 | `invented` | 本專案自訂，安裝包未提供 | 10 |
 | `server` | 原生為伺服器變數，安裝包未帶值 | 4 |
 
@@ -184,6 +184,16 @@ max(1, floor(關卡^1.7 ÷ 100 × PrestigeRelic))，最高關卡到 60 後開放
 |---|---|---|
 | 每 50 關一點與起算偏移 | `table-differs` | `reference/tt2/8.2.0/servervar-defaults.json`；原生把這兩個數字放在具名 [ServerVar]：skillPointsStageDelta（每幾關一點）與 skillPointsStageMin（起算關卡），另有 skillPointsPrestigeDelta／Min 走蛻變那條線。變數表只帶 skillPointsPrestigeMax（180000），但**編譯期預設值都有**：skillPointsStageDelta 500、skillPointsStageMin 51、skillPointsPrestigeDelta 50、skillPointsPrestigeMin 50。引擎現在是「每 50 關一點、偏移 −1」，與原生的「每 500 關一點、第 51 關起算」差了十倍——照原生改，第 2000 關的技能點會從 39 點掉到個位數，天賦樹幾乎等於歸零，因此**尚未採用**，取捨記在「待決定的取捨」。原生另有一條走蛻變次數的發放線，本專案沒有實作。 |
 
+### petBonus · `lib/tt2-rules.ts` 的 `petBonus`
+
+單隻寵物的加成 = (bonusBase + bonusInc × 等級) × 改良乘數 ^ 段數，未出戰的只取 GetPassivePercentage 那一部分
+
+| 來源條目 | 狀態 | 依據 |
+|---|---|---|
+| 括號內與改良乘數的位置 | `native` | `reference/tt2/8.2.0/pet-growth-evidence.json`；原生 PetInfo.GetActiveBonus 先呼叫 GetImprovementBonus，再算 (bonusBase + bonusInc × 等級) × improvementBonus × Bonus(bonusType)，三個因子的位置與引擎相同。引擎乘的第三項是 <family>Pet<group>Effect 與 EquipmentPetEffect，是否等同原生的 Bonus(bonusType) 尚未逐項對照。 |
+| 被動加成繞著 identity 混合 | `native` | `reference/tt2/8.2.0/pet-growth-evidence.json`；原生 GetPassiveBonus = identity + (主動值 − identity) × 比例，identity 取自 BonusModel.GetBonusIdentity；與引擎的 additive ? full × fraction : 1 + (full − 1) × fraction 相同——加法型的 identity 是 0，乘法型是 1。 |
+| 改良段的間隔與上限 | `table-differs` | `reference/tt2/8.2.0/pet-growth-evidence.json`；原生是 Min(Floor((等級 − petImprovementLevelStart) ÷ petImprovementLevelDelta), maxImprovementLevels)，兩個 [ServerVar] 的編譯期預設值是 100 與 20；引擎用的是 max(0, floor((min(等級, maxImprovementLevels) − 100) ÷ 50))。三處不同：每段的等級間隔 20 對 50、maxImprovementLevels 原生夾的是段數而引擎夾的是等級、原生沒有把段數夾到 0 以上（等級低於 100 時乘數小於 1）。暫不套用：以 improvementBonus = 1.5 的 21 隻為例，等級 1 時原生只有引擎的 13%、100 級相同、200 級 3.4 倍、1000 級 5.7 萬倍、1600 級 8.4×10^7 倍，早期變弱後期暴增，等於整條寵物曲線重來，已列入 ROADMAP 的待決定取捨。PetType.Endgame 另走 endGamePetImprovementLevelStart／Delta（皆為 6），PetInfo 的 30 隻只有 Legacy 與 Exotic，用不到。 |
+
 ### petCombat · `lib/tt2-pet-combat.ts` 的 `petDamageFactor`
 
 寵物傷害係數依等級分段，出戰與未出戰分開計算
@@ -191,7 +201,8 @@ max(1, floor(關卡^1.7 ÷ 100 × PrestigeRelic))，最高關卡到 60 後開放
 | 來源條目 | 狀態 | 依據 |
 |---|---|---|
 | 等級分段的兩個門檻 40 與 80 | `default` | `reference/tt2/8.2.0/servervar-defaults.json`；引擎把寵物等級切成 0–40、40–80、80 以上三段各乘不同增量；原生的兩個門檻就是 [ServerVar] petDamageIncLevel1 與 petDamageIncLevel2，編譯期預設值是 40 與 80，**與引擎既有的分段完全相同**，不必改數值。 |
-| 每段的增量與出戰比例 | `baseline-75` | `reference/tt2/8.2.0/PetInfo.json`；每一段乘多少仍以 7.5 的 PetInfo 為準，8.2 對應欄位尚未逐格核對；未出戰寵物只取部分效果的比例也是本專案沿用的。 |
+| 每段的增量 | `table` | `reference/tt2/8.2.0/PetInfo.json`；引擎的 TT2_PETS 30 隻與 8.2 的 PetInfo 逐格核對：DamageBase 與三段 DamageInc1to40／41to80／80on，連同 BonusBase、BonusInc、ImprovementBonus、MaxImprovementLevels 與 UnlockStage 全部相同，沒有一格是 7.5 留下的。 |
+| 未出戰寵物只取部分效果的比例 | `default` | `reference/tt2/8.2.0/pet-growth-evidence.json`；原生 PetInfo.GetPassivePercentage 是 Min(1, gap × increment × (等級 ÷ gap))，除法是整數除法；[ServerVar] petPassiveLevelGap 的預設值是 5、petPassiveLevelIncrement 是 float 0.01，相乘後每 5 級加 0.05，與引擎的 min(1, floor(等級÷5) × 0.05) 相同。被動傷害就是主動傷害乘這個比例。 |
 | 每 20 次有效點擊發動一次 | `default` | `reference/tt2/8.2.0/servervar-defaults.json`；原生 [ServerVar] petTapAmount 的編譯期預設值就是 20，與引擎沿用的數字相同；PetTapCountToAttack 加成可減少次數。線上可覆蓋。 |
 
 ### eggs · `lib/tt2-collection.ts` 的 `advanceEggs`
