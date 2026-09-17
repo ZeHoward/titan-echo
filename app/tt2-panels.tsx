@@ -9,7 +9,7 @@ import {RESOURCE_PERKS,perkLevel,perkLimit,perkValue} from '../lib/tt2-perks';
 import {PET_NAMES,TALENT_NAMES,SET_NAMES,RARITY_NAMES} from '../lib/zh-tw';
 import {SKILL_TEXT} from '../lib/tt2-skill-text';
 import {TT2_PETS,TT2_GEAR,TT2_DAILY} from '../lib/tt2-data';
-import {petBonus,equipmentEffect} from '../lib/tt2-rules';
+import {petBonus,equipmentEffect,equipmentValue,type EquipmentItem} from '../lib/tt2-rules';
 import {craftPrice,EGG_INTERVAL} from '../lib/tt2-collection';
 import {TT2_ACHIEVEMENTS,TT2_DAILY_TASKS,ACHIEVEMENT_PANEL_TEXT,UNMEASURED_ACHIEVEMENTS,UNMEASURED_DAILY_TASKS,DAILY_TASK_PAID,achievementTier,achievementClaimed,achievementReward,achievementProgress,dailyTaskAvailable,dailyTaskProgress,dailyTaskDone,dailyTaskClaimed} from '../lib/engine';
 import {HEROES,SKILLS,SKILL_ORDER,SKILL_DATA,heroLevel,cost,swordMasterBaseDamage,fmt,tapDamage,dps,skillPower,skillCost,skillMana,skillDuration,skillCooldown,manaMax,manaRegen,relicGain,artifactCost,buildDamage,type State,type Action} from '../lib/engine';
@@ -18,11 +18,18 @@ type Props={s:State;tab:string;ready:boolean;basePath:string;act:(a:Omit<Action,
 const branches=['Knight','Pet','Warlord','Sorcerer','Rogue','Alchemist'];
 const branchNames=['騎士','召喚師','督軍','術士','盜賊','煉金術士'];
 const builds:[Build,string][]=[['tap','手動點擊'],['pet','寵物'],['ship','公會飛船'],['clone','影分身'],['dagger','匕首'],['heavenly','天堂'],['goldGun','金槍']];
+const gearSlotNames=['劍','頭盔','衣服','靈氣','砍痕'],gearSlotIcons=['⚔️','⛑️','🥋','🔮','✨'];
+const gearRarity=(g:typeof TT2_GEAR[number])=>g.limited?'活動':({1:'一般',2:'稀有',3:'傳說',4:'神話',5:'獨特'} as Record<number,string>)[g.rarity]||'特殊';
 export default function TT2Panels({s,tab,ready,basePath,act,onPrestige}:Props){
- const [qty,setQty]=useState(1),[search,setSearch]=useState(''),[branch,setBranch]=useState('Knight'),[selected,setSelected]=useState<Build>('clone'),[detail,setDetail]=useState(-1),[collection,setCollection]=useState('pets');
+ const [qty,setQty]=useState(1),[search,setSearch]=useState(''),[branch,setBranch]=useState('Knight'),[selected,setSelected]=useState<Build>('clone'),[detail,setDetail]=useState(-1),[collection,setCollection]=useState('pets'),[gearSlot,setGearSlot]=useState(-1);
  const t=s.tt2!,powerBoost=heroPowerBoost(t),nextMilestone=nextPlayerMilestone(s.level);
  const price=(i:number)=>cost(s,i,qty||1);
  const priceText=(i:number)=>{const p=price(i);return p.e<4?toNumber(p).toLocaleString('zh-TW',{maximumFractionDigits:2}):fmt(p);};
+ const wornGear=(slot:number)=>t.inventory.find(x=>x.id===t.equipped[slot]);
+ // 同一個部位的裝備效果不只一種（靈氣就分成加成劍、頭盔或砍痕三路），跨效果的兩件比不出高下。
+ // 所以「勝過目前這件」只認同部位、同效果、主屬性數值更高的；部位空著時任何一件都算贏。
+ const gearBetter=(item:EquipmentItem)=>{const g=TT2_GEAR[item.definition],worn=wornGear(g.slot);if(!worn)return true;if(worn.id===item.id)return false;return TT2_GEAR[worn.definition].effect===g.effect&&equipmentValue(item)>equipmentValue(worn);};
+ const gearUpgrades=(slot:number)=>t.inventory.filter(x=>TT2_GEAR[x.definition].slot===slot&&gearBetter(x)).length;
  return <fieldset className="content-fieldset" disabled={!ready}>
  <p className="panel-note">點擊泰坦二代 7.5 規則校正版 · <a href={`${basePath}rules.html`} target="_blank" rel="noreferrer">已還原／仍待完成 ↗</a></p>
  {tab==='heroes'?<>
@@ -48,9 +55,12 @@ export default function TT2Panels({s,tab,ready,basePath,act,onPrestige}:Props){
   <button className="outline-button full-width" disabled={!spentPoints(t)} onClick={()=>act({type:'resetTalents'})}>返還技能點（網頁版暫時免費）</button>
  </>:tab==='equipment'?<>
   <div className="content-heading"><h3>裝備 · {t.inventory.length} / 100</h3><p>劍、頭盔、衣服、靈氣、砍痕 · 工藝碎片 {t.shards}</p></div>
+  <div className="equipment-slots">{gearSlotNames.map((name,slot)=>{const worn=wornGear(slot),g=worn&&TT2_GEAR[worn.definition],up=gearUpgrades(slot);return <button key={name} className={gearSlot===slot?'chosen':g?undefined:'vacant'} aria-pressed={gearSlot===slot} onClick={()=>setGearSlot(gearSlot===slot?-1:slot)}><span aria-hidden="true">{gearSlotIcons[slot]}</span><b>{name}</b>{worn&&g?<><small>{gearRarity(g)}</small><small>等級 {worn.level}</small></>:<small>未裝備</small>}{!!up&&<em>▲{up}</em>}</button>;})}</div>
+  <p className="panel-note">點一個部位只列該部位，再點一次看全部。▲ 是背包裡勝過目前這件的件數：同部位、同效果、主屬性數值更高；部位空著時算所有同部位裝備。靈氣分成加成劍、頭盔或砍痕三路，效果不同的兩件比不出高下，不列入。</p>
   <p className="panel-note">首次通過第 16 關後每 20 關掉落。主屬性採原版公式；掉落等級與品質分布暫為網頁近似，副屬性待還原。集齊套裝後，丟棄裝備仍保留收藏。</p>
   {!t.inventory.length&&<p>尚無裝備，繼續推進關卡或領取登入獎勵。</p>}
-  {t.inventory.map(item=>{const g=TT2_GEAR[item.definition],equipped=t.equipped[g.slot]===item.id;return <article className="feature-card" key={item.id}><h3>{['⚔️ 劍','🪖 頭盔','🥋 衣服','🔮 靈氣','✨ 砍痕'][g.slot]} · 等級 {item.level}</h3><small>{SET_NAMES[g.set]||'一般裝備'} · {g.limited?'活動':({1:'一般',2:'稀有',3:'傳說',4:'神話',5:'獨特'} as Record<number,string>)[g.rarity]||'特殊'} · 編號 {item.id}</small><p>{effectLabel(g.effect)} {effectText(g.effect,equipmentEffect(t,item))}</p><div className="feature-actions"><button className="buy-button" disabled={equipped} onClick={()=>act({type:'equip',index:item.id})}>{equipped?'已裝備':'裝備'}</button><button className="outline-button" disabled={equipped} onClick={()=>act({type:'gearDiscard',index:item.id})}>丟棄</button></div></article>;})}
+  {!!t.inventory.length&&gearSlot>=0&&!t.inventory.some(x=>TT2_GEAR[x.definition].slot===gearSlot)&&<p>背包裡沒有{gearSlotNames[gearSlot]}。</p>}
+  {t.inventory.filter(item=>gearSlot<0||TT2_GEAR[item.definition].slot===gearSlot).map(item=>{const g=TT2_GEAR[item.definition],equipped=t.equipped[g.slot]===item.id;return <article className="feature-card" key={item.id}><h3>{gearSlotIcons[g.slot]} {gearSlotNames[g.slot]} · 等級 {item.level}{!equipped&&gearBetter(item)?<em className="gear-upgrade">▲ 勝過目前這件</em>:null}</h3><small>{SET_NAMES[g.set]||'一般裝備'} · {gearRarity(g)} · 編號 {item.id}</small><p>{effectLabel(g.effect)} {effectText(g.effect,equipmentEffect(t,item))}</p><div className="feature-actions"><button className="buy-button" disabled={equipped} onClick={()=>act({type:'equip',index:item.id})}>{equipped?'已裝備':'裝備'}</button><button className="outline-button" disabled={equipped} onClick={()=>act({type:'gearDiscard',index:item.id})}>丟棄</button></div></article>;})}
   {!!s.gear.length&&<details><summary>舊版封存裝備 {s.gear.length} 件</summary>{s.gear.map(g=><p key={g.id}>#{g.id} · 原部位 {g.slot+1} · 原效果 {g.power.toFixed(3)}</p>)}</details>}
  </>:tab==='collection'?<>
   <div className="collection-tabs">{[['pets','寵物'],['sets','套裝'],['achievements','成就'],['builds','流派係數']].map(([id,label])=><button key={id} className={collection===id?'chosen':''} onClick={()=>setCollection(id)}>{label}</button>)}</div>
