@@ -42,7 +42,134 @@
   "sharedCurve": {
     "method": "MonsterModel.GetMonsterBase",
     "rva": "0x2325c4c",
-    "signature": "private GHDouble GetMonsterBase(int stageNum, int levelOff, int transcendenceLevelOff, GHDouble mult, GHDouble base1, GHDouble base2, GHDouble base3, double expo1, double expo2, double expo3, double expo4)"
+    "signature": "private GHDouble GetMonsterBase(int stageNum, int levelOff, int transcendenceLevelOff, GHDouble mult, GHDouble base1, GHDouble base2, GHDouble base3, double expo1, double expo2, double expo3, double expo4)",
+    "callsInOrder": [
+      "System.Math$$Min",
+      "GHDouble$$Pow",
+      "GHDouble$$op_Multiply",
+      "System.Math$$Max",
+      "System.Math$$Pow",
+      "GHDouble$$Pow",
+      "GHDouble$$op_Multiply",
+      "System.Math$$Max",
+      "System.Math$$Pow",
+      "GHDouble$$Pow",
+      "GHDouble$$op_Division"
+    ],
+    "formula": "mult × base1^min(關卡, levelOff) × base2^(expo1 × max(關卡−levelOff, 0)^expo2) ÷ base3^(expo3 × max(關卡−transcendenceLevelOff, 0)^expo4)",
+    "coefficients": {
+      "health": {
+        "mult": 17.5,
+        "base1": 1.38,
+        "base2": 10.0,
+        "base3": 10.0,
+        "expo1": 0.03,
+        "expo2": 1.098,
+        "expo3": 1.0,
+        "expo4": 1.098,
+        "levelOff": 100,
+        "transcendenceLevelOff": 180000
+      },
+      "gold": {
+        "mult": 17.5,
+        "base1": 1.38,
+        "base2": 10.0,
+        "base3": 10.0,
+        "expo1": 0.04,
+        "expo2": 1.036,
+        "expo3": 1.0,
+        "expo4": 1.098,
+        "levelOff": 100,
+        "transcendenceLevelOff": 180000
+      }
+    },
+    "comparison": [
+      {
+        "stage": 1,
+        "nativeHealthLog10": 1.383,
+        "engineHealthLog10": 1.255,
+        "nativeGoldLog10": 1.383,
+        "engineGoldLog10": 0.699
+      },
+      {
+        "stage": 10,
+        "nativeHealthLog10": 2.642,
+        "engineHealthLog10": 2.34,
+        "nativeGoldLog10": 2.642,
+        "engineGoldLog10": 1.633
+      },
+      {
+        "stage": 50,
+        "nativeHealthLog10": 8.237,
+        "engineHealthLog10": 7.163,
+        "nativeGoldLog10": 8.237,
+        "engineGoldLog10": 5.785
+      },
+      {
+        "stage": 100,
+        "nativeHealthLog10": 15.231,
+        "engineHealthLog10": 13.192,
+        "nativeGoldLog10": 15.231,
+        "engineGoldLog10": 10.976
+      },
+      {
+        "stage": 250,
+        "nativeHealthLog10": 22.584,
+        "engineHealthLog10": 31.278,
+        "nativeGoldLog10": 22.417,
+        "engineGoldLog10": 26.546
+      },
+      {
+        "stage": 500,
+        "nativeHealthLog10": 36.817,
+        "engineHealthLog10": 61.422,
+        "nativeGoldLog10": 35.082,
+        "engineGoldLog10": 52.497
+      },
+      {
+        "stage": 1000,
+        "nativeHealthLog10": 67.818,
+        "engineHealthLog10": 121.709,
+        "nativeGoldLog10": 61.22,
+        "engineGoldLog10": 104.399
+      },
+      {
+        "stage": 2000,
+        "nativeHealthLog10": 134.683,
+        "engineHealthLog10": 242.283,
+        "nativeGoldLog10": 114.966,
+        "engineGoldLog10": 208.203
+      },
+      {
+        "stage": 5000,
+        "nativeHealthLog10": 353.262,
+        "engineHealthLog10": 604.004,
+        "nativeGoldLog10": 281.367,
+        "engineGoldLog10": 519.614
+      },
+      {
+        "stage": 10000,
+        "nativeHealthLog10": 746.924,
+        "engineHealthLog10": 1206.874,
+        "nativeGoldLog10": 566.721,
+        "engineGoldLog10": 1038.632
+      },
+      {
+        "stage": 40000,
+        "nativeHealthLog10": 3395.798,
+        "engineHealthLog10": 4824.092,
+        "nativeGoldLog10": 2352.28,
+        "engineGoldLog10": 4152.744
+      },
+      {
+        "stage": 98000,
+        "nativeHealthLog10": 9072.571,
+        "engineHealthLog10": 11817.38,
+        "nativeGoldLog10": 5937.81,
+        "engineGoldLog10": 10173.36
+      }
+    ],
+    "note": "十個參數的編譯期預設值都解出來了（見 servervar-defaults.json）。transcendenceLevelOff 是 180000，遠高於關卡上限 98000，所以在可玩範圍內除數恆為 1。"
   },
   "staticBlock": [
     {
@@ -204,7 +331,8 @@
     "consequence": "怪物血量與金幣曲線的每一個係數都是 [ServerVar]，安裝包的兩張變數表沒有帶值；其中一部分在 ServerVarsModel 的類別建構式有編譯期預設值（見 servervar-defaults.json），但預設值不是線上值，線上可整份覆蓋"
   },
   "limits": [
-    "只證明公式讀哪些具名變數，不證明線上使用的數值",
-    "GetMonsterBase 內部如何組合這些參數尚未逐式還原"
+    "只證明公式的形狀與編譯期預設值，不證明線上使用的數值",
+    "對照表是「基礎值」的對照，不含頭目倍率、榮譽偏移與各項減免",
+    "引擎尚未改用這條曲線；差距與取捨記在 ROADMAP 的「待決定的取捨」"
   ]
 }

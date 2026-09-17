@@ -10,9 +10,9 @@
 | `table` | 取自安裝包資料表 | 16 |
 | `default` | 原生靜態預設值，線上可覆蓋 | 4 |
 | `baseline-75` | 沿用 7.5 基準，尚未對 8.2 核實 | 4 |
-| `table-differs` | 安裝包有值但引擎目前未照做 | 2 |
+| `table-differs` | 安裝包有值但引擎目前未照做 | 5 |
 | `invented` | 本專案自訂，安裝包未提供 | 11 |
-| `server` | 原生為伺服器變數，安裝包未帶值 | 13 |
+| `server` | 原生為伺服器變數，安裝包未帶值 | 10 |
 
 ## 逐條登記
 
@@ -23,7 +23,7 @@
 | 來源條目 | 狀態 | 依據 |
 |---|---|---|
 | 頭目倍率序列 [2,3,4,5,8] | `table-differs` | `reference/tt2/8.2.0/TitanScalingInfo.json`；安裝包的 ThemeMultiplierSequence 分四段：關卡 1–5 為 2,3,4,5,8、6–39 為 4,6,8,15,24、40–59 為 8,12,16,30,48、60 起回到 2,3,4,5,8，四個來源變體（含 A／B／C）在這四列完全一致。引擎對所有關卡只用第一段，因此 6–59 關的頭目血量偏低。**尚未套用**，原因有三：一、選列不是關卡的純函數——MonsterModel.StageChangedPreSpawnHandler 會呼叫 UpdateCurrentScalingInfo，後者用 GetScalingIndex 從目前索引往前掃，GetCurrentScalingInfo 只是對這個有狀態的索引做邊界檢查後取 list[index]；二、換段時還會先 RemoveCurrentScalingBonuses 再以 BonusModel.ModifyBonus 套用該列的 bonusA／bonusB，倍率序列只是該列的一部分；三、themeMultiplierSequence 同時是 ServerVarsModel 的 [ServerVar] 靜態欄位，線上可整份覆蓋。 |
-| 基礎值 18 與每關成長率 1.32 | `server` | `reference/tt2/8.2.0/monster-curve-evidence.json`；原生沒有「基礎值 × 成長率^關卡」這種寫法：MonsterModel.GetMonsterBaseHP 把關卡先加上 ActiveHonourAmount × honourStageOffset（安裝包值 250），再呼叫共用的 GetMonsterBase，參數是 monsterHPLevelOff、monsterTransendenceHPLevelOff、monsterHPMult、monsterHPBase1–3 與 monsterHPExpo1–4 共十個具名 [ServerVar]，**安裝包一個值都沒帶**。目前的 18 與 1.32 是 7.5 基準的近似，不是原版係數。另外 MonsterHPScaling 的 A／B 變體彼此不同（B 在關卡 1–3 為 0.3／0.4／0.475），屬 A／B 指派結果。 |
+| 基礎值 18 與每關成長率 1.32 | `table-differs` | `reference/tt2/8.2.0/monster-curve-evidence.json`；原生沒有「基礎值 × 成長率^關卡」這種寫法：MonsterModel.GetMonsterBaseHP 把關卡先加上 ActiveHonourAmount × honourStageOffset（安裝包值 250），再呼叫共用的 GetMonsterBase，其形狀已逐式還原為 mult × base1^min(關卡, levelOff) × base2^(expo1 × max(關卡−levelOff,0)^expo2) ÷ base3^(expo3 × max(關卡−transcendenceLevelOff,0)^expo4)。十個具名 [ServerVar] 的編譯期預設值也都解出來了：mult 17.5、base1 1.38、base2／base3 10、expo1 0.03、expo2 1.098、expo3 1、expo4 1.098、levelOff 100、transcendenceLevelOff 180000（高於關卡上限，故除數在可玩範圍恆為 1）。**尚未採用**：照原生算，基礎血量在第 250 關之後就低於引擎現值，第 2000 關差 10^107、第 98000 關差 10^2745，等於整條難度曲線換掉；金幣曲線同樣要一起換，英雄傷害那邊也還多著一項 1.035。取捨記在 ROADMAP 的「待決定的取捨」。另外 MonsterHPScaling 的 A／B 變體彼此不同（B 在關卡 1–3 為 0.3／0.4／0.475），屬 A／B 指派結果。 |
 | MonsterHP 減免上限 0.9 | `invented` | 引擎自訂的安全上限，避免血量歸零；安裝包未見對應上限。 |
 
 ### monsterGold · `lib/engine.ts` 的 `goldReward`
@@ -32,7 +32,7 @@
 
 | 來源條目 | 狀態 | 依據 |
 |---|---|---|
-| 基礎值 5 與成長率 1.27 | `server` | `reference/tt2/8.2.0/monster-curve-evidence.json`；原生 MonsterModel.GetMonsterBaseGold 走的是與血量同一條 GetMonsterBase，參數為 monsterGoldLevelOff、monsterTransendenceGoldLevelOff、monsterGoldMult、monsterGoldBase1–3 與 monsterGoldExpo1–4 共十個具名 [ServerVar]，安裝包同樣未帶值。目前的 5 與 1.27 是 7.5 基準的近似。 |
+| 基礎值 5 與成長率 1.27 | `table-differs` | `reference/tt2/8.2.0/monster-curve-evidence.json`；原生 MonsterModel.GetMonsterBaseGold 走的是與血量同一條 GetMonsterBase，參數為 monsterGoldLevelOff、monsterTransendenceGoldLevelOff、monsterGoldMult、monsterGoldBase1–3 與 monsterGoldExpo1–4 共十個具名 [ServerVar]；兩張變數表都沒帶值，但編譯期預設值已解出：mult 17.5、base1 1.38、base2／base3 10、expo1 0.04、expo2 1.036、expo3 1、expo4 1.098、levelOff 100、transcendenceLevelOff 180000。目前的 5 與 1.27 是 7.5 基準的近似，**尚未採用**原生曲線——它必須與血量曲線一起換，取捨記在「待決定的取捨」。 |
 | 加成代號（GoldAll、JackpotGold、ChestAmount…） | `table` | `reference/tt2/8.2.0/native-bonus-types.json`；代號對照原生 BonusType 列舉，數值來自神器與天賦資料表。 |
 | 寶箱泰坦基礎機率 0.02 | `server` | 原生對應欄位是 [ServerVar]，安裝包未帶值。 |
 
@@ -50,7 +50,7 @@ round(8 + 關卡 × 148 ÷ (32000 + 關卡))
 
 | 來源條目 | 狀態 | 依據 |
 |---|---|---|
-| bossHPModBase 與 bossHPModStageMult | `server` | `reference/tt2/8.2.0/monster-curve-evidence.json`；原生除了 ThemeMultiplierSequence 另有這兩個 [ServerVar] 參與頭目血量，安裝包未帶值，本專案未實作。 |
+| bossHPModBase 與 bossHPModStageMult | `table-differs` | `reference/tt2/8.2.0/servervar-defaults.json`；原生除了 ThemeMultiplierSequence 另有這兩個 [ServerVar] 參與頭目血量。兩張變數表沒帶值，但編譯期預設值已解出：bossHPModBase 1.13、bossHPModStageMult 0.005。**本專案仍未實作**：它們如何進入頭目血量（與 ThemeMultiplierSequence 的關係、是否隨關卡累加）尚未逐式還原，而且頭目血量是建立在尚未採用原生曲線的小怪血量之上。 |
 
 ### heroDamage · `lib/engine.ts` 的 `heroDps`
 

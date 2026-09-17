@@ -4,14 +4,14 @@
   "packageSha256": "8d78c9aa877e6c0b291ee2116cab855bd26c59c1d080bc654f88ecf1ff268b5f",
   "binarySha256": "c13fc44321b1214c71ab0277a134fc3401fd7392c74a0bbb3935671c55a8713a",
   "scriptSha256": "62c2eeb8472bb107de516e4b6ae69d3dcdf5013fb1caa87223d82a54dd203f8b",
-  "finding": "ServerVarsModel 有 954 個靜態欄位，其中純量（int／float／bool／double）可從類別建構式解出 753 個的編譯期預設值。這與「安裝包的兩張變數表只帶 28 個值」是兩條不同的線索：變數表是資料，這裡是程式裡寫死的預設值，兩者同時存在的只有 26 個。",
+  "finding": "ServerVarsModel 有 954 個靜態欄位，其中純量（int／float／bool／double）可從類別建構式解出 770 個的編譯期預設值。這與「安裝包的兩張變數表只帶 28 個值」是兩條不同的線索：變數表是資料，這裡是程式裡寫死的預設值，兩者同時存在的只有 27 個。",
   "consequence": "先前標記為「原生為伺服器變數、安裝包未帶值」的項目，有一部分其實有預設值可對照；但預設值不是線上值——每一個都是 [ServerVar]，伺服器可以整份覆蓋，因此引用它時狀態是 default（原生靜態預設值，線上可覆蓋），不是 native。",
   "selfCheck": {
     "helperUpgradeBase": 1.0800000429153442,
     "playerUpgradeCostBase": 5.0,
     "playerUpgradeCostGrowth": 1.0750000476837158
   },
-  "recoveredCount": 753,
+  "recoveredCount": 770,
   "recovered": {
     "maxStage": {
       "type": "int",
@@ -283,6 +283,16 @@
       "offset": "0x124",
       "value": 1200.0
     },
+    "inactiveDelayPerSpawn": {
+      "type": "float",
+      "offset": "0x138",
+      "value": 2.25
+    },
+    "minManaStrips": {
+      "type": "int",
+      "offset": "0x13c",
+      "value": 1
+    },
     "maxManaStrips": {
       "type": "int",
       "offset": "0x140",
@@ -297,6 +307,16 @@
       "type": "int",
       "offset": "0x14c",
       "value": 15
+    },
+    "playerPollFinalizationIntervalCheck": {
+      "type": "float",
+      "offset": "0x150",
+      "value": 10.0
+    },
+    "playerPollMinPrestigeCount": {
+      "type": "int",
+      "offset": "0x154",
+      "value": 1
     },
     "announcementManualRefreshCooldown": {
       "type": "int",
@@ -432,6 +452,11 @@
       "type": "bool",
       "offset": "0x210",
       "value": true
+    },
+    "relicsStageMax": {
+      "type": "int",
+      "offset": "0x214",
+      "value": 180000
     },
     "needPrestigeBeforeSalvageDisenchant": {
       "type": "bool",
@@ -1113,6 +1138,11 @@
       "offset": "0x510",
       "value": 0.5
     },
+    "equipmentLevelReductionMin": {
+      "type": "int",
+      "offset": "0x514",
+      "value": 357803
+    },
     "equipmentLevelReductionAmount": {
       "type": "float",
       "offset": "0x518",
@@ -1383,6 +1413,16 @@
       "offset": "0x634",
       "value": 1.2000000476837158
     },
+    "fairyNeuralNetUsageChance": {
+      "type": "float",
+      "offset": "0x638",
+      "value": 0.949999988079071
+    },
+    "fairyNeuralNetTrainedMaxStage": {
+      "type": "int",
+      "offset": "0x63c",
+      "value": 160000
+    },
     "fairyChallengeTournamentRateLimitedSpawnAmount": {
       "type": "int",
       "offset": "0x640",
@@ -1612,6 +1652,16 @@
       "type": "bool",
       "offset": "0x728",
       "value": true
+    },
+    "upgradeAllHelperStageRequirement": {
+      "type": "int",
+      "offset": "0x72c",
+      "value": 10000
+    },
+    "helperAutoUpgradeIntervalSecs": {
+      "type": "int",
+      "offset": "0x730",
+      "value": 5
     },
     "autoBuyHeroesMaxBonus": {
       "type": "float",
@@ -1867,6 +1917,11 @@
       "type": "int",
       "offset": "0x89c",
       "value": 100
+    },
+    "monsterTransendenceHPLevelOff": {
+      "type": "int",
+      "offset": "0x8a0",
+      "value": 180000
     },
     "monsterHPMult": {
       "type": "GHDouble",
@@ -2292,6 +2347,16 @@
       "type": "int",
       "offset": "0xae4",
       "value": 100
+    },
+    "petAutoAttackDuration": {
+      "type": "float",
+      "offset": "0xae8",
+      "value": 3.0
+    },
+    "bossQTEAttackCount": {
+      "type": "int",
+      "offset": "0xaec",
+      "value": 3
     },
     "mashQTENumTaps": {
       "type": "int",
@@ -2866,7 +2931,7 @@
     "skillPointsPrestigeMax": {
       "type": "int",
       "offset": "0xd3c",
-      "value": 0
+      "value": 200000
     },
     "skillPointsPrestigeDelta": {
       "type": "int",
@@ -2907,6 +2972,16 @@
       "type": "bool",
       "offset": "0xd5c",
       "value": false
+    },
+    "minSkillSplashMult": {
+      "type": "float",
+      "offset": "0xd60",
+      "value": 0.10000000149011612
+    },
+    "maxDefaultSplashKills": {
+      "type": "int",
+      "offset": "0xd64",
+      "value": 3
     },
     "maxSpecialSplashKills": {
       "type": "int",
@@ -3272,6 +3347,16 @@
       "type": "float",
       "offset": "0xf54",
       "value": 2532.5
+    },
+    "ascendDamageExpoScaling": {
+      "type": "float",
+      "offset": "0xf58",
+      "value": 1689.8050537109375
+    },
+    "maximumHeroAscension": {
+      "type": "int",
+      "offset": "0xf5c",
+      "value": 6
     },
     "iapDimScreenTime": {
       "type": "float",
@@ -3780,15 +3865,15 @@
     }
   },
   "unrecovered": {
-    "count": 201,
+    "count": 184,
     "byType": {
       "GHDouble": 2,
       "List<float>": 1,
       "TimeSpan": 2,
       "bool": 63,
       "double": 5,
-      "float": 20,
-      "int": 57,
+      "float": 14,
+      "int": 46,
       "int[]": 12,
       "string": 39
     },
@@ -3879,7 +3964,6 @@
       "float": [
         "adsAllActiveSkillChance",
         "adsManaPotionChance",
-        "ascendDamageExpoScaling",
         "bombGameEventCurrencyFarmingStagePercentage",
         "bombGameSkipAnimationsMult",
         "clanMessageRefreshCooldownInSeconds",
@@ -3887,39 +3971,27 @@
         "fairyDiamondMaxStageCheckMult",
         "fairyDiamondTournamentScoreCheckMult",
         "fairyMidasBonusExpo",
-        "fairyNeuralNetUsageChance",
         "fishingMinigameRarityBonusGood",
         "fishingMinigameRarityBonusPerfect",
-        "inactiveDelayPerSpawn",
         "killFadeDuration",
-        "minSkillSplashMult",
-        "petAutoAttackDuration",
         "petMidasBonusExpo",
-        "playerPollFinalizationIntervalCheck",
         "spawnInvulnerabilityDuration"
       ],
       "int": [
         "activeSkillMaxMultiCastStacks",
         "anniversaryMinigameDailyRewardLimit",
         "arTutorialStartStageDelta",
-        "bossQTEAttackCount",
         "cardShopReSyncMinSeconds",
         "clanPrestigeMinigameFarmingRewardAmount",
         "clanVaultMinigameCurrencyFarmingRewardAmount",
         "dailyCollectablesIngredients",
-        "equipmentLevelReductionMin",
         "facebookLikeDiamonds",
         "fairyAllDamageCooldownSecs",
         "fairyEquipmentCooldownSecs",
-        "fairyNeuralNetTrainedMaxStage",
         "fishingMinigameFarmingRewardAmount",
         "fishingMinigameMaxSpendLures",
-        "helperAutoUpgradeIntervalSecs",
         "huntingMinigameCurrencyFarmingRewardAmount",
         "instagramFollowDiamonds",
-        "maxDefaultSplashKills",
-        "maximumHeroAscension",
-        "minManaStrips",
         "minSecondsForATNotJoinedNotification",
         "minSecondsForATStartNotification",
         "minSecondsForAdChestNotification",
@@ -3938,12 +4010,9 @@
         "minigameHuntingCurrencyRarity4",
         "minigameTimerDisplayMin",
         "mirTutorialStartStageDelta",
-        "monsterTransendenceHPLevelOff",
-        "playerPollMinPrestigeCount",
         "prestigeRaceMinigamePrestigeRewardLimit",
         "rateGameDiamonds",
         "redditFollowDiamonds",
-        "relicsStageMax",
         "shopReSyncMinSeconds",
         "streamOfBladesTargetHitCount",
         "titanSoulsMaxPerDay",
@@ -3954,7 +4023,6 @@
         "updateInfodocsForcedResetDuration",
         "updateInfodocsHiddenResetDurationMax",
         "updateInfodocsHiddenResetDurationMin",
-        "upgradeAllHelperStageRequirement",
         "usdToVIPPoints"
       ],
       "int[]": [
@@ -4041,6 +4109,7 @@
     "pet_paradise_shovel_purchase_daily_limit",
     "raidCardCrystalLevelRank",
     "raidCardCrystalUnlockLevel",
+    "relicsStageMax",
     "skillPointsPrestigeMax"
   ],
   "limits": [

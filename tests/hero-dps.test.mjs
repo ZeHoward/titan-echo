@@ -76,8 +76,10 @@ test('這個差異登記為 table-differs，理由與影響寫在登記表裡', 
   // Why it is not simply removed: the monster curve it is paired with has no native values either.
   assert.match(growth.note, /GetRawDPS/);
   assert.match(growth.note, /1\.32/);
-  // Two known disagreements with the package now: the boss multiplier band and this growth rate.
+  // The package disagrees with the engine in several places now; this is one of them, and the list
+  // is asserted whole so a new one cannot slip in unrecorded.
   const differs = register.formulas.flatMap(formula =>
     formula.parts.filter(part => part.status === 'table-differs').map(() => formula.id));
-  assert.deepEqual(differs.sort(), ['heroDamage', 'monsterHealth']);
+  assert.deepEqual(differs.sort(),
+    ['bossHealthMod', 'heroDamage', 'monsterGold', 'monsterHealth', 'monsterHealth']);
 });

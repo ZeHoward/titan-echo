@@ -1,6 +1,6 @@
 # Titan Echo 完整復刻代辦清單
 
-更新：2026-09-17。遊戲目前為 **2.12.9**，最近完整測試 **372 項 Node 測試＋23 項 Python 匯入測試通過**。此文件是後續工作的主清單；`TT2-RULES.md` 保留歷史研究紀錄，不以舊敘述判斷目前完成度。
+更新：2026-09-17。遊戲目前為 **2.12.9**，最近完整測試 **373 項 Node 測試＋23 項 Python 匯入測試通過**。此文件是後續工作的主清單；`TT2-RULES.md` 保留歷史研究紀錄，不以舊敘述判斷目前完成度。
 
 ## 目前位置
 
@@ -16,6 +16,29 @@
 這裡放**已經查清楚、但要不要照做屬於取捨**的項目：證據都在，缺的是一個決定。
 不是「還沒查」（那在各階段的待證據欄），也不是「還沒做」（那在各階段的狀態欄）。
 做出決定後，把該項移到完成紀錄並更新對應登記。
+
+### 0. 要不要整組換成原生的數值曲線
+
+- **現況**：怪物血量、怪物金幣、英雄傷害這三條曲線，原生的形狀與係數**現在全部都解出來了**。
+  怪物側共用 `MonsterModel.GetMonsterBase`，形狀是
+  `mult × base1^min(關卡, levelOff) × base2^(expo1 × max(關卡−levelOff,0)^expo2) ÷ base3^(…)`，
+  十個係數的編譯期預設值是 mult 17.5、base1 1.38、base2／base3 10、levelOff 100、
+  血量 expo1 0.03／expo2 1.098、金幣 expo1 0.04／expo2 1.036、transcendenceLevelOff 180000
+  （高於關卡上限，除數在可玩範圍恆為 1）。英雄側則是**少一項** 1.035（見下一條）。
+  引擎現用的是 7.5 近似：血量 `18 × 1.32^關卡`、金幣 `5 × 1.27^關卡`。
+- **選項**：三條一起換／維持現狀／只換其中一條（不建議，它們是配套的）。
+- **影響**（基礎值的常用對數，見 [monster-curve-evidence.json](reference/tt2/8.2.0/monster-curve-evidence.json)）：
+
+  | 關卡 | 原生血量 | 引擎血量 | 原生金幣 | 引擎金幣 |
+  |---|---|---|---|---|
+  | 100 | 10^15.2 | 10^13.2 | 10^15.2 | 10^11.0 |
+  | 250 | 10^22.6 | 10^31.3 | 10^22.4 | 10^26.5 |
+  | 2000 | 10^134.7 | 10^242.3 | 10^115.0 | 10^208.2 |
+  | 98000 | 10^9072.6 | 10^11817.4 | 10^5937.8 | 10^10173.4 |
+
+  第 100 關以前原生較高，第 250 關以後原生遠低於引擎，而且血量與金幣同向下降。
+  換掉等於整條進度曲線重來，既有存檔的關卡位置與金幣量會對應到完全不同的難度。
+- 三條都登記為 `table-differs`，保留現值。
 
 ### 1. 英雄每級成長率 1.035 要不要移除
 
@@ -97,7 +120,7 @@
 | R02 | 完成 | 8.2 資料匯入與完整 ID 目錄 | 神器、法術、技能樹、裝備、套裝、英雄、寵物、被動等皆有版本與唯一 ID；處理新增／刪除／停用列及新增欄位；區分活動和常駐內容 |
 | R03 | 完成 | 穩定 ID 存檔遷移、規則版本與還原備份 | 舊 2.6 存檔可遷移且重跑不重複退款；新增 6 項技能與 28 組套裝不錯置；雲端舊版資料有相容讀取流程 |
 | R04 | 完成 | 大數值與數字顯示 | 取代 1e240 的實質封頂及未驗證的等級限制；巨大傷害、金幣、費用、聖物可運算與序列化，無 Infinity／NaN；雲端容量測試通過 |
-| R05 | 完成 | 來源證據與同版本比對用例 | 每個核心公式記錄表、方法或實測來源；建立升級前後、施法前後、蛻變前後對照；缺少實測的項目保留待驗證標記。**登記表見 [docs/formula-sources.md](docs/formula-sources.md)**，56 項來源中 28 項仍為待驗證、2 項與安裝包不一致 |
+| R05 | 完成 | 來源證據與同版本比對用例 | 每個核心公式記錄表、方法或實測來源；建立升級前後、施法前後、蛻變前後對照；缺少實測的項目保留待驗證標記。**登記表見 [docs/formula-sources.md](docs/formula-sources.md)**，56 項來源中 25 項仍為待驗證、5 項已知但引擎未照做 |
 
 R02 子步驟：建立 8.2 全表索引 → 逐表 schema 解析 → 以 ID 映射至現行資料 → 保留版本差異與停用標記 → 產生逐 ID 待驗收清單 → 交給 R03 遷移。此階段不直接以新版陣列覆蓋線上存檔。**R02 標記完成的範圍只有資料目錄與逐 ID 核對**；資料齊備不等於任何玩法系統已還原，後續各項仍須逐條實作與驗證。
 
@@ -233,9 +256,9 @@ R04 子步驟：找出溢位與非有限值 → 以極大存檔釘住不變量 �
    C01 暴擊 10 個欄位 0 個有值、C02 劍術大師 4 個 0 個、C03-C04 英雄 22 個 0 個、C05 泰坦與金幣 67 個 0 個、
    C06 濺射與跳關 3 個 0 個、C07 魔力 18 個 0 個、I01-I03 裝備 26 個 0 個。
 2. **程式裡寫死的編譯期預設值**：`ServerVarsModel` 的類別建構式會在任何伺服器回應之前先賦值。
-   `tools/audit-servervar-defaults.py` 從中解出 **954 個靜態欄位裡的 753 個預設值**
-   （見 [靜態預設值總表](reference/tt2/8.2.0/servervar-defaults.json)），其餘 201 個逐項列名：
-   string 39、bool 63、int 57、int[] 12、float 20、double 5、TimeSpan 2、GHDouble 2、List&lt;float&gt; 1。
+   `tools/audit-servervar-defaults.py` 從中解出 **954 個靜態欄位裡的 770 個預設值**
+   （見 [靜態預設值總表](reference/tt2/8.2.0/servervar-defaults.json)），其餘 184 個逐項列名：
+   string 39、bool 63、int 46、int[] 12、float 14、double 5、TimeSpan 2、GHDouble 2、List&lt;float&gt; 1。
    GHDouble 欄位另外處理：它是以 `GHDouble..ctor(double)` 建在堆疊上再複製進靜態區塊的，
    解出來的是**建構時的那個 double**，怪物血量與金幣曲線的八個係數就是這樣拿到的。
    劍術大師的 `costBase`／`costGrowth` 與英雄的 `helperUpgradeBase` 本來就是從這裡取得的，
@@ -370,6 +393,7 @@ C01 證據狀態：原生把暴擊參數放在 `[ServerVar]` 欄位——`player
 
 | 日期 | 項目 | 證據／結果 |
 |---|---|---|
+| 2026-09-17 | C05 怪物血量與金幣曲線逐式還原，連同係數一起（未採用） | 先修好解析器的兩個盲點：一是 GHDouble 靜態欄位——它是以 `GHDouble..ctor(double)` 建在堆疊上再把 24 位元組複製進靜態區塊，要抓的是**建構時的那個 double**；二是 capstone 會把小的 `movk` 立即數印成十進位，原本的正則只吃十六進位，漏掉了 17 個欄位。修好後解出 **770 個**預設值（原 745）。接著逐式還原 `MonsterModel.GetMonsterBase`（RVA 0x2325c4c）：呼叫順序就是算式——`Math.Min` → `GHDouble.Pow` → `op_Multiply` → `Math.Max`／`Math.Pow` → `GHDouble.Pow` → `op_Multiply` → 同一組再一次 → `op_Division`，也就是 `mult × base1^min(關卡, levelOff) × base2^(expo1 × max(關卡−levelOff,0)^expo2) ÷ base3^(expo3 × max(關卡−transcendenceLevelOff,0)^expo4)`。血量與金幣共用它，十個係數的預設值全部解出（mult 17.5、base1 1.38、base2／3 為 10、levelOff 100、血量 expo 0.03／1.098、金幣 expo 0.04／1.036、transcendenceLevelOff 180000——高於關卡上限 98000，所以除數在可玩範圍恆為 1）。`tools/audit-monster-curve.py` 除了釘住呼叫順序，還輸出 12 個關卡的原生與引擎對照（以常用對數表示，數值本身會溢位）：第 100 關原生較高，**第 250 關起原生遠低於引擎**，第 2000 關差 10^107、第 98000 關差 10^2745，金幣同向。**沒有採用**：這等於整條難度曲線換掉，而且必須與英雄傷害那條（多出來的 1.035）配套，取捨連同對照表寫進「待決定的取捨」第 0 條。`monsterHealth`、`monsterGold`、`bossHealthMod`（其 base 1.13、stageMult 0.005 也解出來了）三項由 `server` 改列 `table-differs`。373 項 Node 測試＋23 項 Python 測試通過。 |
 | 2026-09-17 | C05 每關小怪隻數改用原版算式（2.12.9） | 上一項解出的編譯期預設值立刻派上用場。`StageLogic.GetRawMonsterCountPerStage`（RVA 0x25468a0）短到可以整段讀完：依序讀 `monsterCountInc`、`monsterCountStageDelta`、`monsterCountBase`，算 `base + 關卡 × inc ÷ (delta + 關卡)`，再交給 C# 的 `Math.Round`（以 modf 取小數後比較 ±0.5，平手進偶數），整段以 float 運算。三個欄位的編譯期預設值是 8／148／32000，於是第 1 關 8 隻、第 500 關 10 隻、第 1000 關 12 隻、第 2000 關 17 隻、第 10000 關 43 隻、第 98000 關 120 隻——引擎原本固定 10 隻，**早期偏多、後期遠遠偏少**。`tools/audit-monster-count.py` 逐指令核對讀取順序與四則運算，並直接從 `servervar-defaults.json` 取值（不重複解析，兩份記錄不會漂移），輸出 12 個關卡的樣本；引擎以 `Math.fround` 逐步模擬 float 運算並實作平手進偶數，12 個樣本逐關相同。介面同步處理：一關 120 隻時原本會畫 120 個小圓點，超過 12 隻改用進度條。登記由 `server` 改為 `default`（線上仍可覆蓋）。順帶修正 `monster-curve-evidence.json` 的措辭——原本寫「安裝包沒有帶值」，正確說法是「兩張變數表沒有帶值」，因為編譯期預設值是另一條線索。新增 `tests/monster-count.test.mjs` 6 項。371 項 Node 測試＋23 項 Python 測試通過。 |
 | 2026-09-17 | R05 解出 745 個 [ServerVar] 的編譯期預設值，補上先前漏掉的第二條線索 | 專案原本的認知是「953 個 [ServerVar] 只有 28 個在包內有值」。那只對了一半：那是**變數表**的狀況，而 `ServerVarsModel` 的類別建構式還會在任何伺服器回應之前，把編譯期預設值寫進靜態區塊——劍術大師的 `costBase`／`costGrowth` 一直就是從這裡來的，只是沒有人把它整批解出來。`tools/audit-servervar-defaults.py` 走完整個建構式（0x2618 位元組），追蹤哪一個暫存器持有 `Il2CppClass.static_fields`（偏移 0xb8），把寫進去的每一個純量記下來，處理 `mov`／`movk` 立即數、rodata 載入的 `ldr q/d/s`、`dup v.2d`、以及 scaled 與 unscaled 兩種 `str`／`stp` 形式；**954 個靜態欄位解出 745 個**（int、float、bool、double），其餘 209 個**逐項列名**而不是含混帶過（string 39、bool 63、int 57、int[] 12、float 20、GHDouble 10、double 5、TimeSpan 2、List&lt;float&gt; 1）。可信度靠三重自我檢查：本專案先前手工取得的 `helperUpgradeBase`＝1.08、`playerUpgradeCostBase`＝5、`playerUpgradeCostGrowth`＝1.075，走這條路得到同一個數字（不符就中止）。與變數表互證：`hoursToCollectEgg` 兩邊都是 4、`clanNameChangeCost` 兩邊都是 800；而 `maxStage` 編譯期預設 1,000,000、被變數表覆寫成 98,000，正好示範**預設值不是線上值**。新增 `tests/servervar-defaults.test.mjs` 5 項（含引擎常數必須等於解出的值、覆蓋案例）。ROADMAP 的「伺服器參數的證據界線」一節改寫為兩條線索並說明其分別。**這批值本身還沒有接進任何公式**，接的時候一律登記為 `default`。365 項 Node 測試＋23 項 Python 測試通過。 |
 | 2026-09-17 | R05 英雄升級費用改用 8.2 的原生成長率（2.12.8） | 引擎的 1.075 是 7.5 基準，`HelperInfo.json` 也只有 `PurchaseCost1` 一欄，看起來像「包內查不到」。實際上成長率是 [ServerVar] `ServerVarsModel.helperUpgradeBase`，而它和劍術大師的 `costBase`／`costGrowth` 一樣**在程式裡有靜態預設值**：`tools/audit-helper-cost.py` 從 `ServerVarsModel..cctor` 解出唯一一次寫入，值為 float 的 **1.08**（位元 0x3f8a3d71）。它確實是費用公比而不是同名的別的東西——`HelperInfo..ctor` 讀它之後取對數存進 `helperUpgradeBaseLog`、把 base−1 存進 `helperUpgradeBaseMinusOne`，正是等比級數需要的兩個導出量，`GetPurchaseCost` 再以 `GHDouble.Pow` 乘上基礎費用（`GetMaxNumUpgrades` 用對數那個、`GetEvolveAdditionalCost` 用 base−1 那個）。引擎改用 `HELPER_DEFAULTS.costGrowth = Math.fround(1.08)` 保留 float 精度，算式結構不變，登記由 `baseline-75` 改為 `default`。**影響**：同一位英雄的下一級價格在 100 級約貴 1.6 倍、500 級約貴 10 倍、1000 級約貴 100 倍；已有等級與金幣不變。**沒解出來的部分照實記錄**：相鄰的 `helperUpgradeLevelTiers`／`Modulus`／`Offsets` 三個 int[] 由 `InitializeArray` 從中繼資料填充，本次未解出內容，可能對特定等級區間另有修正。新增 `tests/helper-cost.test.mjs` 5 項（含「引擎用的值連 float 精度都與原生相同」與「相鄰兩級的費用比就是公比」）。360 項 Node 測試＋23 項 Python 測試通過。 |

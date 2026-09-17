@@ -161,9 +161,10 @@ def main():
             words[m.group(1)] = int(m.group(2), 0)
             continue
 
-        m = re.fullmatch(r'([wx]\d+), #(0x[0-9a-f]+), lsl #(\d+)', op)
+        # capstone prints small immediates in decimal, so both spellings have to be accepted.
+        m = re.fullmatch(r'([wx]\d+), #(0x[0-9a-f]+|\d+), lsl #(\d+)', op)
         if mnemonic == 'movk' and m:
-            words[m.group(1)] = words.get(m.group(1), 0) | (int(m.group(2), 16) << int(m.group(3)))
+            words[m.group(1)] = words.get(m.group(1), 0) | (int(m.group(2), 0) << int(m.group(3)))
             continue
 
         m = re.fullmatch(r'([qds]\d+), \[(x\d+)(?:, #(0x[0-9a-f]+))?\]', op)

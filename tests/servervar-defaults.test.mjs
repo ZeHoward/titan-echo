@@ -15,12 +15,12 @@ test('證據取自釘住的那份安裝包，不是別的版本', () => {
   assert.match(evidence.binarySha256, /^[0-9a-f]{64}$/);
 });
 
-test('954 個靜態欄位裡解出 753 個預設值，其餘逐項列名而不是含混帶過', () => {
-  assert.equal(evidence.recoveredCount, 753);
-  assert.equal(Object.keys(evidence.recovered).length, 753);
+test('954 個靜態欄位裡解出 770 個預設值，其餘逐項列名而不是含混帶過', () => {
+  assert.equal(evidence.recoveredCount, 770);
+  assert.equal(Object.keys(evidence.recovered).length, 770);
   const unresolved = evidence.unrecovered;
-  assert.equal(unresolved.count, 201);
-  assert.equal(753 + 201, 954);
+  assert.equal(unresolved.count, 184);
+  assert.equal(770 + 184, 954);
   // Every unresolved field is named, so the gap can be chased rather than guessed at.
   const named = Object.values(unresolved.names).reduce((n, list) => n + list.length, 0);
   assert.equal(named, unresolved.count);
@@ -42,6 +42,8 @@ test('GHDouble 欄位解的是它被建構時的那個 double，怪物曲線的�
   assert.equal(evidence.recovered.monsterHPExpo1.value, 0.03);
   assert.ok(Math.abs(evidence.recovered.monsterHPExpo2.value - 1.098) < 1e-6);
   assert.equal(evidence.recovered.monsterHPLevelOff.value, 100);
+  // capstone prints small movk immediates in decimal; missing that hid 17 fields, this among them.
+  assert.equal(evidence.recovered.monsterTransendenceHPLevelOff.value, 180_000);
   // Two GHDouble statics are still unresolved and named as such.
   assert.equal(evidence.unrecovered.byType.GHDouble, 2);
   assert.deepEqual(evidence.unrecovered.names.GHDouble.sort(), ['maxGold', 'monsterMinGoldDrop']);

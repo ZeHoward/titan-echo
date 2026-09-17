@@ -43,6 +43,32 @@ test('the package carries none of the twenty coefficients', () => {
   assert.match(evidence.evidence.honourOffset, /honourStageOffset/);
 });
 
+test('共用曲線的形狀與十個係數都解出來了，並與引擎現值逐關對照', () => {
+  const curve = evidence.sharedCurve;
+  // The call order is the formula: Min, base1^that, x mult, then the Max/Pow tail twice.
+  assert.deepEqual(curve.callsInOrder, [
+    'System.Math$$Min', 'GHDouble$$Pow', 'GHDouble$$op_Multiply',
+    'System.Math$$Max', 'System.Math$$Pow', 'GHDouble$$Pow', 'GHDouble$$op_Multiply',
+    'System.Math$$Max', 'System.Math$$Pow', 'GHDouble$$Pow', 'GHDouble$$op_Division',
+  ]);
+  assert.deepEqual(curve.coefficients.health, {
+    mult: 17.5, base1: 1.38, base2: 10, base3: 10,
+    expo1: 0.03, expo2: 1.098, expo3: 1, expo4: 1.098,
+    levelOff: 100, transcendenceLevelOff: 180000,
+  });
+  assert.equal(curve.coefficients.gold.expo1, 0.04);
+  assert.equal(curve.coefficients.gold.expo2, 1.036);
+  // The divisor only bites past stage 180000, which is above the 98000 cap.
+  assert.ok(curve.coefficients.health.transcendenceLevelOff > 98000);
+  // The comparison is what makes "not adopted" a decision rather than an oversight: the native
+  // curve is already below the engine's by stage 250 and the gap only widens.
+  const rows = Object.fromEntries(curve.comparison.map(row => [row.stage, row]));
+  assert.ok(rows[100].nativeHealthLog10 > rows[100].engineHealthLog10, '第 100 關原生較高');
+  assert.ok(rows[250].nativeHealthLog10 < rows[250].engineHealthLog10, '第 250 關原生已較低');
+  assert.ok(rows[2000].engineHealthLog10 - rows[2000].nativeHealthLog10 > 100, '第 2000 關差距超過 100 個數量級');
+  assert.ok(rows[2000].engineGoldLog10 > rows[2000].nativeGoldLog10, '金幣同向');
+});
+
 test('the surrounding static block is recorded, including what is not implemented yet', () => {
   const names = evidence.staticBlock.map(field => field.name);
   for (const name of ['monsterCountBase', 'monsterCountInc', 'monsterCountStageDelta',

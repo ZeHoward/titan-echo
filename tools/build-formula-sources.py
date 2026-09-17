@@ -29,23 +29,33 @@ FORMULAS = [
                          '二、換段時還會先 RemoveCurrentScalingBonuses 再以 BonusModel.ModifyBonus 套用該列的 '
                          'bonusA／bonusB，倍率序列只是該列的一部分；三、themeMultiplierSequence 同時是 '
                          'ServerVarsModel 的 [ServerVar] 靜態欄位，線上可整份覆蓋。'),
-              entry(part='基礎值 18 與每關成長率 1.32', status='server', ref='monster-curve-evidence.json',
+              entry(part='基礎值 18 與每關成長率 1.32', status='table-differs', ref='monster-curve-evidence.json',
                     note='原生沒有「基礎值 × 成長率^關卡」這種寫法：MonsterModel.GetMonsterBaseHP 把關卡先加上 '
                          'ActiveHonourAmount × honourStageOffset（安裝包值 250），再呼叫共用的 GetMonsterBase，'
-                         '參數是 monsterHPLevelOff、monsterTransendenceHPLevelOff、monsterHPMult、'
-                         'monsterHPBase1–3 與 monsterHPExpo1–4 共十個具名 [ServerVar]，**安裝包一個值都沒帶**。'
-                         '目前的 18 與 1.32 是 7.5 基準的近似，不是原版係數。另外 MonsterHPScaling 的 A／B 變體'
+                         '其形狀已逐式還原為 '
+                         'mult × base1^min(關卡, levelOff) × base2^(expo1 × max(關卡−levelOff,0)^expo2) '
+                         '÷ base3^(expo3 × max(關卡−transcendenceLevelOff,0)^expo4)。'
+                         '十個具名 [ServerVar] 的編譯期預設值也都解出來了：'
+                         'mult 17.5、base1 1.38、base2／base3 10、expo1 0.03、expo2 1.098、expo3 1、expo4 1.098、'
+                         'levelOff 100、transcendenceLevelOff 180000（高於關卡上限，故除數在可玩範圍恆為 1）。'
+                         '**尚未採用**：照原生算，基礎血量在第 250 關之後就低於引擎現值，'
+                         '第 2000 關差 10^107、第 98000 關差 10^2745，等於整條難度曲線換掉；'
+                         '金幣曲線同樣要一起換，英雄傷害那邊也還多著一項 1.035。'
+                         '取捨記在 ROADMAP 的「待決定的取捨」。另外 MonsterHPScaling 的 A／B 變體'
                          '彼此不同（B 在關卡 1–3 為 0.3／0.4／0.475），屬 A／B 指派結果。'),
               entry(part='MonsterHP 減免上限 0.9', status='invented',
                     note='引擎自訂的安全上限，避免血量歸零；安裝包未見對應上限。')]),
     entry(id='monsterGold', module='lib/engine.ts', export='goldReward',
           expression='5 × 1.27^(關卡-1) × 各項金幣加成',
           parts=[
-              entry(part='基礎值 5 與成長率 1.27', status='server', ref='monster-curve-evidence.json',
+              entry(part='基礎值 5 與成長率 1.27', status='table-differs', ref='monster-curve-evidence.json',
                     note='原生 MonsterModel.GetMonsterBaseGold 走的是與血量同一條 GetMonsterBase，參數為 '
                          'monsterGoldLevelOff、monsterTransendenceGoldLevelOff、monsterGoldMult、'
-                         'monsterGoldBase1–3 與 monsterGoldExpo1–4 共十個具名 [ServerVar]，安裝包同樣未帶值。'
-                         '目前的 5 與 1.27 是 7.5 基準的近似。'),
+                         'monsterGoldBase1–3 與 monsterGoldExpo1–4 共十個具名 [ServerVar]；'
+                         '兩張變數表都沒帶值，但編譯期預設值已解出：mult 17.5、base1 1.38、base2／base3 10、'
+                         'expo1 0.04、expo2 1.036、expo3 1、expo4 1.098、levelOff 100、'
+                         'transcendenceLevelOff 180000。目前的 5 與 1.27 是 7.5 基準的近似，'
+                         '**尚未採用**原生曲線——它必須與血量曲線一起換，取捨記在「待決定的取捨」。'),
               entry(part='加成代號（GoldAll、JackpotGold、ChestAmount…）', status='table', ref='native-bonus-types.json',
                     note='代號對照原生 BonusType 列舉，數值來自神器與天賦資料表。'),
               entry(part='寶箱泰坦基礎機率 0.02', status='server',
@@ -63,10 +73,13 @@ FORMULAS = [
                             '引擎原本固定 10 隻，早期偏多、後期遠遠偏少。線上可覆蓋，故為 default 而非 native。')]),
     entry(id='bossHealthMod', module='lib/engine.ts', export='health',
           expression='頭目血量在小怪基礎上再乘一組倍率',
-          parts=[entry(part='bossHPModBase 與 bossHPModStageMult', status='server',
-                       ref='monster-curve-evidence.json',
-                       note='原生除了 ThemeMultiplierSequence 另有這兩個 [ServerVar] 參與頭目血量，'
-                            '安裝包未帶值，本專案未實作。')]),
+          parts=[entry(part='bossHPModBase 與 bossHPModStageMult', status='table-differs',
+                       ref='servervar-defaults.json',
+                       note='原生除了 ThemeMultiplierSequence 另有這兩個 [ServerVar] 參與頭目血量。'
+                            '兩張變數表沒帶值，但編譯期預設值已解出：bossHPModBase 1.13、'
+                            'bossHPModStageMult 0.005。**本專案仍未實作**：它們如何進入頭目血量'
+                            '（與 ThemeMultiplierSequence 的關係、是否隨關卡累加）尚未逐式還原，'
+                            '而且頭目血量是建立在尚未採用原生曲線的小怪血量之上。')]),
     entry(id='heroDamage', module='lib/engine.ts', export='heroDps',
           expression='基礎傷害 × 等級 × 1.035^(等級-1) × 里程碑倍率 × 武器與流派加成',
           parts=[
