@@ -38,10 +38,11 @@ export function panelSyncsOn(type: string) {
   return type !== 'tap';
 }
 
-// The widest damage number is a crit at 40px type with its prefix, measured at 200px across. A
-// number is centred on the point it belongs to, so half of that has to stay clear of each edge or
-// the battle area's overflow cuts it off — which is what happened on a phone before this existed.
-export const FLOAT_HALF_WIDTH = 108;
+// The widest damage number is a crit: with its prefix and a large exponent it measured 256px across
+// at the desktop type size. A number is centred on the point it belongs to, so half of that has to
+// stay clear of each edge or the battle area's overflow cuts it off, which is what happened on a
+// phone. Phone-width crits are set smaller in the stylesheet, so this bound covers both.
+export const FLOAT_HALF_WIDTH = 132;
 
 /** Keeps a damage number's centre far enough from the edges that the whole number stays visible. */
 export function clampFloat(x: number, arenaWidth: number) {
