@@ -1,0 +1,74 @@
+{
+  "version": "8.2.0",
+  "role": "裝備掉落的界線：時機由客戶端算，掉落內容由伺服器決定。",
+  "packageSha256": "8d78c9aa877e6c0b291ee2116cab855bd26c59c1d080bc654f88ecf1ff268b5f",
+  "binarySha256": "c13fc44321b1214c71ab0277a134fc3401fd7392c74a0bbb3935671c55a8713a",
+  "scriptSha256": "62c2eeb8472bb107de516e4b6ae69d3dcdf5013fb1caa87223d82a54dd203f8b",
+  "finding": "掉落「什麼時候有」是客戶端的：IsEquipmentDropBoss 在頭目關卡上比對本季最高關卡，以 (關卡 − equipmentStageMin + 1) % equipmentStageDelta == 0 判斷，命中才掉。掉落「是什麼」不是：CollectRequest 把當前關卡送給 ServerAPI.EquipmentReward，ProcessEquipmentRewardList 逐項把回應交給 ParseEquipmentInfo(Dictionary, bool)，裝備 ID、等級、鎖定狀態與副屬性清單全部從那個字典讀出來。",
+  "consequence": "掉落的等級分布、品質分布與副屬性種類在安裝包內沒有值，不能自行編造；可從包內核實的是掉落關卡、主屬性算式（EquipmentMetaData 的資料表）與高等級的遞減（GetEffectiveLevel）。",
+  "clientSide": {
+    "dropStage": {
+      "method": "EquipmentModel$$IsEquipmentDropBoss",
+      "rva": "0x2190c60",
+      "rule": "(關卡 − equipmentStageMin + 1) % equipmentStageDelta == 0，且差值不為負；原生計數是 0 起算（回退路徑問的是 extraEquipmentDrops.Contains(關卡 + 1)），換成玩家看到的關卡就是 (關卡 − 16) % 20 == 0 且關卡 ≥ 16，即 16、36、56…",
+      "guard": "只有在「當前關卡等於本季最高關卡」時才走這條算式；重打已經過的關卡改查 extraEquipmentDrops，那份清單由伺服器給（EquipmentModel.SetNewEquipmentDropStages），包內沒有內容。"
+    },
+    "effectiveLevel": {
+      "method": "EquipmentModel$$GetEffectiveLevel",
+      "rva": "0x21884e8",
+      "rule": "level ≤ equipmentLevelReductionMin 時取 floor(level)；超過才是 floor((level − min)^amount + min)。",
+      "inertBelow": 357803,
+      "note": "門檻 357803 遠高於本專案可達的裝備等級，在可玩範圍內這條恆等於 floor(level)。"
+    }
+  },
+  "serverOutcome": {
+    "EquipmentController$$CollectRequest": {
+      "rva": "0x217c728"
+    },
+    "EquipmentController$$ProcessEquipmentRewardList": {
+      "rva": "0x217d8d8"
+    },
+    "EquipmentModel$$ParseEquipmentInfo": {
+      "rva": "0x217e51c"
+    }
+  },
+  "serverSupplied": [
+    "EquipmentModel$$SetNewEquipmentDropStages 的 extraEquipmentDrops 清單"
+  ],
+  "parsedFromResponse": [
+    "裝備 ID",
+    "等級",
+    "鎖定狀態",
+    "副屬性清單"
+  ],
+  "serverVariables": {
+    "equipmentStageMin": {
+      "offset": "0x4ac",
+      "type": "int",
+      "defaultValue": 16,
+      "status": "default"
+    },
+    "equipmentStageDelta": {
+      "offset": "0x4b0",
+      "type": "int",
+      "defaultValue": 20,
+      "status": "default"
+    },
+    "equipmentLevelReductionMin": {
+      "offset": "0x514",
+      "type": "int",
+      "defaultValue": 357803,
+      "status": "default"
+    },
+    "equipmentLevelReductionAmount": {
+      "offset": "0x518",
+      "type": "float",
+      "defaultValue": 0.8500000238418579,
+      "status": "default"
+    }
+  },
+  "limits": [
+    "方法存在與其位址是事實，方法內部的伺服器請求與回應內容不在包內",
+    "這四個變數引用的是編譯期預設值，線上可覆蓋，不宣稱與線上一致"
+  ]
+}
