@@ -54,7 +54,8 @@ test('引擎的掉落關卡與原生算式逐關相同', () => {
   assert.ok(native(16) && native(36) && native(56));
   assert.ok(!native(15) && !native(17) && !native(35));
   // 引擎裡真的是這個條件，不是測試自己算給自己看的。
-  assert.ok(engine.includes('s.stage>=16&&(s.stage-16)%20===0'), 'lib/engine.ts 的掉落條件變了');
+  // 條件住在 clearStage 裡，跳關時逐關跑一次，所以跳過去的掉落關卡不會漏掉也不會重複。
+  assert.ok(engine.includes('cleared>=16&&(cleared-16)%20===0'), 'lib/engine.ts 的掉落條件變了');
 });
 
 test('高等級遞減記成惰性條款，沒有被當成可玩範圍內的公式', () => {

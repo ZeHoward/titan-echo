@@ -434,6 +434,27 @@ FORMULAS = [
           expression='尾數與指數分開保存，與原生 GHDouble 同構',
           parts=[entry(part='表示法', status='native', ref='native-number-type.json',
                        note='原生 GHDouble 以 significand 與 exponent 兩個 double 保存，沒有對應的封頂常數。')]),
+    entry(id='titanSkip', module='lib/engine.ts', export='titanSkip',
+          expression='(TitanSkip + 該來源的 TitanSkip) × TitanSkipMult，取整數',
+          parts=[entry(part='算式與逐來源分流', status='native',
+                       ref='skip-evidence.json',
+                       note='原生 StageLogic.GetTitanSkip(DamageType) 依傷害來源分支，'
+                            '把該來源專屬的加成加到共用的 BonusType.TitanSkip 上，'
+                            '再乘唯一的全域 BonusType.TitanSkipMult，最後以 GHDouble.op_Explicit 取整數。'
+                            '只從 StageLogic.OnMonsterDeath 進入，所以是擊殺時觸發而非每次命中；'
+                            '被跳過的泰坦仍走 GetNonBossSplashGoldDrop 給金幣。'
+                            '原生六個來源中本專案有天堂聖擊、寵物與影分身三個，'
+                            '公會飛船、匕首與金槍的加成不折算到別的來源上。')]),
+    entry(id='stageSkip', module='lib/engine.ts', export='stageSkip',
+          expression='(StageSkip + 該來源的 StageSkip) × 該來源的 Mult（沒有就不乘），取整數',
+          parts=[entry(part='算式與逐來源分流', status='native',
+                       ref='skip-evidence.json',
+                       note='原生 StageLogic.GetStageSkip(DamageType) 與跳泰坦同形，'
+                            '差別在倍率是逐來源的：天堂聖擊有 BurstSkillStageSkipMult、'
+                            '影分身有 ShadowCloneStageSkipMult，寵物那條原生就沒有倍率。'
+                            '跳過的每一關走 GetBossSplashGoldDrop 給頭目金幣。'
+                            '原生七個來源中本專案有三個；寵物爆發（PetQTEStageSkip）對應的'
+                            'PetBurst 傷害來源尚未實作，因此不計入寵物那一條。')]),
 ]
 
 NOT_FORMULAS = {

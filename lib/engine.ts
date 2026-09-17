@@ -303,12 +303,40 @@ export function achievementReward(s:State,index:number){
  return a.diamondReward.slice(achievementClaimed(s,index),achievementTier(s,index)).reduce((n,v)=>n+v,0);
 }
 function spawn(s:State){s.hp=health(s);s.bossEnd=isBoss(s)?s.last+bossDuration(s)*1000:0;s.bossWounded=false;s.monster=chooseMonster(s);const id=monsterIndex(s);if(!s.seen.includes(id))s.seen.push(id);}
-function damage(s:State,hit:Big){if(compare(hit,{...ZERO})<=0)return;s.hp=subtract(s.hp,hit);if(compare(s.hp,{...ZERO})>0)return;
+// 跳泰坦與跳關不是一個全域數值：原生 StageLogic.GetTitanSkip／GetStageSkip 都以傷害來源分支，
+// 把該來源專屬的加成加到共用的基礎值上再乘倍率，最後取整數；而且兩者都只從 OnMonsterDeath 進入，
+// 所以是擊殺時觸發，不是每次命中。本專案有天堂聖擊、寵物攻擊與影分身三個來源；公會飛船、匕首、
+// 金槍與寵物爆發要等對應流派實作，不能把它們的加成折算到別人身上。
+// 只有部分來源有專屬的跳關倍率（寵物那條原生就沒有），沒有的就不乘。
+// 見 reference/tt2/8.2.0/skip-evidence.json。
+const SKIP_SOURCES={heavenly:{titan:'BurstSkillTitanSkip',stage:'BurstSkillStageSkip',stageMult:'BurstSkillStageSkipMult'},
+ pet:{titan:'PetAttackTitanSkip',stage:'PetAttackStageSkip',stageMult:''},
+ clone:{titan:'ShadowCloneTitanSkip',stage:'ShadowCloneStageSkip',stageMult:'ShadowCloneStageSkipMult'}} as const;
+export type SkipSource=keyof typeof SKIP_SOURCES;
+export function titanSkip(s:State,source:SkipSource){const k=SKIP_SOURCES[source];
+ return Math.max(0,Math.floor((stateEffect(s,'TitanSkip')+stateEffect(s,k.titan))*stateEffect(s,'TitanSkipMult')));}
+export function stageSkip(s:State,source:SkipSource){const k=SKIP_SOURCES[source];
+ return Math.max(0,Math.floor((stateEffect(s,'StageSkip')+stateEffect(s,k.stage))*(k.stageMult?stateEffect(s,k.stageMult):1)));}
+// 清掉一個關卡的收尾：首達獎勵都以 s.best 為準，所以逐關跑一次就不會漏領也不會重複。
+function clearStage(s:State,cleared:number){
+ if(cleared>=16&&(cleared-16)%20===0&&cleared>s.tt2!.gearMilestone&&dropGear(s.tt2!,Math.max(s.best,cleared))){
+  s.tt2!.gearMilestone=cleared;s.tt2!.equipmentCollected++;s.daily.equipment++;}
+ s.stage=Math.min(STAGE_CAP,cleared+1);s.best=Math.max(s.best,s.stage);s.kills=0;
+ const points=Math.max(0,Math.floor(s.best/50)-1);
+ if(points>s.tt2!.earnedPoints){s.tt2!.points+=points-s.tt2!.earnedPoints;s.tt2!.earnedPoints=points;}}
+// 被跳過的泰坦與關卡照樣給金幣：原生分別走 GetNonBossSplashGoldDrop 與 GetBossSplashGoldDrop。
+function applySkips(s:State,source:SkipSource){
+ if(!isBoss(s)&&!s.farming){
+  const room=Math.max(0,monsterCount(s)-1-s.kills),skipped=Math.min(titanSkip(s,source),room);
+  for(let n=0;n<skipped;n++){earnGold(s,goldReward(s,'monster'));s.totalKills++;s.daily.kills++;s.kills++;}}
+ const stages=stageSkip(s,source);
+ for(let n=0;n<stages&&s.stage<STAGE_CAP;n++){
+  earnGold(s,goldReward(s,'boss'));s.bossKills++;clearStage(s,s.stage);}}
+function damage(s:State,hit:Big,source?:SkipSource){if(compare(hit,{...ZERO})<=0)return;s.hp=subtract(s.hp,hit);if(compare(s.hp,{...ZERO})>0)return;
  const boss=isBoss(s),chest=!boss&&tt2Random(s.tt2!)<Math.min(1,(BONUS_DEFAULTS.chestChance+stateEffect(s,'ChestChance'))*stateEffect(s,'AllProbabilityBoost'));
  earnGold(s,goldReward(s,boss?'boss':chest?'chest':'monster'));if(chest)s.tt2!.chestKills++;s.totalKills++;s.daily.kills++;
- if(boss){if(s.stage>=16&&(s.stage-16)%20===0&&s.stage> s.tt2!.gearMilestone&&dropGear(s.tt2!,s.best)){s.tt2!.gearMilestone=s.stage;s.tt2!.equipmentCollected++;s.daily.equipment++;}s.bossKills++;s.stage=Math.min(STAGE_CAP,s.stage+1);s.best=Math.max(s.best,s.stage);s.kills=0;
-  const points=Math.max(0,Math.floor(s.best/50)-1);if(points>s.tt2!.earnedPoints){s.tt2!.points+=points-s.tt2!.earnedPoints;s.tt2!.earnedPoints=points;}
- }else if(!s.farming)s.kills++;
+ if(boss){s.bossKills++;clearStage(s,s.stage);}else if(!s.farming)s.kills++;
+ if(source)applySkips(s,source);
  spawn(s);
 }
 export function advance(s:State,to:number){hydrate(s);if(!Number.isFinite(to))return s;to=Math.max(s.last,to);const gap=to-s.last;advanceEggs(s.tt2!,to);
@@ -324,7 +352,7 @@ export function advance(s:State,to:number){hydrate(s);if(!Number.isFinite(to))re
  if(s.last===boundary&&s.active[0]>s.last){const t=s.tt2!,rate=cloneAttackRate(s),interval=1000/rate;
   // buildDamage is this project's per-second figure, so a swing is that divided by the rate: the
   // rhythm follows the original (four a second before bonuses) without multiplying the damage by it.
-  if(s.last-t.cloneAt>=interval){t.cloneAt+=interval;t.lastCloneHit=scale(buildDamage(s,'clone'),1/rate);t.cloneAttacks++;damage(s,t.lastCloneHit);}}
+  if(s.last-t.cloneAt>=interval){t.cloneAt+=interval;t.lastCloneHit=scale(buildDamage(s,'clone'),1/rate);t.cloneAttacks++;damage(s,t.lastCloneHit,'clone');}}
  }return s;
 }
 export function apply(s:State,a:Action){advance(s,a.at);const i=a.index??0,t=s.tt2!;
@@ -332,7 +360,7 @@ export function apply(s:State,a:Action){advance(s,a.at);const i=a.index??0,t=s.t
   const token=a.amount===1,price=RESOURCE_PERKS[i].cost,full=perkLevel(t,i,s.last)>=perkLimit(t);
   if((token?t.perkTokens>0:s.diamonds>=price)&&activatePerk(t,i,s.last)){t.perksUsed++;if(token)t.perkTokens--;else s.diamonds-=price;if(i===0)t.mana=manaMax(s);if(i===1){t.rainLast=s.last;buyAffordableHeroes(s);}note(s,`已使用${RESOURCE_PERKS[i].name}，${full?'層數已滿，剩餘時間最短的一層換成十二小時。':'每層持續十二小時。'}`);}
  }
- if(a.type==='tap'&&s.last-s.lastTap>=45){s.lastTap=s.last;s.taps++;s.daily.taps++;t.tutorialTaps++;t.lastCrit=tt2Random(t)<critChance(s);if(t.lastCrit)t.crits++;let n=scale(tapDamage(s),t.lastCrit?critMultiplier(s):1);if(s.active[1]>s.last&&tt2Random(t)<SKILL_DATA[1].second[skillStep(1,s.skillLevels[1])])n=scale(n,skillPower(s,1));t.lastHit=n;damage(s,n);if(chargePet(t)){t.lastPetHit=petAttackDamage(s);t.petAttacks++;damage(s,t.lastPetHit);}}
+ if(a.type==='tap'&&s.last-s.lastTap>=45){s.lastTap=s.last;s.taps++;s.daily.taps++;t.tutorialTaps++;t.lastCrit=tt2Random(t)<critChance(s);if(t.lastCrit)t.crits++;let n=scale(tapDamage(s),t.lastCrit?critMultiplier(s):1);if(s.active[1]>s.last&&tt2Random(t)<SKILL_DATA[1].second[skillStep(1,s.skillLevels[1])])n=scale(n,skillPower(s,1));t.lastHit=n;damage(s,n);if(chargePet(t)){t.lastPetHit=petAttackDamage(s);t.petAttacks++;damage(s,t.lastPetHit,'pet');}}
  if(a.type==='upgrade'||a.type==='hero'){const id=a.type==='upgrade'?-1:i;if(id<-1||id>=HEROES.length||!Number.isInteger(id))return s;let count=a.amount??1;const cap=id<0?PLAYER_LEVEL_CAP:HERO_LEVEL_CAP;
   if(count===0){while(count<1000&&compare(s.gold,cost(s,id,count+1))>=0&&(id<0?s.level:heroLevel(s,id))+count<cap)count++;}if(![1,10,25,100,1000,0].includes(a.amount??1)||!count)return s;const price=cost(s,id,count);
   if(compare(s.gold,price)>=0&&(id<0?s.level:heroLevel(s,id))+count<=cap){s.gold=atLeastZero(subtract(s.gold,price));if(id<0)s.level+=count;else setHeroLevel(s,id,heroLevel(s,id)+count);}}
@@ -340,7 +368,7 @@ export function apply(s:State,a:Action){advance(s,a.at);const i=a.index??0,t=s.t
   t.mana-=skillMana(s,i);s.active[i]=s.last+skillDuration(s,i)*1000;s.cooldowns[i]=s.active[i]+skillCooldown(s,i)*1000;s.daily.skills++;
   // The native loop waits out one interval before the first swing, so the clock starts on the cast.
   if(i===0)t.cloneAt=s.last;
-  if(i===5){t.heavenlyStrikes++;damage(s,buildDamage(s,'heavenly'));s.active[i]=s.last;s.cooldowns[i]=s.last+skillCooldown(s,i)*1000;}
+  if(i===5){t.heavenlyStrikes++;damage(s,buildDamage(s,'heavenly'),'heavenly');s.active[i]=s.last;s.cooldowns[i]=s.last+skillCooldown(s,i)*1000;}
  }
  if(a.type==='skillUp'&&Number.isInteger(i)&&i>=0&&i<6&&s.level>=SKILLS[i].level&&s.skillLevels[i]<SKILL_DATA[i].max&&compare(s.gold,fromNumber(skillCost(s,i)))>=0){s.gold=atLeastZero(subtract(s.gold,fromNumber(skillCost(s,i))));s.skillLevels[i]++;}
  if(a.type==='discover'&&s.best>=PRESTIGE_DEFAULTS.minimumStage){const found=drawArtifact(t,s.relics);if(found){s.relics-=found.cost;note(s,`獲得神器：${TT2_ARTIFACTS[found.index].name}`);}}

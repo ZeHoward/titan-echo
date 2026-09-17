@@ -1,0 +1,140 @@
+{
+  "version": "8.2.0",
+  "role": "跳泰坦與跳關：每個傷害來源各自一套，在擊殺時觸發，跳過的仍然給金幣。",
+  "packageSha256": "8d78c9aa877e6c0b291ee2116cab855bd26c59c1d080bc654f88ecf1ff268b5f",
+  "binarySha256": "c13fc44321b1214c71ab0277a134fc3401fd7392c74a0bbb3935671c55a8713a",
+  "scriptSha256": "62c2eeb8472bb107de516e4b6ae69d3dcdf5013fb1caa87223d82a54dd203f8b",
+  "finding": "跳過不是一個全域數值。`GetTitanSkip(DamageType)` 與 `GetStageSkip(DamageType)` 都以傷害來源分支，把該來源專屬的加成加到共用的基礎值上，再乘一個倍率，最後取整數。兩者都只從 `OnMonsterDeath` 進入，所以是**擊殺時**觸發，不是每次命中。",
+  "rules": {
+    "titanSkip": {
+      "method": "StageLogic$$GetTitanSkip",
+      "rva": "0x2544194",
+      "expression": "(TitanSkip + 該來源的 TitanSkip) × TitanSkipMult，取整數",
+      "apply": {
+        "method": "StageLogic$$DoSplashTitanSkip",
+        "rva": "0x2544080",
+        "note": "把結果加進 enemyKillCount，並以 Math.Min 夾在本關剩餘隻數內；被跳過的泰坦照樣走 GetNonBossSplashGoldDrop 給金幣。"
+      },
+      "sources": [
+        {
+          "bonus": "BurstSkillTitanSkip",
+          "bonusId": 90,
+          "damageType": "ActiveSkillHeavenlyStrike",
+          "damageTypeId": 18,
+          "implementedHere": true
+        },
+        {
+          "bonus": "PetAttackTitanSkip",
+          "bonusId": 363,
+          "damageType": "Pet",
+          "damageTypeId": 9,
+          "implementedHere": true
+        },
+        {
+          "bonus": "ShadowCloneTitanSkip",
+          "bonusId": 407,
+          "damageType": "ActiveSkillShadowClone",
+          "damageTypeId": 23,
+          "implementedHere": true
+        },
+        {
+          "bonus": "ClanShipTitanSkip",
+          "bonusId": 113,
+          "damageType": "ClanShip",
+          "damageTypeId": 25,
+          "implementedHere": false
+        },
+        {
+          "bonus": "UltraDaggerTitanSkip",
+          "bonusId": 520,
+          "damageType": "Dagger",
+          "damageTypeId": 31,
+          "implementedHere": false
+        },
+        {
+          "bonus": "GoldGunTitanSkip",
+          "bonusId": 229,
+          "damageType": "GoldGunRegular",
+          "damageTypeId": 37,
+          "implementedHere": false
+        }
+      ]
+    },
+    "stageSkip": {
+      "method": "StageLogic$$GetStageSkip",
+      "rva": "0x25448e4",
+      "expression": "(StageSkip + 該來源的 StageSkip) × 該來源專屬的 Mult，取整數",
+      "apply": {
+        "method": "StageLogic$$DoSplashStageSkip",
+        "rva": "0x2544724",
+        "note": "跳過的每一關走 GetBossSplashGoldDrop 給頭目金幣，並以 GetMonsterCountPerStage 結算跳過的關卡裡的小怪。"
+      },
+      "sources": [
+        {
+          "bonus": "BurstSkillStageSkip",
+          "bonusId": 88,
+          "damageType": "ActiveSkillHeavenlyStrike",
+          "damageTypeId": 18,
+          "implementedHere": true
+        },
+        {
+          "bonus": "PetAttackStageSkip",
+          "bonusId": 362,
+          "damageType": "Pet",
+          "damageTypeId": 9,
+          "implementedHere": true
+        },
+        {
+          "bonus": "PetQTEStageSkip",
+          "bonusId": 371,
+          "damageType": "PetBurst",
+          "damageTypeId": 11,
+          "implementedHere": false
+        },
+        {
+          "bonus": "ShadowCloneStageSkip",
+          "bonusId": 405,
+          "damageType": "ActiveSkillShadowClone",
+          "damageTypeId": 23,
+          "implementedHere": true
+        },
+        {
+          "bonus": "ClanShipStageSkip",
+          "bonusId": 110,
+          "damageType": "ClanShip",
+          "damageTypeId": 25,
+          "implementedHere": false
+        },
+        {
+          "bonus": "UltraDaggerStageSkip",
+          "bonusId": 516,
+          "damageType": "Dagger",
+          "damageTypeId": 31,
+          "implementedHere": false
+        },
+        {
+          "bonus": "GoldGunStageSkip",
+          "bonusId": 228,
+          "damageType": "GoldGunMagnumOpus",
+          "damageTypeId": 38,
+          "implementedHere": false
+        }
+      ]
+    }
+  },
+  "baseBonuses": {
+    "titanSkip": "TitanSkip",
+    "titanSkipMult": "TitanSkipMult",
+    "stageSkip": "StageSkip"
+  },
+  "implementableHere": [
+    "ActiveSkillHeavenlyStrike",
+    "ActiveSkillShadowClone",
+    "Pet"
+  ],
+  "consequence": "本專案有天堂聖擊、寵物攻擊與影分身三個來源，這三條可以照做；公會飛船、匕首、金槍與寵物爆發的跳過要等對應流派實作，在那之前不應該把它們的加成折算到別的來源上。",
+  "limits": [
+    "方法存在、位址與其呼叫是事實；BonusType 的實際數值仍由加成系統決定",
+    "本表不涵蓋 DoSplashOverkill 的溢出傷害分配"
+  ]
+}
