@@ -168,17 +168,28 @@ FORMULAS = [
                        note='對應原生欄位是 [ServerVar]，安裝包未帶值；沿用 7.5 基準。')]),
     entry(id='bossTimer', module='lib/engine.ts', export='bossDuration',
           expression='30 秒 + BossTimerDuration',
-          parts=[entry(part='基礎 30 秒', status='server', note='原生為 [ServerVar]，安裝包未帶值。')]),
+          parts=[entry(part='基礎 30 秒', status='default', ref='servervar-defaults.json',
+                       note='兩張變數表沒帶值，但編譯期預設值是 bossPlayTimeBase = 30，'
+                            '與引擎沿用的 30 秒相同——這一項不必改數值，只是來源由「待證據」'
+                            '變成「原生靜態預設值」。線上可覆蓋。')]),
     entry(id='prestigeRelics', module='lib/engine.ts', export='relicGain',
           expression='max(1, floor(關卡^1.7 ÷ 100 × PrestigeRelic))，最高關卡到 60 後開放',
           parts=[
-              entry(part='指數 1.7 與除數 100', status='server', ref='native-server-var-fields.json',
+              entry(part='指數 1.7 與除數 100', status='table-differs', ref='servervar-defaults.json',
                     note='原生沒有「關卡^指數 ÷ 常數」這種寫法：PrestigeModel.GetBonusRelicsFromStageCount '
-                         '（RVA 0x23ff6cc）把係數從模型欄位載入（如 ldr d9,[x8,#0x170]、ldr d10,[x8,#0x1b0]、'
-                         'ldr w9,[x8,#0x214]），不是程式裡的常數。對應的具名 [ServerVar] 欄位有十個——'
+                         '（RVA 0x23ff6cc）把係數從 ServerVarsModel 的靜態區塊載入'
+                         '（ldr d9,[x8,#0x170] 等，偏移已逐一對上欄位名），不是程式裡的常數。'
+                         '對應的具名 [ServerVar] 欄位有十個——'
                          'relicStageBase、relicStageBase2、relicStageExpo、relicStageExpo2、relicStageExpo3、'
-                         'relicStageExpoMax3、relicStageMult1–3 與 relicStageOffset——'
-                         '**安裝包一個值都沒帶**。目前的 1.7 與 100 是 7.5 基準的近似，不是原版係數。'),
+                         'relicStageExpoMax3、relicStageMult1–3 與 relicStageOffset。'
+                         '**先前記為「安裝包一個值都沒帶」，那是變數表的狀況；編譯期預設值都有**：'
+                         'relicStageMult1 3、relicStageMult2 1.5、relicStageMult3 5e-07、'
+                         'relicStageBase 1.21、relicStageBase2 1.002、relicStageExpo 0.48、'
+                         'relicStageExpo2 1.005、relicStageOffset −56。'
+                         '**算式只讀出一部分**：關卡先被 relicsStageMax 夾住，接著至少有三段——'
+                         '1.5 × (關卡 − 56)、3 × 1.21^(關卡^0.48)、'
+                         '以及一段含 Math.Min 與多層 Math.Pow 的 1.002 系項——再以 GHDouble 組合，'
+                         '尚未完整還原，因此引擎維持 7.5 近似的 1.7 與 100。'),
               entry(part='開放門檻第 60 關', status='baseline-75',
                     note='沿用 7.5 基準；安裝包未見對應的蛻變開放關卡欄位。'),
               entry(part='至少一顆聖物的下限', status='invented',
@@ -200,11 +211,16 @@ FORMULAS = [
                          '安裝包都沒有值，所以就算把六個係數接上也無法宣稱與線上一致。')]),
     entry(id='skillPoints', module='lib/engine.ts', export='apply',
           expression='可用技能點 = floor(最高關卡 ÷ 50) − 1，只在最高關卡推進時增加',
-          parts=[entry(part='每 50 關一點與起算偏移', status='server', ref='native-server-var-fields.json',
+          parts=[entry(part='每 50 關一點與起算偏移', status='table-differs', ref='servervar-defaults.json',
                        note='原生把這兩個數字放在具名 [ServerVar]：skillPointsStageDelta（每幾關一點）與 '
-                            'skillPointsStageMin（起算關卡），另有 skillPointsPrestigeDelta／Min 走蛻變那條線；'
-                            '五個欄位中只有 skillPointsPrestigeMax 在包內有值（180000），'
-                            '決定發放節奏的那幾個都沒有。目前的 50 與 −1 是 7.5 基準的近似。')]),
+                            'skillPointsStageMin（起算關卡），另有 skillPointsPrestigeDelta／Min 走蛻變那條線。'
+                            '變數表只帶 skillPointsPrestigeMax（180000），'
+                            '但**編譯期預設值都有**：skillPointsStageDelta 500、skillPointsStageMin 51、'
+                            'skillPointsPrestigeDelta 50、skillPointsPrestigeMin 50。'
+                            '引擎現在是「每 50 關一點、偏移 −1」，與原生的「每 500 關一點、第 51 關起算」'
+                            '差了十倍——照原生改，第 2000 關的技能點會從 39 點掉到個位數，'
+                            '天賦樹幾乎等於歸零，因此**尚未採用**，取捨記在「待決定的取捨」。'
+                            '原生另有一條走蛻變次數的發放線，本專案沒有實作。')]),
     entry(id='petCombat', module='lib/tt2-pet-combat.ts', export='petDamageFactor',
           expression='寵物傷害係數依等級分段，出戰與未出戰分開計算',
           parts=[

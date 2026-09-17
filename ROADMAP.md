@@ -40,6 +40,16 @@
   換掉等於整條進度曲線重來，既有存檔的關卡位置與金幣量會對應到完全不同的難度。
 - 三條都登記為 `table-differs`，保留現值。
 
+### 0.5 技能點要不要改用原生的發放節奏
+
+- **現況**：引擎是「每 50 關一點、偏移 −1」（第 2000 關給 39 點）。原生的兩個 `[ServerVar]`
+  編譯期預設值是 `skillPointsStageDelta` **500**、`skillPointsStageMin` **51**，
+  也就是第 51 關起、每 500 關一點；原生另有一條走蛻變次數的發放線（`skillPointsPrestigeDelta` 50），
+  本專案沒有實作。
+- **選項**：照原生改／維持現狀／只補上蛻變那條線。
+- **影響**：照關卡那條改，第 2000 關的技能點會從 39 點掉到個位數，66 個天賦幾乎全點不起來。
+  但原生同時有蛻變線在發點，只改一條會比原版更苛刻。
+
 ### 1. 英雄每級成長率 1.035 要不要移除
 
 - **現況**：引擎的 `heroDps` 在原生的三個因子之外，多乘了 `1.035^(等級−1)`。
@@ -120,7 +130,7 @@
 | R02 | 完成 | 8.2 資料匯入與完整 ID 目錄 | 神器、法術、技能樹、裝備、套裝、英雄、寵物、被動等皆有版本與唯一 ID；處理新增／刪除／停用列及新增欄位；區分活動和常駐內容 |
 | R03 | 完成 | 穩定 ID 存檔遷移、規則版本與還原備份 | 舊 2.6 存檔可遷移且重跑不重複退款；新增 6 項技能與 28 組套裝不錯置；雲端舊版資料有相容讀取流程 |
 | R04 | 完成 | 大數值與數字顯示 | 取代 1e240 的實質封頂及未驗證的等級限制；巨大傷害、金幣、費用、聖物可運算與序列化，無 Infinity／NaN；雲端容量測試通過 |
-| R05 | 完成 | 來源證據與同版本比對用例 | 每個核心公式記錄表、方法或實測來源；建立升級前後、施法前後、蛻變前後對照；缺少實測的項目保留待驗證標記。**登記表見 [docs/formula-sources.md](docs/formula-sources.md)**，56 項來源中 22 項仍為待驗證、5 項已知但引擎未照做 |
+| R05 | 完成 | 來源證據與同版本比對用例 | 每個核心公式記錄表、方法或實測來源；建立升級前後、施法前後、蛻變前後對照；缺少實測的項目保留待驗證標記。**登記表見 [docs/formula-sources.md](docs/formula-sources.md)**，56 項來源中 19 項仍為待驗證、7 項已知但引擎未照做 |
 
 R02 子步驟：建立 8.2 全表索引 → 逐表 schema 解析 → 以 ID 映射至現行資料 → 保留版本差異與停用標記 → 產生逐 ID 待驗收清單 → 交給 R03 遷移。此階段不直接以新版陣列覆蓋線上存檔。**R02 標記完成的範圍只有資料目錄與逐 ID 核對**；資料齊備不等於任何玩法系統已還原，後續各項仍須逐條實作與驗證。
 
@@ -393,6 +403,7 @@ C01 證據狀態：原生把暴擊參數放在 `[ServerVar]` 欄位——`player
 
 | 日期 | 項目 | 證據／結果 |
 |---|---|---|
+| 2026-09-17 | E01／B01／C05 三項來源改判，聖物公式讀出一半 | 用靜態預設值總表回頭校正三筆登記。**聖物**：`PrestigeModel.GetBonusRelicsFromStageCount`（RVA 0x23ff6cc）讀的 `ldr d9,[x8,#0x170]` 這類偏移，逐一對上 `ServerVarsModel` 的靜態欄位——`relicStageMult1` 3、`relicStageMult2` 1.5、`relicStageMult3` 5e-07、`relicStageBase` 1.21、`relicStageBase2` 1.002、`relicStageExpo` 0.48、`relicStageExpo2` 1.005、`relicStageOffset` −56，**八個係數全部有值**，先前登記的「安裝包一個值都沒帶」只對變數表成立。算式**只讀出一部分**：關卡先被 `relicsStageMax` 夾住，之後至少三段（1.5 × (關卡−56)、3 × 1.21^(關卡^0.48)、一段含 `Math.Min` 與多層 `Math.Pow` 的 1.002 系項）以 GHDouble 組合，尚未完整還原，所以引擎維持 7.5 近似，狀態由 `server` 改列 `table-differs`。**技能點**：`skillPointsStageDelta` 500、`skillPointsStageMin` 51——引擎的「每 50 關一點」比原生寬鬆十倍，照改會讓第 2000 關的點數從 39 掉到個位數，列入「待決定的取捨」第 0.5 條，狀態改 `table-differs`。**頭目計時**：`bossPlayTimeBase` 的預設值就是 30，與引擎沿用的數字相同，狀態由 `server` 升為 `default`，不必改數值。381 項 Node 測試＋23 項 Python 測試通過。 |
 | 2026-09-17 | C01 暴擊與寶箱改用原生基礎值，影分身節奏更正（2.13.0） | 找到一張先前沒人看過的表：`BonusModel.SetDefaultBonuses`（RVA 0x27147c4）在啟動時建立「每個加成的基礎值」字典，每一筆都是 `Dictionary.Add(BonusType, 某個 ServerVarsModel 靜態欄位)`。`tools/audit-bonus-defaults.py` 逐筆配對，**14 筆全部配對成功、0 筆落空**，並交叉核對每個值與靜態預設值總表相同。接進引擎的三項：**暴擊**——`CritChance` 的基礎值是 `playerCritChance` 0.01（引擎原本 0.02），倍率照 `PlayerModel.RefreshCriticalValues` 用 `playerCritMult` 11.5（原本 10），上限 `maxCritChance` 1；機率算式也照原生改成 `(基礎＋加成) × Bonus(AllProbabilityBoost)`。**順帶修掉一個實作缺陷**：點擊那一行寫死 `lastCrit?10:1`，根本沒有用自己匯出的 `critMultiplier`，所以暴擊傷害一直不吃 `CritDamage` 加成；現在會吃了。**寶箱泰坦**機率的基礎值是 `chestersonChance` 0.01（原本 0.02），同樣乘上機率加成。**影分身**：`ShadowCloneSkillAttackRate` 的基礎值是 `baseShadowCloneAniPerSec` = **4**，所以 2.12.7 做的「每秒一次」是錯的，更正為每秒四次；`buildDamage` 是本專案的每秒總量近似，因此一次攻擊取其 ÷ 速率，節奏照原生而總量不變。其餘 11 個基礎值（多重泰坦 0.01、上限 4 隻、炸彈泰坦 0.001、波特 0.001、十倍金幣 0.01、魔力馬尼 4、雙寵爆發 5 次…）先記錄在證據檔並以測試釘住，還沒接。`critical` 與寶箱機率由 `server` 改列 `default`。新增 `tests/bonus-defaults.test.mjs` 6 項；`tests/crit-evidence.test.mjs` 裡那個「引擎的暴擊數字沒有包內依據」的測試改寫為新結論。381 項 Node 測試＋23 項 Python 測試通過。線上實測時發現每秒四下的數字會疊成一坨（同時最多八個），已改為每次落點略為散開、存活時間由 850ms 縮到 420ms。 |
 | 2026-09-17 | R05 缺口盤點補上第二欄，C／I 兩段的「卡在證據」結論作廢 | `tools/server-var-gaps.mjs` 原本只回答「變數表有沒有帶這個鍵」，現在同時回答「程式裡有沒有編譯期預設值」，並多算一欄「兩者皆無」。結果推翻了先前的判斷：953 個 `[ServerVar]` 中 **769 個有預設值**，兩者皆無的只有 **183 個**。分組後 C05 泰坦與金幣 67 個中 61 個有、**I01–I03 裝備 26 個全部都有**、C01 暴擊 10 個中 8 個、C03–C04 英雄 22 個中 19 個、C07 魔力 18 個中 13 個、C02 劍術大師 4 個全部都有。`docs/server-var-gaps.md` 改寫為兩條線索並列，`server-var-gaps.json` 的每個欄位多帶 `compiledDefault` 與 `defaultValue`。ROADMAP 的「目前位置」同步修正——**C／I 兩段不再是「卡在證據」**，只是引用預設值時狀態為 `default`（線上可覆蓋）。順帶記下幾個之後會用到的值：`playerCritChance` 0.01、`playerCritMult` 11.5、`maxCritChance` 1、`bossPlayTimeBase` 30（與引擎現值相同）、`chestersonChance` 0.01、`maxPetEggs` 2（與引擎相同）、`skillPointsStageDelta` 500／`skillPointsStageMin` 51、`relicStageBase` 1.21／`relicStageExpo` 0.48／`relicStageMult1` 3／`relicStageOffset` −56、`ascendCostExpoScaling` 2532.5（這一個先前記為「無值、所以英雄昇階費用接不上」）。這些都還沒接進引擎，接的時候要逐項反組譯確認用途。374 項 Node 測試＋23 項 Python 測試通過。 |
 | 2026-09-17 | C05 怪物血量與金幣曲線逐式還原，連同係數一起（未採用） | 先修好解析器的兩個盲點：一是 GHDouble 靜態欄位——它是以 `GHDouble..ctor(double)` 建在堆疊上再把 24 位元組複製進靜態區塊，要抓的是**建構時的那個 double**；二是 capstone 會把小的 `movk` 立即數印成十進位，原本的正則只吃十六進位，漏掉了 17 個欄位。修好後解出 **770 個**預設值（原 745）。接著逐式還原 `MonsterModel.GetMonsterBase`（RVA 0x2325c4c）：呼叫順序就是算式——`Math.Min` → `GHDouble.Pow` → `op_Multiply` → `Math.Max`／`Math.Pow` → `GHDouble.Pow` → `op_Multiply` → 同一組再一次 → `op_Division`，也就是 `mult × base1^min(關卡, levelOff) × base2^(expo1 × max(關卡−levelOff,0)^expo2) ÷ base3^(expo3 × max(關卡−transcendenceLevelOff,0)^expo4)`。血量與金幣共用它，十個係數的預設值全部解出（mult 17.5、base1 1.38、base2／3 為 10、levelOff 100、血量 expo 0.03／1.098、金幣 expo 0.04／1.036、transcendenceLevelOff 180000——高於關卡上限 98000，所以除數在可玩範圍恆為 1）。`tools/audit-monster-curve.py` 除了釘住呼叫順序，還輸出 12 個關卡的原生與引擎對照（以常用對數表示，數值本身會溢位）：第 100 關原生較高，**第 250 關起原生遠低於引擎**，第 2000 關差 10^107、第 98000 關差 10^2745，金幣同向。**沒有採用**：這等於整條難度曲線換掉，而且必須與英雄傷害那條（多出來的 1.035）配套，取捨連同對照表寫進「待決定的取捨」第 0 條。`monsterHealth`、`monsterGold`、`bossHealthMod`（其 base 1.13、stageMult 0.005 也解出來了）三項由 `server` 改列 `table-differs`。373 項 Node 測試＋23 項 Python 測試通過。 |

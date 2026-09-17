@@ -29,19 +29,19 @@ test('no export in a covered module escapes classification', () => {
 
 test('the counts are recorded, so a source changing status is a visible change', () => {
   assert.deepEqual(report.counts, {
-    'table-differs': 5, 'baseline-75': 4, invented: 10, table: 16, default: 7, server: 8, native: 6,
+    'table-differs': 7, 'baseline-75': 4, invented: 10, table: 16, default: 8, server: 5, native: 6,
   });
   // Still unverified: the 7.5 baseline, this project's own choice, or a server value with no
   // compiled-in default either. Five more sources are now known-but-not-followed instead.
   const unverified = report.counts['baseline-75'] + report.counts.invented + report.counts.server;
-  assert.equal(unverified, 22);
-  assert.equal(report.counts['table-differs'], 5, '已知但未照做的項目要看得見');
+  assert.equal(unverified, 19);
+  assert.equal(report.counts['table-differs'], 7, '已知但未照做的項目要看得見');
 });
 
 test('每一處與安裝包不一致的地方都寫下來了', () => {
   const differs = register.formulas.flatMap(formula =>
     formula.parts.filter(part => part.status === 'table-differs').map(part => ({ formula, part })));
-  assert.equal(differs.length, 5);
+  assert.equal(differs.length, 7);
   const boss = differs.find(entry => entry.formula.id === 'monsterHealth');
   // The boss multiplier sequence is banded by stage in the package; the engine uses one band.
   assert.match(boss.part.note, /4,6,8,15,24/);
