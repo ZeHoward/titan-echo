@@ -1,0 +1,77 @@
+{
+  "version": "8.2.0",
+  "role": "英雄升級費用的公比從哪裡來：原生靜態預設值、它確實是公比的證據，以及旁邊三個沒解出來的欄位。",
+  "packageSha256": "8d78c9aa877e6c0b291ee2116cab855bd26c59c1d080bc654f88ecf1ff268b5f",
+  "binarySha256": "c13fc44321b1214c71ab0277a134fc3401fd7392c74a0bbb3935671c55a8713a",
+  "scriptSha256": "62c2eeb8472bb107de516e4b6ae69d3dcdf5013fb1caa87223d82a54dd203f8b",
+  "finding": "ServerVarsModel.helperUpgradeBase 是 static float，類別建構式寫入的靜態預設值是 1.0800000429153442（原始位元 0x3f8a3d71，即 float 的 1.08）。HelperInfo 的建構式讀它之後取對數存進 helperUpgradeBaseLog、並把 base−1 存進 helperUpgradeBaseMinusOne，正是等比級數需要的兩個導出量；GetPurchaseCost 以 GHDouble.Pow 乘上基礎費用。",
+  "consequence": "引擎原本用的 1.075 是 7.5 基準，8.2 的原生預設值是 1.08；結構（基礎費用 × 公比^等級、總和除以 公比−1）與引擎既有寫法相同，只有公比不同。與劍術大師側的 costBase／costGrowth 同樣屬於「原生靜態預設值」，線上覆蓋值未知。",
+  "growthRate": {
+    "field": "ServerVarsModel.helperUpgradeBase",
+    "staticFieldOffset": "0x6d8",
+    "assignedIn": {
+      "name": "ServerVarsModel$$.cctor",
+      "rva": "0x24aa338",
+      "bytesSha256": "45e74aab0929890ad20a9e6001277de08c9fa8a7cfcd0bdfaa4caefeaf700a51"
+    },
+    "writes": [
+      {
+        "at": "0x24aafe4",
+        "raw": 1066024305
+      }
+    ],
+    "rawBits": "0x3f8a3d71",
+    "float": 1.0800000429153442,
+    "doubleOfFloat": 1.0800000429153442
+  },
+  "derivedInConstructor": {
+    "method": {
+      "name": "HelperInfo$$.ctor",
+      "rva": "0x22478b0",
+      "bytesSha256": "b9ef1d14bbc479808464e3963d0eb83bde46b4f2017c4bba977e8da67b0faba5"
+    },
+    "helperUpgradeBaseLog": "0x160",
+    "helperUpgradeBaseMinusOne": "0x168",
+    "note": "建構式讀 helperUpgradeBase，把它傳進一個未具名的數學函式（取對數）後存進 helperUpgradeBaseLog，另以 fadd −1 得到 helperUpgradeBaseMinusOne。這兩個量分別被 GetMaxNumUpgrades 與 GetEvolveAdditionalCost 使用。"
+  },
+  "purchaseCost": {
+    "method": {
+      "name": "HelperInfo$$GetPurchaseCost",
+      "rva": "0x224b4b0",
+      "bytesSha256": "0b2bd5031408edc7f0581eefed60ab77fa4e7ca446efde6f2e56029910dcecc9"
+    },
+    "calls": [
+      "System.Collections.Generic.List<GHDouble>$$get_Item",
+      "GHDouble$$op_Implicit",
+      "GHDouble$$Pow",
+      "GHDouble$$op_Multiply",
+      "Singleton<object>$$get_instance",
+      "GHDouble$$op_Multiply"
+    ],
+    "related": [
+      {
+        "name": "HelperInfo$$GetMaxNumUpgrades",
+        "rva": "0x224b728",
+        "bytesSha256": "ec5eead13e360e8e24683c36a3345caa8a95525fb147e919ae336103a837be52"
+      },
+      {
+        "name": "HelperInfo$$GetEvolveAdditionalCost",
+        "rva": "0x224afe0",
+        "bytesSha256": "c388f336cd1b0994777b7233da679660605cf646a47db73eff4b249ca67c85b5"
+      }
+    ]
+  },
+  "unresolved": {
+    "fields": {
+      "helperUpgradeLevelTiers": "0x710",
+      "helperUpgradeModulus": "0x718",
+      "helperUpgradeOffsets": "0x720"
+    },
+    "note": "這三個 int[] 靜態欄位與公比相鄰，在類別建構式裡由 RuntimeHelpers.InitializeArray 從中繼資料填充，本次沒有解出內容；它們可能對特定等級區間的費用另有修正，尚未確認。"
+  },
+  "limits": [
+    "靜態預設值不是線上值：helperUpgradeBase 是 [ServerVar]，伺服器可整份覆蓋，而安裝包的兩張變數表都沒有帶這個鍵",
+    "本表只確認公比與其導出量；三個 int[] 欄位的作用未確認",
+    "GetPurchaseCost 讀的 purchaseCosts 清單已含費用減免，與資料表的 PurchaseCost1 不完全相同"
+  ]
+}

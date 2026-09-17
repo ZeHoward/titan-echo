@@ -57,7 +57,7 @@ def enum_values(source, name):
 
 def bool_fields(source, name):
     """Parse the bool backing fields of one class in dump.cs into {offset: field}."""
-    match = re.search(r'^public class '+re.escape(name)+r'[^\n]*\n\{(.*?)^\}', source, re.S | re.M)
+    match = re.search(r'^public class '+re.escape(name)+r'(?=[\s:])[^\n]*\n\{(.*?)^\}', source, re.S | re.M)
     if not match:
         raise ValueError(f'class {name} not found')
     return {int(m.group(2), 16): m.group(1)

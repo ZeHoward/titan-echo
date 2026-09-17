@@ -8,8 +8,8 @@
 |---|---|---|
 | `native` | 由反組譯證據確認 | 6 |
 | `table` | 取自安裝包資料表 | 16 |
-| `default` | 原生靜態預設值，線上可覆蓋 | 2 |
-| `baseline-75` | 沿用 7.5 基準，尚未對 8.2 核實 | 5 |
+| `default` | 原生靜態預設值，線上可覆蓋 | 3 |
+| `baseline-75` | 沿用 7.5 基準，尚未對 8.2 核實 | 4 |
 | `table-differs` | 安裝包有值但引擎目前未照做 | 2 |
 | `invented` | 本專案自訂，安裝包未提供 | 11 |
 | `server` | 原生為伺服器變數，安裝包未帶值 | 14 |
@@ -64,12 +64,12 @@
 
 ### heroCost · `lib/engine.ts` 的 `cost`
 
-基礎費用 × (1.075^(等級+購買數) − 1.075^等級) ÷ 0.075 × 費用減免
+基礎費用 × (1.08^(等級+購買數) − 1.08^等級) ÷ 0.08 × 費用減免
 
 | 來源條目 | 狀態 | 依據 |
 |---|---|---|
 | 英雄基礎費用 | `table` | `reference/tt2/8.2.0/HelperInfo.json`；PurchaseCost1 欄，最高一筆為 1.0000E+240。 |
-| 成長率 1.075 | `baseline-75` | 沿用 7.5 基準；劍術大師側的同名成長率另有原生預設值可對照。 |
+| 成長率 1.08 | `default` | `reference/tt2/8.2.0/helper-cost-evidence.json`；原生 ServerVarsModel.helperUpgradeBase 是 static float，類別建構式寫入的靜態預設值為 float 的 1.08（位元 0x3f8a3d71），整個建構式只寫這個欄位一次。它確實是費用公比：HelperInfo 的建構式讀它之後取對數存進 helperUpgradeBaseLog、把 base−1 存進 helperUpgradeBaseMinusOne，正是等比級數的兩個導出量，GetPurchaseCost 再以 GHDouble.Pow 乘上基礎費用。引擎原本的 1.075 是 7.5 基準，2.12.8 起改用 8.2 的預設值，以 Math.fround 保留 float 精度，與劍術大師側的 costBase／costGrowth 同級。相鄰的 helperUpgradeLevelTiers／Modulus／Offsets 三個 int[] 尚未解出內容。 |
 
 ### playerDamage · `lib/tt2-player.ts` 的 `playerBaseDamage`
 

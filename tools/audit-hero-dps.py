@@ -40,7 +40,7 @@ def sha(data):
 
 
 def class_block(source, name):
-    match = re.search(r'^public class '+re.escape(name)+r'[^\n]*\n\{(.*?)^\}', source, re.S | re.M)
+    match = re.search(r'^public class '+re.escape(name)+r'(?=[\s:])[^\n]*\n\{(.*?)^\}', source, re.S | re.M)
     if not match:
         raise ValueError(f'class {name} not found')
     return match.group(1)

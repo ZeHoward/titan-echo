@@ -119,9 +119,13 @@ export function bossDuration(s:State){return 30+stateEffect(s,'BossTimerDuration
 export function health(s:State):Big{return scale(pow(1.32,s.stage-1),18*(isBoss(s)?[2,3,4,5,8][(s.stage-1)%5]:1)*(1-Math.min(.9,stateEffect(s,'MonsterHP'))));}
 export function isBoss(s:State){return !s.trial&&!s.farming&&s.kills>=monsterCount(s);}
 export function reward(s:State):Big{return goldReward(s,'monster');}
+// APK 8.2.0 ServerVarsModel static default; live server overrides are unknown. The ratio is stored
+// as a float there, and HelperInfo's constructor derives log(ratio) and ratio-1 from it, which is
+// the same geometric series this cost is. Recorded in reference/tt2/8.2.0/helper-cost-evidence.json.
+export const HELPER_DEFAULTS={costGrowth:Math.fround(1.08)} as const;
 export function cost(s:State,index=-1,count=1):Big{
  if(index<0)return scale(playerUpgradeCost(s.level,count),['SwordMasterUpgradeCost','AllUpgradeCost','AllUpgradeCostFairy'].reduce((n,id)=>n*Math.max(0,1-stateEffect(s,id)),1));
- const n=heroLevel(s,index),rate=1.075;
+ const n=heroLevel(s,index),rate=HELPER_DEFAULTS.costGrowth;
  // The geometric sum itself always fits a double; it is multiplying it by base, which already
  // reaches 1e240 for the last heroes, that used to overflow. So the run is applied first.
  const run=scale(pow(rate,n),(rate**count-1)/(rate-1));

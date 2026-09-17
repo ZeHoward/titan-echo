@@ -60,7 +60,9 @@ test('a hero level changes that hero and the total, and leaves the player alone'
   const ten = N(cost(bulk, 0, 10));
   assert.ok(ten <= total, `十連 ${ten} 不應貴於逐次累計 ${total}`);
   assert.ok(total - ten <= 10, `差額 ${total - ten} 應在每筆進位一元的範圍內`);
-  assert.equal(total - ten, 5);
+  // The exact rounding gap follows the common ratio: 1.08 (the 8.2 default) gives 3 where the 7.5
+  // baseline's 1.075 gave 5, so this also catches the ratio moving.
+  assert.ok(Math.abs(total - ten - 3) < 1e-9, `進位差額 ${total - ten}`);
 });
 
 test('a skill changes damage only while it is running', () => {
