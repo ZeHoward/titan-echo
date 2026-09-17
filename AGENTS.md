@@ -9,3 +9,5 @@
 - 玩家進度與雲端相容性是每項驗收條件。現行 Sheets 外層格式為 version 2、heroes[33]、artifacts[30]；如需變更，必須先實作並測試相容遷移，不能直接換欄位。
 - 完成實作後更新 `ROADMAP.md` 的狀態、完成證據及下一項，並更新應用版本與更新紀錄；純規劃或文件更新不虛增遊戲版本。
 - 使用者已要求發布到 GitHub Pages。完成已驗證的遊戲更新後依現有流程發布，確認部署結果。不要因存在 `.openai/hosting.json` 就把此 GitHub Pages 工作改成 Sites 發布。
+- `app/globals.css` 的規則**不照選擇器分組**：同一個 class 的基礎宣告常散在檔案很後面（例如 `.pet-combat-status` 的 `position:absolute` 在近三萬字元處）。加 media query 覆寫時如果插在基礎宣告之前，同特異度下會被整條蓋掉而完全沒有效果，**一律加在檔案末尾**；改完要在實際寬度量一次 `getBoundingClientRect()`，不要只看程式碼。
+
