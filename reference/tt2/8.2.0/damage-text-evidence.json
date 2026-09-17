@@ -1,0 +1,351 @@
+{
+  "version": "8.2.0",
+  "role": "傷害回饋的界線：哪些傷害來源會冒數字、歸哪個顯示選項管、哪些會播受擊動畫，以及影分身的攻擊節奏來自哪個速率。",
+  "packageSha256": "8d78c9aa877e6c0b291ee2116cab855bd26c59c1d080bc654f88ecf1ff268b5f",
+  "binarySha256": "c13fc44321b1214c71ab0277a134fc3401fd7392c74a0bbb3935671c55a8713a",
+  "scriptSha256": "62c2eeb8472bb107de516e4b6ae69d3dcdf5013fb1caa87223d82a54dd203f8b",
+  "finding": "安裝包有 41 個具名傷害來源。CanShowDamageText 是一個 switch，把 8 組來源各自對到唯一一個可關閉它的顯示選項，其餘 7 個永遠顯示；TryDamagedAnimation 另用一個位遮罩決定 25 個來源才播受擊動畫。影分身有自己的攻擊迴圈，間隔是 1 ÷ GetCloneAttackRate()，GetCloneAttackRate = max(1, Bonus(ShadowCloneSkillAttackRate) × Bonus(CompanionAttackRate))。",
+  "consequence": "傷害數字要分幾種、哪一種能被玩家關掉，不必自行編排；影分身的傷害不該混進英雄每秒傷害，它是每 1 ÷ 速率 秒獨立打一次。十個受擊染色常數雖然在包內，但沒有任何方法讀取，不能當成原版的受擊顏色。",
+  "damageTypes": {
+    "Test": 0,
+    "Tap": 1,
+    "TapCrit": 2,
+    "TapSpecialCrit": 3,
+    "Helper": 4,
+    "HelperCrit": 5,
+    "HelperEnhanced": 6,
+    "HelperEnhancedCrit": 7,
+    "HelperQTE": 8,
+    "Pet": 9,
+    "PetCrit": 10,
+    "PetBurst": 11,
+    "PetBurstCrit": 12,
+    "PetZip": 13,
+    "DualZip": 14,
+    "Splash": 15,
+    "DamageOverTime": 16,
+    "Doom": 17,
+    "ActiveSkillHeavenlyStrike": 18,
+    "ActiveSkillHeavenlyStrikeCrit": 19,
+    "ActiveSkillFireGolem": 20,
+    "ActiveSkillFireGolemCrit": 21,
+    "ActiveSkillMegaCoin": 22,
+    "ActiveSkillShadowClone": 23,
+    "ActiveSkillShadowCloneCrit": 24,
+    "ClanShip": 25,
+    "ClanShipCrit": 26,
+    "ClanShipTapped": 27,
+    "SummonClanMate": 28,
+    "SummonClanMateCrit": 29,
+    "LightningStrike": 30,
+    "Dagger": 31,
+    "DaggerCrit": 32,
+    "DaggerCyclone": 33,
+    "DualBurst": 34,
+    "ClanShipThunderVolley": 35,
+    "ClanShipThunderVolleyCrit": 36,
+    "GoldGunRegular": 37,
+    "GoldGunMagnumOpus": 38,
+    "GoldenMissile": 39,
+    "TwilightFairy": 40
+  },
+  "damageText": {
+    "method": {
+      "name": "MonsterModel$$CanShowDamageText",
+      "rva": "0x232889c",
+      "bytesSha256": "67851063f0dfcf247993d4904f40078fc4ebfec4c14a9ff7a4a05e6b28206d63"
+    },
+    "switchTable": {
+      "rva": "0xcf790c",
+      "length": 40,
+      "caseBase": "0x23288f0",
+      "fallthrough": "0x23289d4"
+    },
+    "byOption": {
+      "swordMasterDamageTextOff": {
+        "fieldOffset": "0x4b",
+        "damageTypes": [
+          "Tap",
+          "TapCrit",
+          "TapSpecialCrit",
+          "ActiveSkillFireGolem",
+          "ActiveSkillFireGolemCrit"
+        ]
+      },
+      "petDamageTextOff": {
+        "fieldOffset": "0x4c",
+        "damageTypes": [
+          "Pet",
+          "PetCrit",
+          "PetBurst",
+          "PetBurstCrit",
+          "PetZip",
+          "DualZip",
+          "DualBurst"
+        ]
+      },
+      "specialAttackDamageTextOff": {
+        "fieldOffset": "0x54",
+        "damageTypes": [
+          "DamageOverTime",
+          "Doom",
+          "LightningStrike"
+        ]
+      },
+      "heavenlyStrikeDamageTextOff": {
+        "fieldOffset": "0x51",
+        "damageTypes": [
+          "ActiveSkillHeavenlyStrike",
+          "ActiveSkillHeavenlyStrikeCrit",
+          "TwilightFairy"
+        ]
+      },
+      "shadowCloneDamageTextOff": {
+        "fieldOffset": "0x4e",
+        "damageTypes": [
+          "ActiveSkillShadowClone",
+          "ActiveSkillShadowCloneCrit"
+        ]
+      },
+      "clanShipDamageTextOff": {
+        "fieldOffset": "0x4d",
+        "damageTypes": [
+          "ClanShip",
+          "ClanShipCrit",
+          "ClanShipTapped",
+          "SummonClanMate",
+          "SummonClanMateCrit",
+          "ClanShipThunderVolley",
+          "ClanShipThunderVolleyCrit"
+        ]
+      },
+      "daggerDamageTextOff": {
+        "fieldOffset": "0x52",
+        "damageTypes": [
+          "Dagger",
+          "DaggerCrit",
+          "DaggerCyclone"
+        ]
+      },
+      "goldGunDamageTextOff": {
+        "fieldOffset": "0x53",
+        "damageTypes": [
+          "GoldGunRegular",
+          "GoldGunMagnumOpus",
+          "GoldenMissile"
+        ]
+      }
+    },
+    "alwaysShown": [
+      "Helper",
+      "HelperCrit",
+      "HelperEnhanced",
+      "HelperEnhancedCrit",
+      "HelperQTE",
+      "Splash",
+      "ActiveSkillMegaCoin"
+    ],
+    "note": "每個 case 讀 OptionsController 的一個 bool（<名稱>Off）並回傳其反值，所以預設全部顯示，玩家關掉的才隱藏。"
+  },
+  "damagedAnimation": {
+    "method": {
+      "name": "MonsterController$$TryDamagedAnimation",
+      "rva": "0x231ff24",
+      "bytesSha256": "24e30499e46860f5d1255b148890d588d0607b3eb9bf07f0940c18dd7401c64a"
+    },
+    "mask": "0xff96d76b06",
+    "maxDamageType": 39,
+    "plays": [
+      "Tap",
+      "TapCrit",
+      "HelperQTE",
+      "Pet",
+      "PetBurst",
+      "PetZip",
+      "DualZip",
+      "DamageOverTime",
+      "Doom",
+      "ActiveSkillHeavenlyStrike",
+      "ActiveSkillFireGolem",
+      "ActiveSkillMegaCoin",
+      "ActiveSkillShadowClone",
+      "ClanShip",
+      "ClanShipCrit",
+      "SummonClanMate",
+      "Dagger",
+      "DaggerCrit",
+      "DaggerCyclone",
+      "DualBurst",
+      "ClanShipThunderVolley",
+      "ClanShipThunderVolleyCrit",
+      "GoldGunRegular",
+      "GoldGunMagnumOpus",
+      "GoldenMissile"
+    ],
+    "skips": [
+      "Test",
+      "TapSpecialCrit",
+      "Helper",
+      "HelperCrit",
+      "HelperEnhanced",
+      "HelperEnhancedCrit",
+      "PetCrit",
+      "PetBurstCrit",
+      "Splash",
+      "ActiveSkillHeavenlyStrikeCrit",
+      "ActiveSkillFireGolemCrit",
+      "ActiveSkillShadowCloneCrit",
+      "ClanShipTapped",
+      "SummonClanMateCrit",
+      "LightningStrike",
+      "TwilightFairy"
+    ]
+  },
+  "monsterTints": {
+    "assignedIn": {
+      "name": "MonsterController$$.ctor",
+      "rva": "0x2321474",
+      "bytesSha256": "b8a510a890bb2573dba342931f78e851f08a2d600107f876a1f33a82256bd5d8"
+    },
+    "colours": {
+      "ClanAttackTint": {
+        "rva": "0xcc8190",
+        "rgba": [
+          0.964706,
+          0.72549,
+          0.070588,
+          1.0
+        ],
+        "hex": "#F6B912"
+      },
+      "ShadowCloneTint": {
+        "rva": "0xcc8f50",
+        "rgba": [
+          0.7,
+          0.7,
+          0.7,
+          1.0
+        ],
+        "hex": "#B2B2B2"
+      },
+      "ShadowCloneCritTint": {
+        "rva": "0xcc8390",
+        "rgba": [
+          0.203922,
+          0.32549,
+          0.690196,
+          1.0
+        ],
+        "hex": "#3453B0"
+      },
+      "DoomTint": {
+        "rva": "0xcc9c10",
+        "rgba": [
+          0.67,
+          1.0,
+          0.19,
+          1.0
+        ],
+        "hex": "#ABFF30"
+      },
+      "GolemCloneTint": {
+        "rva": "0xcc9800",
+        "rgba": [
+          1.0,
+          0.380392,
+          0.188235,
+          1.0
+        ],
+        "hex": "#FF6130"
+      },
+      "HeavenlyStrikeTint": {
+        "rva": "0xcc9de0",
+        "rgba": [
+          0.36,
+          0.75,
+          0.9,
+          1.0
+        ],
+        "hex": "#5CBFE6"
+      },
+      "LightningStrikeTint": {
+        "rva": "0xcc8de0",
+        "rgba": [
+          0.72,
+          0.85,
+          0.95,
+          1.0
+        ],
+        "hex": "#B8D9F2"
+      },
+      "HeroQTETint": {
+        "rva": "0xcc9720",
+        "rgba": [
+          1.0,
+          0.54,
+          0.0,
+          1.0
+        ],
+        "hex": "#FF8A00"
+      },
+      "DeadlyStrikeTint": {
+        "rva": "0xcc84c0",
+        "rgba": [
+          0.360784,
+          0.768627,
+          0.32549,
+          1.0
+        ],
+        "hex": "#5CC453"
+      },
+      "GoldGunTint": {
+        "rva": "0xcc8a90",
+        "rgba": [
+          0.960784,
+          0.827451,
+          0.062745,
+          1.0
+        ],
+        "hex": "#F5D310"
+      }
+    },
+    "readers": {
+      "scannedMethods": 47,
+      "reads": 0
+    },
+    "note": "這十個 Color 只在建構式被寫入，MonsterController 的其餘方法都沒有讀；StartDamagedAnimation 不看 DamageType，受擊動畫沒有依來源上色。"
+  },
+  "shadowClone": {
+    "rate": {
+      "method": {
+        "name": "ActiveSkillModel$$GetCloneAttackRate",
+        "rva": "0x223b62c",
+        "bytesSha256": "deed4a74ae218e9f4dac619a95cd1187e7ad7a32d6779095b325a4cba37ca045"
+      },
+      "bonuses": [
+        "ShadowCloneSkillAttackRate",
+        "CompanionAttackRate"
+      ],
+      "base": 1,
+      "formula": "max(1, Bonus(ShadowCloneSkillAttackRate) × Bonus(CompanionAttackRate))"
+    },
+    "attackLoop": {
+      "method": {
+        "name": "PlayerController.<ShadowCloneAttackLoop>d__132$$MoveNext",
+        "rva": "0x23d1e6c",
+        "bytesSha256": "715a0872ce57fe8b490d6615c10149f0533de565a220865fcf7b795cb1c0c5d7"
+      },
+      "interval": "1 ÷ GetCloneAttackRate() 秒",
+      "calls": {
+        "GetCloneAttackRate": 2,
+        "WaitForSeconds": 1
+      }
+    }
+  },
+  "limits": [
+    "兩個 switch 與遮罩是客戶端事實；線上仍可能以伺服器參數改變傷害本身的大小",
+    "GetBonus 對加法型加成是否已含 1 未反組譯確認，本專案照資料表語意以 1＋增量代入",
+    "影分身的特殊攻擊（ShadowCloneSkillSpecialRate／SpecialChance）另有節奏，本次未核實",
+    "Helper 類傷害在 switch 裡落在「永遠顯示」，但原版是否每秒為英雄傷害冒數字需要實機對照，本表不宣稱"
+  ]
+}

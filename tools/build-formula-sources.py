@@ -177,6 +177,23 @@ FORMULAS = [
               entry(part='上限兩顆', status='server', ref='native-server-var-fields.json',
                     note='對應的具名欄位是 maxPetEggs（另有 vipStatusMaxPetEggsAdditive 為 VIP 加成），'
                          '兩者在安裝包內都沒有值；目前的 2 是 7.5 基準沿用，不是原版上限。')]),
+    entry(id='cloneAttackRate', module='lib/engine.ts', export='cloneAttackRate',
+          expression='影分身每秒攻擊次數 = max(1, (1＋ShadowCloneSkillAttackRate) × CompanionAttackRate)',
+          parts=[
+              entry(part='速率算式與每秒一次的基礎值', status='native', ref='damage-text-evidence.json',
+                    note='原生 ActiveSkillModel.GetCloneAttackRate 以 GHDouble(1) 為底，取 '
+                         'Bonus(ShadowCloneSkillAttackRate) 與 Bonus(CompanionAttackRate) 相乘後與 1 取 Max；'
+                         'PlayerController.ShadowCloneAttackLoop 以 WaitForSeconds(1 ÷ 該速率) 間隔攻擊。'),
+              entry(part='加法型加成代入 1＋增量', status='invented',
+                    note='原生 BonusModel.GetBonus 對加法型加成是否已含 1 未反組譯確認。'
+                         'ShadowCloneSkillAttackRate 在 BonusInfo 標為 additive，資料表值為 0.1–0.95 的增量，'
+                         '因此以 1＋增量代入；若原生實為純增量，無加成時速率仍為 1，差別只在天賦加成的作用方式。'),
+              entry(part='離散到 100ms 模擬步長', status='invented',
+                    note='引擎以 100ms 為一步推進，攻擊只在步邊界結算，因此單次間隔最多晚 100ms；'
+                         '計時器累加間隔而非改設為當下時間，長期平均頻率與速率一致。'),
+              entry(part='特殊攻擊未實作', status='server',
+                    note='ShadowCloneSkillSpecialRate 與 SpecialChance 另有節奏與機率，'
+                         '本專案未實作，也未核實其倍率來源。')]),
     entry(id='perks', module='lib/tt2-perks.ts', export='perkValue',
           expression='增益每層 12 小時獨立計時；魔力藥水提高回復倍率，黃金雨依層數縮短自動購買間隔',
           parts=[entry(part='層數倍率與間隔', status='baseline-75',

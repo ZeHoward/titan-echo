@@ -58,14 +58,19 @@ test('介面用計數器的變化決定要不要冒出數字，而不是自己�
   assert.ok(source.includes("(state.current.tt2?.heavenlyStrikes||0)>strikes"), '沒有用天堂聖擊次數判斷');
   assert.ok(source.includes("float(`⚡ ${fmt(t.lastPetHit)}`,'pet'"), '寵物傷害沒有用引擎記下的數值');
   assert.ok(source.includes("buildDamage(state.current,'heavenly')"), '天堂傷害沒有用引擎的算式');
+  // The clone swings inside advance(), so its number is noticed by comparing the count after a frame.
+  assert.ok(source.includes('const count=s.tt2!.cloneAttacks;'), '沒有記下影分身攻擊次數');
+  assert.ok(source.includes('count>seenCloneAttacks.current'), '沒有用影分身攻擊次數判斷');
+  assert.ok(source.includes("fmt(s.tt2!.lastCloneHit)"), '影分身傷害沒有用引擎記下的數值');
+  assert.ok(source.includes("'clone',32,32)"), '影分身數字沒有自己的來源分類');
 });
 
-test('三種傷害數字各有自己的樣式，不會看起來一樣', () => {
-  for (const kind of ['crit', 'pet', 'heavenly']) {
+test('四種傷害數字各有自己的樣式，不會看起來一樣', () => {
+  for (const kind of ['crit', 'pet', 'heavenly', 'clone']) {
     assert.ok(css.includes(`.damage-number.${kind}{`), `缺少 .damage-number.${kind} 樣式`);
   }
   const colour = kind => (css.match(new RegExp(`\\.damage-number\\.${kind}\\{color:(#[0-9a-f]+)`)) || [])[1];
-  const colours = ['crit', 'pet', 'heavenly'].map(colour);
+  const colours = ['crit', 'pet', 'heavenly', 'clone'].map(colour);
   assert.ok(colours.every(Boolean), `有樣式沒有指定顏色：${colours}`);
   assert.equal(new Set(colours).size, colours.length, `顏色重複：${colours}`);
 });

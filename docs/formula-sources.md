@@ -2,17 +2,17 @@
 
 每個核心公式的來源登記表：資料表、原生方法、原生預設值，或明確標記為 7.5 基準沿用、專案自訂或伺服器供給。
 
-版本 8.2.0。共 29 條公式、52 項來源條目。
+版本 8.2.0。共 30 條公式、56 項來源條目。
 
 | 狀態 | 意義 | 條目數 |
 |---|---|---|
-| `native` | 由反組譯證據確認 | 5 |
+| `native` | 由反組譯證據確認 | 6 |
 | `table` | 取自安裝包資料表 | 16 |
 | `default` | 原生靜態預設值，線上可覆蓋 | 2 |
 | `baseline-75` | 沿用 7.5 基準，尚未對 8.2 核實 | 6 |
 | `table-differs` | 安裝包有值但引擎目前未照做 | 1 |
-| `invented` | 本專案自訂，安裝包未提供 | 9 |
-| `server` | 原生為伺服器變數，安裝包未帶值 | 13 |
+| `invented` | 本專案自訂，安裝包未提供 | 11 |
+| `server` | 原生為伺服器變數，安裝包未帶值 | 14 |
 
 ## 逐條登記
 
@@ -200,6 +200,17 @@ max(1, floor(關卡^1.7 ÷ 100 × PrestigeRelic))，最高關卡到 60 後開放
 |---|---|---|
 | 四小時的補充間隔 | `table` | `reference/tt2/8.2.0/ServerVarOverride.json`；原生欄位是 [ServerVar] hoursToCollectEgg，而**安裝包的 ServerVarOverride 帶了值 4**，與本專案沿用的四小時一致；這是少數包內能核對上的欄位之一。該表屬 bundled-server-variable，線上是否被覆蓋未知。 |
 | 上限兩顆 | `server` | `reference/tt2/8.2.0/native-server-var-fields.json`；對應的具名欄位是 maxPetEggs（另有 vipStatusMaxPetEggsAdditive 為 VIP 加成），兩者在安裝包內都沒有值；目前的 2 是 7.5 基準沿用，不是原版上限。 |
+
+### cloneAttackRate · `lib/engine.ts` 的 `cloneAttackRate`
+
+影分身每秒攻擊次數 = max(1, (1＋ShadowCloneSkillAttackRate) × CompanionAttackRate)
+
+| 來源條目 | 狀態 | 依據 |
+|---|---|---|
+| 速率算式與每秒一次的基礎值 | `native` | `reference/tt2/8.2.0/damage-text-evidence.json`；原生 ActiveSkillModel.GetCloneAttackRate 以 GHDouble(1) 為底，取 Bonus(ShadowCloneSkillAttackRate) 與 Bonus(CompanionAttackRate) 相乘後與 1 取 Max；PlayerController.ShadowCloneAttackLoop 以 WaitForSeconds(1 ÷ 該速率) 間隔攻擊。 |
+| 加法型加成代入 1＋增量 | `invented` | 原生 BonusModel.GetBonus 對加法型加成是否已含 1 未反組譯確認。ShadowCloneSkillAttackRate 在 BonusInfo 標為 additive，資料表值為 0.1–0.95 的增量，因此以 1＋增量代入；若原生實為純增量，無加成時速率仍為 1，差別只在天賦加成的作用方式。 |
+| 離散到 100ms 模擬步長 | `invented` | 引擎以 100ms 為一步推進，攻擊只在步邊界結算，因此單次間隔最多晚 100ms；計時器累加間隔而非改設為當下時間，長期平均頻率與速率一致。 |
+| 特殊攻擊未實作 | `server` | ShadowCloneSkillSpecialRate 與 SpecialChance 另有節奏與機率，本專案未實作，也未核實其倍率來源。 |
 
 ### perks · `lib/tt2-perks.ts` 的 `perkValue`
 
