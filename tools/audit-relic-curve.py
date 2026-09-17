@@ -43,6 +43,8 @@ VARS = {'relicStageMult1': 0x168, 'relicStageMult2': 0x170, 'relicStageMult3': 0
         'relicStageBase': 0x180, 'relicStageBase2': 0x188, 'relicStageExpo': 0x190,
         'relicStageExpo2': 0x198, 'relicStageExpo3': 0x1A0, 'relicStageExpoMax3': 0x1A8,
         'relicStageOffset': 0x1B0, 'relicsStageMax': 0x214}
+# Only the outer method reads this one, as the per-stage part of the additive multiplier.
+OUTER_VAR = ('stageRushToRelicMultiplier', 0xC54)
 SAMPLE_STAGES = [60, 100, 250, 500, 1000, 2000, 5000, 10000, 30000, 98000]
 ENGINE_EXPO, ENGINE_DIVISOR = 1.7, 100
 
@@ -186,9 +188,46 @@ def main():
     for name in (NAMES[BONUS_RELICS], 'GHDouble$$Ceiling'):
         if name not in outer_calls:
             raise ValueError(f'GetTotalRelicsFromStageCount no longer calls {name}')
+    # The order the multipliers are applied in. Following the GHDouble out-pointers through the
+    # stack gives the association; this pins the sequence those out-pointers appear in, which is
+    # what makes the association readable in the first place.
+    interesting = [name for name in outer_calls if name in (
+        'PrestigeModel$$GetCurrentAdditiveRelicMultiplierBonus',
+        'PrestigeModel$$GetRewardableAdditiveRelicMultiplierAmount',
+        'BonusModel$$GetBonus', 'PrestigeModel$$GetBonusRelicsFromStageCount',
+        'GHDouble$$op_Implicit', 'GHDouble$$op_Addition', 'GHDouble$$op_Multiply',
+        'GHDouble$$Ceiling')]
+    expected_order = [
+        'PrestigeModel$$GetCurrentAdditiveRelicMultiplierBonus',
+        'PrestigeModel$$GetRewardableAdditiveRelicMultiplierAmount',
+        'GHDouble$$op_Implicit', 'GHDouble$$op_Addition',       # 累加倍率那一項
+        'BonusModel$$GetBonus', 'PrestigeModel$$GetBonusRelicsFromStageCount',
+        'GHDouble$$op_Multiply',                                # 曲線 × PrestigeRelic
+        'GHDouble$$op_Implicit', 'BonusModel$$GetBonus', 'GHDouble$$op_Addition',
+        'GHDouble$$op_Multiply',                                # × (1 + PrestigeRelicAdditive)
+        'GHDouble$$op_Multiply',                                # × 累加倍率
+        'BonusModel$$GetBonus', 'GHDouble$$op_Multiply',        # × OnlyPrestigeRelic
+        'GHDouble$$Ceiling']
+    if interesting != expected_order:
+        raise ValueError(f'the outer sequence changed:\n  got      {interesting}\n'
+                         f'  expected {expected_order}')
+    # The 1 in `1 + PrestigeRelicAdditive` is an immediate, and the additive term's own
+    # coefficient is a named [ServerVar] rather than a constant.
+    outer_text = '\n'.join(f'{i.mnemonic} {i.op_str}' for i in outer)
+    if not re.search(r'mov w0, #1\b', outer_text):
+        raise ValueError('the 1 in (1 + PrestigeRelicAdditive) is gone')
+    if not re.search(r'ldr s\d+, \[x\d+, #0xc54\]', outer_text):
+        raise ValueError('stageRushToRelicMultiplier is no longer read')
+
+    match = re.search(r'public static \S+ '+OUTER_VAR[0]+r'; // 0x([0-9A-Fa-f]+)', variables)
+    if not match or int(match.group(1), 16) != OUTER_VAR[1]:
+        raise ValueError(f'{OUTER_VAR[0]} is no longer at {OUTER_VAR[1]:#x}')
 
     defaults = json.loads((ROOT/'reference/tt2/8.2.0/servervar-defaults.json')
                           .read_text(encoding='utf-8'))['recovered']
+    if OUTER_VAR[0] not in defaults:
+        raise ValueError(f'{OUTER_VAR[0]} has no recovered default')
+    outer_value = defaults[OUTER_VAR[0]]['value']
     values = {}
     for name in VARS:
         if name not in defaults:
@@ -259,18 +298,36 @@ def main():
             'method': symbols[TOTAL_RELICS],
             'multipliers': multipliers,
             'rounding': 'GHDouble.Ceiling',
-            'note': '外層先算 GetCurrentAdditiveRelicMultiplierBonus × '
-                    'GetRewardableAdditiveRelicMultiplierAmount，再依序把 PrestigeRelic、'
-                    'PrestigeRelicAdditive 與 OnlyPrestigeRelic 三個加成乘進來，最後無條件進位。'
-                    '引擎只套用了 PrestigeRelic 一個，另外兩個的資料在 TT2_SETS 裡卻沒有被讀；'
-                    '三者的相乘順序與那個加法項的來源未逐指令確定，所以沒有直接接上。',
+            'callOrder': interesting,
+            'formula': 'Ceiling(曲線值 × Bonus(PrestigeRelic) × (1 + Bonus(PrestigeRelicAdditive)) '
+                       '× 累加倍率 × Bonus(OnlyPrestigeRelic))',
+            'additiveTerm': {
+                'formula': 'GetCurrentAdditiveRelicMultiplierBonus() + stageRushToRelicMultiplier '
+                           '× GetRewardableAdditiveRelicMultiplierAmount()',
+                'coefficient': {'name': OUTER_VAR[0], 'offset': hex(OUTER_VAR[1]),
+                                'value': outer_value},
+            },
+            'note': '跟著 GHDouble 運算子的 out 指標在堆疊上的去向讀，四個乘數的結合順序就定下來了：'
+                    '曲線值先乘 Bonus(PrestigeRelic)，再乘 (1 + Bonus(PrestigeRelicAdditive))'
+                    '（那個 1 是 mov w0,#1 的立即數），接著乘累加倍率那一項，'
+                    '最後乘 Bonus(OnlyPrestigeRelic)，再無條件進位。',
         },
-        'engineFormula': f'max(1, floor(關卡^{ENGINE_EXPO} ÷ {ENGINE_DIVISOR} × Bonus(PrestigeRelic)))',
+        'adopted': {
+            'what': '(1 + Bonus(PrestigeRelicAdditive)) 與 × Bonus(OnlyPrestigeRelic) 兩個乘數',
+            'why': '順序已逐指令確定，兩者在乾淨存檔都是無作用值'
+                   '（前者是加法型、預設 0，後者是乘法型、預設 1），結構與原生相同，影響溫和。',
+            'notAdopted': '累加倍率那一項需要 GetCurrentAdditiveRelicMultiplierBonus 與'
+                          'GetRewardableAdditiveRelicMultiplierAmount 背後的整套累加倍率系統，'
+                          '本專案沒有實作，沒有安全的預設值可用，因此沒有接。'
+                          '曲線本體也維持 7.5 近似，理由見 differsFromEngine。',
+        },
+        'engineFormula': f'max(1, floor(關卡^{ENGINE_EXPO} ÷ {ENGINE_DIVISOR} × Bonus(PrestigeRelic) '
+                         f'× (1 + Bonus(PrestigeRelicAdditive)) × Bonus(OnlyPrestigeRelic)))',
         'comparison': comparison,
         'limits': [
             '十個係數都是 [ServerVar]，本表用的是編譯期預設值，不是線上值',
-            'GetTotalRelicsFromStageCount 的三個乘數與加法項的結合順序未逐指令確定，只記下它們都參與',
-            'GetCurrentAdditiveRelicMultiplierBonus 與 GetRewardableAdditiveRelicMultiplierAmount 未展開',
+            'GetCurrentAdditiveRelicMultiplierBonus 與 GetRewardableAdditiveRelicMultiplierAmount '
+            '兩個方法本身未展開，只確定它們組成的那一項在哪個位置被乘進來',
             '對照表以 double 計算；原生前兩段走 double、第三段走 GHDouble，極大關卡的尾數會有差異',
             '季節聖物（GetTotalSeasonalRelicsFromStageCount）是另一條路徑，未查',
         ],

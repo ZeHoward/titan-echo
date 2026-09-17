@@ -176,7 +176,17 @@ export function cost(s:State,index=-1,count=1):Big{
  const run=scale(pow(rate,n),(rate**count-1)/(rate-1));
  return bigCeil(scale(run,HEROES[index].base*(1-Math.min(.9,stateEffect(s,'AllUpgradeCost')))*(1-Math.min(.9,stateEffect(s,'HelperUpgradeCost')))));
 }
-export function relicGain(s:State){return s.best>=PRESTIGE_DEFAULTS.minimumStage?Math.max(1,Math.floor(s.stage**1.7/100*stateEffect(s,'PrestigeRelic'))):0;}
+// The stage^1.7 / 100 part is still the 7.5 approximation of the native three-term curve, but the
+// multipliers around it are the native ones. Following the GHDouble out-pointers through
+// GetTotalRelicsFromStageCount gives the order: the curve is multiplied by PrestigeRelic, then by
+// 1 + PrestigeRelicAdditive, then by the additive-multiplier term this project does not have, then
+// by OnlyPrestigeRelic. Both of the ones applied here are inert on a clean save — the additive one
+// defaults to 0 and comes from the mythic sets, the other defaults to 1 and has no source yet.
+export function relicGain(s:State){
+ if(s.best<PRESTIGE_DEFAULTS.minimumStage)return 0;
+ const multiplier=stateEffect(s,'PrestigeRelic')*(1+stateEffect(s,'PrestigeRelicAdditive'))*stateEffect(s,'OnlyPrestigeRelic');
+ return Math.max(1,Math.floor(s.stage**1.7/100*multiplier));
+}
 export function artifactCost(s:State,i:number){return s.tt2!.artifacts[i]?upgradeArtifactCost(s.tt2!,i):discoveryCost(s.tt2!);}
 export function evolveCost(s:State,i:number):Big{return scale(pow(1e4,s.evolutions[i]),HEROES[i].base*1e6);}
 export function skillCost(s:State,i:number){return SKILL_DATA[i].cost[Math.min(SKILL_DATA[i].cost.length-1,Math.max(0,s.skillLevels[i]))];}

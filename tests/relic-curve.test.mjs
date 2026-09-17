@@ -4,6 +4,7 @@ import { readFileSync } from 'node:fs';
 import { referenceRoot } from '../tools/reference-validation.mjs';
 import { loadRegister } from '../tools/formula-sources.mjs';
 import { fresh, relicGain, PRESTIGE_DEFAULTS } from '../lib/engine.ts';
+import { TT2_SETS } from '../lib/tt2-data.ts';
 
 const evidence = JSON.parse(readFileSync(new URL('relic-curve-evidence.json', referenceRoot), 'utf8'));
 const baseline = JSON.parse(readFileSync(new URL('../docs/reference-baseline.json', import.meta.url), 'utf8'));
@@ -80,17 +81,40 @@ test('引擎目前的近似值就是證據裡記的那一欄', () => {
   }
 });
 
-test('外層的三個乘數與進位方向都記下來了，引擎只做了其中一個', () => {
+test('外層四個乘數的結合順序定下來了，兩個已接上引擎', () => {
   assert.deepEqual(evidence.outer.multipliers,
     ['PrestigeRelic', 'PrestigeRelicAdditive', 'OnlyPrestigeRelic']);
   assert.equal(evidence.outer.rounding, 'GHDouble.Ceiling');
-  // The engine's own formula, recorded beside it: one multiplier and a floor.
-  assert.match(evidence.engineFormula, /PrestigeRelic/);
-  assert.match(evidence.engineFormula, /floor/);
-  assert.ok(!evidence.engineFormula.includes('OnlyPrestigeRelic'));
+  assert.match(evidence.outer.formula, /Bonus\(PrestigeRelic\) × \(1 \+ Bonus\(PrestigeRelicAdditive\)\)/);
+  // The call order is what makes the association readable, so it is pinned whole.
+  assert.equal(evidence.outer.callOrder.at(-1), 'GHDouble$$Ceiling');
+  assert.equal(evidence.outer.callOrder.filter(name => name === 'GHDouble$$op_Multiply').length, 4);
+  assert.equal(evidence.outer.callOrder.filter(name => name === 'BonusModel$$GetBonus').length, 3);
+  // Two of the four are now in the engine; the additive-multiplier term is not.
+  assert.match(evidence.engineFormula, /PrestigeRelicAdditive/);
+  assert.match(evidence.engineFormula, /OnlyPrestigeRelic/);
+  assert.match(evidence.adopted.notAdopted, /累加倍率/);
+  assert.equal(evidence.outer.additiveTerm.coefficient.value, Math.fround(0.00017));
 });
 
-test('登記表記錄算式已讀完、外層乘數與進位方向的三處不一致', () => {
+test('接上的兩個乘數在乾淨存檔沒有作用，湊齊套裝才變多', () => {
+  const clean = fresh(1000);
+  clean.best = 1000;
+  clean.stage = 1000;
+  assert.equal(relicGain(clean), evidence.comparison['1000'].engine, '乾淨存檔與接上前相同');
+  // One mythic set grants PrestigeRelicAdditive 2.4408, so 1 + that is the whole difference.
+  const withSet = fresh(1000);
+  withSet.best = 1000;
+  withSet.stage = 1000;
+  const index = TT2_SETS.findIndex(set => set.id === 'ScrollTutor');
+  const granted = TT2_SETS[index].effects
+    .find(effect => effect.type === 'PrestigeRelicAdditive').amount;
+  withSet.tt2.sets = [index];
+  const ratio = relicGain(withSet) / relicGain(clean);
+  assert.ok(Math.abs(ratio - (1 + granted)) < 0.01, `倍率 ${ratio}，預期 ${1 + granted}`);
+});
+
+test('登記表記錄算式已讀完、順序已照做、剩下兩處不一致', () => {
   const register = loadRegister();
   const relics = register.formulas.find(formula => formula.id === 'prestigeRelics');
   const curve = relics.parts.find(part => part.part.includes('指數 1.7'));
@@ -98,7 +122,9 @@ test('登記表記錄算式已讀完、外層乘數與進位方向的三處不�
   assert.equal(curve.ref, 'relic-curve-evidence.json');
   assert.match(curve.note, /完整讀完/);
   assert.match(curve.note, /第 9 條/);
-  for (const key of ['外層的三個乘數只套用了一個', '進位方向']) {
+  const order = relics.parts.find(entry => entry.part === '外層乘數的結合順序');
+  assert.equal(order.status, 'native', '順序是反組譯確認的，而且引擎已照做');
+  for (const key of ['累加倍率那一項未實作', '進位方向']) {
     const part = relics.parts.find(entry => entry.part === key);
     assert.ok(part, key);
     assert.equal(part.status, 'table-differs');
@@ -109,5 +135,5 @@ test('登記表記錄算式已讀完、外層乘數與進位方向的三處不�
   assert.equal(extra.status, 'table-differs');
   assert.match(extra.note, /28 個有值/);
   assert.match(extra.note, /50000/);
-  assert.equal(evidence.limits.length, 5);
+  assert.equal(evidence.limits.length, 4);
 });

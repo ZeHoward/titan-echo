@@ -203,11 +203,20 @@ FORMULAS = [
                          '頂到 1.0155，1.002^(關卡^1.0155) 開始主導，到關卡上限差 10^95 量級，'
                          '整條換掉等於重做蛻變經濟，且與怪物曲線那條配套。逐關對照與理由見 '
                          'ROADMAP 待決定的取捨第 9 條。'),
-              entry(part='外層的三個乘數只套用了一個', status='table-differs', ref='relic-curve-evidence.json',
-                    note='原生 GetTotalRelicsFromStageCount 依序把 PrestigeRelic、PrestigeRelicAdditive 與 '
-                         'OnlyPrestigeRelic 三個加成乘進來；引擎只套用 PrestigeRelic，'
-                         '另外兩個的資料在 TT2_SETS 裡卻沒有任何地方讀它。'
-                         '沒有直接接上的原因是三者與外層那個加法項的結合順序尚未逐指令確定。'),
+              entry(part='外層乘數的結合順序', status='native', ref='relic-curve-evidence.json',
+                    note='跟著 GHDouble 運算子的 out 指標在堆疊上的去向讀，順序定下來了：'
+                         'Ceiling(曲線值 × Bonus(PrestigeRelic) × (1 + Bonus(PrestigeRelicAdditive)) '
+                         '× 累加倍率 × Bonus(OnlyPrestigeRelic))，其中那個 1 是 mov w0,#1 的立即數。'
+                         '**引擎已照做兩個**：(1 + PrestigeRelicAdditive) 與 × OnlyPrestigeRelic。'
+                         '兩者在乾淨存檔都是無作用值（加法型預設 0、乘法型預設 1），'
+                         '所以只有湊齊神話套裝的人會變多——包內有 17 個套裝各給 PrestigeRelicAdditive 2.4408，'
+                         '湊一套就是 3.44 倍。OnlyPrestigeRelic 目前在引擎資料裡沒有任何來源，'
+                         '接上是為了位置正確，將來有來源就會生效。'),
+              entry(part='累加倍率那一項未實作', status='table-differs', ref='relic-curve-evidence.json',
+                    note='原生在上式中還乘一項 GetCurrentAdditiveRelicMultiplierBonus() + '
+                         'stageRushToRelicMultiplier × GetRewardableAdditiveRelicMultiplierAmount()，'
+                         '係數的編譯期預設值是 float 0.00017。它背後整套累加倍率系統本專案沒有實作，'
+                         '也沒有安全的預設值可以代入（乘 0 會讓聖物歸零），所以沒有接。'),
               entry(part='進位方向', status='table-differs', ref='relic-curve-evidence.json',
                     note='原生以 GHDouble.Ceiling 無條件進位，引擎用 Math.floor 捨去。'
                          '在目前的近似曲線下改成進位只會讓每次蛻變多零或一顆，'

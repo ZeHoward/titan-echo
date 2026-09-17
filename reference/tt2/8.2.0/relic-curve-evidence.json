@@ -94,9 +94,40 @@
       "OnlyPrestigeRelic"
     ],
     "rounding": "GHDouble.Ceiling",
-    "note": "外層先算 GetCurrentAdditiveRelicMultiplierBonus × GetRewardableAdditiveRelicMultiplierAmount，再依序把 PrestigeRelic、PrestigeRelicAdditive 與 OnlyPrestigeRelic 三個加成乘進來，最後無條件進位。引擎只套用了 PrestigeRelic 一個，另外兩個的資料在 TT2_SETS 裡卻沒有被讀；三者的相乘順序與那個加法項的來源未逐指令確定，所以沒有直接接上。"
+    "callOrder": [
+      "PrestigeModel$$GetCurrentAdditiveRelicMultiplierBonus",
+      "PrestigeModel$$GetRewardableAdditiveRelicMultiplierAmount",
+      "GHDouble$$op_Implicit",
+      "GHDouble$$op_Addition",
+      "BonusModel$$GetBonus",
+      "PrestigeModel$$GetBonusRelicsFromStageCount",
+      "GHDouble$$op_Multiply",
+      "GHDouble$$op_Implicit",
+      "BonusModel$$GetBonus",
+      "GHDouble$$op_Addition",
+      "GHDouble$$op_Multiply",
+      "GHDouble$$op_Multiply",
+      "BonusModel$$GetBonus",
+      "GHDouble$$op_Multiply",
+      "GHDouble$$Ceiling"
+    ],
+    "formula": "Ceiling(曲線值 × Bonus(PrestigeRelic) × (1 + Bonus(PrestigeRelicAdditive)) × 累加倍率 × Bonus(OnlyPrestigeRelic))",
+    "additiveTerm": {
+      "formula": "GetCurrentAdditiveRelicMultiplierBonus() + stageRushToRelicMultiplier × GetRewardableAdditiveRelicMultiplierAmount()",
+      "coefficient": {
+        "name": "stageRushToRelicMultiplier",
+        "offset": "0xc54",
+        "value": 0.00016999999934341758
+      }
+    },
+    "note": "跟著 GHDouble 運算子的 out 指標在堆疊上的去向讀，四個乘數的結合順序就定下來了：曲線值先乘 Bonus(PrestigeRelic)，再乘 (1 + Bonus(PrestigeRelicAdditive))（那個 1 是 mov w0,#1 的立即數），接著乘累加倍率那一項，最後乘 Bonus(OnlyPrestigeRelic)，再無條件進位。"
   },
-  "engineFormula": "max(1, floor(關卡^1.7 ÷ 100 × Bonus(PrestigeRelic)))",
+  "adopted": {
+    "what": "(1 + Bonus(PrestigeRelicAdditive)) 與 × Bonus(OnlyPrestigeRelic) 兩個乘數",
+    "why": "順序已逐指令確定，兩者在乾淨存檔都是無作用值（前者是加法型、預設 0，後者是乘法型、預設 1），結構與原生相同，影響溫和。",
+    "notAdopted": "累加倍率那一項需要 GetCurrentAdditiveRelicMultiplierBonus 與GetRewardableAdditiveRelicMultiplierAmount 背後的整套累加倍率系統，本專案沒有實作，沒有安全的預設值可用，因此沒有接。曲線本體也維持 7.5 近似，理由見 differsFromEngine。"
+  },
+  "engineFormula": "max(1, floor(關卡^1.7 ÷ 100 × Bonus(PrestigeRelic) × (1 + Bonus(PrestigeRelicAdditive)) × Bonus(OnlyPrestigeRelic)))",
   "comparison": {
     "60": {
       "engine": 10,
@@ -221,8 +252,7 @@
   },
   "limits": [
     "十個係數都是 [ServerVar]，本表用的是編譯期預設值，不是線上值",
-    "GetTotalRelicsFromStageCount 的三個乘數與加法項的結合順序未逐指令確定，只記下它們都參與",
-    "GetCurrentAdditiveRelicMultiplierBonus 與 GetRewardableAdditiveRelicMultiplierAmount 未展開",
+    "GetCurrentAdditiveRelicMultiplierBonus 與 GetRewardableAdditiveRelicMultiplierAmount 兩個方法本身未展開，只確定它們組成的那一項在哪個位置被乘進來",
     "對照表以 double 計算；原生前兩段走 double、第三段走 GHDouble，極大關卡的尾數會有差異",
     "季節聖物（GetTotalSeasonalRelicsFromStageCount）是另一條路徑，未查"
   ]
