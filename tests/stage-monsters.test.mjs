@@ -181,3 +181,26 @@ test('舊存檔沒有這個欄位也能顯示怪物', () => {
   assert.ok(Number.isInteger(shown) && shown >= 0 && shown < SPRITE_COUNT);
   assert.ok(stagePool(12).map(spriteForMonster).includes(shown) || isBoss(s));
 });
+
+test('世界地圖的關卡範圍會一路跟著玩家走，不會停在最後一段的起點', () => {
+  // The last BACKGROUND_CYCLE row has no successor, so every stage past its key falls in it.
+  // Reading bandStart straight off that row froze the world map at one 70-stage window for the
+  // whole rest of the game: stage 98000 listed the same 3066-3135 range as stage 3081.
+  const last = BACKGROUND_CYCLE[BACKGROUND_CYCLE.length - 1];
+  const firstOfLastBand = last.level + 1;
+  assert.equal(bandStart(firstOfLastBand), firstOfLastBand, '最後一段的第一關就是它自己的起點');
+  // One full walk later the map starts a new window rather than repeating the old one.
+  assert.equal(bandStart(firstOfLastBand + last.themeEnd), firstOfLastBand + last.themeEnd);
+  assert.equal(bandStart(firstOfLastBand + last.themeEnd - 1), firstOfLastBand, '同一輪之內不動');
+  // The region the player is standing in always contains their stage — that is the whole point of
+  // the list, and it used to be false for every stage past the last band's first walk.
+  for (const stage of [1, 25, 26, 406, 3066, 3081, 3136, 5000, 40000, 98000]) {
+    const range = themeStageRange(themeIndex(stage), stage);
+    assert.ok(range.first <= stage && stage <= range.last,
+      `第 ${stage} 關落在 ${range.first}-${range.last} 之外`);
+  }
+  // Every band keeps its own walk aligned: the first stage of a walk has background index 0.
+  for (const stage of [3066, 3136, 5000, 98000]) {
+    assert.equal(backgroundIndex(bandStart(stage)), 0, `第 ${stage} 關所在的那一輪沒有從第一列開始`);
+  }
+});

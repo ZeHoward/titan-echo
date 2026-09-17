@@ -93,10 +93,19 @@ export const bossSprite = (stage: number) => spriteForMonster(stageBossId(stage)
 /** Levels per theme, read off the table rather than assumed. */
 export const LEVELS_PER_THEME = STAGE_LEVELS.filter(level => level.theme === STAGE_LEVELS[0].theme).length;
 
-/** The stage whose background index is 0 for the band this stage is in. */
+/**
+ * The stage whose background index is 0 for the walk this stage is in.
+ *
+ * A band covers exactly `themeEnd` stages, so the last row's rule keeps repeating past its own
+ * key — the walk restarts every `themeEnd` stages rather than staying pinned to where the row
+ * began. Without the modulo the world map froze at 3066–3135 for every stage past 3080, because
+ * every one of them falls in that final row.
+ */
 export const bandStart = (stage: number) => {
   const band = cycleIndex(stage);
-  return BACKGROUND_CYCLE[band].level + (band > 0 ? 1 : 0);
+  const row = BACKGROUND_CYCLE[band];
+  const start = row.level + (band > 0 ? 1 : 0);
+  return start + Math.floor((clampStage(stage) - start) / row.themeEnd) * row.themeEnd;
 };
 
 /**
