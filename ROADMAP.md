@@ -1,6 +1,6 @@
 # Titan Echo 完整復刻代辦清單
 
-更新：2026-09-17。遊戲目前為 **2.13.0**，最近完整測試 **381 項 Node 測試＋23 項 Python 匯入測試通過**。此文件是後續工作的主清單；`TT2-RULES.md` 保留歷史研究紀錄，不以舊敘述判斷目前完成度。
+更新：2026-09-17。遊戲目前為 **2.13.1**，最近完整測試 **381 項 Node 測試＋23 項 Python 匯入測試通過**。此文件是後續工作的主清單；`TT2-RULES.md` 保留歷史研究紀錄，不以舊敘述判斷目前完成度。
 
 ## 目前位置
 
@@ -130,7 +130,7 @@
 | R02 | 完成 | 8.2 資料匯入與完整 ID 目錄 | 神器、法術、技能樹、裝備、套裝、英雄、寵物、被動等皆有版本與唯一 ID；處理新增／刪除／停用列及新增欄位；區分活動和常駐內容 |
 | R03 | 完成 | 穩定 ID 存檔遷移、規則版本與還原備份 | 舊 2.6 存檔可遷移且重跑不重複退款；新增 6 項技能與 28 組套裝不錯置；雲端舊版資料有相容讀取流程 |
 | R04 | 完成 | 大數值與數字顯示 | 取代 1e240 的實質封頂及未驗證的等級限制；巨大傷害、金幣、費用、聖物可運算與序列化，無 Infinity／NaN；雲端容量測試通過 |
-| R05 | 完成 | 來源證據與同版本比對用例 | 每個核心公式記錄表、方法或實測來源；建立升級前後、施法前後、蛻變前後對照；缺少實測的項目保留待驗證標記。**登記表見 [docs/formula-sources.md](docs/formula-sources.md)**，58 項來源中 17 項仍為待驗證、9 項已知但引擎未照做 |
+| R05 | 完成 | 來源證據與同版本比對用例 | 每個核心公式記錄表、方法或實測來源；建立升級前後、施法前後、蛻變前後對照；缺少實測的項目保留待驗證標記。**登記表見 [docs/formula-sources.md](docs/formula-sources.md)**，58 項來源中 17 項仍為待驗證、7 項已知但引擎未照做 |
 
 R02 子步驟：建立 8.2 全表索引 → 逐表 schema 解析 → 以 ID 映射至現行資料 → 保留版本差異與停用標記 → 產生逐 ID 待驗收清單 → 交給 R03 遷移。此階段不直接以新版陣列覆蓋線上存檔。**R02 標記完成的範圍只有資料目錄與逐 ID 核對**；資料齊備不等於任何玩法系統已還原，後續各項仍須逐條實作與驗證。
 
@@ -403,6 +403,7 @@ C01 證據狀態：原生把暴擊參數放在 `[ServerVar]` 欄位——`player
 
 | 日期 | 項目 | 證據／結果 |
 |---|---|---|
+| 2026-09-17 | C07 魔力上限改用原版算法，回復算式核對相同（2.13.1） | `PlayerModel.RefreshManaRegen` 的最後兩步讀完了：`(manaRegenBaseInMinutes + Bonus(ManaRegen)) × Bonus(ManaRegenMult) ÷ 60 × Bonus(AllManaGained)`——**除以 60 那一步證明 2 的單位是「每分鐘回復點數」**，與引擎既有算式完全相同，只補上原本漏掉的 `AllManaGained` 乘數，狀態由 `table-differs` 改為 `default`。上限那半則確實不同：`RefreshManaCap` 走 `ActiveSkillModel.GetSkillManaCapAmount`，從 `manaCapInitial`（0）起算、每個已解鎖的主動技能加 `manaCapPerSkill`（35），再套 `ManaPoolCap` 與 `ManaPoolCapPercent`。引擎改用這個算法：劍術大師 100 級解鎖第一個技能（天堂聖擊，8 點魔力）前上限為 0，350 級之後六個全解鎖是 210——對已經全解鎖的存檔等於 200→210，幾乎無感，但早期不再有用不完的魔力。八個測試因此改寫，改用「每個已解鎖技能 35」表達期望值而不是寫死 200。381 項 Node 測試＋23 項 Python 測試通過。 |
 | 2026-09-17 | C07／B04 寵物兩項來源升級，魔力兩項改判 | 繼續用靜態預設值總表回頭校正。**寵物**：`petTapAmount` 的編譯期預設值就是 **20**，與引擎「每 20 次有效點擊發動一次」相同；`petDamageIncLevel1`／`petDamageIncLevel2` 是 **40** 與 **80**，與引擎把寵物等級切成 0–40／40–80／80 以上三段的門檻也完全相同——兩項都不必改數值，只是來源由 `baseline-75` 升為 `default`（每段乘多少仍是 7.5 的 PetInfo，維持 baseline-75）。**魔力**：原生沒有固定上限，`PlayerModel.RefreshManaCap` 走 `ActiveSkillModel.GetSkillManaCapAmount`，從 `manaCapInitial`（0）起算、每個已解鎖的主動技能加 `manaCapPerSkill`（35），再套 `ManaPoolCap` 與 `ManaPoolCapPercent`；六個技能全解鎖是 210，早期則遠低於引擎固定的 200。回復那邊 `RefreshManaRegen` 以 `manaRegenBaseInMinutes`（2）為底、加 `Bonus(ManaRegen)`、乘 `Bonus(ManaRegenMult)`，最後還有一次除法與一次乘法換算成每秒量，**那兩步還沒讀完**，所以連 2 的單位是「每分鐘幾點」還是「幾分鐘回滿」都還不確定。兩項都改列 `table-differs` 並寫明未採用的理由——上限與回復是配套的，只改一半會失衡。381 項 Node 測試＋23 項 Python 測試通過。 |
 | 2026-09-17 | E01／B01／C05 三項來源改判，聖物公式讀出一半 | 用靜態預設值總表回頭校正三筆登記。**聖物**：`PrestigeModel.GetBonusRelicsFromStageCount`（RVA 0x23ff6cc）讀的 `ldr d9,[x8,#0x170]` 這類偏移，逐一對上 `ServerVarsModel` 的靜態欄位——`relicStageMult1` 3、`relicStageMult2` 1.5、`relicStageMult3` 5e-07、`relicStageBase` 1.21、`relicStageBase2` 1.002、`relicStageExpo` 0.48、`relicStageExpo2` 1.005、`relicStageOffset` −56，**八個係數全部有值**，先前登記的「安裝包一個值都沒帶」只對變數表成立。算式**只讀出一部分**：關卡先被 `relicsStageMax` 夾住，之後至少三段（1.5 × (關卡−56)、3 × 1.21^(關卡^0.48)、一段含 `Math.Min` 與多層 `Math.Pow` 的 1.002 系項）以 GHDouble 組合，尚未完整還原，所以引擎維持 7.5 近似，狀態由 `server` 改列 `table-differs`。**技能點**：`skillPointsStageDelta` 500、`skillPointsStageMin` 51——引擎的「每 50 關一點」比原生寬鬆十倍，照改會讓第 2000 關的點數從 39 掉到個位數，列入「待決定的取捨」第 0.5 條，狀態改 `table-differs`。**頭目計時**：`bossPlayTimeBase` 的預設值就是 30，與引擎沿用的數字相同，狀態由 `server` 升為 `default`，不必改數值。381 項 Node 測試＋23 項 Python 測試通過。 |
 | 2026-09-17 | C01 暴擊與寶箱改用原生基礎值，影分身節奏更正（2.13.0） | 找到一張先前沒人看過的表：`BonusModel.SetDefaultBonuses`（RVA 0x27147c4）在啟動時建立「每個加成的基礎值」字典，每一筆都是 `Dictionary.Add(BonusType, 某個 ServerVarsModel 靜態欄位)`。`tools/audit-bonus-defaults.py` 逐筆配對，**14 筆全部配對成功、0 筆落空**，並交叉核對每個值與靜態預設值總表相同。接進引擎的三項：**暴擊**——`CritChance` 的基礎值是 `playerCritChance` 0.01（引擎原本 0.02），倍率照 `PlayerModel.RefreshCriticalValues` 用 `playerCritMult` 11.5（原本 10），上限 `maxCritChance` 1；機率算式也照原生改成 `(基礎＋加成) × Bonus(AllProbabilityBoost)`。**順帶修掉一個實作缺陷**：點擊那一行寫死 `lastCrit?10:1`，根本沒有用自己匯出的 `critMultiplier`，所以暴擊傷害一直不吃 `CritDamage` 加成；現在會吃了。**寶箱泰坦**機率的基礎值是 `chestersonChance` 0.01（原本 0.02），同樣乘上機率加成。**影分身**：`ShadowCloneSkillAttackRate` 的基礎值是 `baseShadowCloneAniPerSec` = **4**，所以 2.12.7 做的「每秒一次」是錯的，更正為每秒四次；`buildDamage` 是本專案的每秒總量近似，因此一次攻擊取其 ÷ 速率，節奏照原生而總量不變。其餘 11 個基礎值（多重泰坦 0.01、上限 4 隻、炸彈泰坦 0.001、波特 0.001、十倍金幣 0.01、魔力馬尼 4、雙寵爆發 5 次…）先記錄在證據檔並以測試釘住，還沒接。`critical` 與寶箱機率由 `server` 改列 `default`。新增 `tests/bonus-defaults.test.mjs` 6 項；`tests/crit-evidence.test.mjs` 裡那個「引擎的暴擊數字沒有包內依據」的測試改寫為新結論。381 項 Node 測試＋23 項 Python 測試通過。線上實測時發現每秒四下的數字會疊成一坨（同時最多八個），已改為每次落點略為散開、存活時間由 850ms 縮到 420ms。 |

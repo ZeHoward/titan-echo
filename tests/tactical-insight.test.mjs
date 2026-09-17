@@ -1,17 +1,19 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {fresh,apply,hydrate,stateEffect,manaMax,critChance,tapDamage,BONUS_DEFAULTS} from '../lib/engine.ts';
+import {fresh,apply,hydrate,stateEffect,manaMax,critChance,tapDamage,BONUS_DEFAULTS,SKILLS,MANA_DEFAULTS,unlockedSkills} from '../lib/engine.ts';
 import {TT2_TREE} from '../lib/tt2-data.ts';
 import {B,N} from './amounts.mjs';
 const insight=TT2_TREE.findIndex(k=>k.id==='HelperBoost');
 const commander=TT2_TREE.findIndex(k=>k.id==='AllHelperDmg');
+const capOf=(state)=>MANA_DEFAULTS.capPerSkill*unlockedSkills(state);
 const near=(a,b)=>assert.ok(Math.abs(a-b)<1e-10,`${a} != ${b}`);
 
 test('Tactical Insight affects individual unlocked powers, not base player stats',()=>{
  const s=fresh(1000);s.tt2.tree[insight]=1;
- assert.equal(manaMax(s),200);assert.equal(critChance(s),BONUS_DEFAULTS.critChance);assert.equal(stateEffect(s,'CritDamage'),1);
+ const cap=MANA_DEFAULTS.capPerSkill*unlockedSkills(s);
+ assert.equal(cap,0,'等級 1 還沒解鎖任何主動技能');assert.equal(manaMax(s),cap);assert.equal(critChance(s),BONUS_DEFAULTS.critChance);assert.equal(stateEffect(s,'CritDamage'),1);
  s.heroes[0]=500;
- near(manaMax(s),203.06);near(critChance(s),BONUS_DEFAULTS.critChance+.00102);
+ near(manaMax(s),cap+3.06);near(critChance(s),BONUS_DEFAULTS.critChance+.00102);
  near(stateEffect(s,'CritDamage'),1.1*1.0032);
  near(N(tapDamage(s)),1.1*1.0032);
  s.heroes[1]=100;
@@ -25,15 +27,15 @@ test('buy and reset invalidate warm passive caches and clamp current mana',()=>{
  assert.equal(s.tt2.tree[insight],1);assert.equal(s.tt2.points,19);
  near(stateEffect(s,'CritDamage'),1.10352);
  s.tt2.mana=manaMax(s);apply(s,{type:'resetTalents',at:1000});
- near(stateEffect(s,'CritDamage'),1.1);near(s.tt2.mana,203);
+ near(stateEffect(s,'CritDamage'),1.1);near(s.tt2.mana,capOf(s)+3);
  assert.equal(s.tt2.points,23);
 });
 
 test('loading keeps TI, prestige keeps its level but requires hero powers again',()=>{
  const s=fresh(1000);s.heroes[0]=500;s.best=60;s.tt2.tree[insight]=1;
- const loaded=hydrate(JSON.parse(JSON.stringify(s)));near(manaMax(loaded),203.06);
+ const loaded=hydrate(JSON.parse(JSON.stringify(s)));near(manaMax(loaded),capOf(loaded)+3.06);
  const reset=apply(loaded,{type:'prestige',at:1000});
- assert.equal(reset.tt2.tree[insight],1);assert.equal(manaMax(reset),200);
+ assert.equal(reset.tt2.tree[insight],1);assert.equal(manaMax(reset),capOf(reset));
  assert.equal(stateEffect(reset,'CritDamage'),1);
  reset.heroes[0]=20;near(stateEffect(reset,'CritDamage'),1.10352);
 });

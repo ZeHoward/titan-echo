@@ -8,9 +8,9 @@
 |---|---|---|
 | `native` | 由反組譯證據確認 | 6 |
 | `table` | 取自安裝包資料表 | 16 |
-| `default` | 原生靜態預設值，線上可覆蓋 | 10 |
+| `default` | 原生靜態預設值，線上可覆蓋 | 12 |
 | `baseline-75` | 沿用 7.5 基準，尚未對 8.2 核實 | 3 |
-| `table-differs` | 安裝包有值但引擎目前未照做 | 9 |
+| `table-differs` | 安裝包有值但引擎目前未照做 | 7 |
 | `invented` | 本專案自訂，安裝包未提供 | 10 |
 | `server` | 原生為伺服器變數，安裝包未帶值 | 4 |
 
@@ -145,8 +145,8 @@ round(8 + 關卡 × 148 ÷ (32000 + 關卡))
 
 | 來源條目 | 狀態 | 依據 |
 |---|---|---|
-| 基礎上限 200 | `table-differs` | `reference/tt2/8.2.0/servervar-defaults.json`；原生沒有固定上限：PlayerModel.RefreshManaCap 呼叫 ActiveSkillModel.GetSkillManaCapAmount，後者從 manaCapInitial 起算、每一個已解鎖的主動技能加上 manaCapPerSkill，再套用 ManaPoolCap 與 ManaPoolCapPercent 兩個加成。編譯期預設值是 manaCapInitial 0、manaCapPerSkill 35，所以六個技能全解鎖是 210，早期則遠低於引擎固定的 200。**尚未採用**：改了會讓早期魔力上限只有 35–70，而魔力回復那一半的算式還沒讀完，兩者是配套的。 |
-| 基礎回復 2 | `table-differs` | `reference/tt2/8.2.0/servervar-defaults.json`；原生 PlayerModel.RefreshManaRegen 以 [ServerVar] manaRegenBaseInMinutes （編譯期預設值 2）為底，加上 Bonus(ManaRegen)、乘上 Bonus(ManaRegenMult)，最後還有一次除法與一次乘法把它換算成每秒回復量——**那兩步尚未讀完**，所以不確定 2 的單位是「每分鐘回復點數」還是「回滿所需分鐘數」。引擎目前照 7.5 基準當成每分鐘 2 點。 |
+| 上限＝每個已解鎖主動技能 35 | `default` | `reference/tt2/8.2.0/servervar-defaults.json`；原生沒有固定上限：PlayerModel.RefreshManaCap 呼叫 ActiveSkillModel.GetSkillManaCapAmount，後者從 manaCapInitial 起算、每一個已解鎖的主動技能加上 manaCapPerSkill，再套用 ManaPoolCap 與 ManaPoolCapPercent 兩個加成。編譯期預設值是 manaCapInitial 0、manaCapPerSkill 35，六個技能全解鎖是 210。引擎原本固定 200，2.13.1 起改用原生算式：劍術大師 100 級解鎖第一個技能前上限是 0（也還沒有技能可施放），350 級之後是 210。線上可覆蓋，故為 default。 |
+| 基礎回復 2（每分鐘） | `default` | `reference/tt2/8.2.0/servervar-defaults.json`；原生 PlayerModel.RefreshManaRegen 讀 [ServerVar] manaRegenBaseInMinutes（編譯期預設值 2），加上 Bonus(ManaRegen)、乘上 Bonus(ManaRegenMult)、**除以 60**、再乘上 Bonus(AllManaGained)。除以 60 那一步證明 2 的單位是「每分鐘回復點數」——與引擎既有的算式完全相同，只補上原本漏掉的 AllManaGained 乘數。 |
 
 ### bossTimer · `lib/engine.ts` 的 `bossDuration`
 

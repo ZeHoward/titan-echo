@@ -1,6 +1,7 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {fresh,apply,hydrate,stateEffect,critChance,manaMax,heroDps,tapDamage,goldReward,BONUS_DEFAULTS} from '../lib/engine.ts';
+import {fresh,apply,hydrate,stateEffect,critChance,manaMax,heroDps,tapDamage,goldReward,BONUS_DEFAULTS,SKILLS,MANA_DEFAULTS,unlockedSkills} from '../lib/engine.ts';
+const capOf=(s)=>MANA_DEFAULTS.capPerSkill*unlockedSkills(s);
 const near=(a,b)=>assert.ok(Math.abs(a-b)<1e-9,`${a} != ${b}`);
 import {heroPassiveTotals} from '../lib/tt2-hero-passives.ts';
 import {HERO_NAMES,PET_NAMES,TALENT_NAMES,SET_NAMES} from '../lib/zh-tw.ts';
@@ -25,8 +26,10 @@ test('Maya passives unlock at CSV boundaries and reach actual damage, gold and m
  s.heroes[0]=60;near(critChance(s),BONUS_DEFAULTS.critChance+.001);
  s.heroes[0]=99;assert.equal(N(goldReward(s,'chest')),gold);
  s.heroes[0]=100;assert.ok(Math.abs(N(goldReward(s,'chest'))/gold-1.1)<1e-12);
- s.heroes[0]=499;assert.equal(manaMax(s),200);
- s.heroes[0]=500;assert.equal(manaMax(s),203);
+ // The cap is 35 per unlocked active skill now, so the player level decides the base.
+ s.level=Math.max(...SKILLS.map(k=>k.level));const cap=MANA_DEFAULTS.capPerSkill*SKILLS.length;
+ s.heroes[0]=499;assert.equal(manaMax(s),cap);
+ s.heroes[0]=500;near(manaMax(s),cap+3);
 });
 
 test('multipliers combine independently and pending consumers stay inactive',()=>{
@@ -39,10 +42,10 @@ test('multipliers combine independently and pending consumers stay inactive',()=
 
 test('passives derive on load and reset on prestige without leaking between players',()=>{
  const a=fresh(1000),b=fresh(1000);a.heroes[0]=500;
- assert.equal(manaMax(a),203);assert.equal(manaMax(b),200);
- const restored=hydrate(JSON.parse(JSON.stringify(a)));assert.equal(manaMax(restored),203);
+ assert.equal(manaMax(a),capOf(a)+3);assert.equal(manaMax(b),capOf(b));
+ const restored=hydrate(JSON.parse(JSON.stringify(a)));assert.equal(manaMax(restored),capOf(restored)+3);
  restored.best=60;const reset=apply(restored,{type:'prestige',at:1000});
- assert.equal(manaMax(reset),200);assert.equal(stateEffect(reset,'CritDamage'),1);
+ assert.equal(manaMax(reset),capOf(reset));assert.equal(stateEffect(reset,'CritDamage'),1);
  assert.equal(reset.version,2);assert.equal(reset.heroes.length,33);
 });
 

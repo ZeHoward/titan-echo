@@ -359,9 +359,21 @@ export function fmt(value:BigLike){
 export function heroLevel(s:State,i:number){return i<33?s.heroes[i]:s.tt2!.extraHeroes[i-33];}
 function setHeroLevel(s:State,i:number,n:number){if(i<33)s.heroes[i]=n;else s.tt2!.extraHeroes[i-33]=n;}
 function rawHeroDps(s:State):Big{const shared=heroEffects(s);return sum(HEROES.map((_,i)=>heroDps(s,i,shared)));}
-export function manaMax(s:State){return 200+stateEffect(s,'ManaPoolCap');}
+// Native PlayerModel.RefreshManaCap: the cap is not a fixed number. ActiveSkillModel
+// .GetSkillManaCapAmount starts at manaCapInitial and adds manaCapPerSkill for each unlocked active
+// skill, then the two pool bonuses apply. APK 8.2.0 defaults are 0 and 35, so a player with every
+// skill unlocked sits at 210 and one with none has no mana bar at all — which is also when there is
+// nothing to spend it on. Recorded in reference/tt2/8.2.0/servervar-defaults.json.
+export const MANA_DEFAULTS={capInitial:0,capPerSkill:35,regenPerMinute:2} as const;
+export function unlockedSkills(s:State){return SKILLS.filter(k=>s.level>=k.level).length;}
+export function manaMax(s:State){
+ const base=MANA_DEFAULTS.capInitial+MANA_DEFAULTS.capPerSkill*unlockedSkills(s);
+ return limit((base+stateEffect(s,'ManaPoolCap'))*stateEffect(s,'ManaPoolCapPercent'));}
 // Two clamped effects multiplied together still overflow, so the composed regen is clamped again.
-function baseManaRegen(s:State){return limit((2+stateEffect(s,'ManaRegen'))/60*stateEffect(s,'ManaRegenMult'));}
+// Native RefreshManaRegen: (manaRegenBaseInMinutes + Bonus(ManaRegen)) x Bonus(ManaRegenMult)
+// / 60 x Bonus(AllManaGained) — the same shape this already had, with the base confirmed as 2.
+function baseManaRegen(s:State){return limit((MANA_DEFAULTS.regenPerMinute+stateEffect(s,'ManaRegen'))/60
+ *stateEffect(s,'ManaRegenMult')*stateEffect(s,'AllManaGained'));}
 export function manaRegen(s:State){return limit(baseManaRegen(s)*perkValue(s.tt2!,0,s.last));}
 export function skillMana(s:State,i:number){return Math.max(0,SKILL_DATA[i].mana[Math.max(0,s.skillLevels[i]-1)]-stateEffect(s,SKILL_DATA[i].id+'SkillMana'));}
 // Native: min(Bonus(CritChance) x Bonus(AllProbabilityBoost), maxCritChance), and maxCritChance

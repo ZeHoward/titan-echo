@@ -1,18 +1,18 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {fresh,hydrate,apply,advance,manaRegen,manaMax,heroLevel} from '../lib/engine.ts';
+import {fresh,hydrate,apply,advance,manaRegen,manaMax,heroLevel,SKILLS} from '../lib/engine.ts';
 import {perkLevel,perkValue,manaSeconds} from '../lib/tt2-perks.ts';
 import {B,N} from './amounts.mjs';
 
 test('mana potion pays once, refills mana and caps at three independently timed stacks',()=>{
- let s=fresh(1000);s.diamonds=400;s.tt2.mana=0;
+ let s=fresh(1000);s.level=Math.max(...SKILLS.map(k=>k.level));s.diamonds=400;s.tt2.mana=0;
  s=apply(s,{type:'resourcePerk',index:0,at:1000});assert.equal(s.diamonds,300);assert.equal(s.tt2.mana,manaMax(s));assert.equal(manaRegen(s),2/60*1.5);
  s=apply(s,{type:'resourcePerk',index:0,at:2000});s=apply(s,{type:'resourcePerk',index:0,at:3000});s=apply(s,{type:'resourcePerk',index:0,at:4000});
  assert.equal(s.diamonds,100);assert.equal(perkLevel(s.tt2,0,4000),3);
  assert.equal(perkLevel(s.tt2,0,43201000),2);assert.equal(perkValue(s.tt2,0,43201000),1.75);
 });
 test('offline mana calculation integrates expiry instead of applying an expired buff',()=>{
- const s=fresh(1000);s.tt2.perkEnds[0]=[61000];assert.equal(manaSeconds(s.tt2,1000,121000),150);
+ const s=fresh(1000);s.level=Math.max(...SKILLS.map(k=>k.level));s.tt2.perkEnds[0]=[61000];assert.equal(manaSeconds(s.tt2,1000,121000),150);
  s.tt2.mana=0;advance(s,121000);assert.equal(s.tt2.mana,5);
 });
 test('rain spends available gold on heroes, respects interval and never buys sword levels',()=>{
