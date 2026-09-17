@@ -89,16 +89,20 @@ test('十個受擊染色在包內有值，但沒有任何方法讀它們', () =>
   }
 });
 
-test('影分身速率是 max(1, 攻擊速率加成 × 同伴攻擊速率)，基礎每秒一次', () => {
-  assert.equal(evidence.shadowClone.rate.base, 1);
+test('影分身速率是 max(1, 攻擊速率加成 × 同伴攻擊速率)，基礎每秒四次', () => {
   assert.deepEqual(evidence.shadowClone.rate.bonuses, ['ShadowCloneSkillAttackRate', 'CompanionAttackRate']);
+  // The base is not 1: BonusModel.SetDefaultBonuses seeds ShadowCloneSkillAttackRate from
+  // baseShadowCloneAniPerSec, which is 4.
+  const bonuses = JSON.parse(readFileSync(new URL('bonus-defaults-evidence.json', referenceRoot), 'utf8'));
+  assert.equal(bonuses.defaults.ShadowCloneSkillAttackRate.value, 4);
+  assert.equal(bonuses.defaults.ShadowCloneSkillAttackRate.field, 'baseShadowCloneAniPerSec');
   const s = fresh(1000);
-  assert.equal(cloneAttackRate(s), 1);
+  assert.equal(cloneAttackRate(s), 4);
   const talent = TT2_TREE.findIndex(k => k.effects.some(e => e.type === 'ShadowCloneSkillAttackRate'));
   assert.ok(talent >= 0, '資料表裡沒有提供攻擊速率的天賦');
   s.tt2.tree[talent] = 3;
-  assert.ok(cloneAttackRate(s) > 1, '天賦應提高速率');
-  assert.equal(cloneAttackRate(s), 1 + TT2_TREE[talent].effects
+  assert.ok(cloneAttackRate(s) > 4, '天賦應提高速率');
+  assert.equal(cloneAttackRate(s), 4 + TT2_TREE[talent].effects
     .find(e => e.type === 'ShadowCloneSkillAttackRate').values[3]);
 });
 
@@ -117,12 +121,13 @@ test('技能施放後影分身按自己的節奏攻擊，一次一秒', () => {
   assert.equal(cast.tt2.cloneAttacks, 0, '施放的那一刻還沒打');
   assert.equal(cast.tt2.cloneAt, 1000, '計時從施放那一刻開始');
   const after = advance(cast, 1000 + 10_000);
-  assert.equal(after.tt2.cloneAttacks, 10);
+  assert.equal(after.tt2.cloneAttacks, 40, '四次一秒，十秒四十次');
   assert.ok(compare(after.tt2.lastCloneHit, ZERO) > 0, '最後一次攻擊要留下數字');
-  // Each swing lands the build's full damage, so the damage per second is what the old tick paid in
-  // ten silent instalments — a tenth of it would be an order of magnitude outside this band.
-  const full = toNumber(buildDamage(after, 'clone')), landed = toNumber(after.tt2.lastCloneHit);
-  assert.ok(landed > full/2 && landed < full*2, `一擊應是滿額的流派傷害，得到 ${landed} 對 ${full}`);
+  // buildDamage is this project's per-second figure, so one swing is that over the rate: four
+  // swings a second still add up to the same damage per second as the old silent tick.
+  const perSecond = toNumber(buildDamage(after, 'clone')), landed = toNumber(after.tt2.lastCloneHit);
+  const expected = perSecond/cloneAttackRate(after);
+  assert.ok(landed > expected/2 && landed < expected*2, `一擊應是每秒總量的四分之一，得到 ${landed} 對 ${expected}`);
 });
 
 test('節奏不隨模擬步長改變：一次跳三秒與走三十步結果相同', () => {
@@ -132,7 +137,7 @@ test('節奏不隨模擬步長改變：一次跳三秒與走三十步結果相�
     for (let at = 1100; at <= 4000; at += 100) s = advance(s, at);
     return s;
   })();
-  assert.equal(once.tt2.cloneAttacks, 3);
+  assert.equal(once.tt2.cloneAttacks, 12, '三秒、每秒四次');
   assert.equal(stepped.tt2.cloneAttacks, once.tt2.cloneAttacks);
 });
 
@@ -150,7 +155,7 @@ test('技能結束後停止，不會因為計時器落後而補打', () => {
   let s = cast;
   for (let at = 1000 + 10_000; at <= 1000 + duration; at += 10_000) s = advance(s, at);
   const attacks = s.tt2.cloneAttacks;
-  assert.equal(attacks, 59, '每秒一次；第 60 次的時點與技能結束同一步，那一步已不算施放中');
+  assert.equal(attacks, 239, '每秒四次；最後一次的時點與技能結束同一步，那一步已不算施放中');
   for (let at = 1000 + duration + 10_000; at <= 1000 + duration + 30_000; at += 10_000) s = advance(s, at);
   assert.equal(s.tt2.cloneAttacks, attacks);
 });

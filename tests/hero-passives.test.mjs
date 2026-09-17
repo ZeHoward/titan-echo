@@ -1,6 +1,7 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {fresh,apply,hydrate,stateEffect,critChance,manaMax,heroDps,tapDamage,goldReward} from '../lib/engine.ts';
+import {fresh,apply,hydrate,stateEffect,critChance,manaMax,heroDps,tapDamage,goldReward,BONUS_DEFAULTS} from '../lib/engine.ts';
+const near=(a,b)=>assert.ok(Math.abs(a-b)<1e-9,`${a} != ${b}`);
 import {heroPassiveTotals} from '../lib/tt2-hero-passives.ts';
 import {HERO_NAMES,PET_NAMES,TALENT_NAMES,SET_NAMES} from '../lib/zh-tw.ts';
 import {TT2_HEROES,TT2_PETS,TT2_TREE,TT2_ARTIFACTS} from '../lib/tt2-data.ts';
@@ -20,8 +21,8 @@ test('Maya passives unlock at CSV boundaries and reach actual damage, gold and m
  const s=fresh(1000),tap=N(tapDamage(s)),gold=N(goldReward(s,'chest'));
  s.heroes[0]=19;assert.equal(stateEffect(s,'CritDamage'),1);
  s.heroes[0]=20;assert.equal(stateEffect(s,'CritDamage'),1.1);assert.equal(N(tapDamage(s)),tap*1.1);
- s.heroes[0]=59;assert.equal(critChance(s),.02);
- s.heroes[0]=60;assert.equal(critChance(s),.021);
+ s.heroes[0]=59;assert.equal(critChance(s),BONUS_DEFAULTS.critChance);
+ s.heroes[0]=60;near(critChance(s),BONUS_DEFAULTS.critChance+.001);
  s.heroes[0]=99;assert.equal(N(goldReward(s,'chest')),gold);
  s.heroes[0]=100;assert.ok(Math.abs(N(goldReward(s,'chest'))/gold-1.1)<1e-12);
  s.heroes[0]=499;assert.equal(manaMax(s),200);

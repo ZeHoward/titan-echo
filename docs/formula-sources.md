@@ -8,11 +8,11 @@
 |---|---|---|
 | `native` | 由反組譯證據確認 | 6 |
 | `table` | 取自安裝包資料表 | 16 |
-| `default` | 原生靜態預設值，線上可覆蓋 | 4 |
+| `default` | 原生靜態預設值，線上可覆蓋 | 7 |
 | `baseline-75` | 沿用 7.5 基準，尚未對 8.2 核實 | 4 |
 | `table-differs` | 安裝包有值但引擎目前未照做 | 5 |
-| `invented` | 本專案自訂，安裝包未提供 | 11 |
-| `server` | 原生為伺服器變數，安裝包未帶值 | 10 |
+| `invented` | 本專案自訂，安裝包未提供 | 10 |
+| `server` | 原生為伺服器變數，安裝包未帶值 | 8 |
 
 ## 逐條登記
 
@@ -34,7 +34,7 @@
 |---|---|---|
 | 基礎值 5 與成長率 1.27 | `table-differs` | `reference/tt2/8.2.0/monster-curve-evidence.json`；原生 MonsterModel.GetMonsterBaseGold 走的是與血量同一條 GetMonsterBase，參數為 monsterGoldLevelOff、monsterTransendenceGoldLevelOff、monsterGoldMult、monsterGoldBase1–3 與 monsterGoldExpo1–4 共十個具名 [ServerVar]；兩張變數表都沒帶值，但編譯期預設值已解出：mult 17.5、base1 1.38、base2／base3 10、expo1 0.04、expo2 1.036、expo3 1、expo4 1.098、levelOff 100、transcendenceLevelOff 180000。目前的 5 與 1.27 是 7.5 基準的近似，**尚未採用**原生曲線——它必須與血量曲線一起換，取捨記在「待決定的取捨」。 |
 | 加成代號（GoldAll、JackpotGold、ChestAmount…） | `table` | `reference/tt2/8.2.0/native-bonus-types.json`；代號對照原生 BonusType 列舉，數值來自神器與天賦資料表。 |
-| 寶箱泰坦基礎機率 0.02 | `server` | 原生對應欄位是 [ServerVar]，安裝包未帶值。 |
+| 寶箱泰坦基礎機率 0.01 | `default` | `reference/tt2/8.2.0/bonus-defaults-evidence.json`；BonusModel.SetDefaultBonuses 把 ChestChance 的基礎值設為 chestersonChance（0.01）；引擎原本是 0.02，2.13.0 起改用原生值並與暴擊同樣乘上 AllProbabilityBoost。線上可覆蓋，故為 default。 |
 
 ### monsterCount · `lib/engine.ts` 的 `monsterCount`
 
@@ -133,11 +133,11 @@ round(8 + 關卡 × 148 ÷ (32000 + 關卡))
 
 ### critical · `lib/engine.ts` 的 `critChance`
 
-0.02 + CritChance 加成，上限 1；暴擊倍率為 10 × CritDamage
+(0.01 + CritChance 加成) × AllProbabilityBoost，上限 1；暴擊倍率為 11.5 × CritDamage
 
 | 來源條目 | 狀態 | 依據 |
 |---|---|---|
-| 基礎機率 0.02 與倍率 10 | `server` | 原生的暴擊參數是 [ServerVar] 欄位，安裝包沒有帶值；只有 helperCanCrit=false 有原生預設值。目前數值沿用 7.5 基準，屬待證據。 |
+| 基礎機率 0.01、倍率 11.5 與上限 1 | `default` | `reference/tt2/8.2.0/bonus-defaults-evidence.json`；兩張變數表確實沒帶值，但編譯期預設值有：BonusModel.SetDefaultBonuses 把 CritChance 的基礎值設為 playerCritChance（0.01），PlayerModel.RefreshCriticalValues 以 min(Bonus(CritChance) × Bonus(AllProbabilityBoost), maxCritChance) 算機率、以 playerCritMult（11.5）× Bonus(CritDamage) 算倍率，maxCritChance 為 1。引擎原本是 0.02 與固定 10 倍，而且點擊那一行寫死 10、沒有用 critMultiplier；2.13.0 起改用原生值並接上機率加成與暴擊傷害加成。線上可覆蓋，故為 default。 |
 
 ### mana · `lib/engine.ts` 的 `manaMax`
 
@@ -207,9 +207,9 @@ max(1, floor(關卡^1.7 ÷ 100 × PrestigeRelic))，最高關卡到 60 後開放
 
 | 來源條目 | 狀態 | 依據 |
 |---|---|---|
-| 速率算式與每秒一次的基礎值 | `native` | `reference/tt2/8.2.0/damage-text-evidence.json`；原生 ActiveSkillModel.GetCloneAttackRate 以 GHDouble(1) 為底，取 Bonus(ShadowCloneSkillAttackRate) 與 Bonus(CompanionAttackRate) 相乘後與 1 取 Max；PlayerController.ShadowCloneAttackLoop 以 WaitForSeconds(1 ÷ 該速率) 間隔攻擊。 |
-| 加法型加成代入 1＋增量 | `invented` | 原生 BonusModel.GetBonus 對加法型加成是否已含 1 未反組譯確認。ShadowCloneSkillAttackRate 在 BonusInfo 標為 additive，資料表值為 0.1–0.95 的增量，因此以 1＋增量代入；若原生實為純增量，無加成時速率仍為 1，差別只在天賦加成的作用方式。 |
-| 離散到 100ms 模擬步長 | `invented` | 引擎以 100ms 為一步推進，攻擊只在步邊界結算，因此單次間隔最多晚 100ms；計時器累加間隔而非改設為當下時間，長期平均頻率與速率一致。 |
+| 速率算式與每秒四次的基礎值 | `native` | `reference/tt2/8.2.0/damage-text-evidence.json`；原生 ActiveSkillModel.GetCloneAttackRate 以 GHDouble(1) 為底，取 Bonus(ShadowCloneSkillAttackRate) 與 Bonus(CompanionAttackRate) 相乘後與 1 取 Max；PlayerController.ShadowCloneAttackLoop 以 WaitForSeconds(1 ÷ 該速率) 間隔攻擊。**基礎值不是 1**：BonusModel.SetDefaultBonuses 把 ShadowCloneSkillAttackRate 的基礎值設為 baseShadowCloneAniPerSec，也就是 4，所以無加成時是每秒四次。2.12.7 誤以為是每秒一次，2.13.0 更正。 |
+| 加法型加成代入 基礎值＋增量 | `default` | `reference/tt2/8.2.0/bonus-defaults-evidence.json`；加法型加成的基礎值就是 SetDefaultBonuses 設的那一個：ShadowCloneSkillAttackRate 為 4，天賦提供 0.1–0.95 的增量，兩者相加。 |
+| 離散到 100ms 模擬步長，單次傷害為每秒總量 ÷ 速率 | `invented` | 引擎以 100ms 為一步推進，攻擊只在步邊界結算，因此單次間隔最多晚 100ms；計時器累加間隔而非改設為當下時間，長期平均頻率與速率一致。另外 buildDamage 是本專案的「每秒總量」近似，所以一次攻擊取其 ÷ 速率——節奏照原生，總量不因節奏改變，但單次數值不是原生的單次傷害。 |
 | 特殊攻擊未實作 | `server` | ShadowCloneSkillSpecialRate 與 SpecialChance 另有節奏與機率，本專案未實作，也未核實其倍率來源。 |
 
 ### perks · `lib/tt2-perks.ts` 的 `perkValue`

@@ -29,12 +29,12 @@ test('no export in a covered module escapes classification', () => {
 
 test('the counts are recorded, so a source changing status is a visible change', () => {
   assert.deepEqual(report.counts, {
-    'table-differs': 5, 'baseline-75': 4, invented: 11, table: 16, default: 4, server: 10, native: 6,
+    'table-differs': 5, 'baseline-75': 4, invented: 10, table: 16, default: 7, server: 8, native: 6,
   });
   // Still unverified: the 7.5 baseline, this project's own choice, or a server value with no
   // compiled-in default either. Five more sources are now known-but-not-followed instead.
   const unverified = report.counts['baseline-75'] + report.counts.invented + report.counts.server;
-  assert.equal(unverified, 25);
+  assert.equal(unverified, 22);
   assert.equal(report.counts['table-differs'], 5, '已知但未照做的項目要看得見');
 });
 

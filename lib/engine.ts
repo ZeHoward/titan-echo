@@ -80,12 +80,18 @@ export function passive(_s:State,_kind:number){return 0;}
 export function skillPower(s:State,i:number){return SKILL_DATA[i].amount[Math.max(0,s.skillLevels[i]-1)]*stateEffect(s,SKILL_DATA[i].effect)*stateEffect(s,'AllActiveSkillAmount');}
 export function skillDuration(s:State,i:number){return SKILLS[i].duration+stateEffect(s,SKILL_DATA[i].id+'SkillDuration')+stateEffect(s,'AllActiveSkillDuration');}
 export function skillCooldown(s:State,i:number){return SKILLS[i].cooldown*(1-Math.min(.9,stateEffect(s,'AllActiveSkillCooldownRate')));}
-export function critMultiplier(s:State){return 10*stateEffect(s,'CritDamage');}
+// APK 8.2.0 bases from BonusModel.SetDefaultBonuses, which reads each one out of a ServerVarsModel
+// static; live server overrides are unknown. Recorded in
+// reference/tt2/8.2.0/bonus-defaults-evidence.json.
+export const BONUS_DEFAULTS={critChance:Math.fround(.01),chestChance:Math.fround(.01),
+ cloneAttackRate:4} as const;
+// Native PlayerModel.RefreshCriticalValues: the multiplier is playerCritMult x Bonus(CritDamage).
+export function critMultiplier(s:State){return 11.5*stateEffect(s,'CritDamage');}
 // The shadow clone swings on its own rhythm rather than riding the damage tick: native
 // ShadowCloneAttackLoop waits 1 ÷ GetCloneAttackRate() seconds between swings, and that rate is
 // max(1, Bonus(ShadowCloneSkillAttackRate) × Bonus(CompanionAttackRate)) — one attack a second
 // before bonuses. Recorded in reference/tt2/8.2.0/damage-text-evidence.json.
-export function cloneAttackRate(s:State){return Math.max(1,(1+stateEffect(s,'ShadowCloneSkillAttackRate'))*stateEffect(s,'CompanionAttackRate'));}
+export function cloneAttackRate(s:State){return Math.max(1,(BONUS_DEFAULTS.cloneAttackRate+stateEffect(s,'ShadowCloneSkillAttackRate'))*stateEffect(s,'CompanionAttackRate'));}
 export function tapDamage(s:State):Big{return buildDamage(s,'tap');}
 export function weaponSets(s:State){return Math.min(...s.weapons,...s.tt2!.extraWeapons);}
 // Resolving a bonus walks every artifact and pet, so the six keys the roster shares are resolved
@@ -256,7 +262,7 @@ export function achievementReward(s:State,index:number){
 }
 function spawn(s:State){s.hp=health(s);s.bossEnd=isBoss(s)?s.last+bossDuration(s)*1000:0;s.bossWounded=false;s.monster=chooseMonster(s);const id=monsterIndex(s);if(!s.seen.includes(id))s.seen.push(id);}
 function damage(s:State,hit:Big){if(compare(hit,{...ZERO})<=0)return;s.hp=subtract(s.hp,hit);if(compare(s.hp,{...ZERO})>0)return;
- const boss=isBoss(s),chest=!boss&&tt2Random(s.tt2!)<Math.min(1,.02+stateEffect(s,'ChestChance'));
+ const boss=isBoss(s),chest=!boss&&tt2Random(s.tt2!)<Math.min(1,(BONUS_DEFAULTS.chestChance+stateEffect(s,'ChestChance'))*stateEffect(s,'AllProbabilityBoost'));
  earnGold(s,goldReward(s,boss?'boss':chest?'chest':'monster'));if(chest)s.tt2!.chestKills++;s.totalKills++;s.daily.kills++;
  if(boss){if(s.stage>=16&&(s.stage-16)%20===0&&s.stage> s.tt2!.gearMilestone&&dropGear(s.tt2!,s.best)){s.tt2!.gearMilestone=s.stage;s.tt2!.equipmentCollected++;s.daily.equipment++;}s.bossKills++;s.stage=Math.min(STAGE_CAP,s.stage+1);s.best=Math.max(s.best,s.stage);s.kills=0;
   const points=Math.max(0,Math.floor(s.best/50)-1);if(points>s.tt2!.earnedPoints){s.tt2!.points+=points-s.tt2!.earnedPoints;s.tt2!.earnedPoints=points;}
@@ -273,8 +279,10 @@ export function advance(s:State,to:number){hydrate(s);if(!Number.isFinite(to))re
  // The clone used to be folded into that tick, which made it invisible and threw away its attack
  // rate: the same damage per second arrived in ten silent instalments. It is its own attack now,
  // one per 1 ÷ cloneAttackRate seconds, rounded up to the 100ms tick the simulation walks on.
- if(s.last===boundary&&s.active[0]>s.last){const t=s.tt2!,interval=1000/cloneAttackRate(s);
-  if(s.last-t.cloneAt>=interval){t.cloneAt+=interval;t.lastCloneHit=buildDamage(s,'clone');t.cloneAttacks++;damage(s,t.lastCloneHit);}}
+ if(s.last===boundary&&s.active[0]>s.last){const t=s.tt2!,rate=cloneAttackRate(s),interval=1000/rate;
+  // buildDamage is this project's per-second figure, so a swing is that divided by the rate: the
+  // rhythm follows the original (four a second before bonuses) without multiplying the damage by it.
+  if(s.last-t.cloneAt>=interval){t.cloneAt+=interval;t.lastCloneHit=scale(buildDamage(s,'clone'),1/rate);t.cloneAttacks++;damage(s,t.lastCloneHit);}}
  }return s;
 }
 export function apply(s:State,a:Action){advance(s,a.at);const i=a.index??0,t=s.tt2!;
@@ -282,7 +290,7 @@ export function apply(s:State,a:Action){advance(s,a.at);const i=a.index??0,t=s.t
   const token=a.amount===1,price=RESOURCE_PERKS[i].cost;
   if((token?t.perkTokens>0:s.diamonds>=price)&&activatePerk(t,i,s.last)){t.perksUsed++;if(token)t.perkTokens--;else s.diamonds-=price;if(i===0)t.mana=manaMax(s);if(i===1){t.rainLast=s.last;buyAffordableHeroes(s);}note(s,`已使用${RESOURCE_PERKS[i].name}，每層持續十二小時。`);}
  }
- if(a.type==='tap'&&s.last-s.lastTap>=45){s.lastTap=s.last;s.taps++;s.daily.taps++;t.tutorialTaps++;t.lastCrit=tt2Random(t)<critChance(s);if(t.lastCrit)t.crits++;let n=scale(tapDamage(s),t.lastCrit?10:1);if(s.active[1]>s.last&&tt2Random(t)<SKILL_DATA[1].second[s.skillLevels[1]-1])n=scale(n,skillPower(s,1));t.lastHit=n;damage(s,n);if(chargePet(t)){t.lastPetHit=petAttackDamage(s);t.petAttacks++;damage(s,t.lastPetHit);}}
+ if(a.type==='tap'&&s.last-s.lastTap>=45){s.lastTap=s.last;s.taps++;s.daily.taps++;t.tutorialTaps++;t.lastCrit=tt2Random(t)<critChance(s);if(t.lastCrit)t.crits++;let n=scale(tapDamage(s),t.lastCrit?critMultiplier(s):1);if(s.active[1]>s.last&&tt2Random(t)<SKILL_DATA[1].second[s.skillLevels[1]-1])n=scale(n,skillPower(s,1));t.lastHit=n;damage(s,n);if(chargePet(t)){t.lastPetHit=petAttackDamage(s);t.petAttacks++;damage(s,t.lastPetHit);}}
  if(a.type==='upgrade'||a.type==='hero'){const id=a.type==='upgrade'?-1:i;if(id<-1||id>=HEROES.length||!Number.isInteger(id))return s;let count=a.amount??1;const cap=id<0?PLAYER_LEVEL_CAP:HERO_LEVEL_CAP;
   if(count===0){while(count<1000&&compare(s.gold,cost(s,id,count+1))>=0&&(id<0?s.level:heroLevel(s,id))+count<cap)count++;}if(![1,10,25,100,1000,0].includes(a.amount??1)||!count)return s;const price=cost(s,id,count);
   if(compare(s.gold,price)>=0&&(id<0?s.level:heroLevel(s,id))+count<=cap){s.gold=atLeastZero(subtract(s.gold,price));if(id<0)s.level+=count;else setHeroLevel(s,id,heroLevel(s,id)+count);}}
@@ -356,7 +364,10 @@ export function manaMax(s:State){return 200+stateEffect(s,'ManaPoolCap');}
 function baseManaRegen(s:State){return limit((2+stateEffect(s,'ManaRegen'))/60*stateEffect(s,'ManaRegenMult'));}
 export function manaRegen(s:State){return limit(baseManaRegen(s)*perkValue(s.tt2!,0,s.last));}
 export function skillMana(s:State,i:number){return Math.max(0,SKILL_DATA[i].mana[Math.max(0,s.skillLevels[i]-1)]-stateEffect(s,SKILL_DATA[i].id+'SkillMana'));}
-export function critChance(s:State){return Math.min(1,.02+stateEffect(s,'CritChance'));}
+// Native: min(Bonus(CritChance) x Bonus(AllProbabilityBoost), maxCritChance), and maxCritChance
+// is 1. The chance bonus is additive on top of the base, the probability boost is a multiplier.
+export function critChance(s:State){
+ return Math.min(1,(BONUS_DEFAULTS.critChance+stateEffect(s,'CritChance'))*stateEffect(s,'AllProbabilityBoost'));}
 export function buildDamage(s:State,build:Build):Big{const t=s.tt2!,active=s.active.filter(n=>n>s.last).length,c={tap:0,pet:.5,ship:1,clone:.5,dagger:.5,heavenly:.5,goldGun:.9}[build];
  // The intrinsic Sword Master curve is native-verified. Other build models
  // still use the existing reduction coefficients pending full reconstruction.

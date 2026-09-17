@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { critChance, fresh } from '../lib/engine.ts';
+import {critChance,fresh,critMultiplier,BONUS_DEFAULTS} from '../lib/engine.ts';
 import { loadCatalogs, loadNativeServerVarFields, referenceRoot } from '../tools/reference-validation.mjs';
 const load = name => JSON.parse(readFileSync(new URL(name + '.json', referenceRoot), 'utf8'));
 
@@ -32,14 +32,22 @@ test('only one crit parameter has a native default, and it is off', () => {
   assert.match(evidence.note, /static constructor/);
 });
 
-test('the numbers the engine uses today are its own, not values taken from the package', () => {
+test('暴擊的三個數字現在都有原生依據，不再是本專案自訂', () => {
+  // This test used to assert the opposite: base 2% and a fixed x10 were engine choices with no
+  // package backing. That was only true of the bundled tables — the compiled-in defaults have them.
   const state = fresh(1000);
-  // Base chance 2% and a fixed ten times multiplier are engine choices with no package backing.
-  assert.equal(critChance(state), 0.02);
+  const bonuses = load('bonus-defaults-evidence').defaults;
+  assert.equal(BONUS_DEFAULTS.critChance, Math.fround(bonuses.CritChance.value));
+  assert.equal(bonuses.CritChance.field, 'playerCritChance');
+  assert.equal(critChance(state), BONUS_DEFAULTS.critChance);
+  const defaults = load('servervar-defaults').recovered;
+  assert.equal(critMultiplier(state), defaults.playerCritMult.value);
+  assert.equal(defaults.maxCritChance.value, 1);
+  // The tap used to multiply by a hard-coded 10 instead of the multiplier it already exported.
   const source = readFileSync(new URL('../lib/engine.ts', import.meta.url), 'utf8');
-  assert.ok(source.includes("Math.min(1,.02+stateEffect(s,'CritChance'))"), '暴擊機率仍為硬編 2%');
-  assert.ok(source.includes('t.lastCrit?10:1'), '暴擊倍率仍為硬編 10 倍');
-  // C01 cannot claim parity until the live crit values are obtained from outside the package.
+  assert.ok(!source.includes('t.lastCrit?10:1'), '暴擊倍率仍為硬編 10 倍');
+  assert.ok(source.includes('t.lastCrit?critMultiplier(s):1'), '點擊沒有用暴擊倍率');
+  // Still not parity: these are compiled-in defaults, and the live server can replace them.
   const evidence = load('servervars-parser-evidence').critParameters;
   assert.match(evidence.bundledValues, /neither ServerVarsInfo nor ServerVarOverride/);
 });

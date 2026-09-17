@@ -1,6 +1,6 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {fresh,apply,hydrate,stateEffect,manaMax,critChance,tapDamage} from '../lib/engine.ts';
+import {fresh,apply,hydrate,stateEffect,manaMax,critChance,tapDamage,BONUS_DEFAULTS} from '../lib/engine.ts';
 import {TT2_TREE} from '../lib/tt2-data.ts';
 import {B,N} from './amounts.mjs';
 const insight=TT2_TREE.findIndex(k=>k.id==='HelperBoost');
@@ -9,9 +9,9 @@ const near=(a,b)=>assert.ok(Math.abs(a-b)<1e-10,`${a} != ${b}`);
 
 test('Tactical Insight affects individual unlocked powers, not base player stats',()=>{
  const s=fresh(1000);s.tt2.tree[insight]=1;
- assert.equal(manaMax(s),200);assert.equal(critChance(s),.02);assert.equal(stateEffect(s,'CritDamage'),1);
+ assert.equal(manaMax(s),200);assert.equal(critChance(s),BONUS_DEFAULTS.critChance);assert.equal(stateEffect(s,'CritDamage'),1);
  s.heroes[0]=500;
- near(manaMax(s),203.06);near(critChance(s),.02102);
+ near(manaMax(s),203.06);near(critChance(s),BONUS_DEFAULTS.critChance+.00102);
  near(stateEffect(s,'CritDamage'),1.1*1.0032);
  near(N(tapDamage(s)),1.1*1.0032);
  s.heroes[1]=100;

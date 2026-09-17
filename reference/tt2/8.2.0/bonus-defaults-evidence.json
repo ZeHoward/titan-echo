@@ -1,0 +1,106 @@
+{
+  "version": "8.2.0",
+  "role": "每個加成在任何神器、天賦、寵物、裝備之前的基礎值：BonusModel.SetDefaultBonuses 建立的那張字典。",
+  "packageSha256": "8d78c9aa877e6c0b291ee2116cab855bd26c59c1d080bc654f88ecf1ff268b5f",
+  "binarySha256": "c13fc44321b1214c71ab0277a134fc3401fd7392c74a0bbb3935671c55a8713a",
+  "scriptSha256": "62c2eeb8472bb107de516e4b6ae69d3dcdf5013fb1caa87223d82a54dd203f8b",
+  "finding": "BonusModel.SetDefaultBonuses 逐筆 Dictionary.Add(BonusType, 值)，值都是從 ServerVarsModel 的靜態欄位讀來的。配對出 14 個加成的基礎值，另有 0 筆無法配對。其中暴擊機率的基礎值是 playerCritChance，寶箱泰坦機率是 chestersonChance。",
+  "consequence": "引擎裡寫死的基礎機率可以對照這張表校正；但這些值同樣是 [ServerVar] 的編譯期預設值，線上可覆蓋，狀態為 default。",
+  "method": {
+    "name": "BonusModel$$SetDefaultBonuses",
+    "rva": "0x27147c4",
+    "bytesSha256": "a3b9e0f53d6e9208c45b9083e1f10577e763e9c725ae0e6aa3260fd3c752ca99"
+  },
+  "defaults": {
+    "ChestChance": {
+      "bonusType": 100,
+      "value": 0.009999999776482582,
+      "field": "chestersonChance",
+      "offset": "0x9e8"
+    },
+    "CritChance": {
+      "bonusType": 133,
+      "value": 0.009999999776482582,
+      "field": "playerCritChance",
+      "offset": "0xbb0"
+    },
+    "DualPetAttackCountToBurst": {
+      "bonusType": 181,
+      "value": 5,
+      "field": "dualPetBaseAttackCountToBurst",
+      "offset": "0xb64"
+    },
+    "DualPetAttackPerSecond": {
+      "bonusType": 182,
+      "value": 0.33000001311302185,
+      "field": "dualPetBaseAttackPerSecond",
+      "offset": "0xb60"
+    },
+    "Goldx10Chance": {
+      "bonusType": 248,
+      "value": 0.009999999776482582,
+      "field": "goldx10Chance",
+      "offset": "0xbbc"
+    },
+    "ManaMonsterAmount": {
+      "bonusType": 322,
+      "value": 4.0,
+      "field": "manaMonsterBaseMana",
+      "offset": "0xa24"
+    },
+    "MegaBombMaxStacks": {
+      "bonusType": 331,
+      "value": 1,
+      "field": "megaBombBaseStacks",
+      "offset": "0xa30"
+    },
+    "MegaBombSpawnChance": {
+      "bonusType": 330,
+      "value": 0.0010000000474974513,
+      "field": "megaBombMonsterSpawnChance",
+      "offset": "0x9f0"
+    },
+    "MultiMonsters": {
+      "bonusType": 340,
+      "value": 0.009999999776482582,
+      "field": "multiMonsterBaseChance",
+      "offset": "0xa0c"
+    },
+    "MultiMonstersGold": {
+      "bonusType": 341,
+      "value": 1.0,
+      "field": "monsterMultiSpawnGoldBonus",
+      "offset": "0xa1c"
+    },
+    "MultiMonstersMana": {
+      "bonusType": 342,
+      "value": 0.25,
+      "field": "monsterMultiSpawnManaBonus",
+      "offset": "0xa20"
+    },
+    "MultiMonstersMaxCount": {
+      "bonusType": 343,
+      "value": 4.0,
+      "field": "maxMultiMonsterSpawns",
+      "offset": "0xa10"
+    },
+    "ShadowCloneSkillAttackRate": {
+      "bonusType": 393,
+      "value": 4.0,
+      "field": "baseShadowCloneAniPerSec",
+      "offset": "0xc4"
+    },
+    "StageSkipMonsterSpawnChance": {
+      "bonusType": 433,
+      "value": 0.0010000000474974513,
+      "field": "stageSkipMonsterSpawnChance",
+      "offset": "0x9ec"
+    }
+  },
+  "unresolved": [],
+  "limits": [
+    "這是加成的「基礎值」，不是最終值：實際數值還要經過神器、天賦、寵物與裝備",
+    "預設值不是線上值，伺服器可覆蓋",
+    "沒有配對成功的項目逐筆列出原因，不臆測"
+  ]
+}

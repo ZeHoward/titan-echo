@@ -55,9 +55,10 @@
           "note": "代號對照原生 BonusType 列舉，數值來自神器與天賦資料表。"
         },
         {
-          "part": "寶箱泰坦基礎機率 0.02",
-          "status": "server",
-          "note": "原生對應欄位是 [ServerVar]，安裝包未帶值。"
+          "part": "寶箱泰坦基礎機率 0.01",
+          "status": "default",
+          "ref": "bonus-defaults-evidence.json",
+          "note": "BonusModel.SetDefaultBonuses 把 ChestChance 的基礎值設為 chestersonChance（0.01）；引擎原本是 0.02，2.13.0 起改用原生值並與暴擊同樣乘上 AllProbabilityBoost。線上可覆蓋，故為 default。"
         }
       ]
     },
@@ -252,12 +253,13 @@
       "id": "critical",
       "module": "lib/engine.ts",
       "export": "critChance",
-      "expression": "0.02 + CritChance 加成，上限 1；暴擊倍率為 10 × CritDamage",
+      "expression": "(0.01 + CritChance 加成) × AllProbabilityBoost，上限 1；暴擊倍率為 11.5 × CritDamage",
       "parts": [
         {
-          "part": "基礎機率 0.02 與倍率 10",
-          "status": "server",
-          "note": "原生的暴擊參數是 [ServerVar] 欄位，安裝包沒有帶值；只有 helperCanCrit=false 有原生預設值。目前數值沿用 7.5 基準，屬待證據。"
+          "part": "基礎機率 0.01、倍率 11.5 與上限 1",
+          "status": "default",
+          "ref": "bonus-defaults-evidence.json",
+          "note": "兩張變數表確實沒帶值，但編譯期預設值有：BonusModel.SetDefaultBonuses 把 CritChance 的基礎值設為 playerCritChance（0.01），PlayerModel.RefreshCriticalValues 以 min(Bonus(CritChance) × Bonus(AllProbabilityBoost), maxCritChance) 算機率、以 playerCritMult（11.5）× Bonus(CritDamage) 算倍率，maxCritChance 為 1。引擎原本是 0.02 與固定 10 倍，而且點擊那一行寫死 10、沒有用 critMultiplier；2.13.0 起改用原生值並接上機率加成與暴擊傷害加成。線上可覆蓋，故為 default。"
         }
       ]
     },
@@ -396,20 +398,21 @@
       "expression": "影分身每秒攻擊次數 = max(1, (1＋ShadowCloneSkillAttackRate) × CompanionAttackRate)",
       "parts": [
         {
-          "part": "速率算式與每秒一次的基礎值",
+          "part": "速率算式與每秒四次的基礎值",
           "status": "native",
           "ref": "damage-text-evidence.json",
-          "note": "原生 ActiveSkillModel.GetCloneAttackRate 以 GHDouble(1) 為底，取 Bonus(ShadowCloneSkillAttackRate) 與 Bonus(CompanionAttackRate) 相乘後與 1 取 Max；PlayerController.ShadowCloneAttackLoop 以 WaitForSeconds(1 ÷ 該速率) 間隔攻擊。"
+          "note": "原生 ActiveSkillModel.GetCloneAttackRate 以 GHDouble(1) 為底，取 Bonus(ShadowCloneSkillAttackRate) 與 Bonus(CompanionAttackRate) 相乘後與 1 取 Max；PlayerController.ShadowCloneAttackLoop 以 WaitForSeconds(1 ÷ 該速率) 間隔攻擊。**基礎值不是 1**：BonusModel.SetDefaultBonuses 把 ShadowCloneSkillAttackRate 的基礎值設為 baseShadowCloneAniPerSec，也就是 4，所以無加成時是每秒四次。2.12.7 誤以為是每秒一次，2.13.0 更正。"
         },
         {
-          "part": "加法型加成代入 1＋增量",
-          "status": "invented",
-          "note": "原生 BonusModel.GetBonus 對加法型加成是否已含 1 未反組譯確認。ShadowCloneSkillAttackRate 在 BonusInfo 標為 additive，資料表值為 0.1–0.95 的增量，因此以 1＋增量代入；若原生實為純增量，無加成時速率仍為 1，差別只在天賦加成的作用方式。"
+          "part": "加法型加成代入 基礎值＋增量",
+          "status": "default",
+          "ref": "bonus-defaults-evidence.json",
+          "note": "加法型加成的基礎值就是 SetDefaultBonuses 設的那一個：ShadowCloneSkillAttackRate 為 4，天賦提供 0.1–0.95 的增量，兩者相加。"
         },
         {
-          "part": "離散到 100ms 模擬步長",
+          "part": "離散到 100ms 模擬步長，單次傷害為每秒總量 ÷ 速率",
           "status": "invented",
-          "note": "引擎以 100ms 為一步推進，攻擊只在步邊界結算，因此單次間隔最多晚 100ms；計時器累加間隔而非改設為當下時間，長期平均頻率與速率一致。"
+          "note": "引擎以 100ms 為一步推進，攻擊只在步邊界結算，因此單次間隔最多晚 100ms；計時器累加間隔而非改設為當下時間，長期平均頻率與速率一致。另外 buildDamage 是本專案的「每秒總量」近似，所以一次攻擊取其 ÷ 速率——節奏照原生，總量不因節奏改變，但單次數值不是原生的單次傷害。"
         },
         {
           "part": "特殊攻擊未實作",
@@ -674,6 +677,7 @@
       "THEME_STAGES",
       "TT2_THEMES",
       "HELPER_DEFAULTS",
+      "BONUS_DEFAULTS",
       "HERO_LEVEL_CAP",
       "PLAYER_LEVEL_CAP",
       "UNMEASURED_ACHIEVEMENTS",
