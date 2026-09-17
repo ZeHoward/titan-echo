@@ -2,15 +2,15 @@
 
 每個核心公式的來源登記表：資料表、原生方法、原生預設值，或明確標記為 7.5 基準沿用、專案自訂或伺服器供給。
 
-版本 8.2.0。共 30 條公式、58 項來源條目。
+版本 8.2.0。共 30 條公式、62 項來源條目。
 
 | 狀態 | 意義 | 條目數 |
 |---|---|---|
-| `native` | 由反組譯證據確認 | 6 |
-| `table` | 取自安裝包資料表 | 16 |
-| `default` | 原生靜態預設值，線上可覆蓋 | 12 |
-| `baseline-75` | 沿用 7.5 基準，尚未對 8.2 核實 | 3 |
-| `table-differs` | 安裝包有值但引擎目前未照做 | 7 |
+| `native` | 由反組譯證據確認 | 8 |
+| `table` | 取自安裝包資料表 | 17 |
+| `default` | 原生靜態預設值，線上可覆蓋 | 13 |
+| `baseline-75` | 沿用 7.5 基準，尚未對 8.2 核實 | 2 |
+| `table-differs` | 安裝包有值但引擎目前未照做 | 8 |
 | `invented` | 本專案自訂，安裝包未提供 | 10 |
 | `server` | 原生為伺服器變數，安裝包未帶值 | 4 |
 
@@ -216,11 +216,15 @@ max(1, floor(關卡^1.7 ÷ 100 × PrestigeRelic))，最高關卡到 60 後開放
 
 ### perks · `lib/tt2-perks.ts` 的 `perkValue`
 
-增益每層 12 小時獨立計時；魔力藥水提高回復倍率，黃金雨依層數縮短自動購買間隔
+增益每層 12 小時獨立計時；魔力藥水提高回復倍率，黃金雨依層數縮短自動購買間隔，再乘上 1 − min(AutoBuyHeroesMultDuringMakeItRain, 0.95)
 
 | 來源條目 | 狀態 | 依據 |
 |---|---|---|
-| 層數倍率與間隔 | `baseline-75` | 取自 7.5 的 PerkInfo；原版的隨機配發與立即金幣尚未還原。 |
+| 四段數值、12 小時與費用 100 | `table` | `reference/tt2/8.2.0/perk-evidence.json`；8.2 的 PerkInfo 與本專案沿用的 7.5 值完全相同：ManaPotion 給 AllManaGained 1.5／1.75／2／2.25，MakeItRain 給 AutoBuyHeroes 45／15／5／3，兩者都是 43200 秒、基礎費用 100；鑽石價另有同值的 [ServerVar] 預設值 perkDiamondCost = 100。 |
+| 層數上限 3、解鎖後 4 | `native` | `reference/tt2/8.2.0/perk-evidence.json`；PerkModel.CurrentMaxPerkStackAllowed 是常數 3，Bonus(PerkMaxLevel) 大於 0 時加一；MAX_PERK_STACK = 4 同時是 ActivePerkInfo.timers 的固定格數，所以引擎的 min(4, 3 + PerkMaxLevel) 與原生等價。GetBonusAmountA 以 stackCount−1 當索引並夾在第 0 格與最後一格之間，也與引擎相同。 |
+| 每層獨立計時，滿層換掉剩餘最短的一層 | `native` | `reference/tt2/8.2.0/perk-evidence.json`；RunPerkTimer 對每一層各自扣時間，歸零的格由 ShiftTimersAndCountStack 壓掉。滿層時 ActivatePerk 不是拒絕，而是先 RemoveOldestStack 清掉剩餘時間最短的那格再加新的一層——層數不變，等於用一次使用機會換回完整十二小時。引擎原本在滿層時直接擋掉，已改為照原生。 |
+| 黃金雨間隔的乘數 | `default` | `reference/tt2/8.2.0/perk-evidence.json`；GetBonusAmountA 只對 PerkID.MakeItRain 多乘一段 1 − min(Bonus(AutoBuyHeroesMultDuringMakeItRain), autoBuyHeroesMaxBonus)，上限欄位的編譯期預設值是 float 0.95，所以間隔最低只到原值的 5%。包內給這個加成的是 GoldRain 傳說套裝（0.3），湊齊後間隔剩七成；魔力藥水不受影響。上限是 [ServerVar]，線上可覆蓋，故為 default。 |
+| 隨機配發、票券與立即金幣未還原 | `table-differs` | `reference/tt2/8.2.0/perk-evidence.json`；原生的 perk 選擇在第 1200 關解鎖（perkSelectUnlockStage），另有票券制（perkTicketCost = 10），本專案兩個 perk 固定可用、兌換次數來自登入獎勵。黃金雨的立即金幣走 GetMakeItRainGold，以 makeItRainStageMult（1.0）與 makeItRainMaxStageMult（0.85）配合目前與歷史最高關卡計算，尚未還原。PerkInfo 共 19 列，本專案只實作其中兩列。 |
 
 ### dailyLogin · `lib/engine.ts` 的 `apply`
 

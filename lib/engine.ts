@@ -7,7 +7,7 @@ export {TT2_TUTORIAL} from './tt2-tutorial.ts';
 export {TT2_ACHIEVEMENTS,TT2_DAILY_TASKS,ACHIEVEMENT_PANEL_TEXT} from './tt2-achievements.ts';
 import {playerBaseDamage,playerUpgradeCost} from './tt2-player.ts';
 import {chargePet,petDamageFactor} from './tt2-pet-combat.ts';
-import {RESOURCE_PERKS,perkValue,activatePerk,manaSeconds} from './tt2-perks.ts';
+import {RESOURCE_PERKS,perkValue,perkLevel,perkLimit,activatePerk,manaSeconds} from './tt2-perks.ts';
 import {HERO_NAMES,PET_NAMES} from './zh-tw.ts';
 import {advanceEggs,awardPet,dropGear,craftSet} from './tt2-collection.ts';
 import {TT2_PETS,TT2_GEAR,TT2_DAILY,TT2_HEROES,TT2_HERO_MILESTONES} from './tt2-data.ts';
@@ -311,8 +311,8 @@ export function advance(s:State,to:number){hydrate(s);if(!Number.isFinite(to))re
 }
 export function apply(s:State,a:Action){advance(s,a.at);const i=a.index??0,t=s.tt2!;
  if(a.type==='resourcePerk'&&Number.isInteger(i)&&RESOURCE_PERKS[i]){
-  const token=a.amount===1,price=RESOURCE_PERKS[i].cost;
-  if((token?t.perkTokens>0:s.diamonds>=price)&&activatePerk(t,i,s.last)){t.perksUsed++;if(token)t.perkTokens--;else s.diamonds-=price;if(i===0)t.mana=manaMax(s);if(i===1){t.rainLast=s.last;buyAffordableHeroes(s);}note(s,`已使用${RESOURCE_PERKS[i].name}，每層持續十二小時。`);}
+  const token=a.amount===1,price=RESOURCE_PERKS[i].cost,full=perkLevel(t,i,s.last)>=perkLimit(t);
+  if((token?t.perkTokens>0:s.diamonds>=price)&&activatePerk(t,i,s.last)){t.perksUsed++;if(token)t.perkTokens--;else s.diamonds-=price;if(i===0)t.mana=manaMax(s);if(i===1){t.rainLast=s.last;buyAffordableHeroes(s);}note(s,`已使用${RESOURCE_PERKS[i].name}，${full?'層數已滿，剩餘時間最短的一層換成十二小時。':'每層持續十二小時。'}`);}
  }
  if(a.type==='tap'&&s.last-s.lastTap>=45){s.lastTap=s.last;s.taps++;s.daily.taps++;t.tutorialTaps++;t.lastCrit=tt2Random(t)<critChance(s);if(t.lastCrit)t.crits++;let n=scale(tapDamage(s),t.lastCrit?critMultiplier(s):1);if(s.active[1]>s.last&&tt2Random(t)<SKILL_DATA[1].second[skillStep(1,s.skillLevels[1])])n=scale(n,skillPower(s,1));t.lastHit=n;damage(s,n);if(chargePet(t)){t.lastPetHit=petAttackDamage(s);t.petAttacks++;damage(s,t.lastPetHit);}}
  if(a.type==='upgrade'||a.type==='hero'){const id=a.type==='upgrade'?-1:i;if(id<-1||id>=HEROES.length||!Number.isInteger(id))return s;let count=a.amount??1;const cap=id<0?PLAYER_LEVEL_CAP:HERO_LEVEL_CAP;

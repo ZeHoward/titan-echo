@@ -279,9 +279,35 @@ FORMULAS = [
                     note='ShadowCloneSkillSpecialRate 與 SpecialChance 另有節奏與機率，'
                          '本專案未實作，也未核實其倍率來源。')]),
     entry(id='perks', module='lib/tt2-perks.ts', export='perkValue',
-          expression='增益每層 12 小時獨立計時；魔力藥水提高回復倍率，黃金雨依層數縮短自動購買間隔',
-          parts=[entry(part='層數倍率與間隔', status='baseline-75',
-                       note='取自 7.5 的 PerkInfo；原版的隨機配發與立即金幣尚未還原。')]),
+          expression='增益每層 12 小時獨立計時；魔力藥水提高回復倍率，'
+                     '黃金雨依層數縮短自動購買間隔，再乘上 1 − min(AutoBuyHeroesMultDuringMakeItRain, 0.95)',
+          parts=[
+              entry(part='四段數值、12 小時與費用 100', status='table', ref='perk-evidence.json',
+                    note='8.2 的 PerkInfo 與本專案沿用的 7.5 值完全相同：ManaPotion 給 AllManaGained '
+                         '1.5／1.75／2／2.25，MakeItRain 給 AutoBuyHeroes 45／15／5／3，兩者都是 43200 秒、'
+                         '基礎費用 100；鑽石價另有同值的 [ServerVar] 預設值 perkDiamondCost = 100。'),
+              entry(part='層數上限 3、解鎖後 4', status='native', ref='perk-evidence.json',
+                    note='PerkModel.CurrentMaxPerkStackAllowed 是常數 3，Bonus(PerkMaxLevel) 大於 0 時加一；'
+                         'MAX_PERK_STACK = 4 同時是 ActivePerkInfo.timers 的固定格數，'
+                         '所以引擎的 min(4, 3 + PerkMaxLevel) 與原生等價。GetBonusAmountA 以 stackCount−1 '
+                         '當索引並夾在第 0 格與最後一格之間，也與引擎相同。'),
+              entry(part='每層獨立計時，滿層換掉剩餘最短的一層', status='native', ref='perk-evidence.json',
+                    note='RunPerkTimer 對每一層各自扣時間，歸零的格由 ShiftTimersAndCountStack 壓掉。'
+                         '滿層時 ActivatePerk 不是拒絕，而是先 RemoveOldestStack 清掉剩餘時間最短的那格'
+                         '再加新的一層——層數不變，等於用一次使用機會換回完整十二小時。'
+                         '引擎原本在滿層時直接擋掉，已改為照原生。'),
+              entry(part='黃金雨間隔的乘數', status='default', ref='perk-evidence.json',
+                    note='GetBonusAmountA 只對 PerkID.MakeItRain 多乘一段 '
+                         '1 − min(Bonus(AutoBuyHeroesMultDuringMakeItRain), autoBuyHeroesMaxBonus)，'
+                         '上限欄位的編譯期預設值是 float 0.95，所以間隔最低只到原值的 5%。'
+                         '包內給這個加成的是 GoldRain 傳說套裝（0.3），湊齊後間隔剩七成；魔力藥水不受影響。'
+                         '上限是 [ServerVar]，線上可覆蓋，故為 default。'),
+              entry(part='隨機配發、票券與立即金幣未還原', status='table-differs', ref='perk-evidence.json',
+                    note='原生的 perk 選擇在第 1200 關解鎖（perkSelectUnlockStage），另有票券制'
+                         '（perkTicketCost = 10），本專案兩個 perk 固定可用、兌換次數來自登入獎勵。'
+                         '黃金雨的立即金幣走 GetMakeItRainGold，以 makeItRainStageMult（1.0）與 '
+                         'makeItRainMaxStageMult（0.85）配合目前與歷史最高關卡計算，尚未還原。'
+                         'PerkInfo 共 19 列，本專案只實作其中兩列。')]),
     entry(id='dailyLogin', module='lib/engine.ts', export='apply',
           expression='14 天登入獎勵依 Count 欄發放',
           parts=[entry(part='每日內容與數量', status='native', ref='daily-rewards-parser-evidence.json',
@@ -345,6 +371,7 @@ NOT_FORMULAS = {
         'advanceEggs', 'playerUpgradeCost', 'playerBaseDamage', 'themeIndex', 'goldReward', 'health', 'heroDps',
         'cost', 'critChance', 'manaMax', 'bossDuration', 'relicGain', 'evolveCost', 'buildDamage', 'skillPower',
         'petDamageFactor', 'artifactValue', 'upgradeArtifactCost', 'heroPassiveTotals', 'perkValue',
+        'rainIntervalScale',
         'dailyTaskProgress', 'normalise', 'tutorialStep', 'tutorialProgress', 'tutorialText'],
     'catalog': [
         'HEROES', 'SKILLS', 'SKILL_DATA', 'SKILL_ORDER', 'TT2_RULESET', 'bonusDefinitions',

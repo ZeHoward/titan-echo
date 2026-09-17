@@ -1,0 +1,143 @@
+{
+  "version": "8.2.0",
+  "role": "增益 perks 的原生規則：層數上限、每層計時、層數如何變成索引、黃金雨的專屬修正，以及本專案兩個 perk 在 8.2 資料表裡的值。",
+  "packageSha256": "8d78c9aa877e6c0b291ee2116cab855bd26c59c1d080bc654f88ecf1ff268b5f",
+  "binarySha256": "c13fc44321b1214c71ab0277a134fc3401fd7392c74a0bbb3935671c55a8713a",
+  "scriptSha256": "62c2eeb8472bb107de516e4b6ae69d3dcdf5013fb1caa87223d82a54dd203f8b",
+  "finding": "PerkInfo 的 ManaPotion 與 MakeItRain 兩列在 8.2 與本專案沿用的 7.5 值完全相同（[1.5, 1.75, 2.0, 2.25] 與 [45.0, 15.0, 5.0, 3.0]，各 43200 秒、基礎費用 100），層數上限也對得上：PerkModel.CurrentMaxPerkStackAllowed 是 3，Bonus(PerkMaxLevel) 大於 0 時加一，硬上限 MAX_PERK_STACK = 4，同時就是 ActivePerkInfo.timers 的固定格數；GetBonusAmountA 以 stackCount−1 當索引並夾在 0 與最後一格之間。兩處本專案沒有照做：滿層時原生不是拒絕，而是先 RemoveOldestStack 再加新的一層；黃金雨的間隔另外乘上 1 − min(Bonus(AutoBuyHeroesMultDuringMakeItRain), 0.949999988079071)。",
+  "consequence": "ManaPotion 與 MakeItRain 的數值、時長、費用與層數上限都可由 baseline-75 升為 table／default；滿層行為與黃金雨修正則是引擎要補的兩處差異。",
+  "methods": {
+    "stackLimit": {
+      "name": "PerkModel$$get_CurrentMaxPerkStackAllowed",
+      "rva": "0x2383d18",
+      "bytesSha256": "c97a7c5295e4a328d9b31753de3c254dcb47b6c13e652436b0008403cf4e171d"
+    },
+    "extraStackUnlocked": {
+      "name": "PerkModel$$get_ExtraPerkUnlocked",
+      "rva": "0x23822f0",
+      "bytesSha256": "8e05a0870ed3a31f29ebd184ccb472c2c8abfdbbc5fed5f80be27915560c836f"
+    },
+    "bonusAmountA": {
+      "name": "ActivePerkInfo$$GetBonusAmountA",
+      "rva": "0x211ef28",
+      "bytesSha256": "95f4f97ebabd2917e2f4f30b32badb7e50a87e3316f7d8a4f6eeb1401ee4137f"
+    },
+    "perkAmount": {
+      "name": "ActivePerkModel$$GetPerkAmount",
+      "rva": "0x211e940",
+      "bytesSha256": "2ab917d073b20ea8ed16fe0b2a78ffe949baa272014870b2b98b0c57775bd280"
+    },
+    "activate": {
+      "name": "ActivePerkModel$$ActivatePerk",
+      "rva": "0x211e294",
+      "bytesSha256": "297ba0ec3572878109067199961d239ff75fcfa4145da3275130d8759238c018"
+    },
+    "removeOldestStack": {
+      "name": "ActivePerkInfo$$RemoveOldestStack",
+      "rva": "0x211e508",
+      "bytesSha256": "ea44f57215362f53a14e6f7a74b2e5a5f3e2dfbfb2089bd57f18e6743bd4d523"
+    },
+    "shiftTimers": {
+      "name": "ActivePerkInfo$$ShiftTimersAndCountStack",
+      "rva": "0x211e5ac",
+      "bytesSha256": "0723c6aa216c95613f81ce98c4c79361298192d1b67e3812ef7afeeebac07031"
+    },
+    "runPerkTimer": {
+      "name": "ActivePerkModel$$RunPerkTimer",
+      "rva": "0x211d334",
+      "bytesSha256": "233d8756bdaf9d64334f55f7f111f5bc4c6bd55523b9ba20edd22cdaad43c1aa"
+    }
+  },
+  "stackLimit": {
+    "base": 3,
+    "extraStackBonus": {
+      "name": "PerkMaxLevel",
+      "value": 349,
+      "test": "Bonus(PerkMaxLevel) > 0，是布林而非累加"
+    },
+    "hardCap": 4,
+    "timerSlots": 4,
+    "note": "上限是 3，解鎖後 4；MAX_PERK_STACK = 4 同時是 timers 陣列的固定長度，所以引擎的 min(4, 3 + PerkMaxLevel) 與原生等價。"
+  },
+  "indexing": {
+    "formula": "bonusAmountA[min(max(stackCount - 1, 0), 長度 - 1)]",
+    "note": "原生先取 stackCount−1，小於 0 時退回第 0 格，陣列比 stackCount 短時夾到最後一格，與引擎的 values[min(3, n−1)] 相同。"
+  },
+  "makeItRainMultiplier": {
+    "bonus": {
+      "name": "AutoBuyHeroesMultDuringMakeItRain",
+      "value": 55
+    },
+    "cap": {
+      "name": "autoBuyHeroesMaxBonus",
+      "offset": "0x734",
+      "value": 0.949999988079071
+    },
+    "formula": "間隔 = A[層數] × (1 − min(Bonus(AutoBuyHeroesMultDuringMakeItRain), 0.949999988079071))",
+    "note": "GetBonusAmountA 只對 PerkID.MakeItRain（值 1）走這一段，其餘 perk 的乘數是 1。包內給這個加成的是 GoldRain 傳說套裝（0.3），所以湊齊該套裝時間隔只剩七成。ManaPotion 不受影響。"
+  },
+  "stackingWhenFull": {
+    "native": "滿層時 ActivatePerk 呼叫 RemoveOldestStack（把仍在跑的計時器排序後清掉剩最少的那格、stackCount 減一），再把新的一層寫進 timers，最後 ShiftTimersAndCountStack 重新壓縮計數。",
+    "consequence": "層數不變，但等於用一張票把最短的一層換成完整時長；引擎目前是直接拒絕。"
+  },
+  "timers": {
+    "perStack": true,
+    "note": "RunPerkTimer 對每一層各自扣掉經過時間，歸零的格子由 ShiftTimersAndCountStack 壓掉，整個 perk 的層數歸零後才從 activatedPerks 移除——每層獨立計時確認無誤。"
+  },
+  "perks": {
+    "ManaPotion": {
+      "bonusTypeA": "AllManaGained",
+      "amounts": [
+        1.5,
+        1.75,
+        2.0,
+        2.25
+      ],
+      "durationSeconds": 43200.0,
+      "baseCost": 100.0,
+      "runWhileInactive": true
+    },
+    "MakeItRain": {
+      "bonusTypeA": "AutoBuyHeroes",
+      "amounts": [
+        45.0,
+        15.0,
+        5.0,
+        3.0
+      ],
+      "durationSeconds": 43200.0,
+      "baseCost": 100.0,
+      "runWhileInactive": true
+    }
+  },
+  "serverVarDefaults": {
+    "autoBuyHeroesMaxBonus": {
+      "offset": "0x734",
+      "value": 0.949999988079071
+    },
+    "perkDiamondCost": {
+      "offset": "0xacc",
+      "value": 100
+    },
+    "perkTicketCost": {
+      "offset": "0xac4",
+      "value": 10
+    },
+    "perkSelectUnlockStage": {
+      "offset": "0xaac",
+      "value": 1200
+    }
+  },
+  "notImplemented": {
+    "perkSelectUnlockStage": "原生的 perk 隨機配發（PerkModel.SelectablePerks 與 PerkSelectPanelScript）在第 1200 關解鎖，本專案兩個 perk 固定可用，未還原選擇機制。",
+    "perkTicketCost": "原生另有 perk 票券（perkTicketCost = 10），本專案的兌換次數來自登入獎勵，兩者節奏不同。",
+    "immediateGold": "MakeItRain 的立即金幣走 PerkModel.GetMakeItRainGold，以 makeItRainStageMult 與 makeItRainMaxStageMult 兩個係數配合目前關卡與歷史最高關卡計算，尚未還原。",
+    "otherPerks": "PerkInfo 共 19 列，本專案只實作其中兩列。"
+  },
+  "limits": [
+    "perkDiamondCost 與 autoBuyHeroesMaxBonus 都是 [ServerVar]，本表用的是編譯期預設值，不是線上值",
+    "GetBonusAmountB 未逐指令讀完；本專案兩個 perk 的 BonusTypeB 都是 None，用不到",
+    "Doom 的 DoomBonusTimeUntilMaxDamage 等其他 perk 的專屬路徑未查",
+    "ActivatePerk 另有 VideoAllDamage（PerkID 6）在 VIP 或季票下一次填滿所有層數的捷徑，與本專案無關"
+  ]
+}
