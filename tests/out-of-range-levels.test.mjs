@@ -1,8 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { fresh, hydrate, manaMax, skillPower, skillMana, skillCost, buildDamage, dps, tapDamage,
-  SKILL_DATA, skillStep } from '../lib/engine.ts';
-import { effect, baseEffect, TT2_TREE } from '../lib/tt2-rules.ts';
+  SKILL_DATA, skillStep, skillDuration } from '../lib/engine.ts';
+import { effect, baseEffect, TT2_TREE, TT2_ARTIFACTS } from '../lib/tt2-rules.ts';
 import { toNumber } from '../lib/big-number.ts';
 
 // A talent's value list stops at that talent's own max, and a skill's tables stop at its max level.
@@ -54,6 +54,22 @@ test('那張畫面上的數字回到有限值', () => {
   assert.ok(cap < 1e240, `魔力上限被夾到引擎天花板：${cap}`);
   assert.ok(Number.isFinite(toNumber(dps(s))));
   assert.ok(Number.isFinite(toNumber(tapDamage(s))));
+});
+
+test('神器等級也夾回購買路徑能達到的上限，技能鍵不會顯示 1e+240 秒', () => {
+  const s = hydrate(fresh(1000));
+  s.level = 802;
+  // A level no amount of buying could reach drives the duration bonuses into the engine ceiling.
+  s.tt2.artifacts = s.tt2.artifacts.map(() => 1e6);
+  const loaded = hydrate(JSON.parse(JSON.stringify(s)));
+  loaded.tt2.artifacts.forEach((level, i) => {
+    const max = TT2_ARTIFACTS[i].max || 1e6;
+    assert.ok(level <= max, `神器 ${i} 仍超界：${level} > ${max}`);
+  });
+  for (let i = 0; i < 6; i += 1) {
+    assert.ok(Number.isFinite(skillDuration(loaded, i)), `技能 ${i} 的持續時間不是有限值`);
+    assert.ok(skillDuration(loaded, i) < 1e240, `技能 ${i} 的持續時間到了引擎天花板`);
+  }
 });
 
 test('讀取存檔時把超界的等級夾回合法範圍，壞掉的存檔不會一直壞下去', () => {
