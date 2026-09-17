@@ -1,7 +1,7 @@
 'use client';
 import {useState} from 'react';
 import {playerMilestone,nextPlayerMilestone} from '../lib/tt2-player';
-import {petAttackDamage} from '../lib/engine';
+import {petAttackDamage,MANA_DEFAULTS} from '../lib/engine';
 import {compare,fromNumber,fromText,toNumber,ratio} from '../lib/big-number';
 import {heroSkills,heroSkillValue,heroPowerBoost,PENDING_HERO_EFFECTS} from '../lib/tt2-hero-passives';
 import {petRequiredTaps} from '../lib/tt2-pet-combat';
@@ -37,7 +37,7 @@ export default function TT2Panels({s,tab,ready,basePath,act,onPrestige}:Props){
   <input className="content-search" aria-label="搜尋神器" placeholder="搜尋神器名稱或效果" value={search} onChange={e=>setSearch(e.target.value)}/>
   {TT2_ARTIFACTS.map((a,i)=>({a,i})).filter(({a})=>(a.name+a.english+effectLabel(a.effect)).toLowerCase().includes(search.toLowerCase())).map(({a,i})=><article className="artifact-card" key={a.id}><span>💠</span><h3>{a.name}<small>等級 {t.artifacts[i]}{a.max?` / ${a.max}`:''}</small></h3><p>{effectLabel(a.effect)}</p><p>目前效果 {effectText(a.effect,artifactValue(t,i))} · 神器傷害 +{fmt(a.damage*t.artifacts[i]*100)}%</p><button className="buy-button" disabled={!t.artifacts[i]||!!a.max&&t.artifacts[i]>=a.max||s.relics<artifactCost(s,i)} onClick={()=>act({type:'artifact',index:i})}>{!t.artifacts[i]?'尚未取得':a.max&&t.artifacts[i]>=a.max?'已滿級':`升級 · ◆${fmt(artifactCost(s,i))}`}</button><button className="text-link" onClick={()=>setDetail(detail===i?-1:i)}>數值來源與效果</button>{detail===i&&<p className="panel-note">版本 7.5.0 · 效果係數 {a.value}，成長指數 {a.exponent}。{a.max?'有等級上限':'無原版等級上限；本網頁暫設數值保護上限 100 萬級'}。{a.enchant>0?'此神器有附魔資料，尚未實作附魔流程。':''}</p>}</article>)}
  </>:tab==='skills'?<>
-  <div className="content-heading"><h3>主動技能與魔力</h3><p>魔力 {s.tt2!.mana.toFixed(1)} / {manaMax(s).toFixed(0)} · 每分鐘回復 {(manaRegen(s)*60).toFixed(1)}</p></div>
+  <div className="content-heading"><h3>主動技能與魔力</h3><p>{manaMax(s)>0?`魔力 ${s.tt2!.mana.toFixed(1)} / ${manaMax(s).toFixed(0)} · 每分鐘回復 ${(manaRegen(s)*60).toFixed(1)}`:`魔力上限依已解鎖的主動技能計算，每個 ${MANA_DEFAULTS.capPerSkill} 點；第一個技能在劍術大師 ${SKILLS.reduce((low,k)=>Math.min(low,k.level),Infinity)} 級解鎖`}</p></div>
   {SKILL_ORDER.map(i=>{const k=SKILLS[i],cd=Math.max(0,Math.ceil((s.cooldowns[i]-s.last)/1000));return <article className="feature-card" key={k.name}><div className="feature-title"><span>{k.icon}</span><h3>{k.name}<small>等級 {s.skillLevels[i]} / {SKILL_DATA[i].max}</small></h3></div><p>{(SKILL_TEXT[SKILL_DATA[i].id]?.quick??'').replace('{0}',fmt(skillPower(s,i)))}</p><p className="panel-note">{k.desc}</p><div className="mini-stats"><span>消耗 {skillMana(s,i).toFixed(0)} 魔力</span><span>{skillDuration(s,i).toFixed(0)} 秒</span><span>冷卻 {skillCooldown(s,i).toFixed(1)} 秒</span></div><div className="feature-actions"><button className="buy-button" disabled={s.level<k.level||s.skillLevels[i]>=SKILL_DATA[i].max||compare(s.gold,fromNumber(skillCost(s,i)))<0} onClick={()=>act({type:'skillUp',index:i})}>升級 · ●{fmt(skillCost(s,i))}</button><button className="outline-button" disabled={!s.skillLevels[i]||s.level<k.level||!!cd||t.mana<skillMana(s,i)} onClick={()=>act({type:'skill',index:i})}>{s.level<k.level?`劍士 等級 ${k.level}`:cd?`${cd} 秒`:t.mana<skillMana(s,i)?'魔力不足':'施放'}</button></div></article>;})}
   <p className="panel-note">基礎六技能採逐級表。多重施法與流派專屬額外法術尚待完成。</p>
  </>:tab==='adventure'?<>

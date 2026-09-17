@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import { fresh, hydrate, manaMax, skillPower, skillMana, skillCost, buildDamage, dps, tapDamage,
   SKILL_DATA, skillStep, skillDuration } from '../lib/engine.ts';
 import { effect, baseEffect, TT2_TREE, TT2_ARTIFACTS } from '../lib/tt2-rules.ts';
@@ -70,6 +71,20 @@ test('神器等級也夾回購買路徑能達到的上限，技能鍵不會顯�
     assert.ok(Number.isFinite(skillDuration(loaded, i)), `技能 ${i} 的持續時間不是有限值`);
     assert.ok(skillDuration(loaded, i) < 1e240, `技能 ${i} 的持續時間到了引擎天花板`);
   }
+});
+
+test('魔力上限為 0 時介面說明還沒解鎖技能，而不是寫「0 / 0」', () => {
+  const battle = readFileSync(new URL('../app/game.tsx', import.meta.url), 'utf8');
+  const panel = readFileSync(new URL('../app/tt2-panels.tsx', import.meta.url), 'utf8');
+  assert.match(battle, /manaMax\(s\)>0\?/, '戰鬥區沒有處理上限為 0 的情況');
+  assert.match(battle, /級解鎖第一個技能/);
+  assert.match(panel, /manaMax\(s\)>0\?/, '技能面板沒有處理上限為 0 的情況');
+  assert.match(panel, /魔力上限依已解鎖的主動技能計算/);
+  // The number quoted is the real unlock level, not a hard-coded one.
+  const s = fresh(1000);
+  assert.equal(manaMax(s), 0, '等級 1 的魔力上限應為 0');
+  s.level = Math.min(...SKILL_DATA.map((_, i) => i)) >= 0 ? 100 : 100;
+  assert.ok(manaMax(s) > 0, '解鎖第一個技能後應該有魔力');
 });
 
 test('壞掉的技能計時器不會讓技能永遠處於施放中', () => {
