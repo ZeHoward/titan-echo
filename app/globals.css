@@ -32,3 +32,6 @@
 .equipment-slots .chosen b{color:#f1d598}
 .equipment-slots em{font-style:normal;font-size:11px;color:#e8c46a}
 .feature-card .gear-upgrade{font-style:normal;font-size:11px;color:#e8c46a;margin-left:8px}
+/* 丟棄裝備是不可逆的，確認列的兩顆鍵在手機上量到只有 36px 高，
+   比 2.7.2 為手機訂下的點按下限還小；誤點的代價又特別高，所以拉到 44px。 */
+@media(max-width:780px){.inline-confirm>button{min-height:44px;padding-left:18px;padding-right:18px}}
