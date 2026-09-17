@@ -15,7 +15,7 @@ import {APP_VERSION} from '../lib/releases';
 import {activeCombatPet,petRequiredTaps} from '../lib/tt2-pet-combat';
 import {TT2_PETS} from '../lib/tt2-data';
 import {PET_NAMES} from '../lib/zh-tw';
-import {BATTLE_INTERVAL,PANEL_INTERVAL,panelDue,panelSyncsOn,redraws} from '../lib/ui-cadence';
+import {BATTLE_INTERVAL,clampFloat,PANEL_INTERVAL,panelDue,panelSyncsOn,redraws} from '../lib/ui-cadence';
 import {AUDIO_DEFAULTS,type AudioSettings} from '../lib/audio';
 import {playCue,readAudioSettings,syncMusic,writeAudioSettings} from './sound';
 
@@ -44,8 +44,12 @@ export default function Game({pagesMode=false,basePath='/'}:{pagesMode?:boolean;
  function showPanel(now:number){panelAt.current=now;setPanelState({...state.current});}
  // Damage that is not the tap itself still has to be visible, or the builds look like they do
  // nothing: the pet swipe and the heavenly strike each get their own number.
+ // A number is centred on where it happened, so near an edge half of it would fall outside the
+ // battle area and be cut off by its overflow. The band is measured from the arena rather than
+ // fixed, because the same percentage is a very different distance on a phone and on a desktop.
  function float(text:string,kind:string,x=50,y=42){const id=performance.now()+Math.random();
-  setFloats(f=>[...f.slice(-15),{id,x,y,text,crit:kind==='crit',kind}]);
+  const safe=clampFloat(x,arena.current?.offsetWidth||0);
+  setFloats(f=>[...f.slice(-15),{id,x:safe,y,text,crit:kind==='crit',kind}]);
   setTimeout(()=>setFloats(f=>f.filter(a=>a.id!==id)),850);}
  // The panel's own props never change identity, so a frame that leaves the snapshot alone costs
  // nothing: React compares the three and skips the subtree.
@@ -80,6 +84,7 @@ export default function Game({pagesMode=false,basePath='/'}:{pagesMode?:boolean;
    }else setSync('儲存失敗・將自動重試');
   }finally{busy.current=false;}
  }
+ const arena=useRef<HTMLButtonElement|null>(null);
  const warmed=useRef(new Set<string>());
  function warmImage(file:string){const url=basePath+file;if(warmed.current.has(url))return;warmed.current.add(url);const img=new Image();img.src=url;void img.decode().catch(()=>{});}
  // The five sprite sheets are 3.5MB together. Fetching them all at mount held up the sheet the
@@ -113,7 +118,7 @@ export default function Game({pagesMode=false,basePath='/'}:{pagesMode?:boolean;
     <div className="battle-bg world-atlas" style={{backgroundImage:`url("${basePath}worlds-atlas.webp")`,backgroundPosition:`${region%5/4*100}% ${Math.floor(region/5)*100}%`}}/><div className="battle-shade"/><div className="stage-top"><button className="zone-tag" onClick={()=>setModal('help')}>✦ {s.trial?(s.trial.kind==='dungeon'?'每日地下城':'極限試煉'):TT2_THEMES[theme].name}</button><div className="stage-number"><span>關卡</span><strong>{String(s.stage).padStart(3,'0')}</strong></div><span className="wave-tag">{s.trial?`第 ${s.trial.wave+1} 波`:boss?'⚔ 頭目戰':s.farming?'金幣農場':`${s.kills+1} / ${monsterCount(s)}`}</span></div>
     <div className="currency"><div><span className="coin">金</span><strong>{fmt(s.gold)}</strong><small>金幣</small></div><div><span className="relic">◆</span><strong>{fmt(s.relics)}</strong><small>聖物</small></div><button className="diamond-wallet" onClick={()=>setTab('shop')} title="開啟旅人商店">💎<strong>{fmt(s.diamonds)}</strong></button></div>
     <div className="enemy-health"><div><span>{boss?'♛ ':''}{monster.name}</span><small>{fmt(s.hp)} / {fmt(health(s))}</small></div><div className="hp-track"><div style={{width:`${Math.max(0,ratio(s.hp,health(s))*100)}%`}}/></div>{boss||s.trial?<div className="boss-clock"><span>⏳ {seconds} 秒</span><div style={{width:`${seconds/(s.trial?(s.trial.kind==='dungeon'?60:120):bossDuration(s))*80}%`}}/></div>:<div className="wave-dots">{Array.from({length:monsterCount(s)},(_,i)=><i key={i} className={i<s.kills?'done':''}/>)}</div>}</div>
-    <button className="monster-target" aria-label="攻擊泰坦（也可按空白鍵）" disabled={!ready} onPointerDown={e=>{if(e.button!==0)return;e.preventDefault();const rect=e.currentTarget.getBoundingClientRect();strike((e.clientX-rect.left)/rect.width*100,(e.clientY-rect.top)/rect.height*100);}} onClick={e=>{if(e.detail===0)strike();}}><span className="monster-shadow"/>{ready&&<MonsterSprite key={`${monster.id}-${hit}`} id={monster.id} basePath={basePath} scale={monsterScale(s.stage)} className={`monster ${hit?'struck':''} ${boss?'boss':''}`}/>}{floats.map(f=><span key={f.id} className={`damage-number ${f.kind}`} style={{left:`${f.x}%`,top:`${f.y}%`}}>{f.crit?'暴擊 ':''}{f.text}</span>)}<img key={"hero-"+hit} className={`swordsman ${hit?"swing":""}`} src={`${basePath}swordsman.webp`} alt="劍術大師" draggable={false}/><span className="tap-ring"/><span className="tap-prompt">{ready?'點擊巨獸，揮劍出擊':'正在準備遠征…'}</span></button>
+    <button ref={arena} className="monster-target" aria-label="攻擊泰坦（也可按空白鍵）" disabled={!ready} onPointerDown={e=>{if(e.button!==0)return;e.preventDefault();const rect=e.currentTarget.getBoundingClientRect();strike((e.clientX-rect.left)/rect.width*100,(e.clientY-rect.top)/rect.height*100);}} onClick={e=>{if(e.detail===0)strike();}}><span className="monster-shadow"/>{ready&&<MonsterSprite key={`${monster.id}-${hit}`} id={monster.id} basePath={basePath} scale={monsterScale(s.stage)} className={`monster ${hit?'struck':''} ${boss?'boss':''}`}/>}{floats.map(f=><span key={f.id} className={`damage-number ${f.kind}`} style={{left:`${f.x}%`,top:`${f.y}%`}}>{f.crit?'暴擊 ':''}{f.text}</span>)}<img key={"hero-"+hit} className={`swordsman ${hit?"swing":""}`} src={`${basePath}swordsman.webp`} alt="劍術大師" draggable={false}/><span className="tap-ring"/><span className="tap-prompt">{ready?'點擊巨獸，揮劍出擊':'正在準備遠征…'}</span></button>
     <button className="pet-combat-status" onClick={()=>setTab('collection')} aria-label="查看寵物戰鬥與收藏">{combatPet>=0?<><strong>⚡ {PET_NAMES[TT2_PETS[combatPet].name]}</strong><span>蓄力 {s.tt2!.petCharge} / {petRequiredTaps(s.tt2!)}</span><progress max={petRequiredTaps(s.tt2!)} value={s.tt2!.petCharge} aria-label="寵物攻擊蓄力"/>{compare(s.tt2!.lastPetHit,ZERO)>0&&<small>上次攻擊 {fmt(s.tt2!.lastPetHit)}</small>}</>:<><strong>寵物攻擊</strong><span>取得並派出傷害寵物後啟用</span></>}</button>
     {fairy&&<button className="fairy" title="領取仙女金幣" onClick={()=>act({type:'fairy'})}>🧚<small>點我領金幣</small></button>}
     {s.farming&&!s.trial&&<button className="retry-boss" onClick={()=>act({type:'boss'})}><Swords size={16}/> 再次挑戰頭目</button>}

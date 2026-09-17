@@ -4,6 +4,7 @@ import { readFileSync } from 'node:fs';
 import { fresh, hydrate, apply, buildDamage } from '../lib/engine.ts';
 import { petRequiredTaps } from '../lib/tt2-pet-combat.ts';
 import { compare, ZERO } from '../lib/big-number.ts';
+import { FLOAT_HALF_WIDTH, clampFloat } from '../lib/ui-cadence.ts';
 
 const source = readFileSync(new URL('../app/game.tsx', import.meta.url), 'utf8');
 const css = readFileSync(new URL('../app/globals.css', import.meta.url), 'utf8');
@@ -67,4 +68,25 @@ test('三種傷害數字各有自己的樣式，不會看起來一樣', () => {
   const colours = ['crit', 'pet', 'heavenly'].map(colour);
   assert.ok(colours.every(Boolean), `有樣式沒有指定顏色：${colours}`);
   assert.equal(new Set(colours).size, colours.length, `顏色重複：${colours}`);
+});
+
+test('傷害數字不會被戰鬥區邊緣切掉，夾擠依實際寬度計算', () => {
+  // A 375px phone leaves the battle area about 336px wide; that is where the clipping showed up.
+  const phone = 336;
+  for (const x of [0, 2, 50, 98, 100]) {
+    const safe = clampFloat(x, phone);
+    const centre = (safe / 100) * phone;
+    assert.ok(centre - FLOAT_HALF_WIDTH >= -0.5, `x=${x} 的左緣超出：${centre - FLOAT_HALF_WIDTH}`);
+    assert.ok(centre + FLOAT_HALF_WIDTH <= phone + 0.5, `x=${x} 的右緣超出：${centre + FLOAT_HALF_WIDTH}`);
+  }
+  // A wider arena keeps more of the positional feedback rather than clamping to the same band.
+  const desktop = 500;
+  assert.ok(clampFloat(2, desktop) < clampFloat(2, phone), '寬螢幕的夾擠應該更寬鬆');
+  assert.ok(clampFloat(98, desktop) > clampFloat(98, phone), '寬螢幕的夾擠應該更寬鬆');
+  // The middle is never moved, and a width we cannot measure is left alone rather than forced.
+  assert.equal(clampFloat(50, phone), 50);
+  assert.equal(clampFloat(93, 0), 93);
+  // Even an arena narrower than the number keeps the centre, rather than flipping the bounds.
+  assert.equal(clampFloat(0, 100), 40);
+  assert.equal(clampFloat(100, 100), 60);
 });

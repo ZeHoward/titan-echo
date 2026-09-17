@@ -1,4 +1,5 @@
-// How often the screen is rebuilt, and when it is not rebuilt at all.
+// How the battle screen is drawn: how often it is rebuilt, when it is not rebuilt at all, and
+// where a damage number is allowed to sit.
 //
 // The interval belongs to the simulation, not to the drawing: advance() is what has to run on a
 // steady cadence, because gaps over 30 seconds fall to the coarse offline settlement instead of the
@@ -35,4 +36,16 @@ export function panelDue(now: number, last: number) {
  */
 export function panelSyncsOn(type: string) {
   return type !== 'tap';
+}
+
+// The widest damage number is a crit at 40px type with its prefix, measured at 200px across. A
+// number is centred on the point it belongs to, so half of that has to stay clear of each edge or
+// the battle area's overflow cuts it off — which is what happened on a phone before this existed.
+export const FLOAT_HALF_WIDTH = 108;
+
+/** Keeps a damage number's centre far enough from the edges that the whole number stays visible. */
+export function clampFloat(x: number, arenaWidth: number) {
+  if (!(arenaWidth > 0)) return x;
+  const margin = Math.min(40, (FLOAT_HALF_WIDTH / arenaWidth) * 100);
+  return Math.min(100 - margin, Math.max(margin, x));
 }
