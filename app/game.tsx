@@ -35,6 +35,9 @@ function writeDamageText(settings:DamageTextSettings){
 // some point. Up to a dozen they are the clearest thing to draw; past that the same progress is a
 // bar, and the exact count is already spelled out above the monster.
 const WAVE_DOT_LIMIT=12;
+// How long a damage number stays up. The clone swings four times a second, so its number has to
+// clear before the next three arrive; everything else keeps the original 850ms.
+const FLOAT_LIFE:Record<string,number>={clone:420};
 function WaveProgress({killed,total}:{killed:number;total:number}){
  if(total<=WAVE_DOT_LIMIT)return <div className="wave-dots">{Array.from({length:total},(_,i)=><i key={i} className={i<killed?'done':''}/>)}</div>;
  return <div className="wave-bar"><div style={{width:`${Math.min(100,killed/total*100)}%`}}/></div>;
@@ -59,7 +62,10 @@ export default function Game({pagesMode=false,basePath='/'}:{pagesMode?:boolean;
  // written mid-skill must not print the swing it already took.
  const seenCloneAttacks=useRef(-1);
  function watchForClone(s:State){const count=s.tt2!.cloneAttacks;
-  if(seenCloneAttacks.current>=0&&count>seenCloneAttacks.current)float(`🌑 ${fmt(s.tt2!.lastCloneHit)}`,'clone',32,32);
+  // Four a second at one fixed spot would stack into an unreadable pile, so each swing lands near
+  // the clone rather than exactly on it, and its number fades faster than a tap's.
+  if(seenCloneAttacks.current>=0&&count>seenCloneAttacks.current)
+   float(`🌑 ${fmt(s.tt2!.lastCloneHit)}`,'clone',32+Math.random()*12-6,30+Math.random()*10-5);
   seenCloneAttacks.current=count;}
  function watchForCues(s:State){const seen=watched.current,boss=isBoss(s),gear=s.tt2!.equipmentCollected;
   if(seen.stage>=0){if(s.stage>seen.stage)cue('victory');if(boss&&!seen.boss)cue('boss');if(gear>seen.gear)cue('drop');}
@@ -81,7 +87,7 @@ export default function Game({pagesMode=false,basePath='/'}:{pagesMode?:boolean;
  function float(text:string,kind:string,x=50,y=42){if(!showsDamageText(damageTextRef.current,kind))return;const id=performance.now()+Math.random();
   const safe=clampFloat(x,arena.current?.offsetWidth||0);
   setFloats(f=>[...f.slice(-15),{id,x:safe,y,text,crit:kind==='crit',kind}]);
-  setTimeout(()=>setFloats(f=>f.filter(a=>a.id!==id)),850);}
+  setTimeout(()=>setFloats(f=>f.filter(a=>a.id!==id)),FLOAT_LIFE[kind]??850);}
  // The panel's own props never change identity, so a frame that leaves the snapshot alone costs
  // nothing: React compares the three and skips the subtree.
  const panelAct=useCallback((a:Omit<Action,'at'>)=>actRef.current(a),[]);

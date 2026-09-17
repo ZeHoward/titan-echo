@@ -62,7 +62,15 @@ test('介面用計數器的變化決定要不要冒出數字，而不是自己�
   assert.ok(source.includes('const count=s.tt2!.cloneAttacks;'), '沒有記下影分身攻擊次數');
   assert.ok(source.includes('count>seenCloneAttacks.current'), '沒有用影分身攻擊次數判斷');
   assert.ok(source.includes("fmt(s.tt2!.lastCloneHit)"), '影分身傷害沒有用引擎記下的數值');
-  assert.ok(source.includes("'clone',32,32)"), '影分身數字沒有自己的來源分類');
+  assert.ok(source.includes("'clone',32+Math.random()"), '影分身數字沒有自己的來源分類與散佈');
+});
+
+test('影分身一秒四下，數字要散開而且比別的更快消失', () => {
+  // Otherwise up to eight of them stack on one spot: the number lives 850ms and a swing lands
+  // every 250ms.
+  assert.match(source, /const FLOAT_LIFE:Record<string,number>=\{clone:420\};/);
+  assert.match(source, /FLOAT_LIFE\[kind\]\?\?850/);
+  assert.match(css, /\.damage-number\.clone\{[^}]*animation-duration:\.42s/);
 });
 
 test('四種傷害數字各有自己的樣式，不會看起來一樣', () => {
