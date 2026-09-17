@@ -1,0 +1,4019 @@
+{
+  "version": "8.2.0",
+  "role": "ServerVarsModel 在類別建構式裡寫死的預設值：哪些欄位有、值是多少、哪些解不出來。",
+  "packageSha256": "8d78c9aa877e6c0b291ee2116cab855bd26c59c1d080bc654f88ecf1ff268b5f",
+  "binarySha256": "c13fc44321b1214c71ab0277a134fc3401fd7392c74a0bbb3935671c55a8713a",
+  "scriptSha256": "62c2eeb8472bb107de516e4b6ae69d3dcdf5013fb1caa87223d82a54dd203f8b",
+  "finding": "ServerVarsModel 有 954 個靜態欄位，其中純量（int／float／bool／double）可從類別建構式解出 745 個的編譯期預設值。這與「安裝包的兩張變數表只帶 28 個值」是兩條不同的線索：變數表是資料，這裡是程式裡寫死的預設值，兩者同時存在的只有 26 個。",
+  "consequence": "先前標記為「原生為伺服器變數、安裝包未帶值」的項目，有一部分其實有預設值可對照；但預設值不是線上值——每一個都是 [ServerVar]，伺服器可以整份覆蓋，因此引用它時狀態是 default（原生靜態預設值，線上可覆蓋），不是 native。",
+  "selfCheck": {
+    "helperUpgradeBase": 1.0800000429153442,
+    "playerUpgradeCostBase": 5.0,
+    "playerUpgradeCostGrowth": 1.0750000476837158
+  },
+  "recoveredCount": 745,
+  "recovered": {
+    "maxStage": {
+      "type": "int",
+      "offset": "0x0",
+      "value": 1000000
+    },
+    "needToWipeBeta": {
+      "type": "bool",
+      "offset": "0x38",
+      "value": false
+    },
+    "maxDateOffset": {
+      "type": "int",
+      "offset": "0x3c",
+      "value": 1
+    },
+    "minutesToSyncServerTime": {
+      "type": "int",
+      "offset": "0x40",
+      "value": 10
+    },
+    "secondsToRejectTimeSync": {
+      "type": "int",
+      "offset": "0x44",
+      "value": 10
+    },
+    "minuteToResyncPlayer": {
+      "type": "int",
+      "offset": "0x48",
+      "value": 30
+    },
+    "minutesToAutoSave": {
+      "type": "int",
+      "offset": "0x4c",
+      "value": 5
+    },
+    "showEventCoins": {
+      "type": "bool",
+      "offset": "0x50",
+      "value": false
+    },
+    "accountResyncDelaySecs": {
+      "type": "int",
+      "offset": "0x54",
+      "value": 5
+    },
+    "createAccountEmailReward": {
+      "type": "int",
+      "offset": "0x58",
+      "value": 100
+    },
+    "createAccountFBReward": {
+      "type": "int",
+      "offset": "0x5c",
+      "value": 0
+    },
+    "enableStageTransitionStrictUnload": {
+      "type": "bool",
+      "offset": "0x60",
+      "value": false
+    },
+    "stageTransitionHardUnloadInterval": {
+      "type": "float",
+      "offset": "0x64",
+      "value": 600.0
+    },
+    "hideAppleSignInOnAndroid": {
+      "type": "bool",
+      "offset": "0x68",
+      "value": true
+    },
+    "defaultVolumeOnSettings": {
+      "type": "float",
+      "offset": "0x6c",
+      "value": 0.6600000262260437
+    },
+    "displayPlayerAPITokenOption": {
+      "type": "bool",
+      "offset": "0x70",
+      "value": true
+    },
+    "maxSimultaneousTweens": {
+      "type": "int",
+      "offset": "0x74",
+      "value": 1200
+    },
+    "endgameSeasonJoinStage": {
+      "type": "int",
+      "offset": "0x78",
+      "value": 180000
+    },
+    "minimumEndgamePanelStage": {
+      "type": "int",
+      "offset": "0x7c",
+      "value": 50000
+    },
+    "endgameUpdateAttemptCooldown": {
+      "type": "double",
+      "offset": "0x80",
+      "value": 4.0
+    },
+    "endgameUpdateCooldown": {
+      "type": "int",
+      "offset": "0x88",
+      "value": 3600
+    },
+    "endgameUpdateEnding5MinutesInterval": {
+      "type": "int",
+      "offset": "0x8c",
+      "value": 60
+    },
+    "endgameUpdateEndingSoonMinutes": {
+      "type": "int",
+      "offset": "0x90",
+      "value": 10
+    },
+    "endgameServerClientMismatchResync": {
+      "type": "bool",
+      "offset": "0x94",
+      "value": false
+    },
+    "endgameCacheExpiryTimeInSeconds": {
+      "type": "double",
+      "offset": "0x98",
+      "value": 600.0
+    },
+    "endgameForceLeaderboardStagesPushed": {
+      "type": "int",
+      "offset": "0xa0",
+      "value": 20
+    },
+    "endgameHideNearbyLeaderboardRank": {
+      "type": "int",
+      "offset": "0xa4",
+      "value": 100
+    },
+    "endgameSyncMinIntervalMinutes": {
+      "type": "int",
+      "offset": "0xa8",
+      "value": 5
+    },
+    "endgameSyncMinSecondsProtection": {
+      "type": "int",
+      "offset": "0xac",
+      "value": 5
+    },
+    "endgameMinPrestigeReqInc": {
+      "type": "int",
+      "offset": "0xb0",
+      "value": 5000
+    },
+    "progressionAchievementTestDiamondReward": {
+      "type": "int",
+      "offset": "0xb4",
+      "value": 5
+    },
+    "activeSkillCostMult": {
+      "type": "double",
+      "offset": "0xb8",
+      "value": 1.0
+    },
+    "activeSkillUpgradeCostGrowth": {
+      "type": "float",
+      "offset": "0xc0",
+      "value": 1.0820000171661377
+    },
+    "baseShadowCloneAniPerSec": {
+      "type": "float",
+      "offset": "0xc4",
+      "value": 4.0
+    },
+    "shadowCloneCritSplashThroughBossBase": {
+      "type": "float",
+      "offset": "0xc8",
+      "value": 1.0
+    },
+    "clanMateAniPerSec": {
+      "type": "float",
+      "offset": "0xcc",
+      "value": 6.0
+    },
+    "clanMateDmgMult": {
+      "type": "float",
+      "offset": "0xd0",
+      "value": 0.009999999776482582
+    },
+    "midasTapMultiplier": {
+      "type": "double",
+      "offset": "0xd8",
+      "value": 1.0
+    },
+    "maxQueueAttempts": {
+      "type": "int",
+      "offset": "0xe0",
+      "value": 200
+    },
+    "attackQueueSize": {
+      "type": "int",
+      "offset": "0xe4",
+      "value": 3
+    },
+    "minSkillManaCost": {
+      "type": "int",
+      "offset": "0xe8",
+      "value": 4
+    },
+    "helperAnimationRateMax": {
+      "type": "float",
+      "offset": "0xec",
+      "value": 6.0
+    },
+    "helperQTEDamageMult": {
+      "type": "float",
+      "offset": "0xf0",
+      "value": 0.10000000149011612
+    },
+    "helperQTEDamageOffset": {
+      "type": "float",
+      "offset": "0xf4",
+      "value": 1.0
+    },
+    "helperQTEDamageExpo": {
+      "type": "float",
+      "offset": "0xf8",
+      "value": 2.0
+    },
+    "megaCoinMult": {
+      "type": "float",
+      "offset": "0xfc",
+      "value": 2.5
+    },
+    "maxGoldPerActiveSkillCount": {
+      "type": "int",
+      "offset": "0x100",
+      "value": 4
+    },
+    "burstSkillBaseSplashCount": {
+      "type": "int",
+      "offset": "0x104",
+      "value": 6
+    },
+    "burstDamageMultiStackFixedCooldown": {
+      "type": "int",
+      "offset": "0x108",
+      "value": 2
+    },
+    "burstSkillMultiCastAddedTime": {
+      "type": "float",
+      "offset": "0x10c",
+      "value": 0.6000000238418579
+    },
+    "burstSkillMultiBufferCapAmount": {
+      "type": "int",
+      "offset": "0x110",
+      "value": 10
+    },
+    "deadlyStrikeExpoUltraDagger": {
+      "type": "float",
+      "offset": "0x114",
+      "value": 0.75
+    },
+    "streamOfBladesTargetDurationBase": {
+      "type": "float",
+      "offset": "0x120",
+      "value": 10.0
+    },
+    "activeSkillSelectUnlockStage": {
+      "type": "float",
+      "offset": "0x124",
+      "value": 1200.0
+    },
+    "maxManaStrips": {
+      "type": "int",
+      "offset": "0x140",
+      "value": 25
+    },
+    "unlockStageAnnouncement": {
+      "type": "int",
+      "offset": "0x148",
+      "value": 25
+    },
+    "minutesBetweenAnnouncementCheck": {
+      "type": "int",
+      "offset": "0x14c",
+      "value": 15
+    },
+    "announcementManualRefreshCooldown": {
+      "type": "int",
+      "offset": "0x158",
+      "value": 5
+    },
+    "artifactUpgradeServerTime": {
+      "type": "float",
+      "offset": "0x15c",
+      "value": 3.0
+    },
+    "minimumSalvageCost": {
+      "type": "int",
+      "offset": "0x160",
+      "value": 43
+    },
+    "maximumSalvageCost": {
+      "type": "int",
+      "offset": "0x164",
+      "value": 2000
+    },
+    "relicStageMult1": {
+      "type": "double",
+      "offset": "0x168",
+      "value": 3.0
+    },
+    "relicStageMult2": {
+      "type": "double",
+      "offset": "0x170",
+      "value": 1.5
+    },
+    "relicStageMult3": {
+      "type": "double",
+      "offset": "0x178",
+      "value": 5e-07
+    },
+    "relicStageBase": {
+      "type": "double",
+      "offset": "0x180",
+      "value": 1.21
+    },
+    "relicStageBase2": {
+      "type": "double",
+      "offset": "0x188",
+      "value": 1.002
+    },
+    "relicStageExpo": {
+      "type": "double",
+      "offset": "0x190",
+      "value": 0.48
+    },
+    "relicStageExpo2": {
+      "type": "double",
+      "offset": "0x198",
+      "value": 1.005
+    },
+    "relicStageExpo3": {
+      "type": "double",
+      "offset": "0x1a0",
+      "value": 1.1
+    },
+    "relicStageExpoMax3": {
+      "type": "double",
+      "offset": "0x1a8",
+      "value": 1.0155
+    },
+    "relicStageOffset": {
+      "type": "double",
+      "offset": "0x1b0",
+      "value": -56.0
+    },
+    "artifactSalvageLogBase": {
+      "type": "double",
+      "offset": "0x1b8",
+      "value": 8.0
+    },
+    "artifactSalvagePowerBase": {
+      "type": "double",
+      "offset": "0x1c0",
+      "value": 2.93
+    },
+    "artifactCostBase": {
+      "type": "double",
+      "offset": "0x1c8",
+      "value": 1.31
+    },
+    "artifactSalvageCostBaseScale": {
+      "type": "double",
+      "offset": "0x1d0",
+      "value": 10.0
+    },
+    "artifactUpgradePercent1": {
+      "type": "double",
+      "offset": "0x1d8",
+      "value": 0.01
+    },
+    "artifactUpgradePercent2": {
+      "type": "double",
+      "offset": "0x1e0",
+      "value": 0.05
+    },
+    "artifactUpgradePercent3": {
+      "type": "double",
+      "offset": "0x1e8",
+      "value": 0.25
+    },
+    "artifactMinUpgradePrecision": {
+      "type": "double",
+      "offset": "0x1f0",
+      "value": 1e-09
+    },
+    "artifactRelicServerPrecision": {
+      "type": "double",
+      "offset": "0x1f8",
+      "value": 1e-14
+    },
+    "artifactBuyAmountNotificationMinRelics": {
+      "type": "double",
+      "offset": "0x200",
+      "value": 10000000000000.0
+    },
+    "artifactBuyAmountNotificationNumUpgrades": {
+      "type": "int",
+      "offset": "0x208",
+      "value": 20
+    },
+    "artifactBuyAmountNotificationSeconds": {
+      "type": "float",
+      "offset": "0x20c",
+      "value": 5.0
+    },
+    "artifactBuyAmountNotificationEnabled": {
+      "type": "bool",
+      "offset": "0x210",
+      "value": true
+    },
+    "needPrestigeBeforeSalvageDisenchant": {
+      "type": "bool",
+      "offset": "0x218",
+      "value": true
+    },
+    "seasonArtifactSalvageCost": {
+      "type": "int",
+      "offset": "0x21c",
+      "value": 2000
+    },
+    "seasonalRelicStageExpMult": {
+      "type": "double",
+      "offset": "0x230",
+      "value": 9.8e-05
+    },
+    "seasonalRelicStageOffset": {
+      "type": "double",
+      "offset": "0x238",
+      "value": -180000.0
+    },
+    "seasonalRelicMultiplierFarmIncrBy": {
+      "type": "int",
+      "offset": "0x240",
+      "value": 5
+    },
+    "seasonalRelicMultiplierPrestigeMaxDaily": {
+      "type": "int",
+      "offset": "0x244",
+      "value": 10
+    },
+    "seasonalRelicMuliplierPrestigeFarmStagePercent": {
+      "type": "double",
+      "offset": "0x248",
+      "value": 0.99
+    },
+    "seasonalRelicMultiplierBase": {
+      "type": "double",
+      "offset": "0x250",
+      "value": 1.0053
+    },
+    "defaultFilterMinMembers": {
+      "type": "int",
+      "offset": "0x258",
+      "value": 35
+    },
+    "raidLevelFilterIncrement": {
+      "type": "int",
+      "offset": "0x25c",
+      "value": 5
+    },
+    "unlockStageClan": {
+      "type": "int",
+      "offset": "0x260",
+      "value": 100
+    },
+    "clanMaxMembers": {
+      "type": "int",
+      "offset": "0x264",
+      "value": 50
+    },
+    "clanShipMinYPercent": {
+      "type": "float",
+      "offset": "0x268",
+      "value": 0.8999999761581421
+    },
+    "clanShipDmgMult": {
+      "type": "float",
+      "offset": "0x26c",
+      "value": 20.0
+    },
+    "clanShipAttackDuration": {
+      "type": "int",
+      "offset": "0x270",
+      "value": 6
+    },
+    "createClanCost": {
+      "type": "int",
+      "offset": "0x274",
+      "value": 400
+    },
+    "clanNameChangeCost": {
+      "type": "int",
+      "offset": "0x278",
+      "value": 800
+    },
+    "clanAutoKickTestValue": {
+      "type": "float",
+      "offset": "0x27c",
+      "value": 0.0010000000474974513
+    },
+    "raidRewardMaxPlayerLevelFreeClanHop": {
+      "type": "int",
+      "offset": "0x298",
+      "value": 10
+    },
+    "raidRewardClanHopRewardTimer": {
+      "type": "int",
+      "offset": "0x29c",
+      "value": 48
+    },
+    "raidLeaderDaysOfInactivityUntilDemotion": {
+      "type": "float",
+      "offset": "0x2a0",
+      "value": 30.0
+    },
+    "raidLeaderDemotionWarningDays1": {
+      "type": "float",
+      "offset": "0x2a4",
+      "value": 15.0
+    },
+    "raidLeaderDemotionWarningDays2": {
+      "type": "float",
+      "offset": "0x2a8",
+      "value": 28.0
+    },
+    "baseClanShipBattery": {
+      "type": "int",
+      "offset": "0x2b8",
+      "value": 8
+    },
+    "baseMaxLoyaltyLevel": {
+      "type": "int",
+      "offset": "0x2bc",
+      "value": 10
+    },
+    "maxLoyaltyLevelPracticePanel": {
+      "type": "int",
+      "offset": "0x2c0",
+      "value": 12
+    },
+    "minRaidLevelToSkipAnimation": {
+      "type": "int",
+      "offset": "0x2c4",
+      "value": 50
+    },
+    "clanMaxMessageStorage": {
+      "type": "int",
+      "offset": "0x2c8",
+      "value": 100
+    },
+    "clanMemberListCacheExpiryTimeInSeconds": {
+      "type": "double",
+      "offset": "0x2d0",
+      "value": 60.0
+    },
+    "clanLeaderboardCacheExpiryTimeInSeconds": {
+      "type": "double",
+      "offset": "0x2d8",
+      "value": 60.0
+    },
+    "clanMasterTierCacheExpiryTimeInSeconds": {
+      "type": "double",
+      "offset": "0x2e0",
+      "value": 600.0
+    },
+    "clanLastSeasonCacheExpiryTimeInSeconds": {
+      "type": "double",
+      "offset": "0x2e8",
+      "value": 86400.0
+    },
+    "clanInfoMyClanCacheExpiryTimeInSeconds": {
+      "type": "double",
+      "offset": "0x2f0",
+      "value": 3600.0
+    },
+    "clanChatClosedMinSecondsBetweenChecking": {
+      "type": "float",
+      "offset": "0x2f8",
+      "value": 20.0
+    },
+    "clanChatClosedMaxSecondsBetweenChecking": {
+      "type": "float",
+      "offset": "0x2fc",
+      "value": 300.0
+    },
+    "clanChatClosedFallOffMultiplier": {
+      "type": "float",
+      "offset": "0x300",
+      "value": 3.0
+    },
+    "clanChatOpenMinSecondsBetweenChecking": {
+      "type": "float",
+      "offset": "0x304",
+      "value": 10.0
+    },
+    "clanChatOpenMaxSecondsBetweenChecking": {
+      "type": "float",
+      "offset": "0x308",
+      "value": 60.0
+    },
+    "clanChatOpenFallOffMultiplier": {
+      "type": "float",
+      "offset": "0x30c",
+      "value": 3.0
+    },
+    "DungeonDestroyEquipmentListItems": {
+      "type": "bool",
+      "offset": "0x328",
+      "value": false
+    },
+    "raidSkeletonMultiplier": {
+      "type": "double",
+      "offset": "0x330",
+      "value": 0.05000000074505806
+    },
+    "raidRefreshCooldown": {
+      "type": "int",
+      "offset": "0x338",
+      "value": 60
+    },
+    "raidDOTTickDelay": {
+      "type": "float",
+      "offset": "0x33c",
+      "value": 0.20000000298023224
+    },
+    "raidAttackSubmissionRetries": {
+      "type": "int",
+      "offset": "0x340",
+      "value": 3
+    },
+    "raidAttackSubmissionRetryMaxDelayInMinutes": {
+      "type": "int",
+      "offset": "0x344",
+      "value": 30
+    },
+    "raidAttackSubmissionRetryTimerSeconds": {
+      "type": "int",
+      "offset": "0x348",
+      "value": 3
+    },
+    "raidPrepTimerDelay": {
+      "type": "int",
+      "offset": "0x34c",
+      "value": 3
+    },
+    "raidAttackResetDelay": {
+      "type": "int",
+      "offset": "0x350",
+      "value": 3
+    },
+    "maxRaidDecks": {
+      "type": "int",
+      "offset": "0x354",
+      "value": 24
+    },
+    "maxDeckSlots": {
+      "type": "int",
+      "offset": "0x358",
+      "value": 3
+    },
+    "raidCompletionDays": {
+      "type": "int",
+      "offset": "0x368",
+      "value": 3
+    },
+    "practiceEnemyHPMult": {
+      "type": "double",
+      "offset": "0x370",
+      "value": 0.9
+    },
+    "raidXPPrestigeMSMult": {
+      "type": "double",
+      "offset": "0x378",
+      "value": 0.5
+    },
+    "uniqueTitanLordParts": {
+      "type": "int",
+      "offset": "0x380",
+      "value": 8
+    },
+    "uniqueTitanLordArmParts": {
+      "type": "int",
+      "offset": "0x384",
+      "value": 4
+    },
+    "uniqueTitanLordLegParts": {
+      "type": "int",
+      "offset": "0x388",
+      "value": 2
+    },
+    "raidSkillVarianceOffset": {
+      "type": "float",
+      "offset": "0x38c",
+      "value": 0.30000001192092896
+    },
+    "raidMaxTickets": {
+      "type": "int",
+      "offset": "0x390",
+      "value": 30000
+    },
+    "raidMaxInitializationsPerWeek": {
+      "type": "int",
+      "offset": "0x394",
+      "value": 2
+    },
+    "practiceTeamTacticsBuffer": {
+      "type": "float",
+      "offset": "0x398",
+      "value": 1.0499999523162842
+    },
+    "mirrorForceClanMatesPerUseInterval": {
+      "type": "int",
+      "offset": "0x39c",
+      "value": 7
+    },
+    "SeasonBoostMinRaidLevel": {
+      "type": "int",
+      "offset": "0x3a0",
+      "value": 50
+    },
+    "raidCardCrystalUnlockLevel": {
+      "type": "int",
+      "offset": "0x3a4",
+      "value": 1000
+    },
+    "raidCardCrystalLevelRank": {
+      "type": "int",
+      "offset": "0x3a8",
+      "value": 6
+    },
+    "raidMasterTierPlatinumTopVal": {
+      "type": "int",
+      "offset": "0x3ac",
+      "value": 10
+    },
+    "raidMasterTierGoldTopVal": {
+      "type": "int",
+      "offset": "0x3b0",
+      "value": 25
+    },
+    "raidMasterTierSilverTopVal": {
+      "type": "int",
+      "offset": "0x3b4",
+      "value": 50
+    },
+    "raidMasterTierBronzeTopVal": {
+      "type": "int",
+      "offset": "0x3b8",
+      "value": 100
+    },
+    "raidPreValidationEnabled": {
+      "type": "bool",
+      "offset": "0x3bc",
+      "value": true
+    },
+    "raidCurrentAttackResetEnabled": {
+      "type": "bool",
+      "offset": "0x3c0",
+      "value": true
+    },
+    "soloRaidLeaderboardCacheExpirySeconds": {
+      "type": "double",
+      "offset": "0x3c8",
+      "value": 60.0
+    },
+    "soloRaidCurrentCacheExpirySeconds": {
+      "type": "double",
+      "offset": "0x3d0",
+      "value": 15.0
+    },
+    "soloRaidWorldVariants": {
+      "type": "int",
+      "offset": "0x3d8",
+      "value": 4
+    },
+    "soloRaidPortalVariants": {
+      "type": "int",
+      "offset": "0x3dc",
+      "value": 5
+    },
+    "soloRaidDifficultyVariants": {
+      "type": "int",
+      "offset": "0x3e0",
+      "value": 4
+    },
+    "soloRaidAttackDamageBonus": {
+      "type": "float",
+      "offset": "0x3e4",
+      "value": 1.340000033378601
+    },
+    "unlockStageSoloRaid": {
+      "type": "int",
+      "offset": "0x3e8",
+      "value": 100
+    },
+    "globalRaidRefreshCooldown": {
+      "type": "int",
+      "offset": "0x3ec",
+      "value": 60
+    },
+    "globalRaidInfoCacheTime": {
+      "type": "int",
+      "offset": "0x3f0",
+      "value": 15
+    },
+    "globalRaidTitanScalePhase1": {
+      "type": "float",
+      "offset": "0x3f4",
+      "value": 0.75
+    },
+    "globalRaidTitanScalePhase2": {
+      "type": "float",
+      "offset": "0x3f8",
+      "value": 0.8999999761581421
+    },
+    "globalRaidTitanScalePhase3": {
+      "type": "float",
+      "offset": "0x3fc",
+      "value": 1.100000023841858
+    },
+    "globalRaidTitanScalePhase4": {
+      "type": "float",
+      "offset": "0x400",
+      "value": 0.75
+    },
+    "globalRaidNextAttackBufferSecs": {
+      "type": "int",
+      "offset": "0x404",
+      "value": 1
+    },
+    "globalRaidFirstTitanMinHealthPercent": {
+      "type": "float",
+      "offset": "0x408",
+      "value": 0.30000001192092896
+    },
+    "globalRaidRandomPatternWarning": {
+      "type": "float",
+      "offset": "0x40c",
+      "value": 1.0
+    },
+    "globalRaidRandomPatternDuration": {
+      "type": "float",
+      "offset": "0x410",
+      "value": 29.0
+    },
+    "globalRaidTransitionTime": {
+      "type": "float",
+      "offset": "0x414",
+      "value": 0.4000000059604645
+    },
+    "globalRaidMinSecWaitBetweenActivityFeedRequests": {
+      "type": "float",
+      "offset": "0x418",
+      "value": 5.0
+    },
+    "globalRaidMinWaitTimeBetweenMessages": {
+      "type": "float",
+      "offset": "0x41c",
+      "value": 1.0
+    },
+    "globalRaidMaxWaitTimeBetweenMessages": {
+      "type": "float",
+      "offset": "0x420",
+      "value": 3.0
+    },
+    "globalRaidMaxTitansPerAttack": {
+      "type": "int",
+      "offset": "0x424",
+      "value": 120
+    },
+    "genericBundlePopupEnabled": {
+      "type": "bool",
+      "offset": "0x428",
+      "value": false
+    },
+    "globalPopupReminderCooldown": {
+      "type": "float",
+      "offset": "0x42c",
+      "value": 1800.0
+    },
+    "individualPopupReminderCooldown": {
+      "type": "float",
+      "offset": "0x430",
+      "value": 82800.0
+    },
+    "nullRefNeedsToCrashGame": {
+      "type": "bool",
+      "offset": "0x434",
+      "value": true
+    },
+    "sendSaveFileOnCrash": {
+      "type": "bool",
+      "offset": "0x436",
+      "value": true
+    },
+    "unlockStageDailyRewards": {
+      "type": "int",
+      "offset": "0x438",
+      "value": 40
+    },
+    "dailyRewardDayShowOverlay": {
+      "type": "int",
+      "offset": "0x43c",
+      "value": 13
+    },
+    "dailyStreakResetTo": {
+      "type": "int",
+      "offset": "0x440",
+      "value": 8
+    },
+    "fetchDailyAchievementsOnStartup": {
+      "type": "bool",
+      "offset": "0x444",
+      "value": true
+    },
+    "unlockStageDailyAchievements": {
+      "type": "int",
+      "offset": "0x448",
+      "value": 10
+    },
+    "monsterScaleFactorIPad": {
+      "type": "float",
+      "offset": "0x44c",
+      "value": 1.100000023841858
+    },
+    "monsterBossScaleFactor": {
+      "type": "float",
+      "offset": "0x450",
+      "value": 1.100000023841858
+    },
+    "monsterBossScaleFactorIpad": {
+      "type": "float",
+      "offset": "0x454",
+      "value": 1.0
+    },
+    "deadlyStrikeExpoHS": {
+      "type": "double",
+      "offset": "0x458",
+      "value": 0.0
+    },
+    "deadlyStrikeExpoPet": {
+      "type": "double",
+      "offset": "0x460",
+      "value": 0.7
+    },
+    "deadlyStrikeExpoShip": {
+      "type": "double",
+      "offset": "0x468",
+      "value": 0.5
+    },
+    "deadlyStrikeExpoClone": {
+      "type": "double",
+      "offset": "0x470",
+      "value": 1.2
+    },
+    "splashMidasBonusExpo": {
+      "type": "float",
+      "offset": "0x480",
+      "value": 1.0
+    },
+    "petCritChanceExpo": {
+      "type": "double",
+      "offset": "0x488",
+      "value": 1.0
+    },
+    "swordAttackHSExpo": {
+      "type": "float",
+      "offset": "0x4a0",
+      "value": 0.75
+    },
+    "maxLockableSlots": {
+      "type": "int",
+      "offset": "0x4a4",
+      "value": 60
+    },
+    "maxEquipmentSlots": {
+      "type": "int",
+      "offset": "0x4a8",
+      "value": 100
+    },
+    "equipmentStageMin": {
+      "type": "int",
+      "offset": "0x4ac",
+      "value": 16
+    },
+    "equipmentStageDelta": {
+      "type": "int",
+      "offset": "0x4b0",
+      "value": 20
+    },
+    "transmorphStageRequirement": {
+      "type": "int",
+      "offset": "0x4b4",
+      "value": 1000
+    },
+    "equipmentCommonValue": {
+      "type": "float",
+      "offset": "0x4b8",
+      "value": 1.0
+    },
+    "equipmentRareValue": {
+      "type": "float",
+      "offset": "0x4bc",
+      "value": 1000.0
+    },
+    "equipmentEventValue": {
+      "type": "float",
+      "offset": "0x4c0",
+      "value": 10000.0
+    },
+    "equipmentLegendaryValue": {
+      "type": "float",
+      "offset": "0x4c4",
+      "value": 1000000.0
+    },
+    "equipmentMythicValue": {
+      "type": "float",
+      "offset": "0x4c8",
+      "value": 1000000000.0
+    },
+    "lockEquipmentSortWeight": {
+      "type": "int",
+      "offset": "0x4cc",
+      "value": 10
+    },
+    "equipEquipmentSortWeight": {
+      "type": "int",
+      "offset": "0x4d0",
+      "value": 100
+    },
+    "minFarmingStage": {
+      "type": "int",
+      "offset": "0x4d4",
+      "value": 200
+    },
+    "equipmentSalvageCommon": {
+      "type": "int",
+      "offset": "0x4d8",
+      "value": 1
+    },
+    "equipmentSalvageRare": {
+      "type": "int",
+      "offset": "0x4dc",
+      "value": 5
+    },
+    "equipmentSalvageLegendary": {
+      "type": "int",
+      "offset": "0x4e0",
+      "value": 25
+    },
+    "equipmentSalvageMythic": {
+      "type": "int",
+      "offset": "0x4e4",
+      "value": 100
+    },
+    "equipmentSalvageUnique": {
+      "type": "int",
+      "offset": "0x4e8",
+      "value": 100
+    },
+    "equipmentEnhancementIndexMult": {
+      "type": "int",
+      "offset": "0x4ec",
+      "value": 10
+    },
+    "equipmentShopMult": {
+      "type": "double",
+      "offset": "0x4f0",
+      "value": 1.0
+    },
+    "equipmentShopExponent": {
+      "type": "double",
+      "offset": "0x4f8",
+      "value": 0.4399999976158142
+    },
+    "equipmentMult": {
+      "type": "double",
+      "offset": "0x500",
+      "value": 0.004000000189989805
+    },
+    "equipmentExponent": {
+      "type": "double",
+      "offset": "0x508",
+      "value": 1.5
+    },
+    "equipmentProcessingChangeDelay": {
+      "type": "float",
+      "offset": "0x510",
+      "value": 0.5
+    },
+    "equipmentLevelReductionAmount": {
+      "type": "float",
+      "offset": "0x518",
+      "value": 0.8500000238418579
+    },
+    "selectiveCraftingEnabled": {
+      "type": "bool",
+      "offset": "0x51c",
+      "value": true
+    },
+    "dailyFarmedEquipmentMax": {
+      "type": "int",
+      "offset": "0x520",
+      "value": 20
+    },
+    "maximumManaCapBonusAmount": {
+      "type": "float",
+      "offset": "0x524",
+      "value": 5000.0
+    },
+    "atCorruptionAmount": {
+      "type": "int",
+      "offset": "0x528",
+      "value": 1000
+    },
+    "maxPerksUsedBonusAmount": {
+      "type": "int",
+      "offset": "0x52c",
+      "value": 1000
+    },
+    "recommendedEquipmentsUnique": {
+      "type": "int",
+      "offset": "0x530",
+      "value": 0
+    },
+    "recommendedEquipmentsMythic": {
+      "type": "int",
+      "offset": "0x534",
+      "value": 1
+    },
+    "recommendedEquipmentsLegendary": {
+      "type": "int",
+      "offset": "0x538",
+      "value": 3
+    },
+    "recommendedEquipmentsRare": {
+      "type": "int",
+      "offset": "0x53c",
+      "value": 0
+    },
+    "recommendedEquipmentsEvent": {
+      "type": "int",
+      "offset": "0x540",
+      "value": 0
+    },
+    "equipmentBatchingCallInterval": {
+      "type": "float",
+      "offset": "0x544",
+      "value": 3.0
+    },
+    "equipmentMigrationAttempts": {
+      "type": "int",
+      "offset": "0x548",
+      "value": 5
+    },
+    "equipBonusDelay": {
+      "type": "float",
+      "offset": "0x54c",
+      "value": 0.20000000298023224
+    },
+    "craftingPowerDelta": {
+      "type": "int",
+      "offset": "0x550",
+      "value": 500
+    },
+    "unlockStageCraftingPower": {
+      "type": "int",
+      "offset": "0x554",
+      "value": 500
+    },
+    "craftingPowerForUniqueCrafting": {
+      "type": "int",
+      "offset": "0x558",
+      "value": 10
+    },
+    "craftingPowerForUniqueCraftingInCT": {
+      "type": "int",
+      "offset": "0x55c",
+      "value": 0
+    },
+    "fairyFatChance": {
+      "type": "float",
+      "offset": "0x590",
+      "value": 0.05000000074505806
+    },
+    "fairyAdChance": {
+      "type": "float",
+      "offset": "0x594",
+      "value": 0.5
+    },
+    "fairyAdChanceSessionBonus": {
+      "type": "float",
+      "offset": "0x598",
+      "value": 1.0
+    },
+    "adsDiamondsChance": {
+      "type": "float",
+      "offset": "0x59c",
+      "value": 0.30000001192092896
+    },
+    "adsGoldCostReductionChance": {
+      "type": "float",
+      "offset": "0x5a8",
+      "value": 0.30000001192092896
+    },
+    "fairyAdFirstSessionExpireTimeMin": {
+      "type": "int",
+      "offset": "0x5ac",
+      "value": 20
+    },
+    "fairyVideoDiamondCount": {
+      "type": "int",
+      "offset": "0x5b0",
+      "value": 10
+    },
+    "fairyStartStage": {
+      "type": "int",
+      "offset": "0x5b4",
+      "value": 10
+    },
+    "videoFairyStartStage": {
+      "type": "int",
+      "offset": "0x5b8",
+      "value": 30
+    },
+    "fairyAdMinMult": {
+      "type": "float",
+      "offset": "0x5bc",
+      "value": 10.0
+    },
+    "fairyDropCoinsChance": {
+      "type": "float",
+      "offset": "0x5c0",
+      "value": 0.5
+    },
+    "maxExtraMultiFairySpawns": {
+      "type": "int",
+      "offset": "0x5c4",
+      "value": 7
+    },
+    "multiFairySpawnPenalty": {
+      "type": "float",
+      "offset": "0x5c8",
+      "value": 0.5
+    },
+    "maxSessionFairiesCount": {
+      "type": "int",
+      "offset": "0x5cc",
+      "value": 100
+    },
+    "fairyAdSkillTimerOffset": {
+      "type": "float",
+      "offset": "0x5d0",
+      "value": 75.0
+    },
+    "fairyChestGroundOffset": {
+      "type": "float",
+      "offset": "0x5d4",
+      "value": -1.0230000019073486
+    },
+    "fairyFlyVerticalOffset": {
+      "type": "float",
+      "offset": "0x5d8",
+      "value": 0.0
+    },
+    "fairyMinGoldVariance": {
+      "type": "float",
+      "offset": "0x5dc",
+      "value": 0.20000000298023224
+    },
+    "fairyMaxGoldVariance": {
+      "type": "float",
+      "offset": "0x5e0",
+      "value": 1.7999999523162842
+    },
+    "fairyManaPotionPercent": {
+      "type": "float",
+      "offset": "0x5e4",
+      "value": 0.25
+    },
+    "fairyVideoGoldThreshold": {
+      "type": "int",
+      "offset": "0x5e8",
+      "value": 5
+    },
+    "fairyActivateAllSkillsCooldown": {
+      "type": "float",
+      "offset": "0x5ec",
+      "value": 300.0
+    },
+    "fairyManaPotionCooldown": {
+      "type": "float",
+      "offset": "0x5f0",
+      "value": 120.0
+    },
+    "fairyManaPotionRegenSecondsCheck": {
+      "type": "float",
+      "offset": "0x5f4",
+      "value": 60.0
+    },
+    "fairyManaPotionCapacityCheck": {
+      "type": "float",
+      "offset": "0x5f8",
+      "value": 100.0
+    },
+    "videoAllSkillsUnlockRequirement": {
+      "type": "int",
+      "offset": "0x5fc",
+      "value": 4
+    },
+    "fairyDiamondMaxDailyCount": {
+      "type": "int",
+      "offset": "0x608",
+      "value": 5
+    },
+    "fairyPerkMaxDailyCount": {
+      "type": "int",
+      "offset": "0x60c",
+      "value": 1
+    },
+    "fairyVideoCooldownSecs": {
+      "type": "int",
+      "offset": "0x610",
+      "value": 10
+    },
+    "fairyGoldReductionCooldownSecs": {
+      "type": "int",
+      "offset": "0x614",
+      "value": 120
+    },
+    "disableFairyGoldMessage": {
+      "type": "bool",
+      "offset": "0x618",
+      "value": false
+    },
+    "fairyAllGoldCooldownSecs": {
+      "type": "int",
+      "offset": "0x61c",
+      "value": 120
+    },
+    "fairyDamageBoostMaxStageCheckMult": {
+      "type": "float",
+      "offset": "0x628",
+      "value": 0.9900000095367432
+    },
+    "fairyRareEquipmentMaxStageCheckMult": {
+      "type": "float",
+      "offset": "0x62c",
+      "value": 0.949999988079071
+    },
+    "fairyRareEquipmentMaxDailyCount": {
+      "type": "int",
+      "offset": "0x630",
+      "value": 3
+    },
+    "equipmentFairyRewardMaxStageModifier": {
+      "type": "float",
+      "offset": "0x634",
+      "value": 1.2000000476837158
+    },
+    "fairyChallengeTournamentRateLimitedSpawnAmount": {
+      "type": "int",
+      "offset": "0x640",
+      "value": 50
+    },
+    "fairyTimeBetweenAutoTaps": {
+      "type": "float",
+      "offset": "0x644",
+      "value": 3.0
+    },
+    "twilightFairyMultiActivationRadius": {
+      "type": "float",
+      "offset": "0x648",
+      "value": 1.0
+    },
+    "maxSessionTwilightFairiesCount": {
+      "type": "int",
+      "offset": "0x64c",
+      "value": 100
+    },
+    "maxExtraMultiTwilightFairySpawns": {
+      "type": "int",
+      "offset": "0x650",
+      "value": 7
+    },
+    "multiTwilightFairySpawnPenalty": {
+      "type": "float",
+      "offset": "0x654",
+      "value": 0.5
+    },
+    "twilightFairyGloomMaxCount": {
+      "type": "int",
+      "offset": "0x658",
+      "value": 5
+    },
+    "autoCollectTwilightFairyDuration": {
+      "type": "float",
+      "offset": "0x65c",
+      "value": 3.0
+    },
+    "stageScaleMinAmount": {
+      "type": "float",
+      "offset": "0x660",
+      "value": 2.0
+    },
+    "stageScaleSlope": {
+      "type": "float",
+      "offset": "0x664",
+      "value": 0.0010000000474974513
+    },
+    "stageScaleExpo": {
+      "type": "float",
+      "offset": "0x668",
+      "value": 1.2400000095367432
+    },
+    "petGoldStageScaleExpo": {
+      "type": "float",
+      "offset": "0x66c",
+      "value": 1.7999999523162842
+    },
+    "fairyGoldStageScaleExpo": {
+      "type": "float",
+      "offset": "0x670",
+      "value": 1.600000023841858
+    },
+    "fairyAdGoldStageScaleExpo": {
+      "type": "float",
+      "offset": "0x674",
+      "value": 0.5
+    },
+    "goldGunChargesRequired": {
+      "type": "float",
+      "offset": "0x678",
+      "value": 40.0
+    },
+    "goldGunShootTime": {
+      "type": "float",
+      "offset": "0x67c",
+      "value": 1.0
+    },
+    "fairyGoldGunCharge": {
+      "type": "float",
+      "offset": "0x680",
+      "value": 1.0
+    },
+    "petGoldGunCharge": {
+      "type": "float",
+      "offset": "0x684",
+      "value": 2.0
+    },
+    "chestersonGoldGunCharge": {
+      "type": "float",
+      "offset": "0x688",
+      "value": 0.699999988079071
+    },
+    "titanGoldGunCharge": {
+      "type": "float",
+      "offset": "0x68c",
+      "value": 0.3499999940395355
+    },
+    "makeItRainGoldGunCharge": {
+      "type": "float",
+      "offset": "0x690",
+      "value": 20.0
+    },
+    "clanCrateGoldGunCharge": {
+      "type": "float",
+      "offset": "0x694",
+      "value": 30.0
+    },
+    "goldenMissileGoldGunCharge": {
+      "type": "float",
+      "offset": "0x698",
+      "value": 8.0
+    },
+    "tapToGoldGunTapDPSPower": {
+      "type": "double",
+      "offset": "0x6a0",
+      "value": 0.45
+    },
+    "helperToGoldGunTapDPSPower": {
+      "type": "double",
+      "offset": "0x6a8",
+      "value": 0.9
+    },
+    "deadlyStrikeExpoGoldGun": {
+      "type": "float",
+      "offset": "0x6b0",
+      "value": 0.6000000238418579
+    },
+    "goldGunCritChanceExpo": {
+      "type": "double",
+      "offset": "0x6b8",
+      "value": 1.0
+    },
+    "swordAttackGoldGunExpo": {
+      "type": "float",
+      "offset": "0x6c0",
+      "value": 0.75
+    },
+    "magnumOpusTimeMultiplier": {
+      "type": "float",
+      "offset": "0x6c4",
+      "value": 0.16599999368190765
+    },
+    "magnumOpusDPS": {
+      "type": "float",
+      "offset": "0x6c8",
+      "value": 0.10000000149011612
+    },
+    "goldGunDamageFromClanShipDamageReduction": {
+      "type": "float",
+      "offset": "0x6cc",
+      "value": 0.5
+    },
+    "perSecondGoldGunCharge": {
+      "type": "float",
+      "offset": "0x6d0",
+      "value": 1.0
+    },
+    "magnumOpusBaseDuration": {
+      "type": "float",
+      "offset": "0x6d4",
+      "value": 10.0
+    },
+    "helperUpgradeBase": {
+      "type": "float",
+      "offset": "0x6d8",
+      "value": 1.0800000429153442
+    },
+    "helperEvolveLevel1": {
+      "type": "int",
+      "offset": "0x6dc",
+      "value": 999
+    },
+    "helperEvolveLevel2": {
+      "type": "int",
+      "offset": "0x6e0",
+      "value": 1999
+    },
+    "evolveCostMultiplier": {
+      "type": "float",
+      "offset": "0x6e4",
+      "value": 1000.0
+    },
+    "helperSkillCostMultiplier": {
+      "type": "float",
+      "offset": "0x6e8",
+      "value": 10.0
+    },
+    "helperCanCrit": {
+      "type": "bool",
+      "offset": "0x6ec",
+      "value": false
+    },
+    "helperWeaponSetBase": {
+      "type": "float",
+      "offset": "0x6f0",
+      "value": 5.0
+    },
+    "helperScrollSetBase": {
+      "type": "float",
+      "offset": "0x6f4",
+      "value": 0.10000000149011612
+    },
+    "helperWeaponIndividualBase": {
+      "type": "float",
+      "offset": "0x6f8",
+      "value": 1.5
+    },
+    "helperScrollIndividualBase": {
+      "type": "float",
+      "offset": "0x6fc",
+      "value": 0.05000000074505806
+    },
+    "helperToTapDPSPower": {
+      "type": "double",
+      "offset": "0x700",
+      "value": 0.5
+    },
+    "helperToCloneTapDPSPower": {
+      "type": "double",
+      "offset": "0x708",
+      "value": 0.6
+    },
+    "upgradeAllHelperOnPrestige": {
+      "type": "bool",
+      "offset": "0x728",
+      "value": true
+    },
+    "autoBuyHeroesMaxBonus": {
+      "type": "float",
+      "offset": "0x734",
+      "value": 0.949999988079071
+    },
+    "upgradeAllHelperRefundPercent": {
+      "type": "float",
+      "offset": "0x738",
+      "value": 0.10000000149011612
+    },
+    "maxAscensionAnimations": {
+      "type": "int",
+      "offset": "0x73c",
+      "value": 10
+    },
+    "discoveredAllHelperSkillsStage": {
+      "type": "int",
+      "offset": "0x740",
+      "value": 10000
+    },
+    "daggerCritChanceExpo": {
+      "type": "double",
+      "offset": "0x748",
+      "value": 1.0
+    },
+    "swordAttackDaggerExpo": {
+      "type": "float",
+      "offset": "0x750",
+      "value": 0.6499999761581421
+    },
+    "helperToDaggerTapDPSPower": {
+      "type": "double",
+      "offset": "0x758",
+      "value": 0.5
+    },
+    "tapToDaggerTapDPSPower": {
+      "type": "double",
+      "offset": "0x760",
+      "value": 1.0
+    },
+    "daggerSkillPointsCondition": {
+      "type": "int",
+      "offset": "0x768",
+      "value": 17
+    },
+    "daggerSkillShowSpawnLevel": {
+      "type": "int",
+      "offset": "0x76c",
+      "value": 3
+    },
+    "daggerPoisonSkillShowSpawnLevel": {
+      "type": "int",
+      "offset": "0x770",
+      "value": 1
+    },
+    "daggerCooldownAutoThrowMult": {
+      "type": "float",
+      "offset": "0x774",
+      "value": 1.100000023841858
+    },
+    "daggerCycloneStageSkipMult": {
+      "type": "float",
+      "offset": "0x778",
+      "value": 0.4000000059604645
+    },
+    "ultraDaggerDamageFromShadowCloneSkillAmountReduction": {
+      "type": "float",
+      "offset": "0x77c",
+      "value": 0.5
+    },
+    "clanScrollSetBase": {
+      "type": "float",
+      "offset": "0x780",
+      "value": 1.0
+    },
+    "localDiamondRewardBase": {
+      "type": "int",
+      "offset": "0x790",
+      "value": 50
+    },
+    "localDiamondRewardInc": {
+      "type": "int",
+      "offset": "0x794",
+      "value": 5
+    },
+    "logFacebookIAP": {
+      "type": "bool",
+      "offset": "0x798",
+      "value": true
+    },
+    "discordFollowDiamonds": {
+      "type": "int",
+      "offset": "0x7ac",
+      "value": 25
+    },
+    "inactiveGoldButtonCount": {
+      "type": "int",
+      "offset": "0x7c0",
+      "value": 1
+    },
+    "inactiveGoldMinSyncDays": {
+      "type": "int",
+      "offset": "0x7c4",
+      "value": 3
+    },
+    "inactiveGoldMonsterCap": {
+      "type": "int",
+      "offset": "0x7c8",
+      "value": 150000
+    },
+    "maxInactiveFrameDelay": {
+      "type": "int",
+      "offset": "0x7cc",
+      "value": 200
+    },
+    "inactiveMinSecondsDisplayPanel": {
+      "type": "int",
+      "offset": "0x7d0",
+      "value": 600
+    },
+    "inactiveVideoDurationMult": {
+      "type": "float",
+      "offset": "0x7d4",
+      "value": 0.20000000298023224
+    },
+    "inactiveScreenDisabledCollectsBonus": {
+      "type": "bool",
+      "offset": "0x7d8",
+      "value": false
+    },
+    "inactiveSneakTimeSeconds": {
+      "type": "int",
+      "offset": "0x7dc",
+      "value": 300
+    },
+    "inactiveMinimumSneakTimeSeconds": {
+      "type": "int",
+      "offset": "0x7e0",
+      "value": 300
+    },
+    "inactiveBaseSneakCount": {
+      "type": "int",
+      "offset": "0x7e4",
+      "value": 5
+    },
+    "inactiveGoldReduction": {
+      "type": "float",
+      "offset": "0x7e8",
+      "value": 0.9984999895095825
+    },
+    "inactiveMaxStageDefault": {
+      "type": "float",
+      "offset": "0x7ec",
+      "value": 0.9940000176429749
+    },
+    "inactiveVideoGoldMult": {
+      "type": "float",
+      "offset": "0x7f0",
+      "value": 2.0
+    },
+    "inactiveMaxSneakCount": {
+      "type": "int",
+      "offset": "0x7f4",
+      "value": 6450000
+    },
+    "retentionNotificationEnabled": {
+      "type": "bool",
+      "offset": "0x7f8",
+      "value": true
+    },
+    "clanQuestNotificationEnabled": {
+      "type": "bool",
+      "offset": "0x7fa",
+      "value": true
+    },
+    "atStartNotificationEnabled": {
+      "type": "bool",
+      "offset": "0x7fe",
+      "value": true
+    },
+    "raidAttacksNotificationEnabled": {
+      "type": "bool",
+      "offset": "0x802",
+      "value": true
+    },
+    "atNotJoinedNotificationEnabled": {
+      "type": "bool",
+      "offset": "0x806",
+      "value": true
+    },
+    "secondsBeforeClanQuest": {
+      "type": "int",
+      "offset": "0x820",
+      "value": 180
+    },
+    "maxTournamentNotificationDelaySeconds": {
+      "type": "int",
+      "offset": "0x824",
+      "value": 600
+    },
+    "daysTillPlayerChurned": {
+      "type": "int",
+      "offset": "0x828",
+      "value": 7
+    },
+    "tournamentNotJoinedHoursBeforesNotification": {
+      "type": "int",
+      "offset": "0x82c",
+      "value": 3
+    },
+    "soloRaidNotJoinedHoursBeforesNotification": {
+      "type": "int",
+      "offset": "0x830",
+      "value": 6
+    },
+    "minutesBeforeRaidAttackIncompleteNotification": {
+      "type": "int",
+      "offset": "0x834",
+      "value": 60
+    },
+    "daysRemainingBeforeDungeonQuestEndingNotification": {
+      "type": "int",
+      "offset": "0x838",
+      "value": 3
+    },
+    "daysRemainingBeforeAlchemyEndingNotification": {
+      "type": "int",
+      "offset": "0x83c",
+      "value": 2
+    },
+    "minSecondsForBearShopNotification": {
+      "type": "int",
+      "offset": "0x880",
+      "value": 600
+    },
+    "monsterCountBase": {
+      "type": "int",
+      "offset": "0x890",
+      "value": 8
+    },
+    "monsterCountInc": {
+      "type": "int",
+      "offset": "0x894",
+      "value": 148
+    },
+    "monsterCountStageDelta": {
+      "type": "int",
+      "offset": "0x898",
+      "value": 32000
+    },
+    "monsterHPLevelOff": {
+      "type": "int",
+      "offset": "0x89c",
+      "value": 100
+    },
+    "monsterHPExpo1": {
+      "type": "double",
+      "offset": "0x908",
+      "value": 0.03
+    },
+    "monsterHPExpo2": {
+      "type": "double",
+      "offset": "0x910",
+      "value": 1.098
+    },
+    "monsterHPExpo3": {
+      "type": "double",
+      "offset": "0x918",
+      "value": 1.0
+    },
+    "monsterHPExpo4": {
+      "type": "double",
+      "offset": "0x920",
+      "value": 1.098
+    },
+    "monsterGoldLevelOff": {
+      "type": "int",
+      "offset": "0x928",
+      "value": 100
+    },
+    "monsterTransendenceGoldLevelOff": {
+      "type": "int",
+      "offset": "0x92c",
+      "value": 180000
+    },
+    "monsterGoldExpo1": {
+      "type": "double",
+      "offset": "0x990",
+      "value": 0.04
+    },
+    "monsterGoldExpo2": {
+      "type": "double",
+      "offset": "0x998",
+      "value": 1.036
+    },
+    "monsterGoldExpo3": {
+      "type": "double",
+      "offset": "0x9a0",
+      "value": 1.0
+    },
+    "monsterGoldExpo4": {
+      "type": "double",
+      "offset": "0x9a8",
+      "value": 1.098
+    },
+    "bossHPModBase": {
+      "type": "float",
+      "offset": "0x9b0",
+      "value": 1.1299999952316284
+    },
+    "bossHPModStageMult": {
+      "type": "float",
+      "offset": "0x9b4",
+      "value": 0.004999999888241291
+    },
+    "monsterGoldMultiplier": {
+      "type": "float",
+      "offset": "0x9d0",
+      "value": 0.00800000037997961
+    },
+    "monsterGoldSlope": {
+      "type": "float",
+      "offset": "0x9d4",
+      "value": 0.019999999552965164
+    },
+    "maxBossGoldMultiplier": {
+      "type": "float",
+      "offset": "0x9d8",
+      "value": 6.0
+    },
+    "bossHPModMax": {
+      "type": "float",
+      "offset": "0x9dc",
+      "value": 500.0
+    },
+    "bossPlayTimeBase": {
+      "type": "float",
+      "offset": "0x9e0",
+      "value": 30.0
+    },
+    "treasureGold": {
+      "type": "float",
+      "offset": "0x9e4",
+      "value": 15.0
+    },
+    "chestersonChance": {
+      "type": "float",
+      "offset": "0x9e8",
+      "value": 0.009999999776482582
+    },
+    "stageSkipMonsterSpawnChance": {
+      "type": "float",
+      "offset": "0x9ec",
+      "value": 0.0010000000474974513
+    },
+    "megaBombMonsterSpawnChance": {
+      "type": "float",
+      "offset": "0x9f0",
+      "value": 0.0010000000474974513
+    },
+    "stageSkipMonsterMaxStagePercent": {
+      "type": "float",
+      "offset": "0x9f4",
+      "value": 0.05000000074505806
+    },
+    "megaBombMonsterTitanRemovalPercent": {
+      "type": "float",
+      "offset": "0x9f8",
+      "value": 0.8999999761581421
+    },
+    "stageSkipMonsterMaxStageSkipAmount": {
+      "type": "int",
+      "offset": "0x9fc",
+      "value": 50
+    },
+    "megaBombMonsterMaxStageEffectAmount": {
+      "type": "int",
+      "offset": "0xa00",
+      "value": 10
+    },
+    "chestersonGoldDuration": {
+      "type": "int",
+      "offset": "0xa04",
+      "value": 5
+    },
+    "specialMonsterInvulnerableSecs": {
+      "type": "float",
+      "offset": "0xa08",
+      "value": 1.0
+    },
+    "multiMonsterBaseChance": {
+      "type": "float",
+      "offset": "0xa0c",
+      "value": 0.009999999776482582
+    },
+    "maxMultiMonsterSpawns": {
+      "type": "float",
+      "offset": "0xa10",
+      "value": 4.0
+    },
+    "minMultiMonsterSpawns": {
+      "type": "float",
+      "offset": "0xa14",
+      "value": 2.0
+    },
+    "skipMiniBossTextSpawns": {
+      "type": "int",
+      "offset": "0xa18",
+      "value": 4
+    },
+    "monsterMultiSpawnGoldBonus": {
+      "type": "float",
+      "offset": "0xa1c",
+      "value": 1.0
+    },
+    "monsterMultiSpawnManaBonus": {
+      "type": "float",
+      "offset": "0xa20",
+      "value": 0.25
+    },
+    "manaMonsterBaseMana": {
+      "type": "float",
+      "offset": "0xa24",
+      "value": 4.0
+    },
+    "stageSkipMonsterCooldown": {
+      "type": "double",
+      "offset": "0xa28",
+      "value": 0.0
+    },
+    "megaBombBaseStacks": {
+      "type": "int",
+      "offset": "0xa30",
+      "value": 1
+    },
+    "monsterHpVariance": {
+      "type": "float",
+      "offset": "0xa34",
+      "value": 0.30000001192092896
+    },
+    "monsterSubtypeStartStage": {
+      "type": "int",
+      "offset": "0xa40",
+      "value": 20000
+    },
+    "monsterSubtypeNumStageRotation": {
+      "type": "int",
+      "offset": "0xa44",
+      "value": 5000
+    },
+    "monsterSubtypeAmount": {
+      "type": "int",
+      "offset": "0xa48",
+      "value": 6
+    },
+    "haystMonsterBonusAmount": {
+      "type": "float",
+      "offset": "0xa4c",
+      "value": 0.15000000596046448
+    },
+    "haystMonsterEffectDuration": {
+      "type": "int",
+      "offset": "0xa50",
+      "value": 20
+    },
+    "haystMonsterSpawnChance": {
+      "type": "float",
+      "offset": "0xa54",
+      "value": 0.03999999910593033
+    },
+    "kratosMonsterBonusAmount": {
+      "type": "float",
+      "offset": "0xa58",
+      "value": 1.0
+    },
+    "kratosMonsterSpawnChance": {
+      "type": "float",
+      "offset": "0xa5c",
+      "value": 0.0
+    },
+    "kratosMonsterMinimumSpawnStage": {
+      "type": "float",
+      "offset": "0xa60",
+      "value": 0.75
+    },
+    "kratosMonsterStackCount": {
+      "type": "int",
+      "offset": "0xa64",
+      "value": 0
+    },
+    "kratosMonsterMinimumStageRequirement": {
+      "type": "int",
+      "offset": "0xa68",
+      "value": 1000
+    },
+    "kratosMonsterSpellDuration": {
+      "type": "float",
+      "offset": "0xa6c",
+      "value": 0.0
+    },
+    "makeItRainDropDelay": {
+      "type": "float",
+      "offset": "0xa70",
+      "value": 3.0
+    },
+    "makeItRainSpawnDuration": {
+      "type": "float",
+      "offset": "0xa74",
+      "value": 6.0
+    },
+    "makeItRainFairyCount": {
+      "type": "int",
+      "offset": "0xa78",
+      "value": 30
+    },
+    "clanCrateMaxCount": {
+      "type": "int",
+      "offset": "0xa7c",
+      "value": 3
+    },
+    "makeItRainChestersonCount": {
+      "type": "int",
+      "offset": "0xa80",
+      "value": 500
+    },
+    "clanCrateMult": {
+      "type": "float",
+      "offset": "0xa84",
+      "value": 5.0
+    },
+    "smallClanCrateMult": {
+      "type": "float",
+      "offset": "0xa88",
+      "value": 1.0
+    },
+    "clanCrateStageMult": {
+      "type": "float",
+      "offset": "0xa8c",
+      "value": 1.0
+    },
+    "clanCrateMaxStageMult": {
+      "type": "float",
+      "offset": "0xa90",
+      "value": 1.0
+    },
+    "makeItRainStageMult": {
+      "type": "float",
+      "offset": "0xa94",
+      "value": 1.0
+    },
+    "makeItRainMaxStageMult": {
+      "type": "float",
+      "offset": "0xa98",
+      "value": 0.8500000238418579
+    },
+    "goldRewardMaxStageMult": {
+      "type": "float",
+      "offset": "0xa9c",
+      "value": 0.699999988079071
+    },
+    "perkGoldSkillPointBase": {
+      "type": "float",
+      "offset": "0xaa0",
+      "value": 1.0399999618530273
+    },
+    "perkGoldSkillPointMaxCount": {
+      "type": "float",
+      "offset": "0xaa4",
+      "value": 400.0
+    },
+    "perkGoldReduction": {
+      "type": "float",
+      "offset": "0xaa8",
+      "value": 0.9965000152587891
+    },
+    "perkSelectUnlockStage": {
+      "type": "int",
+      "offset": "0xaac",
+      "value": 1200
+    },
+    "perkSelectResetPercentMS": {
+      "type": "float",
+      "offset": "0xab0",
+      "value": 0.20000000298023224
+    },
+    "swipeAttackSpeed": {
+      "type": "float",
+      "offset": "0xab4",
+      "value": 0.0
+    },
+    "doomMultiplier": {
+      "type": "int",
+      "offset": "0xab8",
+      "value": 50
+    },
+    "megaBoostAdSkipDiamondCost": {
+      "type": "int",
+      "offset": "0xabc",
+      "value": 20
+    },
+    "megaBoostHudPlacementUnlockStage": {
+      "type": "int",
+      "offset": "0xac0",
+      "value": 25
+    },
+    "perkTicketCost": {
+      "type": "int",
+      "offset": "0xac4",
+      "value": 10
+    },
+    "perkTicketsPerLegacyPerk": {
+      "type": "int",
+      "offset": "0xac8",
+      "value": 10
+    },
+    "perkDiamondCost": {
+      "type": "int",
+      "offset": "0xacc",
+      "value": 100
+    },
+    "damagePerRunningPerkCap": {
+      "type": "int",
+      "offset": "0xad0",
+      "value": 6
+    },
+    "petDamageMult": {
+      "type": "double",
+      "offset": "0xad8",
+      "value": 1.0
+    },
+    "petTapAmount": {
+      "type": "int",
+      "offset": "0xae0",
+      "value": 20
+    },
+    "petQuestsTotalPetsRequired": {
+      "type": "int",
+      "offset": "0xae4",
+      "value": 100
+    },
+    "mashQTENumTaps": {
+      "type": "int",
+      "offset": "0xaf0",
+      "value": 30
+    },
+    "usePetSpeedModifier": {
+      "type": "bool",
+      "offset": "0xaf4",
+      "value": false
+    },
+    "maxPetSpeedBoost": {
+      "type": "double",
+      "offset": "0xaf8",
+      "value": 10.0
+    },
+    "petPassiveLevelGap": {
+      "type": "int",
+      "offset": "0xb00",
+      "value": 5
+    },
+    "petPassiveLevelIncrement": {
+      "type": "float",
+      "offset": "0xb04",
+      "value": 0.009999999776482582
+    },
+    "petDamageIncLevel1": {
+      "type": "int",
+      "offset": "0xb08",
+      "value": 40
+    },
+    "petDamageIncLevel2": {
+      "type": "int",
+      "offset": "0xb0c",
+      "value": 80
+    },
+    "petCageHPMultiplier": {
+      "type": "double",
+      "offset": "0xb10",
+      "value": 5.0
+    },
+    "petImprovementLevelStart": {
+      "type": "int",
+      "offset": "0xb18",
+      "value": 100
+    },
+    "petImprovementLevelDelta": {
+      "type": "int",
+      "offset": "0xb1c",
+      "value": 20
+    },
+    "endGamePetImprovementLevelStart": {
+      "type": "int",
+      "offset": "0xb20",
+      "value": 6
+    },
+    "endGamePetImprovementLevelDelta": {
+      "type": "int",
+      "offset": "0xb24",
+      "value": 6
+    },
+    "hoursToCollectEgg": {
+      "type": "float",
+      "offset": "0xb28",
+      "value": 4.0
+    },
+    "hoursToCollectEndgameEgg": {
+      "type": "float",
+      "offset": "0xb2c",
+      "value": 16.0
+    },
+    "maxPetEggs": {
+      "type": "int",
+      "offset": "0xb30",
+      "value": 2
+    },
+    "maxEndgamePetEggs": {
+      "type": "int",
+      "offset": "0xb34",
+      "value": 16
+    },
+    "RewardedVideoAdEggsPerDay": {
+      "type": "int",
+      "offset": "0xb38",
+      "value": 2
+    },
+    "vipStatusMaxPetEggsAdditive": {
+      "type": "int",
+      "offset": "0xb3c",
+      "value": 2
+    },
+    "petMashQTERescheduleSeconds": {
+      "type": "float",
+      "offset": "0xb40",
+      "value": 0.20000000298023224
+    },
+    "petMashQTEStartOfBattleSeconds": {
+      "type": "float",
+      "offset": "0xb44",
+      "value": 1.0
+    },
+    "petHomGoldMult": {
+      "type": "double",
+      "offset": "0xb48",
+      "value": 10.0
+    },
+    "petXpRequiredToLevel": {
+      "type": "int",
+      "offset": "0xb50",
+      "value": 100
+    },
+    "petDamageFromBurstSkillAmountReduction": {
+      "type": "float",
+      "offset": "0xb54",
+      "value": 0.5
+    },
+    "twoPetsTotalPetsRequired": {
+      "type": "int",
+      "offset": "0xb58",
+      "value": 200
+    },
+    "petParadiseRewardXp": {
+      "type": "int",
+      "offset": "0xb5c",
+      "value": 10
+    },
+    "dualPetBaseAttackPerSecond": {
+      "type": "float",
+      "offset": "0xb60",
+      "value": 0.33000001311302185
+    },
+    "dualPetBaseAttackCountToBurst": {
+      "type": "int",
+      "offset": "0xb64",
+      "value": 5
+    },
+    "petQuestDiamondCostPerQuestReroll": {
+      "type": "int",
+      "offset": "0xb68",
+      "value": 2
+    },
+    "pet_paradise_max_shovels": {
+      "type": "int",
+      "offset": "0xb6c",
+      "value": 50
+    },
+    "pet_paradise_shovel_diamond_cost": {
+      "type": "int",
+      "offset": "0xb70",
+      "value": 500
+    },
+    "pet_paradise_shovel_purchase_amount": {
+      "type": "int",
+      "offset": "0xb74",
+      "value": 15
+    },
+    "pet_paradise_shovel_purchase_daily_limit": {
+      "type": "int",
+      "offset": "0xb78",
+      "value": 5
+    },
+    "dungeonQuestTargetMapWidth": {
+      "type": "int",
+      "offset": "0xb7c",
+      "value": 9
+    },
+    "dungeonQuestTargetMapHeight": {
+      "type": "int",
+      "offset": "0xb80",
+      "value": 9
+    },
+    "dungeonQuestCacheDurationSeconds": {
+      "type": "float",
+      "offset": "0xb84",
+      "value": 1800.0
+    },
+    "dungeonQuestDefaultDepth": {
+      "type": "int",
+      "offset": "0xb88",
+      "value": 1073741823
+    },
+    "dungeonQuestPetToTorchesMult": {
+      "type": "int",
+      "offset": "0xb8c",
+      "value": 1
+    },
+    "dungeonQuestSpecialKeyVariations": {
+      "type": "int",
+      "offset": "0xb90",
+      "value": 6
+    },
+    "secretDoorsIgnoreCompletionRequirementSwitch": {
+      "type": "bool",
+      "offset": "0xb94",
+      "value": true
+    },
+    "dungeonQuestVisualDataIndex": {
+      "type": "int",
+      "offset": "0xb98",
+      "value": 0
+    },
+    "dungeonQuestAutoTapInterval": {
+      "type": "float",
+      "offset": "0xb9c",
+      "value": 0.10000000149011612
+    },
+    "tapsPerSecond": {
+      "type": "int",
+      "offset": "0xba0",
+      "value": 20
+    },
+    "playerDamageMult": {
+      "type": "float",
+      "offset": "0xba4",
+      "value": 1.0
+    },
+    "playerUpgradeCostBase": {
+      "type": "float",
+      "offset": "0xba8",
+      "value": 5.0
+    },
+    "playerUpgradeCostGrowth": {
+      "type": "float",
+      "offset": "0xbac",
+      "value": 1.0750000476837158
+    },
+    "playerCritChance": {
+      "type": "float",
+      "offset": "0xbb0",
+      "value": 0.009999999776482582
+    },
+    "playerCritMult": {
+      "type": "float",
+      "offset": "0xbb4",
+      "value": 11.5
+    },
+    "maxCritChance": {
+      "type": "float",
+      "offset": "0xbb8",
+      "value": 1.0
+    },
+    "goldx10Chance": {
+      "type": "float",
+      "offset": "0xbbc",
+      "value": 0.009999999776482582
+    },
+    "jackpotGoldBonusExpo": {
+      "type": "float",
+      "offset": "0xbc0",
+      "value": 1.0
+    },
+    "manaRegenBaseInMinutes": {
+      "type": "float",
+      "offset": "0xbc4",
+      "value": 2.0
+    },
+    "manaCapInitial": {
+      "type": "int",
+      "offset": "0xbc8",
+      "value": 0
+    },
+    "manaCapPerSkill": {
+      "type": "int",
+      "offset": "0xbcc",
+      "value": 35
+    },
+    "antiCheatMaxTapTime": {
+      "type": "float",
+      "offset": "0xbd0",
+      "value": 43200.0
+    },
+    "playerProfileCacheExpiryTimeInSeconds": {
+      "type": "double",
+      "offset": "0xbd8",
+      "value": 300.0
+    },
+    "playerAvatarCollectionAchievementCountsCacheExpiryTimeInSeconds": {
+      "type": "double",
+      "offset": "0xbe0",
+      "value": 60.0
+    },
+    "prestigeMsPercentRequirement": {
+      "type": "float",
+      "offset": "0xbe8",
+      "value": 0.5
+    },
+    "minimumPrestigeStage": {
+      "type": "int",
+      "offset": "0xbec",
+      "value": 60
+    },
+    "swordAttackToClonePower": {
+      "type": "double",
+      "offset": "0xbf0",
+      "value": 1.2
+    },
+    "tapToCloneTapDPSPower": {
+      "type": "double",
+      "offset": "0xbf8",
+      "value": 1.2
+    },
+    "RaidBaseDamage": {
+      "type": "double",
+      "offset": "0xc00",
+      "value": 100.0
+    },
+    "RaidBaseAttackCooldown": {
+      "type": "double",
+      "offset": "0xc08",
+      "value": 5.0
+    },
+    "RaidAttackDuration": {
+      "type": "double",
+      "offset": "0xc10",
+      "value": 30.0
+    },
+    "SwordMasterLevelCap": {
+      "type": "int",
+      "offset": "0xc18",
+      "value": 100000
+    },
+    "maximumTapsDuringAPrestige": {
+      "type": "int",
+      "offset": "0xc1c",
+      "value": 155520000
+    },
+    "maximumChestersonsKilledDuringAPrestige": {
+      "type": "int",
+      "offset": "0xc20",
+      "value": 10
+    },
+    "maximumChestersonsKilledDuringASeason": {
+      "type": "int",
+      "offset": "0xc24",
+      "value": 250000
+    },
+    "maximumFairyTappedDuringAPrestige": {
+      "type": "int",
+      "offset": "0xc28",
+      "value": 25
+    },
+    "maximumSecondsDuringAPrestige": {
+      "type": "int",
+      "offset": "0xc2c",
+      "value": 7776000
+    },
+    "maximumTitansKilledDuringASeason": {
+      "type": "int",
+      "offset": "0xc30",
+      "value": 13000000
+    },
+    "maximumPrestigesDuringASeason": {
+      "type": "int",
+      "offset": "0xc34",
+      "value": 25000
+    },
+    "maximumFairiesDuringASeason": {
+      "type": "int",
+      "offset": "0xc38",
+      "value": 1600000
+    },
+    "firstPrestigeEquipmentAmount": {
+      "type": "int",
+      "offset": "0xc3c",
+      "value": 3
+    },
+    "firstPrestigePerkAmount": {
+      "type": "int",
+      "offset": "0xc40",
+      "value": 1
+    },
+    "prestigeReminderFrequency": {
+      "type": "int",
+      "offset": "0xc44",
+      "value": 2
+    },
+    "advancedStartMaxStagePercentage": {
+      "type": "float",
+      "offset": "0xc48",
+      "value": 1.0
+    },
+    "additiveRelicMultiplierMax": {
+      "type": "int",
+      "offset": "0xc4c",
+      "value": 50000
+    },
+    "newPlayerRelicMultMp": {
+      "type": "float",
+      "offset": "0xc50",
+      "value": 5.0
+    },
+    "stageRushToRelicMultiplier": {
+      "type": "float",
+      "offset": "0xc54",
+      "value": 0.00016999999934341758
+    },
+    "newPlayerRelicMultBonusDurationMins": {
+      "type": "float",
+      "offset": "0xc58",
+      "value": 10080.0
+    },
+    "advancedRelicMultiplierFarmIncrBy": {
+      "type": "int",
+      "offset": "0xc5c",
+      "value": 5
+    },
+    "advancedStartPrestigeFarmStagePercentage": {
+      "type": "float",
+      "offset": "0xc60",
+      "value": 0.9800000190734863
+    },
+    "additiveRelicMultPrestigeMaxPercent": {
+      "type": "float",
+      "offset": "0xc64",
+      "value": 1.0
+    },
+    "goldPrestigeBonusExpo": {
+      "type": "float",
+      "offset": "0xc70",
+      "value": 1.0
+    },
+    "clanDefaultAdvancedStartPercent": {
+      "type": "double",
+      "offset": "0xc78",
+      "value": 0.20000000298023224
+    },
+    "honourStageOffset": {
+      "type": "int",
+      "offset": "0xc88",
+      "value": 250
+    },
+    "petQuestRerollCostPromotionMult": {
+      "type": "float",
+      "offset": "0xca0",
+      "value": 1.0
+    },
+    "petQuestRerollPromotion": {
+      "type": "bool",
+      "offset": "0xca4",
+      "value": false
+    },
+    "promptStage": {
+      "type": "int",
+      "offset": "0xca8",
+      "value": 125
+    },
+    "promptTimes": {
+      "type": "int",
+      "offset": "0xcac",
+      "value": 3
+    },
+    "noMoreRateGameAfterStage": {
+      "type": "int",
+      "offset": "0xcb0",
+      "value": 401
+    },
+    "unlockStageShop": {
+      "type": "int",
+      "offset": "0xcc0",
+      "value": 30
+    },
+    "shopDaysTilNextDialogue": {
+      "type": "int",
+      "offset": "0xcc4",
+      "value": 2
+    },
+    "needToDoShopJSONOverride": {
+      "type": "bool",
+      "offset": "0xcc8",
+      "value": false
+    },
+    "shopMaxNetworkJitterSeconds": {
+      "type": "int",
+      "offset": "0xce0",
+      "value": 15
+    },
+    "isCardShopEnabled": {
+      "type": "bool",
+      "offset": "0xce4",
+      "value": true
+    },
+    "minShopRelicCount": {
+      "type": "double",
+      "offset": "0xce8",
+      "value": 20.0
+    },
+    "minShopSeasonalRelicCount": {
+      "type": "double",
+      "offset": "0xcf0",
+      "value": 20.0
+    },
+    "removeShopBundleAfterPurchased": {
+      "type": "bool",
+      "offset": "0xcf8",
+      "value": false
+    },
+    "firstTimeDiamondsBonusMult": {
+      "type": "float",
+      "offset": "0xcfc",
+      "value": 1.0
+    },
+    "firstTimeDiamondsBonusCeiling": {
+      "type": "int",
+      "offset": "0xd00",
+      "value": 10
+    },
+    "defaultHoursUntilAdChestReset": {
+      "type": "int",
+      "offset": "0xd04",
+      "value": 12
+    },
+    "dailyCardShopRefreshIntervalMinutes": {
+      "type": "int",
+      "offset": "0xd08",
+      "value": 720
+    },
+    "dismissHomeMerchantMinutes": {
+      "type": "int",
+      "offset": "0xd0c",
+      "value": 1440
+    },
+    "DailyCardShopCardCount": {
+      "type": "int",
+      "offset": "0xd10",
+      "value": 12
+    },
+    "syncShopBuyItem": {
+      "type": "bool",
+      "offset": "0xd18",
+      "value": false
+    },
+    "DiamondVaultPurchaseThreshold": {
+      "type": "int",
+      "offset": "0xd1c",
+      "value": 250
+    },
+    "DiamondVaultMaxCount": {
+      "type": "int",
+      "offset": "0xd20",
+      "value": 1000
+    },
+    "DiamondVaultIncrement": {
+      "type": "int",
+      "offset": "0xd24",
+      "value": 25
+    },
+    "DiamondVaultPrestigeStatePercent": {
+      "type": "float",
+      "offset": "0xd28",
+      "value": 0.9800000190734863
+    },
+    "DiamondVaultOfferCooldown": {
+      "type": "int",
+      "offset": "0xd2c",
+      "value": 259200
+    },
+    "skillPointsStageMin": {
+      "type": "int",
+      "offset": "0xd30",
+      "value": 51
+    },
+    "skillPointsStageDelta": {
+      "type": "int",
+      "offset": "0xd34",
+      "value": 500
+    },
+    "skillPointsPrestigeMin": {
+      "type": "int",
+      "offset": "0xd38",
+      "value": 50
+    },
+    "skillPointsPrestigeMax": {
+      "type": "int",
+      "offset": "0xd3c",
+      "value": 0
+    },
+    "skillPointsPrestigeDelta": {
+      "type": "int",
+      "offset": "0xd40",
+      "value": 50
+    },
+    "skillTreeResetOncePerPrestige": {
+      "type": "bool",
+      "offset": "0xd44",
+      "value": false
+    },
+    "skillTreeResetPercentMS": {
+      "type": "float",
+      "offset": "0xd48",
+      "value": 0.20000000298023224
+    },
+    "skillResetTokenMax": {
+      "type": "int",
+      "offset": "0xd4c",
+      "value": 15
+    },
+    "skillTreeMinRestrictStage": {
+      "type": "int",
+      "offset": "0xd50",
+      "value": 10000
+    },
+    "SkillTreeLoadoutSlots": {
+      "type": "int",
+      "offset": "0xd54",
+      "value": 2
+    },
+    "vipStatusMaxLoadoutSlotsAdditive": {
+      "type": "int",
+      "offset": "0xd58",
+      "value": 1
+    },
+    "defaultSplashThroughBoss": {
+      "type": "bool",
+      "offset": "0xd5c",
+      "value": false
+    },
+    "maxSpecialSplashKills": {
+      "type": "int",
+      "offset": "0xd68",
+      "value": 928
+    },
+    "unlockBackgroundLockStage": {
+      "type": "int",
+      "offset": "0xd6c",
+      "value": 500
+    },
+    "backgroundLockDuration": {
+      "type": "float",
+      "offset": "0xd70",
+      "value": 120.0
+    },
+    "needToShowStartMessage": {
+      "type": "bool",
+      "offset": "0xd74",
+      "value": false
+    },
+    "unreadMessagePollingRate": {
+      "type": "float",
+      "offset": "0xd90",
+      "value": 300.0
+    },
+    "tournamentUpdateCooldown": {
+      "type": "double",
+      "offset": "0xda0",
+      "value": 300.0
+    },
+    "tournamentUpdateAttemptCooldown": {
+      "type": "double",
+      "offset": "0xda8",
+      "value": 4.0
+    },
+    "tournamentCollectCooldown": {
+      "type": "double",
+      "offset": "0xdb0",
+      "value": 15.0
+    },
+    "tournamentForceUpdateScore": {
+      "type": "int",
+      "offset": "0xdb8",
+      "value": 30
+    },
+    "tournamentOfflineStageCap": {
+      "type": "int",
+      "offset": "0xdbc",
+      "value": 60
+    },
+    "tournamentScoreAutoResubmitOnErrorCooldown": {
+      "type": "int",
+      "offset": "0xdc0",
+      "value": 30
+    },
+    "tournamentJoinReductionSeconds": {
+      "type": "float",
+      "offset": "0xdc4",
+      "value": 60.0
+    },
+    "tournamentJoinMemoryBoost": {
+      "type": "double",
+      "offset": "0xdc8",
+      "value": 0.75
+    },
+    "tournamentEndingSoonMinutes": {
+      "type": "int",
+      "offset": "0xdd0",
+      "value": 15
+    },
+    "tournamentSurpassMaxAdvancementResync": {
+      "type": "bool",
+      "offset": "0xdd4",
+      "value": true
+    },
+    "tournamentGetPrizeIDCacheExpirySeconds": {
+      "type": "double",
+      "offset": "0xdd8",
+      "value": 600.0
+    },
+    "tournamentUnlockStage": {
+      "type": "int",
+      "offset": "0xde8",
+      "value": 250
+    },
+    "canSpawnStageSkipMonsterPastTournamentMax": {
+      "type": "bool",
+      "offset": "0xdec",
+      "value": true
+    },
+    "challengeTournamentLeaderboardRefreshCooldown": {
+      "type": "int",
+      "offset": "0xdf0",
+      "value": 15
+    },
+    "challengeTournamentUpdateAttemptCooldown": {
+      "type": "double",
+      "offset": "0xdf8",
+      "value": 4.0
+    },
+    "challengeTournamentEndingSoonMinutes": {
+      "type": "int",
+      "offset": "0xe00",
+      "value": 15
+    },
+    "challengeTournamentForceUpdateScore": {
+      "type": "int",
+      "offset": "0xe04",
+      "value": 30
+    },
+    "challengeTournamentOfflineStageCap": {
+      "type": "int",
+      "offset": "0xe08",
+      "value": 60
+    },
+    "challengeTournamentSurpassMaxAdvancementResync": {
+      "type": "bool",
+      "offset": "0xe0c",
+      "value": true
+    },
+    "challengeTournamentScoreAutoResubmitOnErrorCooldown": {
+      "type": "int",
+      "offset": "0xe10",
+      "value": 30
+    },
+    "challengeTournamentGetInfoCacheDurationSeconds": {
+      "type": "float",
+      "offset": "0xe14",
+      "value": 86400.0
+    },
+    "challengeTournamentShopRefreshCost": {
+      "type": "int",
+      "offset": "0xe18",
+      "value": 25
+    },
+    "challengeTournamentShopReSyncMinSeconds": {
+      "type": "int",
+      "offset": "0xe1c",
+      "value": 15
+    },
+    "challengeTournamentPreviewDurationSeconds": {
+      "type": "int",
+      "offset": "0xe20",
+      "value": 604800
+    },
+    "challengeTournamentEquipmentSalvageMultiplier": {
+      "type": "int",
+      "offset": "0xe24",
+      "value": 2
+    },
+    "challengeTournamentSalvageMultiplier": {
+      "type": "int",
+      "offset": "0xe28",
+      "value": 2
+    },
+    "challengeTournamentUnlockStage": {
+      "type": "int",
+      "offset": "0xe2c",
+      "value": 1000
+    },
+    "challengeTournamentResyncDelaySecs": {
+      "type": "int",
+      "offset": "0xe30",
+      "value": 3
+    },
+    "challengeTournamentShopHighlight": {
+      "type": "int",
+      "offset": "0xe34",
+      "value": 200
+    },
+    "challengeTournamentShopLimitedTimeDays": {
+      "type": "int",
+      "offset": "0xe38",
+      "value": 7
+    },
+    "challengeTournamentShopCacheDurationSecs": {
+      "type": "int",
+      "offset": "0xe3c",
+      "value": 1800
+    },
+    "challengeTournamentSubmissionLockDuration": {
+      "type": "int",
+      "offset": "0xe40",
+      "value": 5
+    },
+    "challengeTournamentSubmissionLockEnabled": {
+      "type": "bool",
+      "offset": "0xe44",
+      "value": true
+    },
+    "challengeTournamentParticipationDurationSeconds": {
+      "type": "double",
+      "offset": "0xe48",
+      "value": 86400.0
+    },
+    "challengeTournamentProgressionCompletedBarStagesInterval": {
+      "type": "int",
+      "offset": "0xe58",
+      "value": 20
+    },
+    "challengeTournamentSkillTreeResetPercentMS": {
+      "type": "float",
+      "offset": "0xe5c",
+      "value": 0.9900000095367432
+    },
+    "challengeTournamentCurrencyLeaderboardRefreshCooldownSec": {
+      "type": "int",
+      "offset": "0xe60",
+      "value": 900
+    },
+    "newPlayerTournamentEnabled": {
+      "type": "bool",
+      "offset": "0xe64",
+      "value": true
+    },
+    "newPlayerTournamentReviewLengthMinutes": {
+      "type": "int",
+      "offset": "0xe68",
+      "value": 1440
+    },
+    "newPlayerTournamentLeaderboardPlayerThreshold": {
+      "type": "int",
+      "offset": "0xe6c",
+      "value": 100
+    },
+    "milestoneRetryCooldownSecs": {
+      "type": "float",
+      "offset": "0xe70",
+      "value": 15.0
+    },
+    "posTutorialTriggerStage": {
+      "type": "int",
+      "offset": "0xe74",
+      "value": 20
+    },
+    "mpTutorialTriggerManaPercent": {
+      "type": "float",
+      "offset": "0xe80",
+      "value": 0.30000001192092896
+    },
+    "posTutorialPrestige": {
+      "type": "int",
+      "offset": "0xe84",
+      "value": 0
+    },
+    "arTutorialPrestige": {
+      "type": "int",
+      "offset": "0xe88",
+      "value": 1
+    },
+    "mirTutorialPrestige": {
+      "type": "int",
+      "offset": "0xe8c",
+      "value": 2
+    },
+    "mpTutorialPrestige": {
+      "type": "int",
+      "offset": "0xe90",
+      "value": 3
+    },
+    "doomTutorialPrestige": {
+      "type": "int",
+      "offset": "0xe94",
+      "value": 4
+    },
+    "remindHelperTutorialUnderStage": {
+      "type": "int",
+      "offset": "0xe98",
+      "value": 41
+    },
+    "tutorialFingerDuration": {
+      "type": "int",
+      "offset": "0xe9c",
+      "value": 5
+    },
+    "tutorialTapToContinueDelaySecs": {
+      "type": "float",
+      "offset": "0xea0",
+      "value": 1.0
+    },
+    "tutorialMinMaxStageSecondPrestige": {
+      "type": "int",
+      "offset": "0xea4",
+      "value": 125
+    },
+    "enablePlayerTabTutorial": {
+      "type": "bool",
+      "offset": "0xea8",
+      "value": true
+    },
+    "enableArtifactTabTutorial": {
+      "type": "bool",
+      "offset": "0xeac",
+      "value": true
+    },
+    "enablePowerOfSwipeTutorial": {
+      "type": "bool",
+      "offset": "0xeae",
+      "value": false
+    },
+    "enableDoomTutorial": {
+      "type": "bool",
+      "offset": "0xeb2",
+      "value": false
+    },
+    "enableRemindHelperUpgradeTutorial": {
+      "type": "bool",
+      "offset": "0xeb3",
+      "value": true
+    },
+    "enableInactiveGoldTutorial": {
+      "type": "bool",
+      "offset": "0xeba",
+      "value": false
+    },
+    "enableClanMasterTutorial": {
+      "type": "bool",
+      "offset": "0xebc",
+      "value": true
+    },
+    "iap4USDReq": {
+      "type": "float",
+      "offset": "0xec4",
+      "value": 24.875
+    },
+    "iap5USDReq": {
+      "type": "float",
+      "offset": "0xec8",
+      "value": 49.75
+    },
+    "iap6DiscountFactor": {
+      "type": "float",
+      "offset": "0xecc",
+      "value": 0.25
+    },
+    "iap6USDReq": {
+      "type": "float",
+      "offset": "0xed0",
+      "value": 99.5
+    },
+    "useGoogleIAP": {
+      "type": "bool",
+      "offset": "0xed4",
+      "value": true
+    },
+    "minCameraAspectRatioIPhone": {
+      "type": "float",
+      "offset": "0xf48",
+      "value": 0.5059999823570251
+    },
+    "minCameraAspectRatio": {
+      "type": "float",
+      "offset": "0xf4c",
+      "value": 1.777999997138977
+    },
+    "ascensionMinGoldExp": {
+      "type": "int",
+      "offset": "0xf50",
+      "value": 150
+    },
+    "ascendCostExpoScaling": {
+      "type": "float",
+      "offset": "0xf54",
+      "value": 2532.5
+    },
+    "iapDimScreenTime": {
+      "type": "float",
+      "offset": "0xf60",
+      "value": 60.0
+    },
+    "iapRetryStart": {
+      "type": "int",
+      "offset": "0xf64",
+      "value": 1
+    },
+    "iapRetryGap": {
+      "type": "int",
+      "offset": "0xf68",
+      "value": 1
+    },
+    "iapRetryMax": {
+      "type": "int",
+      "offset": "0xf6c",
+      "value": 10
+    },
+    "iapCostProcessingDelay": {
+      "type": "int",
+      "offset": "0xf70",
+      "value": 5
+    },
+    "newSessionMintues": {
+      "type": "int",
+      "offset": "0xf74",
+      "value": 15
+    },
+    "isHeartbeatEnabled": {
+      "type": "bool",
+      "offset": "0xf78",
+      "value": true
+    },
+    "rewardedVideoFirstLoadDelayTime": {
+      "type": "float",
+      "offset": "0xf7c",
+      "value": 0.5
+    },
+    "rewardedVideoMaxLoadingTime": {
+      "type": "int",
+      "offset": "0xf80",
+      "value": 30
+    },
+    "rewardedVideoFailsafeTime": {
+      "type": "int",
+      "offset": "0xf84",
+      "value": 30
+    },
+    "videoAdExpiryMinutes": {
+      "type": "int",
+      "offset": "0xf88",
+      "value": 60
+    },
+    "maxNumRewardedAdRetries": {
+      "type": "int",
+      "offset": "0xf8c",
+      "value": 8
+    },
+    "holidayEventFairyAdRewardCurrency": {
+      "type": "int",
+      "offset": "0xf90",
+      "value": 15
+    },
+    "holidayEventGetInfoCacheDurationSeconds": {
+      "type": "float",
+      "offset": "0xf94",
+      "value": 1800.0
+    },
+    "holidayCurrencyFarmingStagePercentage": {
+      "type": "float",
+      "offset": "0xf98",
+      "value": 0.9800000190734863
+    },
+    "holidayEventPrestigeRewardLimit": {
+      "type": "int",
+      "offset": "0xf9c",
+      "value": 99
+    },
+    "holidayCurrencyFarmingRewardAmount": {
+      "type": "int",
+      "offset": "0xfa0",
+      "value": 10
+    },
+    "holidayEventShowBeforeStartSeconds": {
+      "type": "int",
+      "offset": "0xfa4",
+      "value": 259200
+    },
+    "holidayEventFinalizationSeconds": {
+      "type": "int",
+      "offset": "0xfa8",
+      "value": 900
+    },
+    "holidayEventFinalizationJitter": {
+      "type": "int",
+      "offset": "0xfac",
+      "value": 120
+    },
+    "eventTimerDisplayMin": {
+      "type": "int",
+      "offset": "0xfb0",
+      "value": 86400
+    },
+    "seasonPassValue": {
+      "type": "int",
+      "offset": "0xfb4",
+      "value": 6
+    },
+    "superSeasonPassValue": {
+      "type": "int",
+      "offset": "0xfb8",
+      "value": 8
+    },
+    "seasonPassUpgradeValue": {
+      "type": "int",
+      "offset": "0xfbc",
+      "value": 8
+    },
+    "displaySuperVIPPointsNeeded": {
+      "type": "int",
+      "offset": "0xfc0",
+      "value": 500
+    },
+    "scheduledEventGetInfoCacheDurationSeconds": {
+      "type": "int",
+      "offset": "0xfc4",
+      "value": 1800
+    },
+    "welcomeBackSkillsChance": {
+      "type": "float",
+      "offset": "0xfc8",
+      "value": 0.25
+    },
+    "secondsBetweenNewSession": {
+      "type": "int",
+      "offset": "0xfcc",
+      "value": 600
+    },
+    "secondsBetweenTrySendingDwEvents": {
+      "type": "int",
+      "offset": "0xfd0",
+      "value": 600
+    },
+    "everyNumStagesToSendStageEvents": {
+      "type": "int",
+      "offset": "0xfd4",
+      "value": 1
+    },
+    "sendTextTutorialEventsRightAway": {
+      "type": "bool",
+      "offset": "0xfd8",
+      "value": true
+    },
+    "dataWarehouseMaxStageActiveSkillUseLogging": {
+      "type": "int",
+      "offset": "0xfdc",
+      "value": 60
+    },
+    "dataWarehouseEventRateLimit": {
+      "type": "int",
+      "offset": "0xfe0",
+      "value": 30
+    },
+    "dataWarehouseDownloadProgressEventLimit": {
+      "type": "int",
+      "offset": "0xfe4",
+      "value": 60
+    },
+    "dataWarehouseCtLoggingEnabled": {
+      "type": "bool",
+      "offset": "0xfe8",
+      "value": true
+    },
+    "dataWarehouseFastLoggingMaxStage": {
+      "type": "int",
+      "offset": "0xfec",
+      "value": 500
+    },
+    "secondsBetweenTrySendingDwEventsNewPlayer": {
+      "type": "int",
+      "offset": "0xff0",
+      "value": 60
+    },
+    "PreparationDurationTierOne": {
+      "type": "int",
+      "offset": "0xff4",
+      "value": 10
+    },
+    "PreparationDurationTierTwo": {
+      "type": "int",
+      "offset": "0xff8",
+      "value": 360
+    },
+    "PreparationDurationTierThree": {
+      "type": "int",
+      "offset": "0xffc",
+      "value": 720
+    },
+    "PreparationDurationTierFour": {
+      "type": "int",
+      "offset": "0x1000",
+      "value": 720
+    },
+    "masterTierInfoCacheDurationSeconds": {
+      "type": "int",
+      "offset": "0x1004",
+      "value": 1800
+    },
+    "updateInfodocsPanelDuration": {
+      "type": "int",
+      "offset": "0x1008",
+      "value": 5
+    },
+    "bombGameEventPurchaseCurrencyAmount": {
+      "type": "int",
+      "offset": "0x1020",
+      "value": 25
+    },
+    "bombGameEventPurchaseCurrencyCost": {
+      "type": "int",
+      "offset": "0x1024",
+      "value": 100
+    },
+    "bombGameEventGetCacheSecs": {
+      "type": "int",
+      "offset": "0x1028",
+      "value": 30
+    },
+    "bombGameEventCurrencyFarmingRewardAmount": {
+      "type": "int",
+      "offset": "0x102c",
+      "value": 10
+    },
+    "bombGameEventPrestigeRewardLimit": {
+      "type": "int",
+      "offset": "0x1030",
+      "value": 99
+    },
+    "clanPrestigeMinigameFarmingStagePercentage": {
+      "type": "float",
+      "offset": "0x1044",
+      "value": 0.8999999761581421
+    },
+    "clanPrestigeMinigamePrestigeRewardLimit": {
+      "type": "int",
+      "offset": "0x1048",
+      "value": 20
+    },
+    "prestigeRaceMinigameFarmingRewardAmount": {
+      "type": "int",
+      "offset": "0x104c",
+      "value": 1
+    },
+    "prestigeRaceMinigameFarmingStagePercentage": {
+      "type": "float",
+      "offset": "0x1050",
+      "value": 0.8999999761581421
+    },
+    "fishingMinigameFarmingStagePercentage": {
+      "type": "float",
+      "offset": "0x105c",
+      "value": 0.8999999761581421
+    },
+    "fishingMinigamePrestigeRewardLimit": {
+      "type": "int",
+      "offset": "0x1060",
+      "value": 20
+    },
+    "fishingMinigameTackleboxCollectTime": {
+      "type": "int",
+      "offset": "0x1064",
+      "value": 60
+    },
+    "fishingMinigameTackleboxBaseSize": {
+      "type": "int",
+      "offset": "0x1068",
+      "value": 48
+    },
+    "huntingMinigameCurrencyFarmingStagePercentage": {
+      "type": "float",
+      "offset": "0x107c",
+      "value": 0.8999999761581421
+    },
+    "huntingMinigameDailyRewardLimit": {
+      "type": "int",
+      "offset": "0x1080",
+      "value": 100
+    },
+    "huntingMinigameQuiverCollectTime": {
+      "type": "int",
+      "offset": "0x1084",
+      "value": 30
+    },
+    "huntingMinigameQuiverBaseCapacity": {
+      "type": "int",
+      "offset": "0x1088",
+      "value": 5
+    },
+    "huntingMinigameMaxSpendArrows": {
+      "type": "int",
+      "offset": "0x108c",
+      "value": 100
+    },
+    "huntingMinigameBaseTargetCount": {
+      "type": "int",
+      "offset": "0x1090",
+      "value": 10
+    },
+    "minigameHuntingCurrencyRarity0": {
+      "type": "int",
+      "offset": "0x1094",
+      "value": 1
+    },
+    "minigameHuntingCurrencyRarity1": {
+      "type": "int",
+      "offset": "0x1098",
+      "value": 5
+    },
+    "minigameHuntingCurrencyRarity2": {
+      "type": "int",
+      "offset": "0x109c",
+      "value": 10
+    },
+    "balldropMinigameCurrencyFarmingRewardAmount": {
+      "type": "int",
+      "offset": "0x10a8",
+      "value": 1
+    },
+    "balldropMinigameCurrencyFarmingStagePercentage": {
+      "type": "float",
+      "offset": "0x10ac",
+      "value": 0.8999999761581421
+    },
+    "balldropMinigameDailyRewardLimit": {
+      "type": "int",
+      "offset": "0x10b0",
+      "value": 100
+    },
+    "balldropMinigamePrestigeCurrencyCollectTime": {
+      "type": "int",
+      "offset": "0x10b4",
+      "value": 5
+    },
+    "balldropMinigameContainerBaseCapacity": {
+      "type": "int",
+      "offset": "0x10b8",
+      "value": 48
+    },
+    "minigameBallDropBaseBallValue": {
+      "type": "int",
+      "offset": "0x10bc",
+      "value": 1
+    },
+    "minigameBallDropNumBallsPerMultiBall": {
+      "type": "int",
+      "offset": "0x10c0",
+      "value": 10
+    },
+    "minigameBallDropMultiBallChance": {
+      "type": "float",
+      "offset": "0x10c4",
+      "value": 0.009999999776482582
+    },
+    "minigameBallDropMaxMultiBallTriggersPerCoin": {
+      "type": "int",
+      "offset": "0x10c8",
+      "value": 1
+    },
+    "anniversaryMinigameCurrencyFarmingRewardAmount": {
+      "type": "int",
+      "offset": "0x10cc",
+      "value": 10
+    },
+    "anniversaryMinigameCurrencyFarmingStagePercentage": {
+      "type": "float",
+      "offset": "0x10d0",
+      "value": 0.8999999761581421
+    },
+    "clanVaultMinigameCurrencyFarmingStagePercentage": {
+      "type": "float",
+      "offset": "0x10dc",
+      "value": 0.8999999761581421
+    },
+    "clanVaultMinigameDailyRewardLimit": {
+      "type": "int",
+      "offset": "0x10e0",
+      "value": 99
+    },
+    "boostedPrestigeRelicMultiplier": {
+      "type": "int",
+      "offset": "0x10e4",
+      "value": 2
+    },
+    "boostedPrestigeDiamondCost": {
+      "type": "int",
+      "offset": "0x10e8",
+      "value": 20
+    },
+    "boostedPrestigeDailyCap": {
+      "type": "int",
+      "offset": "0x10ec",
+      "value": 5
+    },
+    "modifyBonusBroadcastsTypeChanges": {
+      "type": "bool",
+      "offset": "0x10f0",
+      "value": true
+    },
+    "titanSoulsBaseDropChance": {
+      "type": "float",
+      "offset": "0x1104",
+      "value": 0.10000000149011612
+    },
+    "bannerBoostWeightMult": {
+      "type": "float",
+      "offset": "0x1110",
+      "value": 5.0
+    },
+    "titanCardSoulsCost": {
+      "type": "int",
+      "offset": "0x1120",
+      "value": 100
+    },
+    "titanCardDiamondCost": {
+      "type": "int",
+      "offset": "0x1124",
+      "value": 5
+    },
+    "titanCardInstantSummonUnlockLevel": {
+      "type": "int",
+      "offset": "0x1128",
+      "value": 50
+    },
+    "titanSoulsStartingAmount": {
+      "type": "int",
+      "offset": "0x112c",
+      "value": 5000
+    },
+    "gemstonesUnlockInHours": {
+      "type": "int",
+      "offset": "0x1130",
+      "value": 1440
+    },
+    "gemstonesUnlockStage": {
+      "type": "int",
+      "offset": "0x1134",
+      "value": 150000
+    },
+    "gemstonesCurrencyCost": {
+      "type": "int",
+      "offset": "0x1140",
+      "value": 1
+    },
+    "gemstonesDiamondCost": {
+      "type": "int",
+      "offset": "0x1144",
+      "value": 500
+    },
+    "gemstonesMaxSecondaries": {
+      "type": "int",
+      "offset": "0x1148",
+      "value": 4
+    },
+    "gemstonesLoadPercentMS": {
+      "type": "float",
+      "offset": "0x114c",
+      "value": 0.20000000298023224
+    },
+    "minigameMazeCurrencyMaxPerPrestige": {
+      "type": "int",
+      "offset": "0x1150",
+      "value": 1
+    },
+    "minigameMazeCurrencyMaxPerDay": {
+      "type": "int",
+      "offset": "0x1154",
+      "value": 20
+    },
+    "minigameMazeCurrencyFarmingStagePercentage": {
+      "type": "float",
+      "offset": "0x1158",
+      "value": 0.8999999761581421
+    },
+    "minigameMazeMaxFloor": {
+      "type": "int",
+      "offset": "0x115c",
+      "value": 500
+    },
+    "minigameDigsiteCurrencyMaxPerPrestige": {
+      "type": "int",
+      "offset": "0x1160",
+      "value": 10
+    },
+    "minigameDigsiteCurrencyMaxPerDay": {
+      "type": "int",
+      "offset": "0x1164",
+      "value": 100
+    },
+    "minigameDigsiteCurrencyFarmingStagePercentage": {
+      "type": "float",
+      "offset": "0x1168",
+      "value": 0.8999999761581421
+    }
+  },
+  "unrecovered": {
+    "count": 209,
+    "byType": {
+      "GHDouble": 10,
+      "List<float>": 1,
+      "TimeSpan": 2,
+      "bool": 63,
+      "double": 5,
+      "float": 20,
+      "int": 57,
+      "int[]": 12,
+      "string": 39
+    },
+    "names": {
+      "GHDouble": [
+        "maxGold",
+        "monsterGoldBase1",
+        "monsterGoldBase2",
+        "monsterGoldBase3",
+        "monsterGoldMult",
+        "monsterHPBase1",
+        "monsterHPBase2",
+        "monsterHPBase3",
+        "monsterHPMult",
+        "monsterMinGoldDrop"
+      ],
+      "List<float>": [
+        "themeMultiplierSequence"
+      ],
+      "TimeSpan": [
+        "previewDurationTournament",
+        "previewDurationWeekendPrestige"
+      ],
+      "bool": [
+        "DungeonDestroyHelperListItems",
+        "adChestNotificationEnabled",
+        "alchemyDailyCollectables",
+        "alchemyNotificationEnabled",
+        "bearShopNotificationEnabled",
+        "challengeTournamentServerClientMismatchResync",
+        "challengeTournamentServerVarOverrideEnabled",
+        "churnedPlayerNotificationEnabled",
+        "clanLeaderKickNotificationEnabled",
+        "dataWarehouseLoggingEnabled",
+        "dungeonQuestNotificationEnabled",
+        "eggCollectionNotificationEnabled",
+        "enableActiveSkillTutorial",
+        "enableAdrenalineRushTutorial",
+        "enableBossBattleTutorial",
+        "enableClanJoinTutorial",
+        "enableClanTutorial",
+        "enableEquipmentTabTutorial",
+        "enableHelperTabTutorial",
+        "enableMakeItRainTutorial",
+        "enableManaPotionTutorial",
+        "enablePetEggCollectionTutorial",
+        "enablePetTabTutorial",
+        "enableRemindHeroUpgradeTutorial",
+        "enableRemindPrestigeTutorial",
+        "enableSecondPrestigeTutorial",
+        "enableShopTabTutorial",
+        "enableSkillPointTutorial",
+        "enableTitanGachaTutorial",
+        "enableTitanResearchTutorial",
+        "enableTournamentTutorial",
+        "enableTransmorphTutorial",
+        "eventStartNotificationEnabled",
+        "forceRefreshHelperDpsOnEquipmentSwap",
+        "heroGoldNotificationEnabled",
+        "manaNotificationEnabled",
+        "needToCrashForBadGold",
+        "raidAttacksIncompleteNotificationEnabled",
+        "raidCurrentClanQuestButtonEnabled",
+        "raidCurrentDeckSelectEnabled",
+        "raidCurrentGameStartEnabled",
+        "raidCurrentPrepToAttackEnabled",
+        "raidCurrentRefreshButtonEnabled",
+        "raidRetryEnabled",
+        "resyncDiamondsOnNotEnoughDiamondsError",
+        "secretDoorsRequiredForCompletionSwitch",
+        "silentMarchNotificationEnabled",
+        "skipTransitionScreen",
+        "soloRaidNotificationEnabled",
+        "startMessageCanClose",
+        "syncShopMaxStageChanged",
+        "syncShopPrestige",
+        "syncShopPurchaseValid",
+        "syncShopReconnect",
+        "titanTakeoverNotificationEnabled",
+        "tournamentNextInfoMismatchResync",
+        "tournamentNotJoinedNotificationEnabled",
+        "tournamentScoreRetireResync",
+        "tournamentServerClientMismatchResync",
+        "tournamentStartNotificationEnabled",
+        "useDamagePerkEnvironment",
+        "useDoomPerkEnvironment",
+        "useManaPerkEnvironment"
+      ],
+      "double": [
+        "cloneCritChanceExpo",
+        "minScientific",
+        "seasonalRelicStageBase",
+        "seasonalRelicStageMult",
+        "shipCritChanceExpo"
+      ],
+      "float": [
+        "adsAllActiveSkillChance",
+        "adsManaPotionChance",
+        "ascendDamageExpoScaling",
+        "bombGameEventCurrencyFarmingStagePercentage",
+        "bombGameSkipAnimationsMult",
+        "clanMessageRefreshCooldownInSeconds",
+        "clanStickerMessageCooldownInSeconds",
+        "fairyDiamondMaxStageCheckMult",
+        "fairyDiamondTournamentScoreCheckMult",
+        "fairyMidasBonusExpo",
+        "fairyNeuralNetUsageChance",
+        "fishingMinigameRarityBonusGood",
+        "fishingMinigameRarityBonusPerfect",
+        "inactiveDelayPerSpawn",
+        "killFadeDuration",
+        "minSkillSplashMult",
+        "petAutoAttackDuration",
+        "petMidasBonusExpo",
+        "playerPollFinalizationIntervalCheck",
+        "spawnInvulnerabilityDuration"
+      ],
+      "int": [
+        "activeSkillMaxMultiCastStacks",
+        "anniversaryMinigameDailyRewardLimit",
+        "arTutorialStartStageDelta",
+        "bossQTEAttackCount",
+        "cardShopReSyncMinSeconds",
+        "clanPrestigeMinigameFarmingRewardAmount",
+        "clanVaultMinigameCurrencyFarmingRewardAmount",
+        "dailyCollectablesIngredients",
+        "equipmentLevelReductionMin",
+        "facebookLikeDiamonds",
+        "fairyAllDamageCooldownSecs",
+        "fairyEquipmentCooldownSecs",
+        "fairyNeuralNetTrainedMaxStage",
+        "fishingMinigameFarmingRewardAmount",
+        "fishingMinigameMaxSpendLures",
+        "helperAutoUpgradeIntervalSecs",
+        "huntingMinigameCurrencyFarmingRewardAmount",
+        "instagramFollowDiamonds",
+        "maxDefaultSplashKills",
+        "maximumHeroAscension",
+        "minManaStrips",
+        "minSecondsForATNotJoinedNotification",
+        "minSecondsForATStartNotification",
+        "minSecondsForAdChestNotification",
+        "minSecondsForAlchemyEndingNotification",
+        "minSecondsForDungeonQuestEndingNotification",
+        "minSecondsForEggCollectionNotification",
+        "minSecondsForEventStartNotification",
+        "minSecondsForFullManaNotification",
+        "minSecondsForRaidAttackNotification",
+        "minSecondsForRaidAttacksIncompleteNotification",
+        "minSecondsForSilentMarchNotification",
+        "minSecondsForSoloRaidNotJoinedNotification",
+        "minSecondsForTournamentNotJoinedNotification",
+        "minSecondsForTournamentStartNotification",
+        "minigameHuntingCurrencyRarity3",
+        "minigameHuntingCurrencyRarity4",
+        "minigameTimerDisplayMin",
+        "mirTutorialStartStageDelta",
+        "monsterTransendenceHPLevelOff",
+        "playerPollMinPrestigeCount",
+        "prestigeRaceMinigamePrestigeRewardLimit",
+        "rateGameDiamonds",
+        "redditFollowDiamonds",
+        "relicsStageMax",
+        "shopReSyncMinSeconds",
+        "streamOfBladesTargetHitCount",
+        "titanSoulsMaxPerDay",
+        "titanSoulsMaxPerPrestige",
+        "titanSoulsUnlockDays",
+        "titanSoulsUnlockStage",
+        "twitterFollowDiamonds",
+        "updateInfodocsForcedResetDuration",
+        "updateInfodocsHiddenResetDurationMax",
+        "updateInfodocsHiddenResetDurationMin",
+        "upgradeAllHelperStageRequirement",
+        "usdToVIPPoints"
+      ],
+      "int[]": [
+        "clanNecrobearLevelRequirements",
+        "clanRaidLevelRequirements",
+        "clanStageRequirements",
+        "gemstonesPullAmounts",
+        "helperUpgradeLevelTiers",
+        "helperUpgradeModulus",
+        "helperUpgradeOffsets",
+        "newPlayerRetentionHours",
+        "rateGamePopupStages",
+        "retentionDays",
+        "summonAmounts",
+        "vipPointsPerLevel"
+      ],
+      "string": [
+        "TeapotErrorCode",
+        "accountDeletedErrorCode",
+        "accountDeletionWarningErrorCode",
+        "amazonAppStoreLink",
+        "challengeTournamentProgressionRewardsStartDate",
+        "defaultBannerBoostType",
+        "defaultImagesURL",
+        "discordLink",
+        "facebookLink",
+        "forbiddenAccessErrorCode",
+        "gameUpdatedErrorCode",
+        "googleAppStoreLink",
+        "helpshiftUrlFormat",
+        "holidayBundleEndDate",
+        "huaweiAppStoreLink",
+        "iOSAppStoreLink",
+        "instagramLink",
+        "localizationForceDownloadVersion",
+        "maintenanceErrorCode",
+        "minBuildImportVersion",
+        "minVersion",
+        "newContentVersion",
+        "newPlayerRaidAttackGuideURL",
+        "newPlayerRelicMultBonusStartDate",
+        "profileBackgroundImagesURL",
+        "raidAttackShareVersion",
+        "raidStarterDecks",
+        "redditLink",
+        "shopImagesURL",
+        "shopJSONOverride",
+        "skillTreeShareVersion",
+        "startMessageButtonLink",
+        "startMessageHeaderLink",
+        "startMessageId",
+        "tt1PromoEndDate",
+        "twitterLink",
+        "websiteLink",
+        "wipeVersion",
+        "xsollaLink"
+      ]
+    },
+    "note": "string、int[]、List<float>、GHDouble、TimeSpan 等非純量欄位在建構式裡以配置或 InitializeArray 建立，本表不解其內容；純量欄位若解不出來，通常是值由執行期計算或以本表未涵蓋的指令形式寫入。"
+  },
+  "alsoInPackageTables": [
+    "additiveRelicMultiplierMax",
+    "clanNameChangeCost",
+    "endGamePetImprovementLevelDelta",
+    "endGamePetImprovementLevelStart",
+    "fishingMinigamePrestigeRewardLimit",
+    "fishingMinigameTackleboxBaseSize",
+    "fishingMinigameTackleboxCollectTime",
+    "gemstonesCurrencyCost",
+    "gemstonesDiamondCost",
+    "gemstonesUnlockInHours",
+    "gemstonesUnlockStage",
+    "honourStageOffset",
+    "hoursToCollectEgg",
+    "hoursToCollectEndgameEgg",
+    "maxEndgamePetEggs",
+    "maxStage",
+    "petParadiseRewardXp",
+    "petQuestRerollCostPromotionMult",
+    "petQuestRerollPromotion",
+    "pet_paradise_max_shovels",
+    "pet_paradise_shovel_diamond_cost",
+    "pet_paradise_shovel_purchase_amount",
+    "pet_paradise_shovel_purchase_daily_limit",
+    "raidCardCrystalLevelRank",
+    "raidCardCrystalUnlockLevel",
+    "skillPointsPrestigeMax"
+  ],
+  "limits": [
+    "預設值不是線上值：這些欄位都是 [ServerVar]，伺服器可覆蓋",
+    "解析只承認「寫進靜態區塊」的指令，其餘一律列為未解出，不猜測",
+    "本表不判斷欄位是否被實際使用，只記錄它的編譯期預設值"
+  ]
+}

@@ -1,6 +1,6 @@
 # Titan Echo 完整復刻代辦清單
 
-更新：2026-09-17。遊戲目前為 **2.12.8**，最近完整測試 **360 項 Node 測試＋23 項 Python 匯入測試通過**。此文件是後續工作的主清單；`TT2-RULES.md` 保留歷史研究紀錄，不以舊敘述判斷目前完成度。
+更新：2026-09-17。遊戲目前為 **2.12.8**，最近完整測試 **365 項 Node 測試＋23 項 Python 匯入測試通過**。此文件是後續工作的主清單；`TT2-RULES.md` 保留歷史研究紀錄，不以舊敘述判斷目前完成度。
 
 ## 目前位置
 
@@ -226,15 +226,28 @@ R04 子步驟：找出溢位與非有限值 → 以極大存檔釘住不變量 �
 **尚未接入引擎**：接入會改變存檔中數值的表示法（金幣與目前怪物血量是關鍵欄位，聖物在 18 萬關也只到 8.6e6，不受影響），必須一併處理 Sheets 外層格式相容、雲端容量與既有存檔遷移；且在取得 maxGold 的線上值之前，仍無法宣稱與原版同上限。這是 R04 剩餘的工作。
 ## 伺服器參數的證據界線
 
-原生把大量玩法參數放在 `[ServerVar]` 靜態欄位，共 **953 個**；安裝包的兩張變數表只帶 37 個鍵，其中 28 個對得上原生欄位。
-依 ROADMAP 項目分組後（見 [伺服器變數缺口盤點](docs/server-var-gaps.md)），**第二階段各項的伺服器參數在安裝包內全部沒有值**：
-C01 暴擊 10 個欄位 0 個有值、C02 劍術大師 4 個 0 個、C03-C04 英雄 22 個 0 個、C05 泰坦與金幣 67 個 0 個、
-C06 濺射與跳關 3 個 0 個、C07 魔力 18 個 0 個、I01-I03 裝備 26 個 0 個。
+原生把大量玩法參數放在 `[ServerVar]` 靜態欄位，共 **953 個**。這裡有**兩條各自獨立的線索**，先前只記了第一條：
+
+1. **安裝包的兩張變數表**只帶 37 個鍵，其中 28 個對得上原生欄位。依 ROADMAP 項目分組後
+   （見 [伺服器變數缺口盤點](docs/server-var-gaps.md)），第二階段各項的參數在這兩張表裡全部沒有值：
+   C01 暴擊 10 個欄位 0 個有值、C02 劍術大師 4 個 0 個、C03-C04 英雄 22 個 0 個、C05 泰坦與金幣 67 個 0 個、
+   C06 濺射與跳關 3 個 0 個、C07 魔力 18 個 0 個、I01-I03 裝備 26 個 0 個。
+2. **程式裡寫死的編譯期預設值**：`ServerVarsModel` 的類別建構式會在任何伺服器回應之前先賦值。
+   `tools/audit-servervar-defaults.py` 從中解出 **954 個靜態欄位裡的 745 個純量預設值**
+   （見 [靜態預設值總表](reference/tt2/8.2.0/servervar-defaults.json)），其餘 209 個逐項列名：
+   string 39、bool 63、int 57、int[] 12、float 20、GHDouble 10、double 5、TimeSpan 2、List&lt;float&gt; 1。
+   劍術大師的 `costBase`／`costGrowth` 與英雄的 `helperUpgradeBase` 本來就是從這裡取得的，
+   三者同時作為這份解析的自我檢查。
+
+**兩條線索互證，也彼此區別**：`hoursToCollectEgg` 的預設值 4 與變數表的 4 一致；
+`clanNameChangeCost` 兩邊都是 800。而 `maxStage` 的編譯期預設值是 **1,000,000**、被變數表覆寫成 **98,000**
+——這正說明**預設值不是線上值**：每一個都是 `[ServerVar]`，伺服器可以整份覆蓋。
+因此引用預設值時狀態是 `default`（原生靜態預設值，線上可覆蓋），不是 `native`。
 
 **這界定了「原版一致」在本專案能到什麼程度**：資料表（曲線、費用、效果 ID）可以從安裝包核實，
-但決定這些曲線如何組合的伺服器參數不在包內。因此第二階段各項在取得線上參數或實測紀錄之前，
-只能做到「依資料表與原生程式結構還原」，不能宣稱數值與線上一致；相關項目一律保留待證據標記，
-不以猜測值改動戰鬥數值。盤點由 `node tools/server-var-gaps.mjs` 產生，可重跑。
+編譯期預設值可以作為 `default` 級的對照，但線上實際生效的參數仍然不在包內。
+因此第二階段各項在取得線上參數或實測紀錄之前，只能做到「依資料表、原生程式結構與編譯期預設值還原」，
+不能宣稱數值與線上一致。盤點由 `node tools/server-var-gaps.mjs` 產生，可重跑。
 
 **小遊戲是同一類界線，但原因不同**：不是參數缺值，而是**結果本身由伺服器決定**。六個小遊戲模型都把花費送出、再從回應解析結果——釣魚 `PullFishFromServer`／`TryParsePulledFish`、狩獵 `PullBeasts`／`TryParsePulledBeasts`、挖掘 `RevealTile`（翻一格就是一次往返）、落球 `Submit`、迷宮 `OpenDoor`、公會保險庫 `CollectRewards`。連落球的釘子數值（`ParsePegsAndBuckets`）與迷宮地圖（`ParseMaze`）都是從伺服器字典解析的。因此安裝包內那些魚、野獸、關卡與稀有度機率表是**顯示用的資料**，不是客戶端的抽選規則；由 `python tools/audit-minigame-boundary.py` 對釘住的程式庫重新產生，逐方法位址與位元組雜湊見上述證據檔。
 
@@ -355,6 +368,7 @@ C01 證據狀態：原生把暴擊參數放在 `[ServerVar]` 欄位——`player
 
 | 日期 | 項目 | 證據／結果 |
 |---|---|---|
+| 2026-09-17 | R05 解出 745 個 [ServerVar] 的編譯期預設值，補上先前漏掉的第二條線索 | 專案原本的認知是「953 個 [ServerVar] 只有 28 個在包內有值」。那只對了一半：那是**變數表**的狀況，而 `ServerVarsModel` 的類別建構式還會在任何伺服器回應之前，把編譯期預設值寫進靜態區塊——劍術大師的 `costBase`／`costGrowth` 一直就是從這裡來的，只是沒有人把它整批解出來。`tools/audit-servervar-defaults.py` 走完整個建構式（0x2618 位元組），追蹤哪一個暫存器持有 `Il2CppClass.static_fields`（偏移 0xb8），把寫進去的每一個純量記下來，處理 `mov`／`movk` 立即數、rodata 載入的 `ldr q/d/s`、`dup v.2d`、以及 scaled 與 unscaled 兩種 `str`／`stp` 形式；**954 個靜態欄位解出 745 個**（int、float、bool、double），其餘 209 個**逐項列名**而不是含混帶過（string 39、bool 63、int 57、int[] 12、float 20、GHDouble 10、double 5、TimeSpan 2、List&lt;float&gt; 1）。可信度靠三重自我檢查：本專案先前手工取得的 `helperUpgradeBase`＝1.08、`playerUpgradeCostBase`＝5、`playerUpgradeCostGrowth`＝1.075，走這條路得到同一個數字（不符就中止）。與變數表互證：`hoursToCollectEgg` 兩邊都是 4、`clanNameChangeCost` 兩邊都是 800；而 `maxStage` 編譯期預設 1,000,000、被變數表覆寫成 98,000，正好示範**預設值不是線上值**。新增 `tests/servervar-defaults.test.mjs` 5 項（含引擎常數必須等於解出的值、覆蓋案例）。ROADMAP 的「伺服器參數的證據界線」一節改寫為兩條線索並說明其分別。**這批值本身還沒有接進任何公式**，接的時候一律登記為 `default`。365 項 Node 測試＋23 項 Python 測試通過。 |
 | 2026-09-17 | R05 英雄升級費用改用 8.2 的原生成長率（2.12.8） | 引擎的 1.075 是 7.5 基準，`HelperInfo.json` 也只有 `PurchaseCost1` 一欄，看起來像「包內查不到」。實際上成長率是 [ServerVar] `ServerVarsModel.helperUpgradeBase`，而它和劍術大師的 `costBase`／`costGrowth` 一樣**在程式裡有靜態預設值**：`tools/audit-helper-cost.py` 從 `ServerVarsModel..cctor` 解出唯一一次寫入，值為 float 的 **1.08**（位元 0x3f8a3d71）。它確實是費用公比而不是同名的別的東西——`HelperInfo..ctor` 讀它之後取對數存進 `helperUpgradeBaseLog`、把 base−1 存進 `helperUpgradeBaseMinusOne`，正是等比級數需要的兩個導出量，`GetPurchaseCost` 再以 `GHDouble.Pow` 乘上基礎費用（`GetMaxNumUpgrades` 用對數那個、`GetEvolveAdditionalCost` 用 base−1 那個）。引擎改用 `HELPER_DEFAULTS.costGrowth = Math.fround(1.08)` 保留 float 精度，算式結構不變，登記由 `baseline-75` 改為 `default`。**影響**：同一位英雄的下一級價格在 100 級約貴 1.6 倍、500 級約貴 10 倍、1000 級約貴 100 倍；已有等級與金幣不變。**沒解出來的部分照實記錄**：相鄰的 `helperUpgradeLevelTiers`／`Modulus`／`Offsets` 三個 int[] 由 `InitializeArray` 從中繼資料填充，本次未解出內容，可能對特定等級區間另有修正。新增 `tests/helper-cost.test.mjs` 5 項（含「引擎用的值連 float 精度都與原生相同」與「相鄰兩級的費用比就是公比」）。360 項 Node 測試＋23 項 Python 測試通過。 |
 | 2026-09-17 | R05 英雄傷害曲線對上原生，多出來的成長率登記為不一致 | 查 `HelperInfo.GetRawDPS`（RVA 0x22491ac）：它就是 `LevelCurve.GetTotalImprovementByLevel(昇階, 等級) × 等級 × GetBaseDamage(昇階)` 三個因子相乘，完整的 `GetDPS` 在外面只再乘武器傷害、`GetAllHelperDPS` 與 `GetIndividualEnhancedMultiplier`。`tools/audit-hero-dps.py` 除了記下呼叫順序，還把兩個方法載入的每一個浮點常數列出來——**兩個方法一個浮點常數都沒有載入**，所以逐級成長率不可能藏在原生路徑裡；里程碑累計倍率本身就是整條曲線（`HelperImprovementsInfo` 1015 列、七個昇階各 145 段，Ascension 0 到 6000 級累計 1.18×10^189）。對照結果：`TT2_HERO_MILESTONES` 145 列與該表 Ascension 0 的 `PrecalculatedAmount` 三欄**逐列完全相同**，引擎與原生的唯一差異就是額外乘上的 `1.035^(等級−1)`（新測試以乾淨存檔在 1／10／50／200／1000 級驗證比值正好等於它，等於同時釘住其餘因子都正確）。**這一項沒有移除**：1.035 是 7.5 基準的產物，與同為 7.5 近似的怪物血量曲線（18 × 1.32^關卡，十個具名 [ServerVar] 在包內都沒有值）配套，單獨拿掉會讓英雄傷害在 1000 級時少 8.4×10^14 倍，等於在沒有原版難度基準的情況下只改一邊；因此在登記表由 `baseline-75` 改列 `table-differs` 並寫明理由與影響。新增 `tests/hero-dps.test.mjs` 5 項，`tests/formula-sources.test.mjs` 同步為兩處不一致。純證據與文件變更，不動遊戲數值，版本號不變。355 項 Node 測試＋23 項 Python 測試通過。 |
 | 2026-09-17 | V03／V06 影分身自己攻擊，傷害數字依原生分類（2.12.7） | 先查原生再動手。`tools/audit-damage-text.py` 產出 [damage-text-evidence.json](reference/tt2/8.2.0/damage-text-evidence.json)，四件事都是程式化解析、不是手抄：一、`DamageType` 有 41 個具名來源；二、`MonsterModel.CanShowDamageText` 是一個對 damageType−1 的跳表，把 33 個來源各自對到**唯一一個** `OptionsController` 的 `<名稱>Off` 布林（劍術大師 5 個、寵物 7 個、公會飛船 7 個、匕首 3 個、金槍 3 個、天堂 3 個、影分身 2 個、特殊攻擊 3 個），其餘 7 個（英雄家族、Splash、MegaCoin）永遠顯示；三、`MonsterController.TryDamagedAnimation` 另用位遮罩 `0xff96d76b06` 決定 25 個來源才播受擊動畫（`PetCrit`、`HeavenlyStrikeCrit`、`ShadowCloneCrit` 都不播）；四、**負面結果**：`MonsterController` 有十個受擊染色常數（已解出 RGBA），但掃過該類別其餘 47 個方法後**沒有任何一個讀它們**，`StartDamagedAnimation` 也不看 DamageType，所以受擊動畫不依來源上色，這十個顏色不能當成原版行為。實作面：`ActiveSkillModel.GetCloneAttackRate` ＝ `max(1, Bonus(ShadowCloneSkillAttackRate) × Bonus(CompanionAttackRate))`，`PlayerController.ShadowCloneAttackLoop` 以 `WaitForSeconds(1 ÷ 該速率)` 為間隔，因此把影分身從 `advance()` 的每 100ms 傷害 tick 裡拆出來：改為每 1÷速率 秒獨立攻擊一次，記在新的 `cloneAt`／`cloneAttacks`／`lastCloneHit`，介面比對次數變化才冒數字（與 2.12.3 的寵物、天堂同一原則）。每秒總傷害不變（原本是一秒十次各十分之一），但技能樹「影分身」天賦本來就帶的 `ShadowCloneSkillAttackRate`（+10%～+95%）原先完全沒有作用，現在會加快攻擊。設定新增四個傷害數字開關，存在本機而非存檔。新增 `tests/damage-text.test.mjs` 12 項（證據雜湊、跳表互斥且分完、四個開關與原生欄位逐項相同、受擊動畫名單、十個染色 0 個讀取且原始碼不得使用那些色碼、速率算式、節奏與步長無關、技能結束不補打、舊存檔缺三個欄位可讀、蛻變後歸零），`tests/damage-numbers.test.mjs` 增為四種數字，`cloneAttackRate` 登記進公式來源表（native 1 項、invented 2 項、server 1 項）。350 項 Node 測試＋23 項 Python 測試通過。 |
