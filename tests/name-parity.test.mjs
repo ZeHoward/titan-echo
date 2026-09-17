@@ -3,7 +3,8 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { TT2_ACTIVE, TT2_ARTIFACTS, TT2_HEROES, TT2_PETS, TT2_SETS, TT2_TREE } from '../lib/tt2-data.ts';
 import { HERO_NAMES, PET_NAMES, SET_NAMES, TALENT_NAMES } from '../lib/zh-tw.ts';
-import { SKILLS } from '../lib/engine.ts';
+import { SKILLS, SKILL_DATA, SKILL_ORDER } from '../lib/engine.ts';
+import { SKILL_TEXT } from '../lib/tt2-skill-text.ts';
 import { SOURCE_NAMES } from '../lib/tt2-source-names.ts';
 import { referenceRoot } from '../tools/reference-validation.mjs';
 const parity = JSON.parse(readFileSync(new URL('set-name-parity.json', referenceRoot), 'utf8'));
@@ -119,5 +120,35 @@ test('官方名稱清單本身可重算，主題名稱不會因為重跑匯入�
   assert.equal(skills.length, 6);
   for (const value of Object.values(SOURCE_NAMES)) {
     assert.doesNotMatch(value, /[A-Za-z{}<>]/, `官方名稱清單混入未譯字串：${value}`);
+  }
+});
+
+test('六個技能的說明也來自安裝包，沒有留下手寫的句子', () => {
+  assert.equal(Object.keys(SKILL_TEXT).length, TT2_ACTIVE.length);
+  for (const skill of TT2_ACTIVE) {
+    const text = SKILL_TEXT[skill.id];
+    assert.ok(text, `${skill.id} 沒有官方說明`);
+    // The flavour line is what the tooltip shows, so it has to be fully translated.
+    assert.ok(text.flavour.length > 6, `${skill.id} 的敘述太短`);
+    assert.doesNotMatch(text.flavour, /[A-Za-z{}<>]/, `${skill.id} 的敘述未完全翻譯：${text.flavour}`);
+    // The effect line carries the multiplier as a placeholder the interface fills in.
+    assert.ok(text.quick.includes('{0}'), `${skill.id} 的效果說明沒有 {0}`);
+  }
+  // Four of the six carry a secondary effect; that is a fact about the package, not a choice.
+  assert.equal(Object.values(SKILL_TEXT).filter(text => text.secondary).length, 4);
+});
+
+test('引擎與面板都讀官方說明，而不是自己帶一份', () => {
+  for (const skill of SKILLS) {
+    assert.ok(Object.values(SKILL_TEXT).some(text => text.flavour === skill.desc), `${skill.name} 的說明不是官方字串`);
+  }
+  assert.equal(SKILLS.length, SKILL_ORDER.length);
+  const panel = readFileSync(new URL('../app/tt2-panels.tsx', import.meta.url), 'utf8');
+  assert.ok(panel.includes("SKILL_TEXT[SKILL_DATA[i].id]?.quick"), '面板沒有使用官方效果說明');
+  assert.ok(panel.includes(".replace('{0}',fmt(skillPower(s,i)))"), '面板沒有把倍率填進說明');
+  // The old hand-written lines must not survive anywhere.
+  const engine = readFileSync(new URL('../lib/engine.ts', import.meta.url), 'utf8');
+  for (const written of ['持續造成影分身傷害', '提高各金源收益', '造成一擊天堂傷害']) {
+    assert.ok(!engine.includes(written), `lib/engine.ts 仍有手寫說明：${written}`);
   }
 });
