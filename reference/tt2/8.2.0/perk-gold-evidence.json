@@ -1,0 +1,71 @@
+{
+  "version": "8.2.0",
+  "role": "黃金雨立即金幣的原生形狀：關卡怎麼挑、金額怎麼算，以及它為什麼接不上。",
+  "packageSha256": "8d78c9aa877e6c0b291ee2116cab855bd26c59c1d080bc654f88ecf1ff268b5f",
+  "binarySha256": "c13fc44321b1214c71ab0277a134fc3401fd7392c74a0bbb3935671c55a8713a",
+  "scriptSha256": "62c2eeb8472bb107de516e4b6ae69d3dcdf5013fb1caa87223d82a54dd203f8b",
+  "finding": "兩個方法都短。GetMakeItRainGold 先挑一個關卡——把「歷史最高 − 目前」的差額乘上 makeItRainMaxStageMult（0.8500000238418579）再加回目前關卡，和 makeItRainStageMult（1.0）× 目前關卡兩者取其一（fcsel 挑，等於偏向較大的那個）——再交給 GetPerkGold。GetPerkGold 則是 (GetLargestGoldSourceAmount(關卡) × Bonus(PerkGold)) ^ perkGoldReduction（0.9965000152587891）。**所以金額根本不是關卡的函數**：它是「玩家在那個關卡最大的單一金幣來源值多少」，再開一個略小於 1 的次方壓下來。",
+  "consequence": "接不上，而且原因很具體：GetLargestGoldSourceAmount 有 387 條指令，對四個金幣來源取最大值（寶箱泰坦、頭目、妖精、寵物點金手），還要 GetMaxHandOfMidasBonus 與一次 QTE 解鎖檢查。這四條本專案沒有一條是照原生算的，所以先還原它們才談得上黃金雨的立即金幣。",
+  "methods": {
+    "makeItRainGold": {
+      "name": "PerkModel$$GetMakeItRainGold",
+      "rva": "0x23823bc",
+      "bytesSha256": "58c321099dfa1b6f4355f56832af1070d6e9379c9a6b4afdb4398ae52cd952d9"
+    },
+    "perkGold": {
+      "name": "PerkModel$$GetPerkGold",
+      "rva": "0x238737c",
+      "bytesSha256": "0d5ea0ca27979ff03a488bbb9a3f78400eb50eb30021755bf8e7ebf6610811c6"
+    }
+  },
+  "stagePick": {
+    "formula": "max(makeItRainMaxStageMult × (歷史最高 − 目前) + 目前, makeItRainStageMult × 目前)",
+    "coefficients": {
+      "makeItRainStageMult": {
+        "offset": "0xa94",
+        "value": 1.0
+      },
+      "makeItRainMaxStageMult": {
+        "offset": "0xa98",
+        "value": 0.8500000238418579
+      }
+    },
+    "note": "兩個係數的預設值是 1.0 與 0.8500000238418579，所以實際上是「目前關卡，外加還沒推回去的那段的 85%」。挑法用兩層 fcsel，未逐一判定每個條件碼，只確認兩個候選值都算得出來。"
+  },
+  "payout": {
+    "formula": "(GetLargestGoldSourceAmount(關卡, useMaxHandOfMidas: true) × Bonus(PerkGold)) ^ perkGoldReduction",
+    "bonus": {
+      "name": "PerkGold",
+      "value": 348
+    },
+    "exponent": {
+      "name": "perkGoldReduction",
+      "offset": "0xaa8",
+      "value": 0.9965000152587891
+    },
+    "note": "指數略小於 1，作用是把很大的金幣值壓低——數字愈大壓得愈多。GetPerkGold 同時也是公會箱金幣走的那條路徑。"
+  },
+  "blockedBy": {
+    "method": "PlayerModel$$GetLargestGoldSourceAmount",
+    "instructionCount": 387,
+    "sources": [
+      "MonsterModel$$GetAverageChestersonGoldDrop",
+      "MonsterModel$$GetAverageBossGoldDrop",
+      "FairyController$$GetFairyGoldAmount",
+      "PetModel$$GetPetHomGold"
+    ],
+    "alsoNeeds": [
+      "PlayerModel$$GetMaxHandOfMidasBonus",
+      "BonusModel$$GetBonus",
+      "QTEModel$$IsQTEUnlocked",
+      "BonusModel$$GetBonusFromModifierID"
+    ],
+    "note": "它對四個來源取 GHDouble.Max，本專案這四條都不是照原生算的：寶箱與頭目金幣沿用近似、妖精獎勵是另一套、寵物點金手未實作。"
+  },
+  "limits": [
+    "三個係數都是 [ServerVar]，本表用的是編譯期預設值，不是線上值",
+    "GetMakeItRainGold 的兩層 fcsel 未逐一判定條件碼，只確認兩個候選值的算法",
+    "GetLargestGoldSourceAmount 本身未展開，只記下它呼叫了哪些來源與取最大值",
+    "相鄰的 perkGoldSkillPointBase（1.04）與 perkGoldSkillPointMaxCount（400）不在這兩個方法裡，用途未查"
+  ]
+}

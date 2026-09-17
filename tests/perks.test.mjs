@@ -102,7 +102,8 @@ test('登記為安裝包資料表與原生預設值，未還原的部分逐項�
  const register=loadRegister(),perks=register.formulas.find(formula=>formula.id==='perks');
  assert.ok(perks.parts.length>=3,'拆成數值、層數與黃金雨修正三項以上');
  assert.ok(!perks.parts.some(part=>part.status==='baseline-75'),'不該再有沿用 7.5 的條目');
- for(const part of perks.parts)assert.equal(part.ref,'perk-evidence.json');
+ // Every part names its evidence; the immediate-gold one has a file of its own.
+ for(const part of perks.parts)assert.ok(['perk-evidence.json','perk-gold-evidence.json'].includes(part.ref),part.part);
  // Still missing on purpose, and named rather than counted.
  for(const key of ['perkSelectUnlockStage','immediateGold','otherPerks'])assert.ok(evidence.notImplemented[key],key);
  assert.equal(evidence.serverVarDefaults.perkSelectUnlockStage.value,1200);

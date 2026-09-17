@@ -525,10 +525,16 @@
           "note": "GetBonusAmountA 只對 PerkID.MakeItRain 多乘一段 1 − min(Bonus(AutoBuyHeroesMultDuringMakeItRain), autoBuyHeroesMaxBonus)，上限欄位的編譯期預設值是 float 0.95，所以間隔最低只到原值的 5%。包內給這個加成的是 GoldRain 傳說套裝（0.3），湊齊後間隔剩七成；魔力藥水不受影響。上限是 [ServerVar]，線上可覆蓋，故為 default。"
         },
         {
-          "part": "隨機配發、票券與立即金幣未還原",
+          "part": "隨機配發與票券未還原",
           "status": "table-differs",
           "ref": "perk-evidence.json",
-          "note": "原生的 perk 選擇在第 1200 關解鎖（perkSelectUnlockStage），另有票券制（perkTicketCost = 10），本專案兩個 perk 固定可用、兌換次數來自登入獎勵。黃金雨的立即金幣走 GetMakeItRainGold，以 makeItRainStageMult（1.0）與 makeItRainMaxStageMult（0.85）配合目前與歷史最高關卡計算，尚未還原。PerkInfo 共 19 列，本專案只實作其中兩列。"
+          "note": "原生的 perk 選擇在第 1200 關解鎖（perkSelectUnlockStage），另有票券制（perkTicketCost = 10），本專案兩個 perk 固定可用、兌換次數來自登入獎勵。PerkInfo 共 19 列，本專案只實作其中兩列。"
+        },
+        {
+          "part": "黃金雨的立即金幣未還原",
+          "status": "table-differs",
+          "ref": "perk-gold-evidence.json",
+          "note": "形狀讀出來了，**但不是關卡的函數**：GetMakeItRainGold 先挑一個關卡（把「歷史最高 − 目前」的差額乘 makeItRainMaxStageMult 0.85 再加回目前，與 makeItRainStageMult 1.0 × 目前關卡兩者取其一），再交給 GetPerkGold；GetPerkGold 是 (GetLargestGoldSourceAmount(關卡) × Bonus(PerkGold)) ^ perkGoldReduction（0.9965）——也就是「玩家在那個關卡最大的單一金幣來源」再開一個略小於 1 的次方。**接不上的原因很具體**：GetLargestGoldSourceAmount 有 387 條指令，對寶箱泰坦、頭目、妖精、寵物點金手四個來源取最大值，還要 GetMaxHandOfMidasBonus 與一次 QTE 檢查，而這四條本專案沒有一條是照原生算的。先還原它們才談得上立即金幣。"
         }
       ]
     },
