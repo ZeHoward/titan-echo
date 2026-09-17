@@ -1,6 +1,6 @@
 # Titan Echo 完整復刻代辦清單
 
-更新：2026-09-17。遊戲目前為 **2.12.8**，最近完整測試 **365 項 Node 測試＋23 項 Python 匯入測試通過**。此文件是後續工作的主清單；`TT2-RULES.md` 保留歷史研究紀錄，不以舊敘述判斷目前完成度。
+更新：2026-09-17。遊戲目前為 **2.12.9**，最近完整測試 **371 項 Node 測試＋23 項 Python 匯入測試通過**。此文件是後續工作的主清單；`TT2-RULES.md` 保留歷史研究紀錄，不以舊敘述判斷目前完成度。
 
 ## 目前位置
 
@@ -97,7 +97,7 @@
 | R02 | 完成 | 8.2 資料匯入與完整 ID 目錄 | 神器、法術、技能樹、裝備、套裝、英雄、寵物、被動等皆有版本與唯一 ID；處理新增／刪除／停用列及新增欄位；區分活動和常駐內容 |
 | R03 | 完成 | 穩定 ID 存檔遷移、規則版本與還原備份 | 舊 2.6 存檔可遷移且重跑不重複退款；新增 6 項技能與 28 組套裝不錯置；雲端舊版資料有相容讀取流程 |
 | R04 | 完成 | 大數值與數字顯示 | 取代 1e240 的實質封頂及未驗證的等級限制；巨大傷害、金幣、費用、聖物可運算與序列化，無 Infinity／NaN；雲端容量測試通過 |
-| R05 | 完成 | 來源證據與同版本比對用例 | 每個核心公式記錄表、方法或實測來源；建立升級前後、施法前後、蛻變前後對照；缺少實測的項目保留待驗證標記。**登記表見 [docs/formula-sources.md](docs/formula-sources.md)**，56 項來源中 29 項仍為待驗證、2 項與安裝包不一致 |
+| R05 | 完成 | 來源證據與同版本比對用例 | 每個核心公式記錄表、方法或實測來源；建立升級前後、施法前後、蛻變前後對照；缺少實測的項目保留待驗證標記。**登記表見 [docs/formula-sources.md](docs/formula-sources.md)**，56 項來源中 28 項仍為待驗證、2 項與安裝包不一致 |
 
 R02 子步驟：建立 8.2 全表索引 → 逐表 schema 解析 → 以 ID 映射至現行資料 → 保留版本差異與停用標記 → 產生逐 ID 待驗收清單 → 交給 R03 遷移。此階段不直接以新版陣列覆蓋線上存檔。**R02 標記完成的範圍只有資料目錄與逐 ID 核對**；資料齊備不等於任何玩法系統已還原，後續各項仍須逐條實作與驗證。
 
@@ -368,6 +368,7 @@ C01 證據狀態：原生把暴擊參數放在 `[ServerVar]` 欄位——`player
 
 | 日期 | 項目 | 證據／結果 |
 |---|---|---|
+| 2026-09-17 | C05 每關小怪隻數改用原版算式（2.12.9） | 上一項解出的編譯期預設值立刻派上用場。`StageLogic.GetRawMonsterCountPerStage`（RVA 0x25468a0）短到可以整段讀完：依序讀 `monsterCountInc`、`monsterCountStageDelta`、`monsterCountBase`，算 `base + 關卡 × inc ÷ (delta + 關卡)`，再交給 C# 的 `Math.Round`（以 modf 取小數後比較 ±0.5，平手進偶數），整段以 float 運算。三個欄位的編譯期預設值是 8／148／32000，於是第 1 關 8 隻、第 500 關 10 隻、第 1000 關 12 隻、第 2000 關 17 隻、第 10000 關 43 隻、第 98000 關 120 隻——引擎原本固定 10 隻，**早期偏多、後期遠遠偏少**。`tools/audit-monster-count.py` 逐指令核對讀取順序與四則運算，並直接從 `servervar-defaults.json` 取值（不重複解析，兩份記錄不會漂移），輸出 12 個關卡的樣本；引擎以 `Math.fround` 逐步模擬 float 運算並實作平手進偶數，12 個樣本逐關相同。介面同步處理：一關 120 隻時原本會畫 120 個小圓點，超過 12 隻改用進度條。登記由 `server` 改為 `default`（線上仍可覆蓋）。順帶修正 `monster-curve-evidence.json` 的措辭——原本寫「安裝包沒有帶值」，正確說法是「兩張變數表沒有帶值」，因為編譯期預設值是另一條線索。新增 `tests/monster-count.test.mjs` 6 項。371 項 Node 測試＋23 項 Python 測試通過。 |
 | 2026-09-17 | R05 解出 745 個 [ServerVar] 的編譯期預設值，補上先前漏掉的第二條線索 | 專案原本的認知是「953 個 [ServerVar] 只有 28 個在包內有值」。那只對了一半：那是**變數表**的狀況，而 `ServerVarsModel` 的類別建構式還會在任何伺服器回應之前，把編譯期預設值寫進靜態區塊——劍術大師的 `costBase`／`costGrowth` 一直就是從這裡來的，只是沒有人把它整批解出來。`tools/audit-servervar-defaults.py` 走完整個建構式（0x2618 位元組），追蹤哪一個暫存器持有 `Il2CppClass.static_fields`（偏移 0xb8），把寫進去的每一個純量記下來，處理 `mov`／`movk` 立即數、rodata 載入的 `ldr q/d/s`、`dup v.2d`、以及 scaled 與 unscaled 兩種 `str`／`stp` 形式；**954 個靜態欄位解出 745 個**（int、float、bool、double），其餘 209 個**逐項列名**而不是含混帶過（string 39、bool 63、int 57、int[] 12、float 20、GHDouble 10、double 5、TimeSpan 2、List&lt;float&gt; 1）。可信度靠三重自我檢查：本專案先前手工取得的 `helperUpgradeBase`＝1.08、`playerUpgradeCostBase`＝5、`playerUpgradeCostGrowth`＝1.075，走這條路得到同一個數字（不符就中止）。與變數表互證：`hoursToCollectEgg` 兩邊都是 4、`clanNameChangeCost` 兩邊都是 800；而 `maxStage` 編譯期預設 1,000,000、被變數表覆寫成 98,000，正好示範**預設值不是線上值**。新增 `tests/servervar-defaults.test.mjs` 5 項（含引擎常數必須等於解出的值、覆蓋案例）。ROADMAP 的「伺服器參數的證據界線」一節改寫為兩條線索並說明其分別。**這批值本身還沒有接進任何公式**，接的時候一律登記為 `default`。365 項 Node 測試＋23 項 Python 測試通過。 |
 | 2026-09-17 | R05 英雄升級費用改用 8.2 的原生成長率（2.12.8） | 引擎的 1.075 是 7.5 基準，`HelperInfo.json` 也只有 `PurchaseCost1` 一欄，看起來像「包內查不到」。實際上成長率是 [ServerVar] `ServerVarsModel.helperUpgradeBase`，而它和劍術大師的 `costBase`／`costGrowth` 一樣**在程式裡有靜態預設值**：`tools/audit-helper-cost.py` 從 `ServerVarsModel..cctor` 解出唯一一次寫入，值為 float 的 **1.08**（位元 0x3f8a3d71）。它確實是費用公比而不是同名的別的東西——`HelperInfo..ctor` 讀它之後取對數存進 `helperUpgradeBaseLog`、把 base−1 存進 `helperUpgradeBaseMinusOne`，正是等比級數需要的兩個導出量，`GetPurchaseCost` 再以 `GHDouble.Pow` 乘上基礎費用（`GetMaxNumUpgrades` 用對數那個、`GetEvolveAdditionalCost` 用 base−1 那個）。引擎改用 `HELPER_DEFAULTS.costGrowth = Math.fround(1.08)` 保留 float 精度，算式結構不變，登記由 `baseline-75` 改為 `default`。**影響**：同一位英雄的下一級價格在 100 級約貴 1.6 倍、500 級約貴 10 倍、1000 級約貴 100 倍；已有等級與金幣不變。**沒解出來的部分照實記錄**：相鄰的 `helperUpgradeLevelTiers`／`Modulus`／`Offsets` 三個 int[] 由 `InitializeArray` 從中繼資料填充，本次未解出內容，可能對特定等級區間另有修正。新增 `tests/helper-cost.test.mjs` 5 項（含「引擎用的值連 float 精度都與原生相同」與「相鄰兩級的費用比就是公比」）。360 項 Node 測試＋23 項 Python 測試通過。 |
 | 2026-09-17 | R05 英雄傷害曲線對上原生，多出來的成長率登記為不一致 | 查 `HelperInfo.GetRawDPS`（RVA 0x22491ac）：它就是 `LevelCurve.GetTotalImprovementByLevel(昇階, 等級) × 等級 × GetBaseDamage(昇階)` 三個因子相乘，完整的 `GetDPS` 在外面只再乘武器傷害、`GetAllHelperDPS` 與 `GetIndividualEnhancedMultiplier`。`tools/audit-hero-dps.py` 除了記下呼叫順序，還把兩個方法載入的每一個浮點常數列出來——**兩個方法一個浮點常數都沒有載入**，所以逐級成長率不可能藏在原生路徑裡；里程碑累計倍率本身就是整條曲線（`HelperImprovementsInfo` 1015 列、七個昇階各 145 段，Ascension 0 到 6000 級累計 1.18×10^189）。對照結果：`TT2_HERO_MILESTONES` 145 列與該表 Ascension 0 的 `PrecalculatedAmount` 三欄**逐列完全相同**，引擎與原生的唯一差異就是額外乘上的 `1.035^(等級−1)`（新測試以乾淨存檔在 1／10／50／200／1000 級驗證比值正好等於它，等於同時釘住其餘因子都正確）。**這一項沒有移除**：1.035 是 7.5 基準的產物，與同為 7.5 近似的怪物血量曲線（18 × 1.32^關卡，十個具名 [ServerVar] 在包內都沒有值）配套，單獨拿掉會讓英雄傷害在 1000 級時少 8.4×10^14 倍，等於在沒有原版難度基準的情況下只改一邊；因此在登記表由 `baseline-75` 改列 `table-differs` 並寫明理由與影響。新增 `tests/hero-dps.test.mjs` 5 項，`tests/formula-sources.test.mjs` 同步為兩處不一致。純證據與文件變更，不動遊戲數值，版本號不變。355 項 Node 測試＋23 項 Python 測試通過。 |

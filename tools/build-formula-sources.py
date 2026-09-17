@@ -51,10 +51,16 @@ FORMULAS = [
               entry(part='寶箱泰坦基礎機率 0.02', status='server',
                     note='原生對應欄位是 [ServerVar]，安裝包未帶值。')]),
     entry(id='monsterCount', module='lib/engine.ts', export='monsterCount',
-          expression='每關固定 10 隻小怪',
-          parts=[entry(part='固定值 10', status='server', ref='monster-curve-evidence.json',
-                       note='原生以 monsterCountBase、monsterCountInc、monsterCountStageDelta 三個 [ServerVar] '
-                            '決定隻數且隨關卡變動，安裝包未帶值；本專案先以固定 10 代替。')]),
+          expression='round(8 + 關卡 × 148 ÷ (32000 + 關卡))',
+          parts=[entry(part='算式與 base 8、inc 148、delta 32000', status='default',
+                       ref='monster-count-evidence.json',
+                       note='原生 StageLogic.GetRawMonsterCountPerStage 依序讀 monsterCountInc、'
+                            'monsterCountStageDelta、monsterCountBase，算 '
+                            'base + 關卡 × inc ÷ (delta + 關卡) 後交給 Math.Round（平手進偶數）。'
+                            '三個欄位是 [ServerVar]，安裝包的兩張變數表都沒有帶值，'
+                            '但類別建構式有編譯期預設值 8／148／32000（見 servervar-defaults.json）。'
+                            '因此第 1 關 8 隻、第 500 關 10 隻、第 2000 關 17 隻、第 98000 關 120 隻；'
+                            '引擎原本固定 10 隻，早期偏多、後期遠遠偏少。線上可覆蓋，故為 default 而非 native。')]),
     entry(id='bossHealthMod', module='lib/engine.ts', export='health',
           expression='頭目血量在小怪基礎上再乘一組倍率',
           parts=[entry(part='bossHPModBase 與 bossHPModStageMult', status='server',

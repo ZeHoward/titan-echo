@@ -125,7 +125,7 @@ def main():
         evidence=dict(
             honourOffset='關卡先加上 HonourModel.ActiveHonourAmount × honourStageOffset 才進入曲線',
             shape='兩條曲線共用 GetMonsterBase，參數為 levelOff、transcendenceLevelOff、mult、base1–3 與 expo1–4',
-            consequence='怪物血量與金幣曲線的每一個係數都是 [ServerVar]，安裝包沒有帶值'),
+            consequence='怪物血量與金幣曲線的每一個係數都是 [ServerVar]，安裝包的兩張變數表沒有帶值；其中一部分在 ServerVarsModel 的類別建構式有編譯期預設值（見 servervar-defaults.json），但預設值不是線上值，線上可整份覆蓋'),
         limits=['只證明公式讀哪些具名變數，不證明線上使用的數值',
                 'GetMonsterBase 內部如何組合這些參數尚未逐式還原'])
     target = ROOT/'reference/tt2/8.2.0/monster-curve-evidence.json'

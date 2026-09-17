@@ -1,0 +1,62 @@
+{
+  "version": "8.2.0",
+  "role": "每關普通泰坦的隻數：原生算式、參與的三個 [ServerVar] 與其編譯期預設值，以及逐關樣本。",
+  "packageSha256": "8d78c9aa877e6c0b291ee2116cab855bd26c59c1d080bc654f88ecf1ff268b5f",
+  "binarySha256": "c13fc44321b1214c71ab0277a134fc3401fd7392c74a0bbb3935671c55a8713a",
+  "scriptSha256": "62c2eeb8472bb107de516e4b6ae69d3dcdf5013fb1caa87223d82a54dd203f8b",
+  "finding": "StageLogic.GetRawMonsterCountPerStage 依序讀 monsterCountInc、monsterCountStageDelta、monsterCountBase，算 base + 關卡 × inc ÷ (delta + 關卡)，再交給 Math.Round。三個欄位的編譯期預設值是 base=8、inc=148、delta=32000，因此第 1 關 8 隻、第 1000 關 12 隻、第 98000 關 120 隻。",
+  "consequence": "引擎原本固定 10 隻，早期偏多、後期遠遠偏少。這三個欄位仍是 [ServerVar]，線上可覆蓋，因此接入後狀態是 default 而非 native。",
+  "method": {
+    "name": "StageLogic$$GetRawMonsterCountPerStage",
+    "rva": "0x25468a0",
+    "bytesSha256": "9dbff7d53eaa64c944a8590c85c47ec24fe06725eae61ac8017e9c977c0dc3af"
+  },
+  "caller": {
+    "name": "StageLogic$$GetMonsterCountPerStage",
+    "rva": "0x2546594",
+    "bytesSha256": "af5101c4a3c46851ba2e6192e618d52380df4dccc396e138742ec4a3679b605f"
+  },
+  "formula": "round(monsterCountBase + stageNum × monsterCountInc ÷ (monsterCountStageDelta + stageNum))",
+  "readsInOrder": [
+    "monsterCountInc",
+    "monsterCountStageDelta",
+    "monsterCountBase"
+  ],
+  "defaults": {
+    "monsterCountBase": {
+      "offset": "0x890",
+      "value": 8
+    },
+    "monsterCountInc": {
+      "offset": "0x894",
+      "value": 148
+    },
+    "monsterCountStageDelta": {
+      "offset": "0x898",
+      "value": 32000
+    }
+  },
+  "rounding": {
+    "call": "0x1e1de60",
+    "note": "原生把和交給 C# 的 Math.Round(double)：以 modf 取小數部分後比較 ±0.5，剛好 0.5 時進位到偶數。本表的樣本依同一規則計算。"
+  },
+  "sampleCounts": {
+    "1": 8,
+    "10": 8,
+    "50": 8,
+    "100": 8,
+    "250": 9,
+    "500": 10,
+    "1000": 12,
+    "2000": 17,
+    "5000": 28,
+    "10000": 43,
+    "40000": 90,
+    "98000": 120
+  },
+  "limits": [
+    "三個欄位都是 [ServerVar]，本表用的是編譯期預設值，不是線上值",
+    "GetMonsterCountPerStage 另有 splashSkip 與 isInactiveGameplay 兩個修正參數，本表只記原始值",
+    "樣本以 double 計算；原生以 float 運算，極端關卡可能在進位邊界差一隻"
+  ]
+}

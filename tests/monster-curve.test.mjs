@@ -54,6 +54,8 @@ test('the surrounding static block is recorded, including what is not implemente
     assert.match(field.offset, /^0x[0-9a-f]+$/);
     assert.ok(field.type.length > 0, field.name);
   }
-  assert.match(evidence.evidence.consequence, /安裝包沒有帶值/);
+  assert.match(evidence.evidence.consequence, /兩張變數表沒有帶值/);
+  // The second line of evidence exists and is named, so the two are not confused with each other.
+  assert.match(evidence.evidence.consequence, /servervar-defaults\.json/);
   assert.ok(evidence.limits.length >= 2);
 });

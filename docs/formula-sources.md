@@ -8,11 +8,11 @@
 |---|---|---|
 | `native` | 由反組譯證據確認 | 6 |
 | `table` | 取自安裝包資料表 | 16 |
-| `default` | 原生靜態預設值，線上可覆蓋 | 3 |
+| `default` | 原生靜態預設值，線上可覆蓋 | 4 |
 | `baseline-75` | 沿用 7.5 基準，尚未對 8.2 核實 | 4 |
 | `table-differs` | 安裝包有值但引擎目前未照做 | 2 |
 | `invented` | 本專案自訂，安裝包未提供 | 11 |
-| `server` | 原生為伺服器變數，安裝包未帶值 | 14 |
+| `server` | 原生為伺服器變數，安裝包未帶值 | 13 |
 
 ## 逐條登記
 
@@ -38,11 +38,11 @@
 
 ### monsterCount · `lib/engine.ts` 的 `monsterCount`
 
-每關固定 10 隻小怪
+round(8 + 關卡 × 148 ÷ (32000 + 關卡))
 
 | 來源條目 | 狀態 | 依據 |
 |---|---|---|
-| 固定值 10 | `server` | `reference/tt2/8.2.0/monster-curve-evidence.json`；原生以 monsterCountBase、monsterCountInc、monsterCountStageDelta 三個 [ServerVar] 決定隻數且隨關卡變動，安裝包未帶值；本專案先以固定 10 代替。 |
+| 算式與 base 8、inc 148、delta 32000 | `default` | `reference/tt2/8.2.0/monster-count-evidence.json`；原生 StageLogic.GetRawMonsterCountPerStage 依序讀 monsterCountInc、monsterCountStageDelta、monsterCountBase，算 base + 關卡 × inc ÷ (delta + 關卡) 後交給 Math.Round（平手進偶數）。三個欄位是 [ServerVar]，安裝包的兩張變數表都沒有帶值，但類別建構式有編譯期預設值 8／148／32000（見 servervar-defaults.json）。因此第 1 關 8 隻、第 500 關 10 隻、第 2000 關 17 隻、第 98000 關 120 隻；引擎原本固定 10 隻，早期偏多、後期遠遠偏少。線上可覆蓋，故為 default 而非 native。 |
 
 ### bossHealthMod · `lib/engine.ts` 的 `health`
 

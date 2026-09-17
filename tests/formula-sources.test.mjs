@@ -29,12 +29,13 @@ test('no export in a covered module escapes classification', () => {
 
 test('the counts are recorded, so a source changing status is a visible change', () => {
   assert.deepEqual(report.counts, {
-    'table-differs': 2, 'baseline-75': 4, invented: 11, table: 16, default: 3, server: 14, native: 6,
+    'table-differs': 2, 'baseline-75': 4, invented: 11, table: 16, default: 4, server: 13, native: 6,
   });
-  // Over a third of the sources are still the 7.5 baseline or this project's own choice.
+  // Exactly half the sources are still the 7.5 baseline, this project's own choice, or a server
+  // value the package does not carry. The ratio is recorded, not asserted to stay high.
   const unverified = report.counts['baseline-75'] + report.counts.invented + report.counts.server;
-  assert.equal(unverified, 29);
-  assert.ok(unverified / report.parts > 0.5, '待核實比例應如實記錄');
+  assert.equal(unverified, 28);
+  assert.equal(unverified * 2, report.parts, '待核實比例應如實記錄');
 });
 
 test('每一處與安裝包不一致的地方都寫下來了', () => {
