@@ -2,7 +2,7 @@
 
 每個核心公式的來源登記表：資料表、原生方法、原生預設值，或明確標記為 7.5 基準沿用、專案自訂或伺服器供給。
 
-版本 8.2.0。共 31 條公式、67 項來源條目。
+版本 8.2.0。共 31 條公式、69 項來源條目。
 
 | 狀態 | 意義 | 條目數 |
 |---|---|---|
@@ -10,9 +10,9 @@
 | `table` | 取自安裝包資料表 | 18 |
 | `default` | 原生靜態預設值，線上可覆蓋 | 15 |
 | `baseline-75` | 沿用 7.5 基準，尚未對 8.2 核實 | 0 |
-| `table-differs` | 安裝包有值但引擎目前未照做 | 10 |
+| `table-differs` | 安裝包有值但引擎目前未照做 | 13 |
 | `invented` | 本專案自訂，安裝包未提供 | 10 |
-| `server` | 原生為伺服器變數，安裝包未帶值 | 4 |
+| `server` | 原生為伺服器變數，安裝包未帶值 | 3 |
 
 ## 逐條登記
 
@@ -162,11 +162,13 @@ max(1, floor(關卡^1.7 ÷ 100 × PrestigeRelic))，最高關卡到 60 後開放
 
 | 來源條目 | 狀態 | 依據 |
 |---|---|---|
-| 指數 1.7 與除數 100 | `table-differs` | `reference/tt2/8.2.0/servervar-defaults.json`；原生沒有「關卡^指數 ÷ 常數」這種寫法：PrestigeModel.GetBonusRelicsFromStageCount （RVA 0x23ff6cc）把係數從 ServerVarsModel 的靜態區塊載入（ldr d9,[x8,#0x170] 等，偏移已逐一對上欄位名），不是程式裡的常數。對應的具名 [ServerVar] 欄位有十個——relicStageBase、relicStageBase2、relicStageExpo、relicStageExpo2、relicStageExpo3、relicStageExpoMax3、relicStageMult1–3 與 relicStageOffset。**先前記為「安裝包一個值都沒帶」，那是變數表的狀況；編譯期預設值都有**：relicStageMult1 3、relicStageMult2 1.5、relicStageMult3 5e-07、relicStageBase 1.21、relicStageBase2 1.002、relicStageExpo 0.48、relicStageExpo2 1.005、relicStageOffset −56。**算式只讀出一部分**：關卡先被 relicsStageMax 夾住，接著至少有三段——1.5 × (關卡 − 56)、3 × 1.21^(關卡^0.48)、以及一段含 Math.Min 與多層 Math.Pow 的 1.002 系項——再以 GHDouble 組合，尚未完整還原，因此引擎維持 7.5 近似的 1.7 與 100。 |
+| 指數 1.7 與除數 100 | `table-differs` | `reference/tt2/8.2.0/relic-curve-evidence.json`；原生沒有「關卡^指數 ÷ 常數」這種寫法，而是三段相加，**這次完整讀完了**：關卡先 Min(關卡, relicsStageMax)，然後 (一) relicStageMult2 × (relicStageOffset + 關卡)、(二) relicStageMult1 × relicStageBase ^ (關卡 ^ relicStageExpo)、(三) relicStageBase2 ^ (關卡 ^ Min(relicStageExpoMax3, relicStageExpo2 × (1 + relicStageMult3 × 關卡 ^ relicStageExpo3)))，三段相加後 Max(0, ·)。第三段那個包在 Math.Pow 裡的 Math.Min 就是先前沒讀完的部分。**十個係數全部有編譯期預設值**（先前記為八個）：mult1 3、mult2 1.5、mult3 5e-07、base 1.21、base2 1.002、expo 0.48、expo2 1.005、expo3 1.1、expoMax3 1.0155、offset −56，關卡上限 relicsStageMax 180000。**仍不採用**：第 2000 關以內兩者同數量級（1.6–3.4 倍），但第 10000 關起第三段的指數頂到 1.0155，1.002^(關卡^1.0155) 開始主導，到關卡上限差 10^95 量級，整條換掉等於重做蛻變經濟，且與怪物曲線那條配套。逐關對照與理由見 ROADMAP 待決定的取捨第 9 條。 |
+| 外層的三個乘數只套用了一個 | `table-differs` | `reference/tt2/8.2.0/relic-curve-evidence.json`；原生 GetTotalRelicsFromStageCount 依序把 PrestigeRelic、PrestigeRelicAdditive 與 OnlyPrestigeRelic 三個加成乘進來；引擎只套用 PrestigeRelic，另外兩個的資料在 TT2_SETS 裡卻沒有任何地方讀它。沒有直接接上的原因是三者與外層那個加法項的結合順序尚未逐指令確定。 |
+| 進位方向 | `table-differs` | `reference/tt2/8.2.0/relic-curve-evidence.json`；原生以 GHDouble.Ceiling 無條件進位，引擎用 Math.floor 捨去。在目前的近似曲線下改成進位只會讓每次蛻變多零或一顆，但它與上面那條曲線是同一個回傳值的兩端，一起換才有意義。 |
 | 開放門檻第 60 關 | `default` | `reference/tt2/8.2.0/prestige-unlock-evidence.json`；不是 7.5 留下的猜測：[ServerVar] minimumPrestigeStage 的編譯期預設值就是 60，而且它正是 PrestigeModel.GetPrestigeStage 結尾那個 System.Math.Max 的第二個引數，也就是「這次蛻變要打到第幾關」的下限，CanPrestige 只是拿關卡和它比 >=。先前記為「安裝包未見對應欄位」是沒找到名字——改以指令編碼掃描（ldr Wt,[Xn,#0xbec] 除兩個暫存器欄位外完全固定）才找出全部三個讀取點。引擎把這個數字寫在 PRESTIGE_DEFAULTS.minimumStage，relicGain、discover 與 prestige 三處共用。線上可覆蓋，故為 default。 |
 | 門檻隨歷史最高關卡上升的那一層 | `table-differs` | `reference/tt2/8.2.0/prestige-unlock-evidence.json`；原生的門檻不是固定 60：GetPrestigeStage = Math.Max(floor(prestigeMsPercentRequirement × (基準 − 進階起點) + 進階起點), minimumPrestigeStage)，係數的編譯期預設值是 float 0.5，基準取自 maxPrestigeStageCount，也就是要推到歷史最高的一半才能再蛻變。引擎沒有這一層——歷史最高到過 60 就一直能蛻變。第一次蛻變前兩者等價。未採用，已列入 ROADMAP 待決定的取捨第 8 條。 |
 | 至少一顆聖物的下限 | `invented` | 引擎自訂：開放後即使在第一關蛻變也給一顆，安裝包未見對應下限。 |
-| 額外的聖物乘數（累加、季節、新手） | `server` | `reference/tt2/8.2.0/native-server-var-fields.json`；原生另有 additiveRelicMultiplier、seasonalRelicMultiplier 與新手加成三條乘數，共 31 個含 relic 的 [ServerVar] 欄位，包內只有 additiveRelicMultiplierMax（150000）與 relicsStageMax（180000）兩個有值；本專案尚未實作這三條乘數。 |
+| 額外的聖物乘數（累加、季節、新手） | `table-differs` | `reference/tt2/8.2.0/relic-curve-evidence.json`；原生另有 additiveRelicMultiplier、seasonalRelicMultiplier 與新手加成三條乘數，本專案都沒有實作。**先前記為「31 個含 relic 的欄位裡只有兩個有值」，那是變數表的狀況**——按編譯期預設值算，31 個裡有 28 個有值，例如 additiveRelicMultiplierMax 50000（先前誤記為 150000）、seasonalRelicMultiplierBase 1.0053、seasonalRelicStageExpMult 9.8e-05、newPlayerRelicMultMp 5、newPlayerRelicMultBonusDurationMins 10080（七天）。也就是說這三條乘數其實查得到，只是還沒有人去還原它們的算式。 |
 
 ### evolveCost · `lib/engine.ts` 的 `evolveCost`
 

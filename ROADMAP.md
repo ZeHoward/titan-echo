@@ -1,6 +1,6 @@
 # Titan Echo 完整復刻代辦清單
 
-更新：2026-09-17。遊戲目前為 **2.13.3**，最近完整測試 **407 項 Node 測試＋23 項 Python 匯入測試通過**。**核心公式來源登記表裡已經沒有任何 `baseline-75`**——67 項來源全部對過 8.2，不能照做的改列 `table-differs` 並寫明理由。此文件是後續工作的主清單；`TT2-RULES.md` 保留歷史研究紀錄，不以舊敘述判斷目前完成度。
+更新：2026-09-17。遊戲目前為 **2.13.3**，最近完整測試 **414 項 Node 測試＋23 項 Python 匯入測試通過**。**核心公式來源登記表裡已經沒有任何 `baseline-75`**——67 項來源全部對過 8.2，不能照做的改列 `table-differs` 並寫明理由。此文件是後續工作的主清單；`TT2-RULES.md` 保留歷史研究紀錄，不以舊敘述判斷目前完成度。
 
 ## 目前位置
 
@@ -8,7 +8,7 @@
 - **已完成 R02 的資料整備：8.2 全表匯入與完整 ID 目錄。** 133 張表、31,451 個有效 ID 的精確字串資料、七組舊 ID 對照、31,758 處引用檢查（errors 與 unresolved 皆為 0），372 個安裝包資源全部歸類完畢。**線上資料版本尚未切換**，遊戲執行時仍使用 7.5 數值；切換需要先完成 R04 的大數值處理，並逐項校正各系統公式。
 - **已完成 R03：穩定 ID 存檔遷移、規則版本與還原備份。** 存檔槽與 TT2 區塊皆有 ID 對照與依 ID 搬移的遷移函式；舊 2.6 存檔只退款一次、重跑不變；8.2 新增的 6 項技能與 28 組套裝不會錯置；雲端與備份存檔可寬鬆讀取補齊後再嚴格檢查（遊戲 2.6.2）。**執行時資料版本仍為 7.5，切換屬 R04 之後的工作。**
 - **已完成 R04：大數值與數字顯示。** 關卡、等級與金幣鏈已改用尾數／指數表示並改採安裝包記載的上限（關卡 98000、英雄 6000、劍術大師 12500），血量、傷害、金幣、費用在全程皆可運算與序列化（遊戲 2.8.0）。`lib/tt2-rules.ts` 的 `cap()` 仍把加成倍率夾在 1e240，但**這不是遊玩上的封頂**：把神器、天賦、寵物、卷軸、英雄等級與關卡全部推到規則允許的最高值後，640 個加成目標沒有任何一個接近該值，最大的 GoldAll 約 8.4×10^150，仍差 89 個數量級；該夾擠只在存檔帶著規則產不出的等級時用來避免 Infinity。
-- 接續順序：R01–R04 已完成。**C01–C07 與 I01–I03 的「卡在證據」已經過時，2026-09-17 修正**：舊說法是「953 個 `[ServerVar]` 只有 28 個有值，這兩段的參數在包內全部沒有值」。那只對了變數表那一半——`ServerVarsModel` 的類別建構式還帶著**編譯期預設值**，953 個欄位裡 **769 個解得出來**，真正兩者皆無的只剩 183 個。分組來看：C05 泰坦與金幣 67 個中 61 個有預設值、I01–I03 裝備 26 個**全部**有、C01 暴擊 10 個中 8 個、C03–C04 英雄 22 個中 19 個、C07 魔力 18 個中 13 個（見 [伺服器變數缺口盤點](docs/server-var-gaps.md)）。**所以這兩段可以做了**，只是引用預設值時狀態是 `default`（線上可覆蓋），不能宣稱與線上一致；已經照這條路完成的有英雄升級費用（2.12.8）與每關小怪隻數（2.12.9）。**V 系列裡 V02 小遊戲同樣卡在證據**（六個模式的抽選結果都是伺服器回應），**V01 活動框架是半套**（貨幣賺取側在包內，獎勵路徑與時程來自伺服器），兩者都不要當成「還沒做」而重新開工；V03–V07 則按證據是否充足逐項推進。**已經查清楚、但要不要照做屬於取捨的十項，集中在下一節「待決定的取捨」**；在使用者做出決定前不要自行改動那幾項，也不要當成沒查過而重查。
+- 接續順序：R01–R04 已完成。**C01–C07 與 I01–I03 的「卡在證據」已經過時，2026-09-17 修正**：舊說法是「953 個 `[ServerVar]` 只有 28 個有值，這兩段的參數在包內全部沒有值」。那只對了變數表那一半——`ServerVarsModel` 的類別建構式還帶著**編譯期預設值**，953 個欄位裡 **769 個解得出來**，真正兩者皆無的只剩 183 個。分組來看：C05 泰坦與金幣 67 個中 61 個有預設值、I01–I03 裝備 26 個**全部**有、C01 暴擊 10 個中 8 個、C03–C04 英雄 22 個中 19 個、C07 魔力 18 個中 13 個（見 [伺服器變數缺口盤點](docs/server-var-gaps.md)）。**所以這兩段可以做了**，只是引用預設值時狀態是 `default`（線上可覆蓋），不能宣稱與線上一致；已經照這條路完成的有英雄升級費用（2.12.8）與每關小怪隻數（2.12.9）。**V 系列裡 V02 小遊戲同樣卡在證據**（六個模式的抽選結果都是伺服器回應），**V01 活動框架是半套**（貨幣賺取側在包內，獎勵路徑與時程來自伺服器），兩者都不要當成「還沒做」而重新開工；V03–V07 則按證據是否充足逐項推進。**已經查清楚、但要不要照做屬於取捨的十一項，集中在下一節「待決定的取捨」**；在使用者做出決定前不要自行改動那幾項，也不要當成沒查過而重查。
 - 尚未有任何一個大型系統通過「與原版同版本完整一致」驗收。已有功能不會重寫成空白，但必須逐項校正與驗證。
 
 ## 待決定的取捨
@@ -141,6 +141,35 @@
   現在則是隨時可以。這不改任何數值，改的是「什麼時候可以蛻變」這條規則，會直接影響蛻變節奏與
   短循環刷聖物的玩法。原生另有兩個本專案沒有的前提——`GetAdvancedStartNextStage`（蛻變後的起始關卡，
   本專案一律回到第 1 關）與末日紀元的 `endgameMinPrestigeReqInc`（5000）——照做前要先決定它們怎麼算。
+
+### 9. 蛻變聖物要不要改用原生的三段曲線
+
+- **現況**：算式**已經完整還原**（先前只讀出三段中的兩段）。關卡先 `Min(關卡, relicsStageMax)`，然後：
+
+  1. `relicStageMult2 × (relicStageOffset + 關卡)` — 1.5 ×(關卡 − 56)
+  2. `relicStageMult1 × relicStageBase ^ (關卡 ^ relicStageExpo)` — 3 × 1.21^(關卡^0.48)
+  3. `relicStageBase2 ^ (關卡 ^ Min(relicStageExpoMax3, relicStageExpo2 × (1 + relicStageMult3 × 關卡 ^ relicStageExpo3)))`
+     — 1.002^(關卡^min(1.0155, 1.005×(1 + 5e-07×關卡^1.1)))
+
+  三段相加後 `Max(0, ·)`。**十個係數全部有編譯期預設值**（先前記為八個）。
+  引擎現用的是 7.5 近似 `max(1, floor(關卡^1.7 ÷ 100 × PrestigeRelic))`。
+  完整對照見 [relic-curve-evidence.json](reference/tt2/8.2.0/relic-curve-evidence.json)。
+- **選項**：整條換掉／維持現狀／只到某個關卡為止照原生（原生在低關卡本來就接近，這選項只是把發散點推後）。
+- **影響**：
+
+  | 關卡 | 60 | 250 | 1000 | 2000 | 5000 | 10000 | 30000 | 98000 |
+  |---|---|---|---|---|---|---|---|---|
+  | 引擎 | 10 | 119 | 1,258 | 4,090 | 19,419 | 63,095 | 408,419 | 3.06×10^6 |
+  | 原生 | 19 | 337 | 1,996 | 7,526 | 324,452 | 1.02×10^10 | 3.48×10^30 | 4.15×10^101 |
+  | 倍率 | 1.88 | 2.83 | 1.59 | 1.84 | 16.71 | 162,087 | 8.53×10^24 | 1.36×10^95 |
+
+  第 2000 關以內同數量級，第 10000 關起第三段的指數頂到上限 1.0155，
+  `1.002^(關卡^1.0155)` 開始主導，之後無上限地拉開。
+- **與第 0 條配套**：原生聖物給得多，是因為原生的怪物血量在第 250 關之後也遠低於引擎——
+  推得更遠、聖物更多是同一套設計。只換聖物這一邊會直接壞掉。
+- **另外兩處同源的不一致**（同一個回傳值的兩端，一起換才有意義）：原生外層依序乘上
+  `PrestigeRelic`、`PrestigeRelicAdditive`、`OnlyPrestigeRelic` 三個加成，引擎只套用第一個
+  （後兩者的資料在 `TT2_SETS` 裡卻沒有任何地方讀）；原生以 `GHDouble.Ceiling` 進位，引擎用 `floor`。
 
 ## 固定目標與完成標準
 
@@ -442,6 +471,7 @@ C01 證據狀態：原生把暴擊參數放在 `[ServerVar]` 欄位——`player
 
 | 日期 | 項目 | 證據／結果 |
 |---|---|---|
+| 2026-09-17 | E01 聖物曲線第三段讀完，整條算式還原（未採用） | 先前登記寫「算式只讀出三段中的兩段，第三段含 `Math.Min` 與多層 `Math.Pow` 尚未完整還原」。這次讀完了：第三段的**指數本身**是 `Min(relicStageExpoMax3, relicStageExpo2 × (1 + relicStageMult3 × 關卡^relicStageExpo3))`，拿它當關卡的指數之後，再以 `relicStageBase2` 為底做 `GHDouble.Pow`——會用 GHDouble 而不是 `Math.Pow`，正是因為這一段的結果會超出 double。完整算式：關卡先 `Min(關卡, relicsStageMax)`，三段為 `1.5 × (關卡 − 56)`、`3 × 1.21^(關卡^0.48)`、`1.002^(關卡^min(1.0155, 1.005×(1 + 5e-07×關卡^1.1)))`，相加後 `Max(0, ·)`。**十個係數全部有編譯期預設值**（先前記為八個，`relicStageExpo3` 1.1 與 `relicStageExpoMax3` 1.0155 也有）。**沒有採用**：第 2000 關以內原生是引擎的 1.6–3.4 倍（同數量級），第 10000 關起第三段的指數頂到 1.0155、`1.002^(關卡^1.0155)` 開始主導，第 30000 關差 10^24、關卡上限差 10^95——整條換掉等於重做蛻變經濟，而且與怪物曲線那條配套（原生聖物給得多，是因為原生血量在第 250 關後遠低於引擎），寫進「待決定的取捨」第 9 條並附逐關對照。**順帶查出外層還有兩處同源的不一致**：`GetTotalRelicsFromStageCount` 依序乘上 `PrestigeRelic`、`PrestigeRelicAdditive` 與 `OnlyPrestigeRelic` 三個加成，引擎只套用第一個（後兩者的資料在 `TT2_SETS` 裡卻沒有任何地方讀它）；原生以 `GHDouble.Ceiling` 進位，引擎用 `Math.floor` 捨去。**另外更正兩個先前寫錯的數字**：登記表說「31 個含 relic 的 `[ServerVar]` 只有兩個有值」，那是變數表的狀況——按編譯期預設值算 **31 個裡有 28 個有值**；`additiveRelicMultiplierMax` 是 **50000** 不是 150000。也就是說季節聖物與累加倍率那幾條乘數其實查得到，只是還沒去還原算式。新增 `tools/audit-relic-curve.py`（兩個方法的位元組雜湊、十一個 `[ServerVar]` 偏移、四次 `Pow` 與那個 `Min` 的先後、兩次加法與結尾 `Max`、外層三個 `GetBonus` 的型別都會斷言；`ldp` 一次載入兩個相鄰係數，掃描要一併認）、`reference/tt2/8.2.0/relic-curve-evidence.json` 與 `tests/relic-curve.test.mjs` 7 項（測試自己用係數重算一次曲線，不是照抄證據裡的數字）。登記表 67→69 項來源，table-differs 10→13、server 4→3。未改任何遊戲數值，版本號不變。414 項 Node 測試＋23 項 Python 測試通過。 |
 | 2026-09-17 | E01 蛻變門檻第 60 關查到原生欄位，登記表的 `baseline-75` 歸零 | 登記表最後一項 `baseline-75`。先前寫「安裝包未見對應的蛻變開放關卡欄位」，**那是沒找到名字**：`[ServerVar]` **`minimumPrestigeStage` 的編譯期預設值就是 60**。找法換了一種——按名稱搜尋找不到，就改**按指令編碼掃描**：`ldr Wt,[Xn,#0xbec]` 是 `1011_1001_01 imm12 Rn Rt`，除了兩個暫存器欄位以外完全固定，對整個映像做一次遮罩比對就找出全部三個讀取點（`PrestigeModel.GetPrestigeStage`、`AchievementPanelScript.InitMilestonesPanel`、`TutorialEventModel.CheckAlreadyCompleted`）。關鍵的那個在 `GetPrestigeStage` 的**尾端**：整個方法結束在 `b System.Math.Max`，而 `ldr w1,[x8,#0xbec]` 正是它的第二個引數，所以 60 是「這次蛻變要打到第幾關」的**下限**；`CanPrestige` 只是拿關卡和它比 `>=`。引擎原本把 60 硬寫在 `relicGain`、`discover`、`prestige` 三處，現在抽成 `PRESTIGE_DEFAULTS.minimumStage` 共用，狀態由 `baseline-75` 升為 `default`。**順帶查出原生在下限之上還有一層**：`GetPrestigeStage = Math.Max(floor(`prestigeMsPercentRequirement` × (基準 − 進階起點) + 進階起點), `minimumPrestigeStage`)，係數預設值是 float **0.5**、基準取自 `maxPrestigeStageCount`，也就是**要推到歷史最高的一半才能再蛻變**；引擎沒有這一層，列為 `table-differs` 並寫進「待決定的取捨」第 8 條。新增 `tools/audit-prestige-unlock.py`（三個方法的位元組雜湊、三個 `[ServerVar]` 偏移、以及「那個 `Math.Max` 是尾呼叫而且在讀取 `minimumPrestigeStage` 之後」都會斷言）、`reference/tt2/8.2.0/prestige-unlock-evidence.json` 與 `tests/prestige-unlock.test.mjs` 6 項。沒讀完的部分逐項列名：`CanPrestige` 左運算元那個 ObscuredInt 的身分、`GetPrestigeStage` 前半由 bool 開關選的分支、`GetAdvancedStartNextStage`、以及另外兩個讀取點的用途。登記表 66→67 項來源，**`baseline-75` 1→0**、default 14→15、table-differs 9→10。抽常數不改行為，未改任何遊戲數值，版本號不變。407 項 Node 測試＋23 項 Python 測試通過。 |
 | 2026-09-17 | I04 寵物成長逐式對上 8.2，改良段的三處不一致列入待決定 | 登記表裡 `baseline-75` 的倒數第二項。`PetInfo` 的六個方法都讀得完，**大部分是「查得到而且一樣」**：三段傷害 `damageBase + inc1×min(等級,L1) + inc2×min(max(等級−L1,0),L2−L1) + inc3×max(等級−L2,0)`，兩個門檻就是 `[ServerVar]` `petDamageIncLevel1`／`2`（40／80）；未出戰的比例是 `Min(1, gap × increment × (等級 ÷ gap))`（整數除法），`petPassiveLevelGap` = 5、`petPassiveLevelIncrement` = float 0.01，相乘後每 5 級 5%，與引擎相同；`GetPassiveDamage` 就是主動傷害乘該比例，`GetPassiveBonus` 則是 `identity + (主動值 − identity) × 比例`（identity 取自 `BonusModel.GetBonusIdentity`），與引擎的 `additive ? full×fraction : 1+(full−1)×fraction` 相同；`GetActiveBonus` 的 `(bonusBase + bonusInc×等級) × 改良乘數 × Bonus(...)` 三個因子位置也相同。**引擎的 30 隻寵物資料與 8.2 的 `PetInfo` 逐格核對全部相同**（含 `MaxImprovementLevels` 與三段 `DamageInc`）。**不一樣的是改良段，而且是三處**：原生 `Min(Floor((等級 − 100) ÷ 20), maxImprovementLevels)`，引擎 `max(0, floor((min(等級, maxImprovementLevels) − 100) ÷ 50))`——每段的等級間隔 **20 對 50**、`maxImprovementLevels`（表裡 1600）原生夾的是**段數**而引擎夾的是**等級**、原生**沒有**把段數夾到 0 以上（所以 100 級以下乘數小於 1）。**沒有採用**：以 `improvementBonus` = 1.5 的 21 隻為例，等級 1 時原生只有引擎的 13%、100 級相同、200 級 3.4 倍、1000 級 5.7×10⁴ 倍、1600 級 8.4×10⁷ 倍，早期變弱後期暴增，等於整條寵物曲線重來，寫進「待決定的取捨」第 7 條。順帶記下 `PetType.Endgame` 另走 `endGamePetImprovementLevelStart`／`Delta`（皆為 6），但 `PetInfo` 的 30 隻只有 Legacy 與 Exotic，用不到。新增 `tools/audit-pet-growth.py`（六個方法的位元組雜湊、`ParsedPetInfo` 八個欄位偏移、八個 `[ServerVar]` 偏移與 `PetType` 列舉值都先驗一次才往下讀；`GetImprovementBonus` 把偏移折進位址再載入，掃描要同時認 `add` 那一形）、`reference/tt2/8.2.0/pet-growth-evidence.json` 與 `tests/pet-growth.test.mjs` 6 項。`petBonus` 由「非公式」升為獨立的公式條目。登記表 62→66 項來源、30→31 條公式，**baseline-75 2→1（只剩聖物開放門檻第 60 關）**、native 8→10、table 17→18、default 13→14、table-differs 8→9。未改任何遊戲數值，版本號不變。401 項 Node 測試＋23 項 Python 測試通過。 |
 | 2026-09-17 | I06 增益 perks 對上 8.2 原生，補回滿層與黃金雨兩處差異（2.13.3） | 登記表裡 `baseline-75` 最後剩三項，這次查掉一項。**數值那半是「查得到而且一樣」**：8.2 的 `PerkInfo.json` 就在參考目錄裡，ManaPotion 給 `AllManaGained` 1.5／1.75／2／2.25、MakeItRain 給 `AutoBuyHeroes` 45／15／5／3，兩者都是 43200 秒、基礎費用 100，與本專案沿用的 7.5 值逐格相同；鑽石價另有同值的編譯期預設值 `perkDiamondCost` = 100。層數上限也對得上：`PerkModel.get_CurrentMaxPerkStackAllowed`（RVA 0x2383d18）就是 `mov w8,#3` 加一個 `cinc`——上限是 3，`Bonus(PerkMaxLevel)` 大於 0 時 4，而 `MAX_PERK_STACK = 4` 同時是 `ActivePerkInfo.timers` 的固定格數（`ShiftTimersAndCountStack` 走的正好是 32 位元組），所以引擎的 `min(4, 3 + PerkMaxLevel)` 與原生等價；`GetBonusAmountA` 以 `stackCount−1` 當索引、兩端各夾一次，也與 `values[min(3, n−1)]` 相同。`RunPerkTimer` 對每一層各自扣時間，證實「每層獨立計時」無誤。**但有兩處引擎沒照做，這次補上**：（一）**滿層不是拒絕**——原生 `ActivatePerk` 在 `stackCount` 等於上限時先呼叫 `RemoveOldestStack`（把仍在跑的計時器排序後清掉剩最少的那格、`stackCount` 減一）再加新的一層，等於用一次使用機會把快結束的那層續滿；引擎原本直接 `return false`、按鈕也是灰的，現在照原生放行並改了文案。（二）**黃金雨的間隔另有乘數**——`GetBonusAmountA` 只對 `PerkID.MakeItRain`（值 1）多走一段 `1 − min(Bonus(AutoBuyHeroesMultDuringMakeItRain), autoBuyHeroesMaxBonus)`，上限欄位的編譯期預設值是 float 0.95；包內給這個加成的是 **GoldRain 傳說套裝（0.3）**，資料本來就在 `TT2_SETS` 裡，只是沒有被讀，所以湊齊該套裝後間隔剩七成（三層由每 5 秒變每 3.5 秒）。魔力藥水不吃這個乘數。**沒做的部分逐項列名不只給數量**：原生的 perk 隨機配發在第 1200 關解鎖（`perkSelectUnlockStage`）、另有票券制（`perkTicketCost` = 10），黃金雨的立即金幣走 `GetMakeItRainGold`，以 `makeItRainStageMult`（1.0）與 `makeItRainMaxStageMult`（0.85）配合目前與歷史最高關卡計算；`PerkInfo` 共 19 列，本專案只實作兩列。新增 `tools/audit-perks.py`（八個方法的位元組雜湊、PerkID 與 BonusType 的列舉值、`ActivePerkInfo` 四個欄位偏移都先驗一次才往下讀）與 `reference/tt2/8.2.0/perk-evidence.json`，以及 `tests/perks.test.mjs` 由 4 項增為 11 項（原本那 4 項裡「滿層第四次不扣鑽石」的預期依原生行為改寫）。登記表 58→62 項來源，baseline-75 3→2（只剩聖物開放門檻第 60 關與寵物每段增量）、native 6→8、table 16→17、default 12→13、table-differs 7→8。395 項 Node 測試＋23 項 Python 測試通過。 |
