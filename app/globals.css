@@ -14,4 +14,6 @@
 @media(max-width:780px){/* 手機沒有空間讓提示浮在戰鬥圖上：未解鎖時它只是一句「去收藏開蛋」，藏起來；解鎖後那張卡顯示的是蓄力進度，留著。 */.pet-combat-hint{display:none}.pet-combat-status{bottom:250px;max-width:150px;padding:8px 10px;font-size:13px}}@media(max-width:1120px){.pet-combat-status{bottom:250px}.top-actions button{min-width:40px;min-height:44px;justify-content:center}.buy-toolbar button{min-height:40px;min-width:44px;padding:8px 10px}.save-status a,.save-status button{min-height:40px;display:inline-flex;align-items:center}}
 @media(max-width:380px){.top-actions{gap:6px}}
 @media(max-width:780px){.tutorial-hint{display:block;width:100%}}
-@media(max-width:780px){.tap-prompt{bottom:6px}}
+/* 戰鬥圖的底緣和傷害數值列是相接的，所以「點擊巨獸，揮劍出擊」放在圖內底部一樣會壓到。
+   手機本來就是用點的，這句引導在底部說明列的「觸摸攻擊！」已經有了，這裡不再重複。 */
+@media(max-width:780px){.tap-prompt{display:none}}
