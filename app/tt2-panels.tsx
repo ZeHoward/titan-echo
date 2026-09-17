@@ -62,7 +62,7 @@ export default function TT2Panels({s,tab,ready,basePath,act,onPrestige}:Props){
    const share=blocked||tier>=a.requirement.length?tier>=a.requirement.length?1:0:Math.max(0,Math.min(1,ratio(progress,target)));
    return <article className="feature-card" key={a.type}>
     <h3>{a.description.replace('{0}',fmt(target))}<small>{blocked?'待實作':`第 ${tier} / ${a.requirement.length} 階`}</small></h3>
-    {blocked?<p>{blocked}</p>:<><p>目前 {fmt(progress)} · 已領 {claimed} 階 · 本階獎勵 💎{a.diamondReward[Math.min(tier,a.diamondReward.length-1)]}</p>
+    {blocked?<p>{blocked}</p>:<><p>目前 {fmt(progress)} · 已領 {claimed} 階 · {tier>=a.requirement.length?'全部達成':`下一階獎勵 💎${a.diamondReward[Math.min(tier,a.diamondReward.length-1)]}`}</p>
     <div className="hp-track"><div style={{width:`${share*100}%`}}/></div>
     <button className="buy-button" disabled={!reward} onClick={()=>act({type:'achievement',index:i})}>{reward?`領取 💎${reward}`:tier>=a.requirement.length?'已全部領取':'尚未達成'}</button></>}
    </article>;})}
