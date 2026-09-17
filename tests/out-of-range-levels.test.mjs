@@ -78,9 +78,14 @@ test('壞掉的技能計時器不會讓技能永遠處於施放中', () => {
   broken.cooldowns[0] = 1e243;
   broken.active[1] = Number.NaN;
   const loaded = hydrate(broken);
-  assert.ok(loaded.active[0] <= loaded.last + 86_400_000, '施放中的時間戳沒有被夾回');
-  assert.ok(loaded.cooldowns[0] <= loaded.last + 86_400_000);
+  // Treated as already over, not clamped to a day: clamping would hand out a free day of the skill.
+  assert.equal(loaded.active[0], 0, '壞掉的施放時間戳應視為已結束');
+  assert.equal(loaded.cooldowns[0], 0);
   assert.equal(loaded.active[1], 0, '非數字的時間戳應視為沒有施放');
+  // A legitimate timer is left exactly as it was.
+  const running = JSON.parse(JSON.stringify(fresh(1000)));
+  running.active[2] = running.last + 30_000;
+  assert.equal(hydrate(running).active[2], running.last + 30_000);
 });
 
 test('讀取存檔時把超界的等級夾回合法範圍，壞掉的存檔不會一直壞下去', () => {
