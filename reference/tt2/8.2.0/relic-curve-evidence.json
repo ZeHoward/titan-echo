@@ -118,6 +118,21 @@
         "name": "stageRushToRelicMultiplier",
         "offset": "0xc54",
         "value": 0.00016999999934341758
+      },
+      "expanded": "兩半都很短：前者是 1 + stageRushToRelicMultiplier × PrestigeModel.AdditiveRelicMultiplier（已擁有的數量），後者是 Math.Max(0, GetNextAdditiveRelicMultiplier() − 已擁有)，所以整項化簡成 1 + stageRushToRelicMultiplier × Max(已擁有, 下一個門檻)。",
+      "inertWhenAbsent": true,
+      "note": "**沒有累加倍率時這一項就是 1**（已擁有 0、下一個門檻 0），所以引擎省略它與原生等價，不是「未照做」。將來實作累加倍率系統時要把它加回來——它依賴 PlayerModel.GetSeasonalMaxStageReached，本專案也沒有季節系統。",
+      "methods": {
+        "currentBonus": {
+          "name": "PrestigeModel$$GetCurrentAdditiveRelicMultiplierBonus",
+          "rva": "0x23f005c",
+          "bytesSha256": "b18d8d620785a4379e1648c92eecaf251710a383fb881a763601a1c38b72a8a7"
+        },
+        "rewardable": {
+          "name": "PrestigeModel$$GetRewardableAdditiveRelicMultiplierAmount",
+          "rva": "0x23ff64c",
+          "bytesSha256": "5f19fe77bd3d5d2e87b25e2471607e826665ea9d734fcf4d67d9755f67cbb196"
+        }
       }
     },
     "note": "跟著 GHDouble 運算子的 out 指標在堆疊上的去向讀，四個乘數的結合順序就定下來了：曲線值先乘 Bonus(PrestigeRelic)，再乘 (1 + Bonus(PrestigeRelicAdditive))（那個 1 是 mov w0,#1 的立即數），接著乘累加倍率那一項，最後乘 Bonus(OnlyPrestigeRelic)，再無條件進位。"
@@ -125,14 +140,14 @@
   "adopted": {
     "what": "(1 + Bonus(PrestigeRelicAdditive)) 與 × Bonus(OnlyPrestigeRelic) 兩個乘數",
     "why": "順序已逐指令確定，兩者在乾淨存檔都是無作用值（前者是加法型、預設 0，後者是乘法型、預設 1），結構與原生相同，影響溫和。",
-    "notAdopted": "累加倍率那一項需要 GetCurrentAdditiveRelicMultiplierBonus 與GetRewardableAdditiveRelicMultiplierAmount 背後的整套累加倍率系統，本專案沒有實作，沒有安全的預設值可用，因此沒有接。曲線本體也維持 7.5 近似，理由見 differsFromEngine。"
+    "notAdopted": "曲線本體維持 7.5 近似，理由見 differsFromEngine。累加倍率那一項不必接——展開後在沒有該系統時恆為 1。"
   },
-  "engineFormula": "max(1, floor(關卡^1.7 ÷ 100 × Bonus(PrestigeRelic) × (1 + Bonus(PrestigeRelicAdditive)) × Bonus(OnlyPrestigeRelic)))",
+  "engineFormula": "max(1, ceil(關卡^1.7 ÷ 100 × Bonus(PrestigeRelic) × (1 + Bonus(PrestigeRelicAdditive)) × Bonus(OnlyPrestigeRelic)))",
   "comparison": {
     "60": {
-      "engine": 10,
+      "engine": 11,
       "native": 18.824001449117556,
-      "ratio": 1.8824001449117556,
+      "ratio": 1.711272859010687,
       "terms": {
         "linear": 6.0,
         "powerOfBase": 11.69381529762539,
@@ -142,9 +157,9 @@
       "exponentAtCeiling": false
     },
     "100": {
-      "engine": 25,
+      "engine": 26,
       "native": 84.29298911173103,
-      "ratio": 3.3717195644692413,
+      "ratio": 3.2420380427588857,
       "terms": {
         "linear": 66.0,
         "powerOfBase": 17.066041815229553,
@@ -154,9 +169,9 @@
       "exponentAtCeiling": false
     },
     "250": {
-      "engine": 119,
+      "engine": 120,
       "native": 337.26050777809695,
-      "ratio": 2.834121914101655,
+      "ratio": 2.810504231484141,
       "terms": {
         "linear": 291.0,
         "powerOfBase": 44.588372069524866,
@@ -166,9 +181,9 @@
       "exponentAtCeiling": false
     },
     "500": {
-      "engine": 387,
+      "engine": 388,
       "native": 798.2010018001291,
-      "ratio": 2.0625348883724266,
+      "ratio": 2.0572190768044565,
       "terms": {
         "linear": 666.0,
         "powerOfBase": 129.3900291132906,
@@ -178,9 +193,9 @@
       "exponentAtCeiling": false
     },
     "1000": {
-      "engine": 1258,
+      "engine": 1259,
       "native": 1995.7930228197367,
-      "ratio": 1.5864809402382645,
+      "ratio": 1.5852208282920863,
       "terms": {
         "linear": 1416.0,
         "powerOfBase": 571.7677899996162,
@@ -190,9 +205,9 @@
       "exponentAtCeiling": false
     },
     "2000": {
-      "engine": 4090,
+      "engine": 4091,
       "native": 7526.258213279913,
-      "ratio": 1.8401609323422772,
+      "ratio": 1.8397111252211962,
       "terms": {
         "linear": 2916.0,
         "powerOfBase": 4542.2820777078705,
@@ -202,9 +217,9 @@
       "exponentAtCeiling": false
     },
     "5000": {
-      "engine": 19419,
+      "engine": 19420,
       "native": 324452.1240193104,
-      "ratio": 16.707972811128812,
+      "ratio": 16.707112462374376,
       "terms": {
         "linear": 7416.0,
         "powerOfBase": 259463.68805975417,
@@ -214,9 +229,9 @@
       "exponentAtCeiling": false
     },
     "10000": {
-      "engine": 63095,
+      "engine": 63096,
       "native": 10226885352.069693,
-      "ratio": 162087.09647467616,
+      "ratio": 162084.52757813004,
       "terms": {
         "linear": 14916.0,
         "powerOfBase": 23062608.961503103,
@@ -226,9 +241,9 @@
       "exponentAtCeiling": true
     },
     "30000": {
-      "engine": 408419,
+      "engine": 408420,
       "native": 3.4831110466825524e+30,
-      "ratio": 8.528278671370706e+24,
+      "ratio": 8.528257790222203e+24,
       "terms": {
         "linear": 44916.0,
         "powerOfBase": 1394632414738.0186,
@@ -238,9 +253,9 @@
       "exponentAtCeiling": true
     },
     "98000": {
-      "engine": 3055514,
+      "engine": 3055515,
       "native": 4.1491173708047514e+101,
-      "ratio": 1.357911425313303e+95,
+      "ratio": 1.3579109809000287e+95,
       "terms": {
         "linear": 146916.0,
         "powerOfBase": 1.1781153634325674e+21,
@@ -252,7 +267,7 @@
   },
   "limits": [
     "十個係數都是 [ServerVar]，本表用的是編譯期預設值，不是線上值",
-    "GetCurrentAdditiveRelicMultiplierBonus 與 GetRewardableAdditiveRelicMultiplierAmount 兩個方法本身未展開，只確定它們組成的那一項在哪個位置被乘進來",
+    "GetNextAdditiveRelicMultiplier 未展開，只確定它是 Max(0, 它 − 已擁有) 的被減數；累加倍率的取得條件（GetRequiredStageForAdditiveRelicMultiplier 等）整組未查",
     "對照表以 double 計算；原生前兩段走 double、第三段走 GHDouble，極大關卡的尾數會有差異",
     "季節聖物（GetTotalSeasonalRelicsFromStageCount）是另一條路徑，未查"
   ]

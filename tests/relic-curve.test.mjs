@@ -90,11 +90,13 @@ test('外層四個乘數的結合順序定下來了，兩個已接上引擎', ()
   assert.equal(evidence.outer.callOrder.at(-1), 'GHDouble$$Ceiling');
   assert.equal(evidence.outer.callOrder.filter(name => name === 'GHDouble$$op_Multiply').length, 4);
   assert.equal(evidence.outer.callOrder.filter(name => name === 'BonusModel$$GetBonus').length, 3);
-  // Two of the four are now in the engine; the additive-multiplier term is not.
+  // All four are accounted for now: two are applied, and the additive-multiplier term expands to
+  // exactly 1 without that system, so leaving it out is equivalent rather than a shortfall.
   assert.match(evidence.engineFormula, /PrestigeRelicAdditive/);
   assert.match(evidence.engineFormula, /OnlyPrestigeRelic/);
-  assert.match(evidence.adopted.notAdopted, /累加倍率/);
   assert.equal(evidence.outer.additiveTerm.coefficient.value, Math.fround(0.00017));
+  assert.equal(evidence.outer.additiveTerm.inertWhenAbsent, true);
+  assert.match(evidence.outer.additiveTerm.expanded, /Max\(已擁有, 下一個門檻\)/);
 });
 
 test('接上的兩個乘數在乾淨存檔沒有作用，湊齊套裝才變多', () => {
@@ -114,7 +116,7 @@ test('接上的兩個乘數在乾淨存檔沒有作用，湊齊套裝才變多',
   assert.ok(Math.abs(ratio - (1 + granted)) < 0.01, `倍率 ${ratio}，預期 ${1 + granted}`);
 });
 
-test('登記表記錄算式已讀完、順序已照做、剩下兩處不一致', () => {
+test('登記表記錄算式已讀完，外層四個乘數全部對上', () => {
   const register = loadRegister();
   const relics = register.formulas.find(formula => formula.id === 'prestigeRelics');
   const curve = relics.parts.find(part => part.part.includes('指數 1.7'));
@@ -122,13 +124,16 @@ test('登記表記錄算式已讀完、順序已照做、剩下兩處不一致',
   assert.equal(curve.ref, 'relic-curve-evidence.json');
   assert.match(curve.note, /完整讀完/);
   assert.match(curve.note, /第 9 條/);
-  const order = relics.parts.find(entry => entry.part === '外層乘數的結合順序');
-  assert.equal(order.status, 'native', '順序是反組譯確認的，而且引擎已照做');
-  for (const key of ['累加倍率那一項未實作', '進位方向']) {
+  for (const key of ['外層乘數的結合順序', '累加倍率那一項', '進位方向']) {
     const part = relics.parts.find(entry => entry.part === key);
     assert.ok(part, key);
-    assert.equal(part.status, 'table-differs');
+    assert.equal(part.status, 'native', `${key} 應為反組譯確認且引擎已對上`);
   }
+  // What is left disagreeing: the curve itself, the rising prestige requirement, and the three
+  // extra multipliers this project has not implemented. None of them is an outer-multiplier gap.
+  const differing = relics.parts.filter(part => part.status === 'table-differs').map(part => part.part);
+  assert.deepEqual(differing, ['指數 1.7 與除數 100', '門檻隨歷史最高關卡上升的那一層',
+    '額外的聖物乘數（累加、季節、新手）']);
   // The old note said only two of the relic server vars carried a value. That was true of the
   // variable table, not of the compiled-in defaults; the corrected count is recorded instead.
   const extra = relics.parts.find(part => part.part.includes('額外的聖物乘數'));

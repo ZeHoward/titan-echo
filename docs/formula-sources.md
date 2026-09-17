@@ -6,11 +6,11 @@
 
 | 狀態 | 意義 | 條目數 |
 |---|---|---|
-| `native` | 由反組譯證據確認 | 11 |
+| `native` | 由反組譯證據確認 | 13 |
 | `table` | 取自安裝包資料表 | 18 |
 | `default` | 原生靜態預設值，線上可覆蓋 | 15 |
 | `baseline-75` | 沿用 7.5 基準，尚未對 8.2 核實 | 0 |
-| `table-differs` | 安裝包有值但引擎目前未照做 | 13 |
+| `table-differs` | 安裝包有值但引擎目前未照做 | 11 |
 | `invented` | 本專案自訂，安裝包未提供 | 10 |
 | `server` | 原生為伺服器變數，安裝包未帶值 | 3 |
 
@@ -164,11 +164,11 @@ max(1, floor(關卡^1.7 ÷ 100 × PrestigeRelic))，最高關卡到 60 後開放
 |---|---|---|
 | 指數 1.7 與除數 100 | `table-differs` | `reference/tt2/8.2.0/relic-curve-evidence.json`；原生沒有「關卡^指數 ÷ 常數」這種寫法，而是三段相加，**這次完整讀完了**：關卡先 Min(關卡, relicsStageMax)，然後 (一) relicStageMult2 × (relicStageOffset + 關卡)、(二) relicStageMult1 × relicStageBase ^ (關卡 ^ relicStageExpo)、(三) relicStageBase2 ^ (關卡 ^ Min(relicStageExpoMax3, relicStageExpo2 × (1 + relicStageMult3 × 關卡 ^ relicStageExpo3)))，三段相加後 Max(0, ·)。第三段那個包在 Math.Pow 裡的 Math.Min 就是先前沒讀完的部分。**十個係數全部有編譯期預設值**（先前記為八個）：mult1 3、mult2 1.5、mult3 5e-07、base 1.21、base2 1.002、expo 0.48、expo2 1.005、expo3 1.1、expoMax3 1.0155、offset −56，關卡上限 relicsStageMax 180000。**仍不採用**：第 2000 關以內兩者同數量級（1.6–3.4 倍），但第 10000 關起第三段的指數頂到 1.0155，1.002^(關卡^1.0155) 開始主導，到關卡上限差 10^95 量級，整條換掉等於重做蛻變經濟，且與怪物曲線那條配套。逐關對照與理由見 ROADMAP 待決定的取捨第 9 條。 |
 | 外層乘數的結合順序 | `native` | `reference/tt2/8.2.0/relic-curve-evidence.json`；跟著 GHDouble 運算子的 out 指標在堆疊上的去向讀，順序定下來了：Ceiling(曲線值 × Bonus(PrestigeRelic) × (1 + Bonus(PrestigeRelicAdditive)) × 累加倍率 × Bonus(OnlyPrestigeRelic))，其中那個 1 是 mov w0,#1 的立即數。**引擎已照做兩個**：(1 + PrestigeRelicAdditive) 與 × OnlyPrestigeRelic。兩者在乾淨存檔都是無作用值（加法型預設 0、乘法型預設 1），所以只有湊齊神話套裝的人會變多——包內有 17 個套裝各給 PrestigeRelicAdditive 2.4408，湊一套就是 3.44 倍。OnlyPrestigeRelic 目前在引擎資料裡沒有任何來源，接上是為了位置正確，將來有來源就會生效。 |
-| 累加倍率那一項未實作 | `table-differs` | `reference/tt2/8.2.0/relic-curve-evidence.json`；原生在上式中還乘一項 GetCurrentAdditiveRelicMultiplierBonus() + stageRushToRelicMultiplier × GetRewardableAdditiveRelicMultiplierAmount()，係數的編譯期預設值是 float 0.00017。它背後整套累加倍率系統本專案沒有實作，也沒有安全的預設值可以代入（乘 0 會讓聖物歸零），所以沒有接。 |
-| 進位方向 | `table-differs` | `reference/tt2/8.2.0/relic-curve-evidence.json`；原生以 GHDouble.Ceiling 無條件進位，引擎用 Math.floor 捨去。在目前的近似曲線下改成進位只會讓每次蛻變多零或一顆，但它與上面那條曲線是同一個回傳值的兩端，一起換才有意義。 |
+| 累加倍率那一項 | `native` | `reference/tt2/8.2.0/relic-curve-evidence.json`；原生在上式中還乘一項 GetCurrentAdditiveRelicMultiplierBonus() + stageRushToRelicMultiplier × GetRewardableAdditiveRelicMultiplierAmount()。兩半都很短：前者是 1 + stageRushToRelicMultiplier（float 0.00017）× PrestigeModel.AdditiveRelicMultiplier（已擁有的數量），後者是 Max(0, GetNextAdditiveRelicMultiplier() − 已擁有)，整項化簡成 1 + 0.00017 × Max(已擁有, 下一個門檻)。**本專案沒有累加倍率系統，這一項因此恆為 1**——所以引擎省略它與原生等價，不是「未照做」。將來實作該系統時要加回來；它還依賴 PlayerModel.GetSeasonalMaxStageReached，季節系統本專案也沒有。 |
+| 進位方向 | `native` | `reference/tt2/8.2.0/relic-curve-evidence.json`；原生以 GHDouble.Ceiling 無條件進位，引擎原本用 Math.floor 捨去，已改為 Math.ceil。在目前的近似曲線下每次蛻變固定多一顆（第 60 關 10→11、第 1000 關 1258→1259）。 |
 | 開放門檻第 60 關 | `default` | `reference/tt2/8.2.0/prestige-unlock-evidence.json`；不是 7.5 留下的猜測：[ServerVar] minimumPrestigeStage 的編譯期預設值就是 60，而且它正是 PrestigeModel.GetPrestigeStage 結尾那個 System.Math.Max 的第二個引數，也就是「這次蛻變要打到第幾關」的下限，CanPrestige 只是拿關卡和它比 >=。先前記為「安裝包未見對應欄位」是沒找到名字——改以指令編碼掃描（ldr Wt,[Xn,#0xbec] 除兩個暫存器欄位外完全固定）才找出全部三個讀取點。引擎把這個數字寫在 PRESTIGE_DEFAULTS.minimumStage，relicGain、discover 與 prestige 三處共用。線上可覆蓋，故為 default。 |
 | 門檻隨歷史最高關卡上升的那一層 | `table-differs` | `reference/tt2/8.2.0/prestige-unlock-evidence.json`；原生的門檻不是固定 60：GetPrestigeStage = Math.Max(floor(prestigeMsPercentRequirement × (基準 − 進階起點) + 進階起點), minimumPrestigeStage)，係數的編譯期預設值是 float 0.5，基準取自 maxPrestigeStageCount，也就是要推到歷史最高的一半才能再蛻變。引擎沒有這一層——歷史最高到過 60 就一直能蛻變。第一次蛻變前兩者等價。未採用，已列入 ROADMAP 待決定的取捨第 8 條。 |
-| 至少一顆聖物的下限 | `invented` | 引擎自訂：開放後即使在第一關蛻變也給一顆，安裝包未見對應下限。 |
+| 至少一顆聖物的下限 | `invented` | `reference/tt2/8.2.0/relic-curve-evidence.json`；引擎自訂的 max(1, ·)，安裝包未見對應下限。改用無條件進位之後它幾乎不再生效——任何正數進位後都至少是 1——保留是為了擋住乘數把值壓到 0 的情形。 |
 | 額外的聖物乘數（累加、季節、新手） | `table-differs` | `reference/tt2/8.2.0/relic-curve-evidence.json`；原生另有 additiveRelicMultiplier、seasonalRelicMultiplier 與新手加成三條乘數，本專案都沒有實作。**先前記為「31 個含 relic 的欄位裡只有兩個有值」，那是變數表的狀況**——按編譯期預設值算，31 個裡有 28 個有值，例如 additiveRelicMultiplierMax 50000（先前誤記為 150000）、seasonalRelicMultiplierBase 1.0053、seasonalRelicStageExpMult 9.8e-05、newPlayerRelicMultMp 5、newPlayerRelicMultBonusDurationMins 10080（七天）。也就是說這三條乘數其實查得到，只是還沒有人去還原它們的算式。 |
 
 ### evolveCost · `lib/engine.ts` 的 `evolveCost`

@@ -29,7 +29,7 @@ test('no export in a covered module escapes classification', () => {
 
 test('the counts are recorded, so a source changing status is a visible change', () => {
   assert.deepEqual(report.counts, {
-    'table-differs': 13, invented: 10, table: 18, default: 15, server: 3, native: 11,
+    'table-differs': 11, invented: 10, table: 18, default: 15, server: 3, native: 13,
   });
   // Nothing is left on the 7.5 baseline: every source has been checked against 8.2, and what
   // could not be adopted is recorded as known-but-not-followed rather than as unchecked.
@@ -37,13 +37,13 @@ test('the counts are recorded, so a source changing status is a visible change',
   // Still unverified: this project's own choice, or a server value with no compiled-in default.
   const unverified = (report.counts['baseline-75'] ?? 0) + report.counts.invented + report.counts.server;
   assert.equal(unverified, 13);
-  assert.equal(report.counts['table-differs'], 13, '已知但未照做的項目要看得見');
+  assert.equal(report.counts['table-differs'], 11, '已知但未照做的項目要看得見');
 });
 
 test('每一處與安裝包不一致的地方都寫下來了', () => {
   const differs = register.formulas.flatMap(formula =>
     formula.parts.filter(part => part.status === 'table-differs').map(part => ({ formula, part })));
-  assert.equal(differs.length, 13);
+  assert.equal(differs.length, 11);
   const boss = differs.find(entry => entry.formula.id === 'monsterHealth');
   // The boss multiplier sequence is banded by stage in the package; the engine uses one band.
   assert.match(boss.part.note, /4,6,8,15,24/);

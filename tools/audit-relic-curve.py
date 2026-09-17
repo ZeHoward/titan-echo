@@ -20,6 +20,7 @@ to its own ceiling and 1.002^(stage^1.0155) takes over.
 import hashlib
 import io
 import json
+import math
 import pathlib
 import re
 import sys
@@ -36,8 +37,16 @@ TOTAL_RELICS = 0x23FF300      # PrestigeModel.GetTotalRelicsFromStageCount(int, 
 GET_BONUS = 0x2714C88         # BonusModel.GetBonus(BonusType, ...)
 MATH_POW = 0x3FCC8E0          # System.Math.Pow(double, double)
 MATH_MIN = 0x3FCC214          # System.Math.Min(double, double)
+MATH_MAX = 0x3FCC0F4          # System.Math.Max(int, int)
+CURRENT_ADDITIVE = 0x23F005C  # PrestigeModel.GetCurrentAdditiveRelicMultiplierBonus()
+REWARDABLE = 0x23FF64C        # PrestigeModel.GetRewardableAdditiveRelicMultiplierAmount()
+NEXT_ADDITIVE = 0x2400624     # PrestigeModel.GetNextAdditiveRelicMultiplier(out bool)
 NAMES = {BONUS_RELICS: 'PrestigeModel$$GetBonusRelicsFromStageCount',
-         TOTAL_RELICS: 'PrestigeModel$$GetTotalRelicsFromStageCount'}
+         TOTAL_RELICS: 'PrestigeModel$$GetTotalRelicsFromStageCount',
+         CURRENT_ADDITIVE: 'PrestigeModel$$GetCurrentAdditiveRelicMultiplierBonus',
+         REWARDABLE: 'PrestigeModel$$GetRewardableAdditiveRelicMultiplierAmount'}
+# PrestigeModel's own field, the count of additive relic multipliers the player owns.
+OWNED_FIELD = ('AdditiveRelicMultiplier', 0x48)
 # ServerVarsModel statics, by offset in the statics block.
 VARS = {'relicStageMult1': 0x168, 'relicStageMult2': 0x170, 'relicStageMult3': 0x178,
         'relicStageBase': 0x180, 'relicStageBase2': 0x188, 'relicStageExpo': 0x190,
@@ -223,6 +232,31 @@ def main():
     if not match or int(match.group(1), 16) != OUTER_VAR[1]:
         raise ValueError(f'{OUTER_VAR[0]} is no longer at {OUTER_VAR[1]:#x}')
 
+    # 5. The additive-multiplier term, which is what the engine leaves out. Both halves are short.
+    model = re.search(r'^public class PrestigeModel(?=[\s:])[^\n]*\n\{(.*?)^\}', dump, re.S | re.M).group(1)
+    owned = re.search(r'private int <'+OWNED_FIELD[0]+r'>k__BackingField; // 0x([0-9A-Fa-f]+)', model)
+    if not owned or int(owned.group(1), 16) != OWNED_FIELD[1]:
+        raise ValueError(f'PrestigeModel.{OWNED_FIELD[0]} is no longer at {OWNED_FIELD[1]:#x}')
+    bonus_text = '\n'.join(f'{i.mnemonic} {i.op_str}' for i in instructions(CURRENT_ADDITIVE))
+    for needed, why in ((r'ldr w\d+, \[x\d+, #0x48\]', 'the owned count'),
+                        (r'ldr s\d+, \[x\d+, #0xc54\]', 'stageRushToRelicMultiplier'),
+                        (r'fmov s\d+, #1\.00000000', 'the 1 it is added to'),
+                        (r'fmul s\d+, s\d+, s\d+', 'the multiply'),
+                        (r'fadd s\d+, s\d+, s\d+', 'the add')):
+        if not re.search(needed, bonus_text):
+            raise ValueError(f'GetCurrentAdditiveRelicMultiplierBonus no longer contains {why}')
+    rewardable = instructions(REWARDABLE)
+    rewardable_calls = [symbols.get(int(i.op_str.lstrip('#'), 16), '') for i in rewardable
+                        if i.mnemonic in ('bl', 'b') and i.op_str.startswith('#')]
+    if symbols[NEXT_ADDITIVE] not in rewardable_calls:
+        raise ValueError('GetRewardableAdditiveRelicMultiplierAmount no longer asks for the next tier')
+    tail_max = rewardable[-1]
+    if not (tail_max.mnemonic == 'b' and int(tail_max.op_str.lstrip('#'), 16) == MATH_MAX):
+        raise ValueError('GetRewardableAdditiveRelicMultiplierAmount no longer ends in Math.Max')
+    rewardable_text = '\n'.join(f'{i.mnemonic} {i.op_str}' for i in rewardable)
+    if not re.search(r'sub w1, w\d+, w\d+', rewardable_text) or 'mov w0, wzr' not in rewardable_text:
+        raise ValueError('the Max(0, next - owned) shape is gone')
+
     defaults = json.loads((ROOT/'reference/tt2/8.2.0/servervar-defaults.json')
                           .read_text(encoding='utf-8'))['recovered']
     if OUTER_VAR[0] not in defaults:
@@ -245,7 +279,8 @@ def main():
         return max(0.0, first+second+third), first, second, third, exponent
 
     def engine(stage):
-        return max(1, int(stage**ENGINE_EXPO/ENGINE_DIVISOR))
+        # The engine rounds up, as the native does; max(1, ...) is its own floor underneath.
+        return max(1, math.ceil(stage**ENGINE_EXPO/ENGINE_DIVISOR))
 
     comparison = {}
     for stage in SAMPLE_STAGES:
@@ -306,6 +341,16 @@ def main():
                            '× GetRewardableAdditiveRelicMultiplierAmount()',
                 'coefficient': {'name': OUTER_VAR[0], 'offset': hex(OUTER_VAR[1]),
                                 'value': outer_value},
+                'expanded': '兩半都很短：前者是 1 + stageRushToRelicMultiplier × '
+                            'PrestigeModel.AdditiveRelicMultiplier（已擁有的數量），'
+                            '後者是 Math.Max(0, GetNextAdditiveRelicMultiplier() − 已擁有)，'
+                            '所以整項化簡成 1 + stageRushToRelicMultiplier × Max(已擁有, 下一個門檻)。',
+                'inertWhenAbsent': True,
+                'note': '**沒有累加倍率時這一項就是 1**（已擁有 0、下一個門檻 0），'
+                        '所以引擎省略它與原生等價，不是「未照做」。'
+                        '將來實作累加倍率系統時要把它加回來——它依賴 '
+                        'PlayerModel.GetSeasonalMaxStageReached，本專案也沒有季節系統。',
+                'methods': {'currentBonus': fact(CURRENT_ADDITIVE), 'rewardable': fact(REWARDABLE)},
             },
             'note': '跟著 GHDouble 運算子的 out 指標在堆疊上的去向讀，四個乘數的結合順序就定下來了：'
                     '曲線值先乘 Bonus(PrestigeRelic)，再乘 (1 + Bonus(PrestigeRelicAdditive))'
@@ -316,18 +361,16 @@ def main():
             'what': '(1 + Bonus(PrestigeRelicAdditive)) 與 × Bonus(OnlyPrestigeRelic) 兩個乘數',
             'why': '順序已逐指令確定，兩者在乾淨存檔都是無作用值'
                    '（前者是加法型、預設 0，後者是乘法型、預設 1），結構與原生相同，影響溫和。',
-            'notAdopted': '累加倍率那一項需要 GetCurrentAdditiveRelicMultiplierBonus 與'
-                          'GetRewardableAdditiveRelicMultiplierAmount 背後的整套累加倍率系統，'
-                          '本專案沒有實作，沒有安全的預設值可用，因此沒有接。'
-                          '曲線本體也維持 7.5 近似，理由見 differsFromEngine。',
+            'notAdopted': '曲線本體維持 7.5 近似，理由見 differsFromEngine。'
+                          '累加倍率那一項不必接——展開後在沒有該系統時恆為 1。',
         },
-        'engineFormula': f'max(1, floor(關卡^{ENGINE_EXPO} ÷ {ENGINE_DIVISOR} × Bonus(PrestigeRelic) '
+        'engineFormula': f'max(1, ceil(關卡^{ENGINE_EXPO} ÷ {ENGINE_DIVISOR} × Bonus(PrestigeRelic) '
                          f'× (1 + Bonus(PrestigeRelicAdditive)) × Bonus(OnlyPrestigeRelic)))',
         'comparison': comparison,
         'limits': [
             '十個係數都是 [ServerVar]，本表用的是編譯期預設值，不是線上值',
-            'GetCurrentAdditiveRelicMultiplierBonus 與 GetRewardableAdditiveRelicMultiplierAmount '
-            '兩個方法本身未展開，只確定它們組成的那一項在哪個位置被乘進來',
+            'GetNextAdditiveRelicMultiplier 未展開，只確定它是 Max(0, 它 − 已擁有) 的被減數；'
+            '累加倍率的取得條件（GetRequiredStageForAdditiveRelicMultiplier 等）整組未查',
             '對照表以 double 計算；原生前兩段走 double、第三段走 GHDouble，極大關卡的尾數會有差異',
             '季節聖物（GetTotalSeasonalRelicsFromStageCount）是另一條路徑，未查',
         ],

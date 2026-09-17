@@ -179,13 +179,16 @@ export function cost(s:State,index=-1,count=1):Big{
 // The stage^1.7 / 100 part is still the 7.5 approximation of the native three-term curve, but the
 // multipliers around it are the native ones. Following the GHDouble out-pointers through
 // GetTotalRelicsFromStageCount gives the order: the curve is multiplied by PrestigeRelic, then by
-// 1 + PrestigeRelicAdditive, then by the additive-multiplier term this project does not have, then
+// 1 + PrestigeRelicAdditive, then by the additive-multiplier term — which expands to
+// 1 + 0.00017 * max(owned, next tier) and is therefore exactly 1 without that system — then
 // by OnlyPrestigeRelic. Both of the ones applied here are inert on a clean save — the additive one
 // defaults to 0 and comes from the mythic sets, the other defaults to 1 and has no source yet.
 export function relicGain(s:State){
  if(s.best<PRESTIGE_DEFAULTS.minimumStage)return 0;
  const multiplier=stateEffect(s,'PrestigeRelic')*(1+stateEffect(s,'PrestigeRelicAdditive'))*stateEffect(s,'OnlyPrestigeRelic');
- return Math.max(1,Math.floor(s.stage**1.7/100*multiplier));
+ // Native rounds the whole thing up (GHDouble.Ceiling), which also makes the project's own
+ // "at least one" floor redundant for every reachable stage; it stays as a guard.
+ return Math.max(1,Math.ceil(s.stage**1.7/100*multiplier));
 }
 export function artifactCost(s:State,i:number){return s.tt2!.artifacts[i]?upgradeArtifactCost(s.tt2!,i):discoveryCost(s.tt2!);}
 export function evolveCost(s:State,i:number):Big{return scale(pow(1e4,s.evolutions[i]),HEROES[i].base*1e6);}

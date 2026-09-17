@@ -316,16 +316,16 @@
           "note": "跟著 GHDouble 運算子的 out 指標在堆疊上的去向讀，順序定下來了：Ceiling(曲線值 × Bonus(PrestigeRelic) × (1 + Bonus(PrestigeRelicAdditive)) × 累加倍率 × Bonus(OnlyPrestigeRelic))，其中那個 1 是 mov w0,#1 的立即數。**引擎已照做兩個**：(1 + PrestigeRelicAdditive) 與 × OnlyPrestigeRelic。兩者在乾淨存檔都是無作用值（加法型預設 0、乘法型預設 1），所以只有湊齊神話套裝的人會變多——包內有 17 個套裝各給 PrestigeRelicAdditive 2.4408，湊一套就是 3.44 倍。OnlyPrestigeRelic 目前在引擎資料裡沒有任何來源，接上是為了位置正確，將來有來源就會生效。"
         },
         {
-          "part": "累加倍率那一項未實作",
-          "status": "table-differs",
+          "part": "累加倍率那一項",
+          "status": "native",
           "ref": "relic-curve-evidence.json",
-          "note": "原生在上式中還乘一項 GetCurrentAdditiveRelicMultiplierBonus() + stageRushToRelicMultiplier × GetRewardableAdditiveRelicMultiplierAmount()，係數的編譯期預設值是 float 0.00017。它背後整套累加倍率系統本專案沒有實作，也沒有安全的預設值可以代入（乘 0 會讓聖物歸零），所以沒有接。"
+          "note": "原生在上式中還乘一項 GetCurrentAdditiveRelicMultiplierBonus() + stageRushToRelicMultiplier × GetRewardableAdditiveRelicMultiplierAmount()。兩半都很短：前者是 1 + stageRushToRelicMultiplier（float 0.00017）× PrestigeModel.AdditiveRelicMultiplier（已擁有的數量），後者是 Max(0, GetNextAdditiveRelicMultiplier() − 已擁有)，整項化簡成 1 + 0.00017 × Max(已擁有, 下一個門檻)。**本專案沒有累加倍率系統，這一項因此恆為 1**——所以引擎省略它與原生等價，不是「未照做」。將來實作該系統時要加回來；它還依賴 PlayerModel.GetSeasonalMaxStageReached，季節系統本專案也沒有。"
         },
         {
           "part": "進位方向",
-          "status": "table-differs",
+          "status": "native",
           "ref": "relic-curve-evidence.json",
-          "note": "原生以 GHDouble.Ceiling 無條件進位，引擎用 Math.floor 捨去。在目前的近似曲線下改成進位只會讓每次蛻變多零或一顆，但它與上面那條曲線是同一個回傳值的兩端，一起換才有意義。"
+          "note": "原生以 GHDouble.Ceiling 無條件進位，引擎原本用 Math.floor 捨去，已改為 Math.ceil。在目前的近似曲線下每次蛻變固定多一顆（第 60 關 10→11、第 1000 關 1258→1259）。"
         },
         {
           "part": "開放門檻第 60 關",
@@ -342,7 +342,8 @@
         {
           "part": "至少一顆聖物的下限",
           "status": "invented",
-          "note": "引擎自訂：開放後即使在第一關蛻變也給一顆，安裝包未見對應下限。"
+          "ref": "relic-curve-evidence.json",
+          "note": "引擎自訂的 max(1, ·)，安裝包未見對應下限。改用無條件進位之後它幾乎不再生效——任何正數進位後都至少是 1——保留是為了擋住乘數把值壓到 0 的情形。"
         },
         {
           "part": "額外的聖物乘數（累加、季節、新手）",

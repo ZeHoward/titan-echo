@@ -212,15 +212,19 @@ FORMULAS = [
                          '所以只有湊齊神話套裝的人會變多——包內有 17 個套裝各給 PrestigeRelicAdditive 2.4408，'
                          '湊一套就是 3.44 倍。OnlyPrestigeRelic 目前在引擎資料裡沒有任何來源，'
                          '接上是為了位置正確，將來有來源就會生效。'),
-              entry(part='累加倍率那一項未實作', status='table-differs', ref='relic-curve-evidence.json',
+              entry(part='累加倍率那一項', status='native', ref='relic-curve-evidence.json',
                     note='原生在上式中還乘一項 GetCurrentAdditiveRelicMultiplierBonus() + '
-                         'stageRushToRelicMultiplier × GetRewardableAdditiveRelicMultiplierAmount()，'
-                         '係數的編譯期預設值是 float 0.00017。它背後整套累加倍率系統本專案沒有實作，'
-                         '也沒有安全的預設值可以代入（乘 0 會讓聖物歸零），所以沒有接。'),
-              entry(part='進位方向', status='table-differs', ref='relic-curve-evidence.json',
-                    note='原生以 GHDouble.Ceiling 無條件進位，引擎用 Math.floor 捨去。'
-                         '在目前的近似曲線下改成進位只會讓每次蛻變多零或一顆，'
-                         '但它與上面那條曲線是同一個回傳值的兩端，一起換才有意義。'),
+                         'stageRushToRelicMultiplier × GetRewardableAdditiveRelicMultiplierAmount()。'
+                         '兩半都很短：前者是 1 + stageRushToRelicMultiplier（float 0.00017）× '
+                         'PrestigeModel.AdditiveRelicMultiplier（已擁有的數量），'
+                         '後者是 Max(0, GetNextAdditiveRelicMultiplier() − 已擁有)，'
+                         '整項化簡成 1 + 0.00017 × Max(已擁有, 下一個門檻)。'
+                         '**本專案沒有累加倍率系統，這一項因此恆為 1**——所以引擎省略它與原生等價，'
+                         '不是「未照做」。將來實作該系統時要加回來；它還依賴 '
+                         'PlayerModel.GetSeasonalMaxStageReached，季節系統本專案也沒有。'),
+              entry(part='進位方向', status='native', ref='relic-curve-evidence.json',
+                    note='原生以 GHDouble.Ceiling 無條件進位，引擎原本用 Math.floor 捨去，已改為 Math.ceil。'
+                         '在目前的近似曲線下每次蛻變固定多一顆（第 60 關 10→11、第 1000 關 1258→1259）。'),
               entry(part='開放門檻第 60 關', status='default', ref='prestige-unlock-evidence.json',
                     note='不是 7.5 留下的猜測：[ServerVar] minimumPrestigeStage 的編譯期預設值就是 60，'
                          '而且它正是 PrestigeModel.GetPrestigeStage 結尾那個 System.Math.Max 的第二個引數，'
@@ -236,8 +240,9 @@ FORMULAS = [
                          '係數的編譯期預設值是 float 0.5，基準取自 maxPrestigeStageCount，'
                          '也就是要推到歷史最高的一半才能再蛻變。引擎沒有這一層——歷史最高到過 60 就一直能蛻變。'
                          '第一次蛻變前兩者等價。未採用，已列入 ROADMAP 待決定的取捨第 8 條。'),
-              entry(part='至少一顆聖物的下限', status='invented',
-                    note='引擎自訂：開放後即使在第一關蛻變也給一顆，安裝包未見對應下限。'),
+              entry(part='至少一顆聖物的下限', status='invented', ref='relic-curve-evidence.json',
+                    note='引擎自訂的 max(1, ·)，安裝包未見對應下限。改用無條件進位之後它幾乎不再生效——'
+                         '任何正數進位後都至少是 1——保留是為了擋住乘數把值壓到 0 的情形。'),
               entry(part='額外的聖物乘數（累加、季節、新手）', status='table-differs',
                     ref='relic-curve-evidence.json',
                     note='原生另有 additiveRelicMultiplier、seasonalRelicMultiplier 與新手加成三條乘數，'
