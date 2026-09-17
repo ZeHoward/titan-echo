@@ -40,7 +40,15 @@ function newDaily(day:number):State['daily']{return {day,claimed:[],taps:0,kills
 export function fresh(now=Date.now()):State {return {version:2,ruleset:TT2_RULESET,tt2:freshTT2(now),stage:1,best:1,kills:0,hp:fromNumber(18),gold:{...ZERO},level:1,heroes:Array(33).fill(0),relics:0,artifacts:ARTIFACTS.map(()=>0),prestiges:0,taps:0,totalKills:0,cooldowns:SKILLS.map(()=>0),active:SKILLS.map(()=>0),bossEnd:0,farming:false,last:now,lastTap:0,lastFairy:now,diamonds:0,weapons:Array(33).fill(0),evolutions:Array(33).fill(0),wounded:Array(33).fill(0),skillLevels:SKILLS.map(()=>0),gear:[],equipped:[-1,-1,-1,-1,-1],dust:0,lootCounter:0,bossKills:0,bossWounded:false,protection:0,seen:[0],monster:spriteForMonster(stagePool(1)[0]),achievements:{},daily:newDaily(dayAt(now)),loginDay:-1,streak:0,trial:null,weekly:{week:weekAt(now),best:0,claimed:[]},world:0,worldBest:[1,1],artifactSpent:ARTIFACTS.map(()=>0),log:[]};}
 export function hydrate(s:State):State{// A save already on this ruleset is repaired, never re-migrated: the legacy path refunds artifacts
 // and clears skill levels, so falling through with a missing tt2 block would wipe live progress.
-if(s.ruleset===TT2_RULESET){s.tt2??=freshTT2(s.last??Date.now());normaliseAmounts(s);s.monster??=settledMonster(s);if(!s.tt2.inventory)s.tt2={...freshTT2(s.last),...s.tt2};s.tt2.perkEnds??=[[],[]];s.tt2.rainLast??=s.last;s.tt2.petCharge??=0;s.tt2.petAttacks??=0;s.tt2.cloneAt??=s.last;return s;}const base=fresh(s.last||Date.now());const original={...s};Object.assign(s,base,original,{version:2});for(const key of ['heroes','weapons','evolutions','wounded','artifacts','artifactSpent','skillLevels'] as const){const length=key==='artifacts'||key==='artifactSpent'?30:key==='skillLevels'?6:33;const old=original[key]||[];s[key]=Array.from({length},(_,i)=>Number.isFinite(old[i])?old[i]:key==='skillLevels'?1:0);}if(!original.artifactSpent)s.artifactSpent=s.artifacts.map((n,i)=>i<3?n*n:0);s.worldBest[0]=s.best;s.tt2=freshTT2(s.last);s.ruleset=TT2_RULESET;
+if(s.ruleset===TT2_RULESET){s.tt2??=freshTT2(s.last??Date.now());normaliseAmounts(s);s.monster??=settledMonster(s);if(!s.tt2.inventory)s.tt2={...freshTT2(s.last),...s.tt2};s.tt2.perkEnds??=[[],[]];s.tt2.rainLast??=s.last;s.tt2.petCharge??=0;s.tt2.petAttacks??=0;s.tt2.cloneAt??=s.last;clampLevels(s);return s;}
+// Talent and skill levels index straight into their own tables. A save holding a level past the
+// table's end reads undefined and every bonus built from it becomes NaN, so the levels are
+// brought back into range on load rather than defended against at each of the dozen read sites.
+function clampLevels(s:State){
+ const t=s.tt2;if(!t)return;
+ if(Array.isArray(t.tree))t.tree=t.tree.map((level,i)=>Math.min(Math.max(0,Number.isFinite(level)?level:0),TT2_TREE[i]?.max??0));
+ s.skillLevels=s.skillLevels.map((level,i)=>Math.min(Math.max(0,Number.isFinite(level)?level:0),SKILL_DATA[i]?.max??0));
+}const base=fresh(s.last||Date.now());const original={...s};Object.assign(s,base,original,{version:2});for(const key of ['heroes','weapons','evolutions','wounded','artifacts','artifactSpent','skillLevels'] as const){const length=key==='artifacts'||key==='artifactSpent'?30:key==='skillLevels'?6:33;const old=original[key]||[];s[key]=Array.from({length},(_,i)=>Number.isFinite(old[i])?old[i]:key==='skillLevels'?1:0);}if(!original.artifactSpent)s.artifactSpent=s.artifacts.map((n,i)=>i<3?n*n:0);s.worldBest[0]=s.best;s.tt2=freshTT2(s.last);s.ruleset=TT2_RULESET;
  normaliseAmounts(s);
  s.tt2.legacyArtifacts=[...s.artifacts];s.tt2.legacySpent=[...s.artifactSpent];s.relics=limit(s.relics+s.artifactSpent.reduce((a,b)=>a+b,0));
  s.artifacts.fill(0);s.artifactSpent.fill(0);s.active.fill(0);s.cooldowns.fill(0);s.skillLevels.fill(0);s.trial=null;s.world=0;s.evolutions.fill(0);s.wounded.fill(0);s.kills=0;s.hp=health(s);s.bossEnd=0;
@@ -77,7 +85,10 @@ export function note(s:State,message:string){s.log=[message,...s.log].slice(0,15
 export function bonus(_s:State,_effect:Effect){return 0;}
 export function gearBonus(_s:State,_slot:number){return 1;}
 export function passive(_s:State,_kind:number){return 0;}
-export function skillPower(s:State,i:number){return SKILL_DATA[i].amount[Math.max(0,s.skillLevels[i]-1)]*stateEffect(s,SKILL_DATA[i].effect)*stateEffect(s,'AllActiveSkillAmount');}
+// A skill's tables stop at its max level; a save past that would read undefined and poison every
+// number downstream, so every lookup is clamped to the table it is reading.
+export function skillStep(i:number,level:number){return Math.min(Math.max(0,level-1),SKILL_DATA[i].amount.length-1);}
+export function skillPower(s:State,i:number){return SKILL_DATA[i].amount[skillStep(i,s.skillLevels[i])]*stateEffect(s,SKILL_DATA[i].effect)*stateEffect(s,'AllActiveSkillAmount');}
 export function skillDuration(s:State,i:number){return SKILLS[i].duration+stateEffect(s,SKILL_DATA[i].id+'SkillDuration')+stateEffect(s,'AllActiveSkillDuration');}
 export function skillCooldown(s:State,i:number){return SKILLS[i].cooldown*(1-Math.min(.9,stateEffect(s,'AllActiveSkillCooldownRate')));}
 // APK 8.2.0 bases from BonusModel.SetDefaultBonuses, which reads each one out of a ServerVarsModel
@@ -150,7 +161,7 @@ export function cost(s:State,index=-1,count=1):Big{
 export function relicGain(s:State){return s.best>=60?Math.max(1,Math.floor(s.stage**1.7/100*stateEffect(s,'PrestigeRelic'))):0;}
 export function artifactCost(s:State,i:number){return s.tt2!.artifacts[i]?upgradeArtifactCost(s.tt2!,i):discoveryCost(s.tt2!);}
 export function evolveCost(s:State,i:number):Big{return scale(pow(1e4,s.evolutions[i]),HEROES[i].base*1e6);}
-export function skillCost(s:State,i:number){return SKILL_DATA[i].cost[Math.min(34,s.skillLevels[i])];}
+export function skillCost(s:State,i:number){return SKILL_DATA[i].cost[Math.min(SKILL_DATA[i].cost.length-1,Math.max(0,s.skillLevels[i]))];}
 // The two the engine cannot count honestly: neither system exists yet, so neither is claimable.
 export const UNMEASURED_ACHIEVEMENTS:Record<string,string>={
  ParticipatedTournament:'錦標賽尚未實作，沒有可計數的參賽事件',
@@ -290,7 +301,7 @@ export function apply(s:State,a:Action){advance(s,a.at);const i=a.index??0,t=s.t
   const token=a.amount===1,price=RESOURCE_PERKS[i].cost;
   if((token?t.perkTokens>0:s.diamonds>=price)&&activatePerk(t,i,s.last)){t.perksUsed++;if(token)t.perkTokens--;else s.diamonds-=price;if(i===0)t.mana=manaMax(s);if(i===1){t.rainLast=s.last;buyAffordableHeroes(s);}note(s,`已使用${RESOURCE_PERKS[i].name}，每層持續十二小時。`);}
  }
- if(a.type==='tap'&&s.last-s.lastTap>=45){s.lastTap=s.last;s.taps++;s.daily.taps++;t.tutorialTaps++;t.lastCrit=tt2Random(t)<critChance(s);if(t.lastCrit)t.crits++;let n=scale(tapDamage(s),t.lastCrit?critMultiplier(s):1);if(s.active[1]>s.last&&tt2Random(t)<SKILL_DATA[1].second[s.skillLevels[1]-1])n=scale(n,skillPower(s,1));t.lastHit=n;damage(s,n);if(chargePet(t)){t.lastPetHit=petAttackDamage(s);t.petAttacks++;damage(s,t.lastPetHit);}}
+ if(a.type==='tap'&&s.last-s.lastTap>=45){s.lastTap=s.last;s.taps++;s.daily.taps++;t.tutorialTaps++;t.lastCrit=tt2Random(t)<critChance(s);if(t.lastCrit)t.crits++;let n=scale(tapDamage(s),t.lastCrit?critMultiplier(s):1);if(s.active[1]>s.last&&tt2Random(t)<SKILL_DATA[1].second[skillStep(1,s.skillLevels[1])])n=scale(n,skillPower(s,1));t.lastHit=n;damage(s,n);if(chargePet(t)){t.lastPetHit=petAttackDamage(s);t.petAttacks++;damage(s,t.lastPetHit);}}
  if(a.type==='upgrade'||a.type==='hero'){const id=a.type==='upgrade'?-1:i;if(id<-1||id>=HEROES.length||!Number.isInteger(id))return s;let count=a.amount??1;const cap=id<0?PLAYER_LEVEL_CAP:HERO_LEVEL_CAP;
   if(count===0){while(count<1000&&compare(s.gold,cost(s,id,count+1))>=0&&(id<0?s.level:heroLevel(s,id))+count<cap)count++;}if(![1,10,25,100,1000,0].includes(a.amount??1)||!count)return s;const price=cost(s,id,count);
   if(compare(s.gold,price)>=0&&(id<0?s.level:heroLevel(s,id))+count<=cap){s.gold=atLeastZero(subtract(s.gold,price));if(id<0)s.level+=count;else setHeroLevel(s,id,heroLevel(s,id)+count);}}
@@ -375,7 +386,7 @@ export function manaMax(s:State){
 function baseManaRegen(s:State){return limit((MANA_DEFAULTS.regenPerMinute+stateEffect(s,'ManaRegen'))/60
  *stateEffect(s,'ManaRegenMult')*stateEffect(s,'AllManaGained'));}
 export function manaRegen(s:State){return limit(baseManaRegen(s)*perkValue(s.tt2!,0,s.last));}
-export function skillMana(s:State,i:number){return Math.max(0,SKILL_DATA[i].mana[Math.max(0,s.skillLevels[i]-1)]-stateEffect(s,SKILL_DATA[i].id+'SkillMana'));}
+export function skillMana(s:State,i:number){return Math.max(0,SKILL_DATA[i].mana[skillStep(i,s.skillLevels[i])]-stateEffect(s,SKILL_DATA[i].id+'SkillMana'));}
 // Native: min(Bonus(CritChance) x Bonus(AllProbabilityBoost), maxCritChance), and maxCritChance
 // is 1. The chance bonus is additive on top of the base, the probability boost is a multiplier.
 export function critChance(s:State){
@@ -389,8 +400,8 @@ export function buildDamage(s:State,build:Build):Big{const t=s.tt2!,active=s.act
  n=scale(n,buildMultiplier(t,build,active,isBoss(s),id=>stateEffect(s,id))*gearBonus(s,0));
  if(s.active[3]>s.last)n=scale(n,skillPower(s,3)**({tap:1,pet:1,ship:0,clone:.6,dagger:1,heavenly:1,goldGun:.45}[build]));
  if(s.active[2]>s.last)n=scale(n,skillPower(s,2)**c);
- if(build==='clone')n=scale(n,SKILL_DATA[0].amount[s.skillLevels[0]-1]);
- if(build==='heavenly')n=scale(n,SKILL_DATA[5].amount[s.skillLevels[5]-1]);
+ if(build==='clone')n=scale(n,SKILL_DATA[0].amount[skillStep(0,s.skillLevels[0])]);
+ if(build==='heavenly')n=scale(n,SKILL_DATA[5].amount[skillStep(5,s.skillLevels[5])]);
  return n;
 }
 export function goldReward(s:State,source:'monster'|'boss'|'fairy'|'chest'|'pet'|'multi'):Big{

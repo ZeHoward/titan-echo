@@ -644,6 +644,7 @@
       "critMultiplier",
       "monsterCount",
       "unlockedSkills",
+      "skillStep",
       "discoveryCost",
       "craftPrice",
       "buildMultiplier",

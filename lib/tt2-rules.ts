@@ -55,7 +55,10 @@ function baseFrom(cached:Cache,t:TT2State,target:string){
  const additive=bonusDefinitions[target]?.additive;let total=additive?0:1;
  const put=(n:number)=>{total=additive?total+n:cap(total*n);};
  TT2_ARTIFACTS.forEach((a,i)=>{if(t.artifacts[i]>0&&reaches(a.effect,target)){let n=artifactValue(t,i);if(!a.max&&a.effect!=='PrestigeRelic'){const group=bonusDefinitions[a.effect]?.group;const boost=group==='Damage'?98:group==='Gold'?99:-1;if(boost>=0&&boost!==i&&t.artifacts[boost]>0)n=cap(n*artifactValue(t,boost));}put(n);}});
- TT2_TREE.forEach((k,i)=>{const level=t.tree[i]||0;if(level)for(const e of k.effects)if(reaches(e.type,target))put(e.values[level]);});
+ // A talent's value list only goes up to its own max. A save carrying a higher level — a broken
+ // one, or one written before a max was lowered — would read undefined here and turn the whole
+ // bonus into NaN, which then spreads to every number built from it.
+ TT2_TREE.forEach((k,i)=>{const level=Math.min(t.tree[i]||0,k.max);if(level)for(const e of k.effects)if(reaches(e.type,target))put(e.values[Math.min(level,e.values.length-1)]);});
  TT2_SETS.forEach((set,i)=>{if(t.sets.includes(i))for(const e of set.effects)if(reaches(e.type,target)&&!e.perDay)put(e.amount);});
  cached.values.set(target,total);return total;
 }
