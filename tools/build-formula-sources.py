@@ -185,7 +185,14 @@ FORMULAS = [
               entry(part='主動技能倍率', status='table', ref='ActiveSkillInfo.json')]),
     entry(id='skillValues', module='lib/engine.ts', export='skillPower',
           expression='技能等級對應的倍率 × 對應加成 × 全主動技能加成',
-          parts=[entry(part='各級倍率、持續、冷卻與魔力', status='table', ref='ActiveSkillInfo.json')]),
+          parts=[entry(part='各級倍率、持續、冷卻與魔力', status='table', ref='ActiveSkillInfo.json'),
+                 entry(part='持續時間的兩個加總', status='native', ref='skill-duration-evidence.json',
+                       note='原生 SkillParsedInfo.GetDuration 先建兩個加總再相乘：秒數那組**從 0 起算**，'
+                            '收該技能自己的 SkillDuration 與 AllActiveSkillDuration；'
+                            '倍率那組**從 1 起算**，收該技能自己的 SkillDurationMult 與 AllActiveSkillDurationMult；'
+                            '結果是 (基礎 + 秒數組) × 倍率組。兩個起點是關鍵——倍率組若從 0 起算，'
+                            '沒有來源的人技能持續會直接歸零。本專案原本只做了秒數那組；'
+                            '倍率組的唯一來源是「獵人」傳說套裝（0.1），六個技能各 ×1.1。')]),
     entry(id='critical', module='lib/engine.ts', export='critChance',
           expression='(0.01 + CritChance 加成) × AllProbabilityBoost，上限 1；暴擊倍率為 11.5 × CritDamage',
           parts=[entry(part='基礎機率 0.01、倍率 11.5 與上限 1', status='default',

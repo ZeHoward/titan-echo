@@ -107,7 +107,15 @@ export function skillPower(s:State,i:number){return SKILL_DATA[i].amount[skillSt
 // has every bonus - natively there is no BurstDamageSkillDuration, because the heavenly strike is
 // instant - so these two add only the bonuses that exist. Without this the strike lasted 3+1 = 4s.
 const skillBonus=(s:State,id:string)=>id in bonusDefinitions?stateEffect(s,id):0;
-export function skillDuration(s:State,i:number){return SKILLS[i].duration+skillBonus(s,SKILL_DATA[i].id+'SkillDuration')+stateEffect(s,'AllActiveSkillDuration');}
+// Native SkillParsedInfo.GetDuration builds two sums and multiplies them: seconds start at 0 and
+// collect this skill's SkillDuration plus AllActiveSkillDuration, the multiplier starts at 1 and
+// collects this skill's SkillDurationMult plus AllActiveSkillDurationMult, then
+// (duration + seconds) x multiplier. Both Mult bonuses are additive, so with no source the second
+// sum stays at 1 and the duration is unchanged.
+export function skillDuration(s:State,i:number){
+ const seconds=SKILLS[i].duration+skillBonus(s,SKILL_DATA[i].id+'SkillDuration')+stateEffect(s,'AllActiveSkillDuration');
+ return seconds*(1+skillBonus(s,SKILL_DATA[i].id+'SkillDurationMult')+stateEffect(s,'AllActiveSkillDurationMult'));
+}
 export function skillCooldown(s:State,i:number){return SKILLS[i].cooldown*(1-Math.min(.9,stateEffect(s,'AllActiveSkillCooldownRate')));}
 // APK 8.2.0 bases from BonusModel.SetDefaultBonuses, which reads each one out of a ServerVarsModel
 // static; live server overrides are unknown. Recorded in

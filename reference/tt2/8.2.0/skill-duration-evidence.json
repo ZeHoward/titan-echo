@@ -1,0 +1,36 @@
+{
+  "version": "8.2.0",
+  "role": "主動技能的持續時間：兩個加法組再相乘，兩個起點分別是 0 與 1。",
+  "packageSha256": "8d78c9aa877e6c0b291ee2116cab855bd26c59c1d080bc654f88ecf1ff268b5f",
+  "binarySha256": "c13fc44321b1214c71ab0277a134fc3401fd7392c74a0bbb3935671c55a8713a",
+  "scriptSha256": "62c2eeb8472bb107de516e4b6ae69d3dcdf5013fb1caa87223d82a54dd203f8b",
+  "finding": "SkillParsedInfo.GetDuration 先建兩個加總：秒數那組**從 0 起算**，收該技能自己的 SkillDuration 與 AllActiveSkillDuration；倍率那組**從 1 起算**，收該技能自己的 SkillDurationMult 與 AllActiveSkillDurationMult。最後是 (基礎 duration ＋ 秒數組) × 倍率組，只有一次乘法、五次加法。兩個逐技能的加成型別由 GetSkillDurationBonusType 以暫存器傳入，該技能沒有對應加成時走分支跳過自己那一項——對應本專案 skillBonus 的存在性檢查（天堂聖擊就沒有 SkillDuration 與 SkillDurationMult）。",
+  "expression": "持續 = (基礎 + 該技能 SkillDuration + AllActiveSkillDuration) × (1 + 該技能 SkillDurationMult + AllActiveSkillDurationMult)",
+  "seeds": {
+    "seconds": 0,
+    "multiplier": 1
+  },
+  "methods": {
+    "SkillParsedInfo$$GetDuration": "0x223ea88",
+    "BonusModel$$GetBonus": "0x2714c88",
+    "GHDouble$$op_Addition": "0x21de5cc",
+    "GHDouble$$op_Multiply": "0x21dd6ec",
+    "SkillParsedInfo$$GetSkillDurationBonusType": "0x223fa8c"
+  },
+  "bonusOrder": [
+    "（該技能的 SkillDuration，暫存器）",
+    "AllActiveSkillDuration",
+    "（該技能的 SkillDurationMult，暫存器）",
+    "AllActiveSkillDurationMult"
+  ],
+  "durationField": {
+    "offset": "0x3c",
+    "name": "SkillParsedInfo.duration"
+  },
+  "consequence": "本專案原本只做了秒數那組，倍率那組整個沒有讀。這一版接上，唯一拿得到的來源是「獵人」傳說套裝（AllActiveSkillDurationMult 0.1），六個技能的持續時間各 ×1.1。兩個 Mult 加成都是加法型，沒有來源時倍率組停在 1，持續時間與上一版相同。",
+  "limits": [
+    "方法存在、位址、呼叫順序與兩個起點是事實；起點以「op_Implicit 前最後寫進 w0 的立即數」判定",
+    "逐技能的加成型別以暫存器傳入，本表不列出它們的身分",
+    "本表只涵蓋持續時間，冷卻與耗魔是另外的方法"
+  ]
+}

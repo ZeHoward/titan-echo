@@ -2,11 +2,11 @@
 
 每個核心公式的來源登記表：資料表、原生方法、原生預設值，或明確標記為 7.5 基準沿用、專案自訂或伺服器供給。
 
-版本 8.2.0。共 34 條公式、81 項來源條目。
+版本 8.2.0。共 34 條公式、82 項來源條目。
 
 | 狀態 | 意義 | 條目數 |
 |---|---|---|
-| `native` | 由反組譯證據確認 | 22 |
+| `native` | 由反組譯證據確認 | 23 |
 | `table` | 取自安裝包資料表 | 18 |
 | `default` | 原生靜態預設值，線上可覆蓋 | 16 |
 | `baseline-75` | 沿用 7.5 基準，尚未對 8.2 核實 | 0 |
@@ -135,6 +135,7 @@ round(8 + 關卡 × 148 ÷ (32000 + 關卡))
 | 來源條目 | 狀態 | 依據 |
 |---|---|---|
 | 各級倍率、持續、冷卻與魔力 | `table` | `reference/tt2/8.2.0/ActiveSkillInfo.json` |
+| 持續時間的兩個加總 | `native` | `reference/tt2/8.2.0/skill-duration-evidence.json`；原生 SkillParsedInfo.GetDuration 先建兩個加總再相乘：秒數那組**從 0 起算**，收該技能自己的 SkillDuration 與 AllActiveSkillDuration；倍率那組**從 1 起算**，收該技能自己的 SkillDurationMult 與 AllActiveSkillDurationMult；結果是 (基礎 + 秒數組) × 倍率組。兩個起點是關鍵——倍率組若從 0 起算，沒有來源的人技能持續會直接歸零。本專案原本只做了秒數那組；倍率組的唯一來源是「獵人」傳說套裝（0.1），六個技能各 ×1.1。 |
 
 ### critical · `lib/engine.ts` 的 `critChance`
 

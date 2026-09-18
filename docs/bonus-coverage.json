@@ -16,10 +16,12 @@
     ],
     "assembledSuffixes": [
       "SkillDuration",
+      "SkillDurationMult",
       "SkillMana"
     ],
     "skippedCombinations": [
-      "BurstDamageSkillDuration"
+      "BurstDamageSkillDuration",
+      "BurstDamageSkillDurationMult"
     ],
     "unbuiltSystems": [
       "ClanShip",
@@ -74,11 +76,11 @@
     }
   },
   "counts": {
-    "live": 97,
-    "dead-native-uses-it": 131,
-    "dead-native-ignores-it": 69,
-    "read-without-source": 9,
-    "not-in-project": 490
+    "live": 99,
+    "dead-native-uses-it": 130,
+    "dead-native-ignores-it": 68,
+    "read-without-source": 13,
+    "not-in-project": 486
   },
   "verdicts": {
     "live": "專案有來源、引擎有讀：正常運作。",
@@ -137,16 +139,16 @@
     },
     {
       "id": "AllActiveSkillDurationMult",
-      "verdict": "dead-native-uses-it",
+      "verdict": "live",
       "sources": [
         "TT2_SETS"
       ],
-      "engineReads": false,
+      "engineReads": true,
       "nativeReaders": [
         "SkillParsedInfo"
       ],
       "indirect": null,
-      "priority": true
+      "priority": false
     },
     {
       "id": "AllActiveSkillAmount",
@@ -1627,9 +1629,9 @@
     },
     {
       "id": "CritBoostSkillDurationMult",
-      "verdict": "not-in-project",
+      "verdict": "read-without-source",
       "sources": null,
-      "engineReads": false,
+      "engineReads": true,
       "nativeReaders": null,
       "indirect": null,
       "priority": false
@@ -3142,11 +3144,11 @@
     },
     {
       "id": "HandOfMidasSkillDurationMult",
-      "verdict": "dead-native-ignores-it",
+      "verdict": "live",
       "sources": [
         "TT2_SETS"
       ],
-      "engineReads": false,
+      "engineReads": true,
       "nativeReaders": null,
       "indirect": null,
       "priority": false
@@ -3290,9 +3292,9 @@
     },
     {
       "id": "HelperBoostSkillDurationMult",
-      "verdict": "not-in-project",
+      "verdict": "read-without-source",
       "sources": null,
-      "engineReads": false,
+      "engineReads": true,
       "nativeReaders": null,
       "indirect": null,
       "priority": false
@@ -4925,9 +4927,9 @@
     },
     {
       "id": "ShadowCloneSkillDurationMult",
-      "verdict": "not-in-project",
+      "verdict": "read-without-source",
       "sources": null,
-      "engineReads": false,
+      "engineReads": true,
       "nativeReaders": null,
       "indirect": null,
       "priority": false
@@ -5529,9 +5531,9 @@
     },
     {
       "id": "TapBoostSkillDurationMult",
-      "verdict": "not-in-project",
+      "verdict": "read-without-source",
       "sources": null,
-      "engineReads": false,
+      "engineReads": true,
       "nativeReaders": null,
       "indirect": null,
       "priority": false

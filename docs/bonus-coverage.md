@@ -7,13 +7,13 @@
 
 | 判定 | 意義 | 個數 |
 |---|---|---|
-| `live` | 專案有來源、引擎有讀：正常運作。 | 97 |
-| `dead-native-uses-it` | 專案有來源、引擎沒讀，而且原生有取值點：**這些是可以接上的**。 | 131 |
-| `dead-native-ignores-it` | 專案有來源、引擎沒讀，原生也掃不到取值點：接了大概也沒有依據。 | 69 |
-| `read-without-source` | 引擎有讀，但專案沒有任何來源會給：恆為中性值，等來源出現才會生效。 | 9 |
-| `not-in-project` | 專案沒有來源，引擎也沒讀。 | 490 |
+| `live` | 專案有來源、引擎有讀：正常運作。 | 99 |
+| `dead-native-uses-it` | 專案有來源、引擎沒讀，而且原生有取值點：**這些是可以接上的**。 | 130 |
+| `dead-native-ignores-it` | 專案有來源、引擎沒讀，原生也掃不到取值點：接了大概也沒有依據。 | 68 |
+| `read-without-source` | 引擎有讀，但專案沒有任何來源會給：恆為中性值，等來源出現才會生效。 | 13 |
+| `not-in-project` | 專案沒有來源，引擎也沒讀。 | 486 |
 
-## 優先：落在已實作系統的（67）
+## 優先：落在已實作系統的（66）
 
 原生有取值點、我們沒讀，而且**不屬於尚未實作的流派**——這些是可以直接接上的。
 依**原生讀取它的類別**分組，類別名就說明了它屬於哪個系統。
@@ -230,10 +230,6 @@
 
 - `ManaTapRegenAmount` ← TT2_TREE
 
-### SkillParsedInfo（1）
-
-- `AllActiveSkillDurationMult` ← TT2_SETS
-
 ### SpecialTitanModel（1）
 
 - `DamagePerSpecialTitanActive` ← TT2_SETS
@@ -293,13 +289,13 @@
 
 專案有來源會給，但原生與我們都沒有取值點。接上去沒有依據，先不要動。
 
-`AlchemistBonusBoost`、`AllManaSourceMult`、`LegacyPetDamageEffect`、`LegacyPetGoldEffect`、`AnyContractBonusBoost`、`AnyContractQTECooldown`、`AutoActivateContractsQTE`、`BeastBladeDamage`、`BoostedSwordAttackDamage`、`BurstDamageSkillManaMult`、`BurstDamageSkillStacks`、`BurstDamageSkillStacksBonus`、`CannonDamage`、`ClanQTECooldown`、`CritBoostSkillStacks`、`CritBoostSkillStacksBonus`、`DamagePerMythicSet`、`DamagePerLegendarySet`、`DamagePerUniqueSet`、`DualPetDuration`、`DualPetSkillStacks`、`DualPetSkillStacksBonus`、`EquipmentRarityChance`、`EquipmentUniqueChance`、`ExoticPetGoldEffect`、`FairyCooldown`、`FundamentalDamage`、`GoldPerLegendarySet`、`HandOfMidasSkillDurationMult`、`HandOfMidasSkillStacks`、`HandOfMidasSkillStacksBonus`、`HelperBoostSkillStacks`、`HelperBoostSkillStacksBonus`、`KnightBonusBoost`、`KronusComboBoost`、`LanceComboBoost`、`NohniComboBoost`、`PaladinBonusBoost`、`PetBonusBoost`、`PetGoldQTECooldown`、`PetQTEDamage`、`RogueBonusBoost`、`SajeComboBoost`、`ShadowCloneSkillStacks`、`ShadowCloneSkillStacksBonus`、`SkillTreeAlchemistAllDamage`、`SkillTreeRogueAllDamage`、`SkillTreeKnightAllDamage`、`SkillTreePetAllDamage`、`SkillTreeSorcererAllDamage`、`SkillTreeWarlordAllDamage`、`SophiaComboBoost`、`SorcererBonusBoost`、`StreamOfBladesDuration`、`StreamOfBladesSkillStacks`、`StreamOfBladesSkillStacksBonus`、`TapBoostSkillStacks`、`TapBoostSkillStacksBonus`、`ThunderVolleySkillDuration`、`ThunderVolleySkillStacks`、`ThunderVolleySkillStacksBonus`、`TwilightBoost`、`TwilightFairySkillDuration`、`TwilightFairySkillStacks`、`TwilightFairySkillStacksBonus`、`TitanSlayer`、`UltraDaggerCooldown`、`UnskilledGold`、`WarlordBonusBoost`
+`AlchemistBonusBoost`、`AllManaSourceMult`、`LegacyPetDamageEffect`、`LegacyPetGoldEffect`、`AnyContractBonusBoost`、`AnyContractQTECooldown`、`AutoActivateContractsQTE`、`BeastBladeDamage`、`BoostedSwordAttackDamage`、`BurstDamageSkillManaMult`、`BurstDamageSkillStacks`、`BurstDamageSkillStacksBonus`、`CannonDamage`、`ClanQTECooldown`、`CritBoostSkillStacks`、`CritBoostSkillStacksBonus`、`DamagePerMythicSet`、`DamagePerLegendarySet`、`DamagePerUniqueSet`、`DualPetDuration`、`DualPetSkillStacks`、`DualPetSkillStacksBonus`、`EquipmentRarityChance`、`EquipmentUniqueChance`、`ExoticPetGoldEffect`、`FairyCooldown`、`FundamentalDamage`、`GoldPerLegendarySet`、`HandOfMidasSkillStacks`、`HandOfMidasSkillStacksBonus`、`HelperBoostSkillStacks`、`HelperBoostSkillStacksBonus`、`KnightBonusBoost`、`KronusComboBoost`、`LanceComboBoost`、`NohniComboBoost`、`PaladinBonusBoost`、`PetBonusBoost`、`PetGoldQTECooldown`、`PetQTEDamage`、`RogueBonusBoost`、`SajeComboBoost`、`ShadowCloneSkillStacks`、`ShadowCloneSkillStacksBonus`、`SkillTreeAlchemistAllDamage`、`SkillTreeRogueAllDamage`、`SkillTreeKnightAllDamage`、`SkillTreePetAllDamage`、`SkillTreeSorcererAllDamage`、`SkillTreeWarlordAllDamage`、`SophiaComboBoost`、`SorcererBonusBoost`、`StreamOfBladesDuration`、`StreamOfBladesSkillStacks`、`StreamOfBladesSkillStacksBonus`、`TapBoostSkillStacks`、`TapBoostSkillStacksBonus`、`ThunderVolleySkillDuration`、`ThunderVolleySkillStacks`、`ThunderVolleySkillStacksBonus`、`TwilightBoost`、`TwilightFairySkillDuration`、`TwilightFairySkillStacks`、`TwilightFairySkillStacksBonus`、`TitanSlayer`、`UltraDaggerCooldown`、`UnskilledGold`、`WarlordBonusBoost`
 
 ## 引擎有讀但專案沒有來源的
 
 這些已經接好了，只是還沒有任何神器、天賦、寵物或套裝會給，所以恆為中性值。
 
-`AllUpgradeCostFairy`、`BurstSkillStageSkipMult`、`CompanionAttackRate`、`Goldx10Chance`、`ManaPoolCapPercent`、`ManaRegenMult`、`OnlyPrestigeRelic`、`SwordMasterDamage`、`SwordMasterUpgradeCost`
+`AllUpgradeCostFairy`、`BurstSkillStageSkipMult`、`CompanionAttackRate`、`CritBoostSkillDurationMult`、`Goldx10Chance`、`HelperBoostSkillDurationMult`、`ManaPoolCapPercent`、`ManaRegenMult`、`OnlyPrestigeRelic`、`ShadowCloneSkillDurationMult`、`SwordMasterDamage`、`SwordMasterUpgradeCost`、`TapBoostSkillDurationMult`
 
 ## 限制
 
