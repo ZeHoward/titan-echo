@@ -4,7 +4,9 @@
 - 按清單順序完成一個可驗證的工作項目後，再開始下一個；不要任意新增自訂遊戲機制。遇到缺少證據，記錄缺口，繼續可獨立完成的子步驟。
 - 每個項目區分資料、公式、實際事件、介面、存檔與驗證。僅有資料表、名稱、倍率預覽或自己的單元測試，不能宣稱原版系統已完整還原。
 - 固定目標為 TT2 8.2.0 內附資料及可核實的客戶端邏輯。7.5 是現行歷史資料基準，遷移時按穩定 ID 對照，禁止用不同版本的陣列位置直接覆蓋玩家資料。官方伺服器覆蓋值未知時明確記錄。
-- 核心模組新增公式時，要同時在 `tools/build-formula-sources.py` 登記來源（資料表、原生方法、原生預設值，或明確標記為 7.5 沿用、專案自訂、伺服器供給）；`tests/formula-sources.test.mjs` 會擋下未登記的匯出。逐項對照見 [docs/formula-sources.md](docs/formula-sources.md)。
+- 核心模組新增公式時，要同時在 `tools/build-formula-sources.py` 登記來源（資料表、原生方法、原生預設值，或明確標記為 7.5 沿用、專案自訂、伺服器供給）；`tests/formula-sources.test.mjs` 會擋下未登記的匯出。逐項對照見 [docs/formula-sources.md](docs/formula-sources.md)。**登記只是第一步**：接著要跑 `python tools/build-formula-sources.py` 與 `node tools/formula-sources.mjs` 重新產生登記表與可讀版，再更新 `tests/formula-sources.test.mjs` 裡寫死的三組數字（公式數、來源條目數、各狀態計數）與可讀版開頭那句「共 N 條公式、M 項來源條目」。數字寫死是刻意的——來源狀態變動必須是有人明確改過，不能悄悄漂移。
+- **工作區的檔案是 CRLF**（repo 沒有 `.gitattributes`）。用腳本改檔時要先偵測或正規化換行，否則跨行的字串比對會失配，或寫出混合換行的檔案；`git checkout --` 還原之後也會是 CRLF。Python 的 `write_text` 在 Windows 會把整檔轉成 CRLF，不要用它改 repo 檔案。
+- **把一個「尚未實作」的加成接上時，記得找既有的守衛測試**。專案用 `PENDING_HERO_EFFECTS` 這類清單與「未實作的效果不得生效」的測試把未完成的加成擋在外面；實作之後那些測試會轉紅，那是刻意更新而不是壞掉。寫這種守衛時注意**乘法型加成未生效的中性值是 1 不是 0**，要依 `TT2_BONUSES` 的 `additive` 判斷。
 - 不把 APK、原始資源、完整反組譯輸出、玩家存檔或憑證提交到 Git；它們留在既有忽略目錄。提交自己實作的程式、必要數值事實、來源索引與測試。
 - 玩家進度與雲端相容性是每項驗收條件。現行 Sheets 外層格式為 version 2、heroes[33]、artifacts[30]；如需變更，必須先實作並測試相容遷移，不能直接換欄位。
 - 完成實作後更新 `ROADMAP.md` 的狀態、完成證據及下一項，並更新應用版本與更新紀錄；純規劃或文件更新不虛增遊戲版本。
