@@ -450,6 +450,41 @@ FORMULAS = [
               entry(part='特殊攻擊未實作', status='server',
                     note='ShadowCloneSkillSpecialRate 與 SpecialChance 另有節奏與機率，'
                          '本專案未實作，也未核實其倍率來源。')]),
+    entry(id='chesterson', module='lib/engine.ts', export='chestersonStackLength',
+          expression='寶箱泰坦用同一套佇列但效果完全不同：打死一隻（要蛻變過）開啟 floor((ChestersonGoldStageAmount + 5) × SpecialTitanStackDurationMult) 關的效果，那幾關的每一隻普通泰坦都是寶箱泰坦，金幣倍率 treasureGold(15) × ChestAmount',
+          parts=[
+              entry(part='效果是換掉泰坦的類別，不是再擲一次骰', status='native',
+                    ref='special-titan-evidence.json',
+                    note='MonsterModel.NewMonster 在 IsMonsterEffectActive(MonsterClass.Chesterson) '
+                         '為真時，直接把新生成泰坦的類別 csel 成 Chesterson（列舉值 3）；'
+                         'Boss 與 StageSkipBoss 走各自的分支，保留原本的類別。'
+                         '所以效果作用中的那幾關，每一隻普通泰坦都是寶箱泰坦。'),
+              entry(part='一疊的關數與「只有一疊」', status='native', ref='special-titan-evidence.json',
+                    note='ChestersonTitanScript.get_StageEffectLength 取 '
+                         'Bonus(ChestersonGoldStageAmount) 加上 [ServerVar] chestersonGoldDuration，'
+                         '再乘 Bonus(SpecialTitanStackDurationMult)，最後 floor。'
+                         'get_MaxStackCount 是常數 1（整個方法就是 mov w0,#1; ret），'
+                         '所以不像炸彈泰坦那樣會疊起來——本專案因此用一個「剩幾關」的數字，'
+                         '不用佇列。'),
+              entry(part='要蛻變過才會出現', status='native', ref='special-titan-evidence.json',
+                    note='ChestersonTitanScript.CanSpawnTitan 先看 NumOfStacks 有沒有到上限，'
+                         '再尾呼叫 PrestigeModel.HasPrestigedBefore()。'
+                         '所以第一輪（還沒蛻變過）不會有寶箱泰坦——這一點以前沒有做。'),
+              entry(part='寶箱金幣倍率 15，不是 10', status='default', ref='special-titan-evidence.json',
+                    note='BonusModel.GetChestersonMultiplier 是 [ServerVar] treasureGold 乘上 '
+                         'Bonus(ChestAmount)，而 treasureGold 的編譯期預設值是 **15**。'
+                         '引擎以前寫死 10，這一版改成 15。'
+                         '**妖精金幣沿用了同一個 10**：原生的妖精走 FairyRewardTableInfo，'
+                         '還沒查，所以先各走各的常數而不是一起改掉。'),
+              entry(part='關數 5 的基礎值', status='default', ref='special-titan-evidence.json',
+                    note='[ServerVar] chestersonGoldDuration 的編譯期預設值是 5，線上可覆蓋。'
+                         'ChestersonGoldStageAmount 是加法型，中性值 0，所以未投資時一疊就是 5 關；'
+                         '天賦「Chesterson Incense」每級加一關，滿級（40）加 30 關。'),
+              entry(part='被效果轉成寶箱的那些不會續期', status='invented',
+                    note='原生是在生成時換類別，被換的那一隻走的仍然是 Chesterson 的擊殺路徑，'
+                         '而 CanSpawnTitan 在效果作用中為假，所以不會再推一疊。'
+                         '本專案把「擲骰打到的」與「被效果轉成的」分成兩個旗標，'
+                         '只有前者會設定剩餘關數——結果相同，但寫法是本專案自己的。')]),
     entry(id='specialTitans', module='lib/engine.ts', export='megaBombChance',
           expression='特殊泰坦是一疊有期限的效果：生成機率 = 自己那一項 × SpecialTitanSpawnChance × AllProbabilityBoost，打死一隻推一疊 floor(10 × SpecialTitanStackDurationMult) 關，每疊讓該關隻數再乘 0.9，滿層（MegaBombMaxStacks）就不再生成',
           parts=[
@@ -482,12 +517,10 @@ FORMULAS = [
                          '在擊殺當下擲骰決定剛打死的是不是特殊泰坦。兩者在統計上等價——每隻泰坦'
                          '各擲一次同樣的骰——差別只在畫面上看不到牠走過來。'
                          '一隻泰坦只能是一種，所以寶箱與炸彈在本專案是互斥的。'),
-              entry(part='寶箱泰坦的跨關金幣效果未實作', status='server',
-                    note='ChestersonTitanScript 也有 StageEffectLength，形狀是 '
-                         'floor((ChestersonGoldStageAmount + chestersonGoldDuration=5) × '
-                         'SpecialTitanStackDurationMult)，但它的 MaxStackCount 與效果本身還沒解，'
-                         '所以 ChestersonGoldStageAmount 仍然沒有接。本專案的寶箱泰坦目前只在'
-                         '擊殺當下給金幣，沒有跨關效果。')]),
+              entry(part='Hayst 與 Kratos 兩種特殊泰坦未實作', status='server',
+                    note='兩者的 GetSpawnChance 用同一個模板，但各多一個加法項，'
+                         '而且綁在本專案未實作的流派上（HaystMonsterSpawnChance 與 '
+                         'KratosMonsterSpawnChance 都列在「等流派實作再說」那一組）。')]),
     entry(id='multiMonsters', module='lib/engine.ts', export='multiMonsterChance',
           expression='每次生成擲一次骰，命中機率 min(1, (0.01 ＋ MultiMonsters) × AllProbabilityBoost)，'
                      '命中則這一波是 trunc(Random[2, 4 ＋ MultiMonstersMaxCount ＋ 1)) 隻，'
@@ -650,7 +683,7 @@ NOT_FORMULAS = {
         'artifactCost', 'skillCost', 'skillDuration', 'skillCooldown', 'skillMana', 'critMultiplier',
         'manaCapDamage', 'helperWeaponDamage', 'maxStageDamage', 'skillCap', 'cloakedStageSkip', 'stateResolver', 'effectResolver',
         'multiMonsterMaxCount', 'multiMonsterGold',
-        'chestChance', 'megaBombMaxStacks', 'megaBombStackLength',
+        'chestChance', 'megaBombMaxStacks', 'megaBombStackLength', 'chestersonActive',
         'monsterCount', 'unlockedSkills', 'skillStep', 'discoveryCost', 'craftPrice', 'buildMultiplier', 'manaRegen', 'achievementTier',
         'advanceEggs', 'playerUpgradeCost', 'playerBaseDamage', 'themeIndex', 'goldReward', 'health', 'heroDps',
         'cost', 'critChance', 'manaMax', 'bossDuration', 'relicGain', 'evolveCost', 'buildDamage', 'skillPower',
@@ -661,7 +694,7 @@ NOT_FORMULAS = {
         'HEROES', 'SKILLS', 'SKILL_DATA', 'SKILL_ORDER', 'TT2_RULESET', 'bonusDefinitions',
         'EFFECT_LABELS', 'effectLabel', 'BUILD_COEFFICIENTS', 'PLAYER_DEFAULTS', 'RESOURCE_PERKS',
         'EGG_INTERVAL', 'PENDING_HERO_EFFECTS', 'heroSkills', 'THEME_STAGES', 'TT2_THEMES', 'HELPER_DEFAULTS',
-        'BONUS_DEFAULTS', 'MANA_DEFAULTS', 'PRESTIGE_DEFAULTS', 'MULTI_MONSTER_MIN', 'MEGA_BOMB',
+        'BONUS_DEFAULTS', 'MANA_DEFAULTS', 'PRESTIGE_DEFAULTS', 'MULTI_MONSTER_MIN', 'MEGA_BOMB', 'CHESTERSON',
         'HERO_LEVEL_CAP', 'PLAYER_LEVEL_CAP', 'UNMEASURED_ACHIEVEMENTS', 'UNMEASURED_DAILY_TASKS',
         'DAILY_TASK_PAID', 'cap'],
     'arithmetic': [

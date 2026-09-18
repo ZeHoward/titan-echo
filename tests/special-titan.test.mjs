@@ -209,7 +209,9 @@ test('頭目不會是特殊泰坦', () => {
   s.kills = monsterCount(s);
   assert.ok(isBoss(s));
   const source = readFileSync(new URL('../lib/engine.ts', import.meta.url), 'utf8');
-  // Both rolls are gated on the same !boss check, in one place.
-  assert.match(source, /const chest=!boss&&tt2Random/);
-  assert.match(source, /const bomb=!boss&&!chest&&tt2Random/);
+  // Every branch that can make a kill special is gated on the same !boss check, in one place.
+  for (const decl of ['const converted=!boss&&', 'const rolled=!boss&&!converted&&',
+    'const bomb=!boss&&!chest&&']) {
+    assert.ok(source.includes(decl), `${decl} 不見了，頭目可能變成特殊泰坦`);
+  }
 });

@@ -80,6 +80,9 @@ function normaliseTallies(s:State){
  }
  // 這一波的隻數是 2.16.0 才有的欄位，舊存檔沒有；沒有就是一隻，不是零隻。
  if(!Number.isFinite(t.multi)||t.multi<1)t.multi=1;
+ // 寶箱效果剩幾關是 2.18.0 才有的欄位。
+ if(!Number.isFinite(t.chestStages)||t.chestStages<0)t.chestStages=0;
+ else t.chestStages=Math.trunc(t.chestStages);
  // 炸彈泰坦的堆疊是 2.17.0 才有的：沒有就是沒有堆疊，而且只留得下正整數關數。
  t.bombStacks=(Array.isArray(t.bombStacks)?t.bombStacks:[])
   .filter(n=>Number.isFinite(n)&&n>=1).map(n=>Math.trunc(n));
@@ -139,6 +142,9 @@ export const MULTI_MONSTER_MIN=2;
 // 炸彈泰坦（原生 Snap）的兩個 [ServerVar]：一疊的基礎關數，以及每疊讓該關隻數乘上的比例。
 // 兩個都不是加成，所以不在上面那張表裡。見 reference/tt2/8.2.0/special-titan-evidence.json。
 export const MEGA_BOMB={stageLength:10,titanRemoval:Math.fround(.9)} as const;
+// 寶箱泰坦的兩個 [ServerVar]：一疊的基礎關數，以及寶箱金幣的倍率。
+// treasureGold 是 15，引擎以前寫死 10。同一份證據檔。
+export const CHESTERSON={stageLength:5,treasureGold:15} as const;
 /** The crit boost skill's slot in this project's arrays; natively ActiveSkillID 3. */
 const CRIT_BOOST_SKILL=SKILL_DATA.findIndex(k=>k.id==='CritBoost');
 // Native PlayerModel.RefreshCriticalValues: the multiplier is playerCritMult x Bonus(CritDamage).
@@ -392,6 +398,14 @@ export function megaBombMaxStacks(s:State,resolve=stateResolver(s)){
 /** 一疊維持幾關。 */
 export function megaBombStackLength(s:State,resolve=stateResolver(s)){
  return Math.floor(MEGA_BOMB.stageLength*resolve('SpecialTitanStackDurationMult'));}
+/** 寶箱泰坦一疊維持幾關。原生的上限是常數 1，所以只會有一疊。 */
+export function chestersonStackLength(s:State,resolve=stateResolver(s)){
+ return Math.floor((resolve('ChestersonGoldStageAmount')+CHESTERSON.stageLength)
+  *resolve('SpecialTitanStackDurationMult'));}
+/** 寶箱效果作用中嗎？作用中的那幾關，每一隻普通泰坦都是寶箱泰坦。 */
+export function chestersonActive(s:State){return (s.tt2?.chestStages??0)>0;}
+// 原生的 CanSpawnTitan 除了「還沒疊」還要求蛻變過一次，所以第一輪不會出現寶箱泰坦。
+function canSpawnChesterson(s:State){return !chestersonActive(s)&&s.prestiges>0;}
 /** 打死一隻炸彈泰坦：推一疊進佇列。原生推完還會夾住長度，那是同一關打死多隻時的防護。 */
 function pushBombStack(s:State,resolve=stateResolver(s)){
  const length=megaBombStackLength(s,resolve);if(length<1)return;
@@ -436,6 +450,7 @@ function clearStage(s:State,cleared:number){
  if(cleared>=16&&(cleared-16)%20===0&&cleared>s.tt2!.gearMilestone&&dropGear(s.tt2!,Math.max(s.best,cleared))){
   s.tt2!.gearMilestone=cleared;s.tt2!.equipmentCollected++;s.daily.equipment++;}
  ageBombStacks(s.tt2!);
+ if(s.tt2!.chestStages>0)s.tt2!.chestStages--;
  s.stage=Math.min(STAGE_CAP,cleared+1);s.best=Math.max(s.best,s.stage);s.kills=0;
  const points=Math.max(0,Math.floor(s.best/50)-1);
  if(points>s.tt2!.earnedPoints){s.tt2!.points+=points-s.tt2!.earnedPoints;s.tt2!.earnedPoints=points;}}
@@ -465,14 +480,20 @@ function applySkips(s:State,source:SkipSource){
   earnGold(s,goldReward(s,'boss'));s.bossKills++;clearStage(s,s.stage);}}
 function damage(s:State,hit:Big,source?:SkipSource){if(compare(hit,{...ZERO})<=0)return;s.hp=subtract(s.hp,hit);if(compare(s.hp,{...ZERO})>0)return;
  const boss=isBoss(s),resolve=stateResolver(s);
- const chest=!boss&&tt2Random(s.tt2!)<chestChance(s,resolve);
+ // 寶箱效果作用中時，這一關的每一隻都是寶箱泰坦——原生是在生成時把類別換掉，不是再擲一次骰。
+ const converted=!boss&&chestersonActive(s);
+ const rolled=!boss&&!converted&&canSpawnChesterson(s)&&tt2Random(s.tt2!)<chestChance(s,resolve);
+ const chest=converted||rolled;
  // 一隻泰坦只能是一種，所以寶箱與炸彈互斥。原生的順序是先擲骰再看能不能生成，滿層就不生成。
  const bomb=!boss&&!chest&&tt2Random(s.tt2!)<megaBombChance(s,resolve)
   &&s.tt2!.bombStacks.length<megaBombMaxStacks(s,resolve);
- // 原生一次結算整群，不是逐隻給：隻數同時決定金幣倍率與擊殺數。
+ // 原生一次結算整群，不是逐隻給：隻數同時決定金幣倍率、擊殺數與寶箱計數——
+ // 一波三隻在寶箱效果裡就是三隻寶箱泰坦，不是一隻。
  const group=boss?1:Math.max(1,s.tt2!.multi||1);
- earnGold(s,scale(goldReward(s,boss?'boss':chest?'chest':'monster'),multiMonsterGold(s,group)));if(chest)s.tt2!.chestKills++;
+ earnGold(s,scale(goldReward(s,boss?'boss':chest?'chest':'monster'),multiMonsterGold(s,group)));if(chest)s.tt2!.chestKills+=group;
  if(bomb){pushBombStack(s);s.tt2!.bombKills++;}
+ // 只有擲骰打到的那一隻會開啟效果；被效果轉成寶箱的那些不會把它自己續期。
+ if(rolled)s.tt2!.chestStages=chestersonStackLength(s,resolve);
  s.totalKills+=group;s.daily.kills+=group;
  if(boss){s.bossKills++;clearStage(s,s.stage);}else if(!s.farming)s.kills+=group;
  if(source)applySkips(s,source);
@@ -652,7 +673,10 @@ export function goldReward(s:State,source:'monster'|'boss'|'fairy'|'chest'|'pet'
  const resolve=stateResolver(s);
  for(const factor of [resolve('GoldAll'),resolve('JackpotGold'),resolve('GoldPerRunningActiveSkill')**running,1+resolve('GoldPerOwnedCardLevel')*t.cards,1+resolve('GoldPerSwordMasterLevel')*s.level,gearBonus(s,2)])n=scale(n,factor);
  if(source==='boss'||source==='pet')n=scale(n,10*resolve('GoldBoss'));
- if(source==='chest'||source==='fairy')n=scale(n,10*resolve('ChestAmount'));
+ // 寶箱是 treasureGold × ChestAmount。妖精那條共用了同一個 10，但原生的妖精金幣走別的表，
+ // 還沒查，所以先各走各的而不是一起改掉。
+ if(source==='chest')n=scale(n,CHESTERSON.treasureGold*resolve('ChestAmount'));
+ if(source==='fairy')n=scale(n,10*resolve('ChestAmount'));
  if(source==='fairy'||source==='pet')n=scale(n,resolve('GoldSpecialty'));
  if(source==='fairy')n=scale(n,resolve('FairyGold'));if(source==='pet')n=scale(n,resolve('PetGoldQTEAmount'));
  if(s.active[4]>s.last)n=scale(n,skillPower(s,4)**(['fairy','pet'].includes(source)?.7:1));

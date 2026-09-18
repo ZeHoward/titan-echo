@@ -15,11 +15,16 @@ This walks the methods that make it up and pins each one instruction by instruct
   * Snap's stack cap     - (int)MegaBombMaxStacks
   * defeat               - enqueue the length, then drop the oldest while over the cap
   * a stage passing      - decrement every element, drop what reaches zero
-  * the effect itself    - the stage's titan count x pow(megaBombMonsterTitanRemovalPercent, stacks)
+  * Snap's effect        - the stage's titan count x pow(megaBombMonsterTitanRemovalPercent, stacks)
+  * Chesterson's chance  - ChestChance x SpecialTitanSpawnChance x AllProbabilityBoost
+  * Chesterson's gate    - one stack at most, and only after a prestige
+  * Chesterson's length  - floor((ChestersonGoldStageAmount + chestersonGoldDuration) x duration mult)
+  * Chesterson's effect  - while the stack is up, NewMonster hands out MonsterClass.Chesterson
+  * Chesterson's gold    - treasureGold x ChestAmount
 
-The Chesterson chance is in scope because it is the same template and the engine already rolls that
-titan without the SpecialTitanSpawnChance factor - the shape has to be recorded to fix it.
-Hayst and Kratos use the template too but belong to builds this project has not implemented.
+The two titans share the template but not the effect: Snap thins the stage out, Chesterson turns
+every ordinary titan in it into a treasure one. Hayst and Kratos use the template too but belong to
+builds this project has not implemented.
 """
 import hashlib
 import io
@@ -49,15 +54,26 @@ METHODS = {
     'atMaxStacks': (0x2537B0C, 'SpecialTitanScript$$IsAtMaxStacks'),
     'effectActive': (0x2538380, 'SpecialTitanScript$$IsEffectActive'),
     'titanCount': (0x2546594, 'StageLogic$$GetMonsterCountPerStage'),
+    'chestersonStackCap': (0x2537938, 'ChestersonTitanScript$$get_MaxStackCount'),
+    'chestersonGate': (0x2537A84, 'ChestersonTitanScript$$CanSpawnTitan'),
+    'chestersonStackLength': (0x2537940, 'ChestersonTitanScript$$get_StageEffectLength'),
+    'chestersonClass': (0x231DF20, 'MonsterModel$$NewMonster'),
+    'chestersonGold': (0x271852C, 'BonusModel$$GetChestersonMultiplier'),
 }
 
 # ServerVarsModel statics this system reads directly rather than through a bonus.
 STATICS = {0xA00: ('megaBombMonsterMaxStageEffectAmount', 'int'),
-           0x9F8: ('megaBombMonsterTitanRemovalPercent', 'float')}
+           0x9F8: ('megaBombMonsterTitanRemovalPercent', 'float'),
+           0xA04: ('chestersonGoldDuration', 'int'),
+           0x9E4: ('treasureGold', 'float')}
 
 BONUS_IDS = {'MegaBombSpawnChance': 330, 'MegaBombMaxStacks': 331,
              'SpecialTitanSpawnChance': 424, 'SpecialTitanStackDurationMult': 425,
-             'ChestChance': 100, 'AllProbabilityBoost': 27}
+             'ChestChance': 100, 'AllProbabilityBoost': 27,
+             'ChestersonGoldStageAmount': 101, 'ChestAmount': 97}
+
+# MonsterClass values, checked against the enum rather than trusted from here.
+CHESTERSON_CLASS = 3
 
 # Bases from BonusModel.SetDefaultBonuses, published by audit-bonus-defaults.py.
 BASE_OF = {'MegaBombSpawnChance': 'megaBombMonsterSpawnChance',
@@ -121,6 +137,9 @@ def main():
     for key, (address, name) in METHODS.items():
         if symbols.get(address) != name:
             raise ValueError(f'{key}: expected {name} at {address:#x}, found {symbols.get(address)!r}')
+
+    if not re.search(r'public const MonsterClass Chesterson = '+str(CHESTERSON_CLASS)+r';', dump):
+        raise ValueError(f'MonsterClass.Chesterson is no longer {CHESTERSON_CLASS}')
 
     enum = json.loads((ROOT/'reference/tt2/8.2.0/native-bonus-types.json').read_text(encoding='utf-8'))
     for name, wanted in BONUS_IDS.items():
@@ -275,6 +294,42 @@ def main():
         ('fmul', 's8, s8, s9'), ('frintm', 's0, s8'), ('fcvtms', 'w9, s8'),
         ('call', 'Max')], keep={'GetBonus', 'call', 'static', 'scvtf', 'fmul', 'frintm', 'fcvtms'})
 
+    # --- Chesterson: one stack, only after a prestige, and it converts the whole stage ---
+    # The cap is a constant, so there is nothing for the trace to see; read the two instructions.
+    cap_body = list(machine.disasm(body(METHODS['chestersonStackCap'][0], 0x10),
+                                   METHODS['chestersonStackCap'][0]))[:2]
+    cap_shape = [(i.mnemonic, i.op_str) for i in cap_body]
+    if cap_shape != [('mov', 'w0, #1'), ('ret', '')]:
+        raise ValueError(f'Chesterson no longer caps at one stack: {cap_shape}')
+
+    want('chestersonGate', [('call', 'get_NumOfStacks'), ('vcall', MAX_STACK_SLOT),
+                            ('tail', 'HasPrestigedBefore')],
+         keep={'call', 'vcall', 'tail'})
+    want('chestersonStackLength', [
+        ('GetBonus', 'ChestersonGoldStageAmount'), ('call', 'op_Explicit'),
+        ('GetBonus', 'SpecialTitanStackDurationMult'), ('call', 'op_Explicit'),
+        ('static', 'chestersonGoldDuration'), ('scvtf', 's0, s0'),
+        ('fadd', 's0, s8, s0'), ('fmul', 's0, s9, s0'), ('frintm', 's1, s0'), ('fcvtms', 'w9, s0')],
+        keep={'GetBonus', 'call', 'static', 'scvtf', 'fadd', 'fmul', 'frintm', 'fcvtms'})
+    want('chestersonGold', [('static', 'treasureGold'), ('call', 'op_Implicit'),
+                            ('GetBonus', 'ChestAmount'), ('call', 'op_Multiply')],
+         keep={'static', 'call', 'GetBonus'})
+
+    # The effect: a new titan's class becomes Chesterson while the stack is up. The two compares
+    # before it are the classes that keep their own identity - Boss and StageSkipBoss.
+    swap = [(a, b) for a, b, _ in traces['chestersonClass']][:6]
+    expected_swap = [('sub', 'sp, sp, #0x110'), ('cmp', 'w20, #1'), ('cmp', 'w20, #6'),
+                     ('call', 'GetStageSkipMonsterStagesSkipped'), ('call', 'IsMonsterEffectActive'),
+                     ('csel', 'w27, w22, w20, ne')]
+    if swap != expected_swap:
+        raise ValueError(f'the class swap changed shape:\n  got      {swap}\n  expected {expected_swap}')
+    # The class it swaps in is loaded into w22 just before the call; find that immediate.
+    swap_at = int(next(at for a, b, at in traces['chestersonClass'] if b == 'IsMonsterEffectActive'), 16)
+    loaded = [i for i in machine.disasm(read(swap_at-0x20, 0x24), swap_at-0x20)
+              if i.mnemonic == 'mov' and i.op_str == f'w22, #{CHESTERSON_CLASS}']
+    if not loaded:
+        raise ValueError(f'the swapped-in class is not MonsterClass {CHESTERSON_CLASS}')
+
     defaults = json.loads((ROOT/'reference/tt2/8.2.0/bonus-defaults-evidence.json')
                           .read_text(encoding='utf-8'))['defaults']
     bases = {}
@@ -317,11 +372,23 @@ def main():
                    '寶箱是把第一項換成 ChestChance。炸彈的 StageEffectLength 是 '
                    f'floor({length} × SpecialTitanStackDurationMult)，MaxStackCount 是 '
                    f'(int)MegaBombMaxStacks（基底 {caps}）。效果在 GetMonsterCountPerStage 結尾：'
-                   f'該關隻數乘上 pow({removal}, 堆疊層數) 再向下取整。',
+                   f'該關隻數乘上 pow({removal}, 堆疊層數) 再向下取整。'
+                   '**寶箱泰坦用同一套佇列，但效果完全不同**：它的 MaxStackCount 是常數 1，'
+                   'CanSpawnTitan 除了「還沒疊」還要求 PrestigeModel.HasPrestigedBefore()，'
+                   f'一疊撐 floor((ChestersonGoldStageAmount + {statics["chestersonGoldDuration"]}) '
+                   '× SpecialTitanStackDurationMult) 關；效果作用中，'
+                   'MonsterModel.NewMonster 會把新生成泰坦的類別直接換成 MonsterClass.Chesterson'
+                   '（Boss 與 StageSkipBoss 除外），也就是那幾關的每一隻都是寶箱泰坦。'
+                   f'寶箱金幣的倍率是 BonusModel.GetChestersonMultiplier = treasureGold'
+                   f'（{statics["treasureGold"]}）× ChestAmount。',
         'consequence': '**引擎目前的寶箱泰坦機率少了 SpecialTitanSpawnChance 這一項**，接上等於修正既有機制。'
                        '炸彈泰坦則是全新的：未投資的玩家上限 1 層，打死一隻之後的 '
                        f'{length} 關每關隻數乘 {removal}。三個基底與兩個靜態欄位都是 [ServerVar] 的'
-                       '編譯期預設值，線上可覆蓋，狀態為 default。',
+                       '編譯期預設值，線上可覆蓋，狀態為 default。'
+                       f'**引擎的寶箱金幣倍率一直寫死 10，原生是 treasureGold = '
+                       f'{statics["treasureGold"]}**，接這一段時一併修正。'
+                       '寶箱的跨關效果對金幣影響很大：未投資時一疊就有 '
+                       f'{statics["chestersonGoldDuration"]} 關，那幾關的每一隻普通泰坦都是寶箱。',
         'methods': {key: fact(address) for key, (address, _) in METHODS.items()},
         'formulas': {
             'megaBombChance': 'MegaBombSpawnChance × SpecialTitanSpawnChance × AllProbabilityBoost',
@@ -332,6 +399,13 @@ def main():
             'onDefeat': '推入 StageEffectLength；長度超過 StageEffectLength 就丟掉最舊的一疊',
             'onStageCleared': '每一疊減一關，減到小於 1 就移除',
             'titanCount': 'floor(該關隻數 × pow(megaBombMonsterTitanRemovalPercent, 堆疊層數))',
+            'chestersonStackCap': '常數 1',
+            'chestersonGate': 'NumOfStacks < 1 且 PrestigeModel.HasPrestigedBefore()',
+            'chestersonStackLength': 'floor((ChestersonGoldStageAmount + chestersonGoldDuration) '
+                                     '× SpecialTitanStackDurationMult)',
+            'chestersonEffect': '效果作用中時 MonsterModel.NewMonster 把泰坦的類別換成 '
+                                'MonsterClass.Chesterson；Boss 與 StageSkipBoss 保留自己的類別',
+            'chestersonGold': 'treasureGold × ChestAmount',
         },
         'traces': traces,
         'bases': bases,
@@ -346,8 +420,11 @@ def main():
             '哪天它們不再呼叫同一個位址，這支工具就會停下來。',
             'Hayst 與 Kratos 的 GetSpawnChance 用同一個模板，但各自多一個 op_Addition，'
             '而且綁在本專案未實作的流派上，因此不在本文件範圍內。',
-            '寶箱泰坦的跨關金幣效果（ChestersonGoldStageAmount 與它的 StageEffectLength）'
-            '不在本文件範圍內：它的 MaxStackCount 與效果本身還沒解。',
+            'MonsterModel.NewMonster 的那個分支只證明「類別被換成 Chesterson」。'
+            '換了類別之後金幣怎麼算，是 GetMonsterGoldDrop 走 GetChestersonMultiplier 的事，'
+            '兩者分別記錄，中間沒有第三段被省略。',
+            'Try10xGold 也檢查同一個效果（十倍金幣在寶箱關內另有規則），'
+            '但 Goldx10Chance 在本專案沒有任何來源，因此不在範圍內。',
             'StageEffectLength 的推入端有一個 int.MaxValue 的防護分支，兩次呼叫同一個 getter；'
             '等價於推入 StageEffectLength 一次。',
             '虛擬呼叫的目標是 vtable 槽，指令本身無法具名，所以記的是槽位移。'

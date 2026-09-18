@@ -2,16 +2,16 @@
 
 每個核心公式的來源登記表：資料表、原生方法、原生預設值，或明確標記為 7.5 基準沿用、專案自訂或伺服器供給。
 
-版本 8.2.0。共 38 條公式、98 項來源條目。
+版本 8.2.0。共 39 條公式、104 項來源條目。
 
 | 狀態 | 意義 | 條目數 |
 |---|---|---|
-| `native` | 由反組譯證據確認 | 31 |
+| `native` | 由反組譯證據確認 | 34 |
 | `table` | 取自安裝包資料表 | 19 |
-| `default` | 原生靜態預設值，線上可覆蓋 | 18 |
+| `default` | 原生靜態預設值，線上可覆蓋 | 20 |
 | `baseline-75` | 沿用 7.5 基準，尚未對 8.2 核實 | 0 |
 | `table-differs` | 安裝包有值但引擎目前未照做 | 12 |
-| `invented` | 本專案自訂，安裝包未提供 | 14 |
+| `invented` | 本專案自訂，安裝包未提供 | 15 |
 | `server` | 原生為伺服器變數，安裝包未帶值 | 4 |
 
 ## 逐條登記
@@ -257,6 +257,19 @@ max(1, floor(關卡^1.7 ÷ 100 × PrestigeRelic))，最高關卡到 60 後開放
 | 離散到 100ms 模擬步長，單次傷害為每秒總量 ÷ 速率 | `invented` | 引擎以 100ms 為一步推進，攻擊只在步邊界結算，因此單次間隔最多晚 100ms；計時器累加間隔而非改設為當下時間，長期平均頻率與速率一致。另外 buildDamage 是本專案的「每秒總量」近似，所以一次攻擊取其 ÷ 速率——節奏照原生，總量不因節奏改變，但單次數值不是原生的單次傷害。 |
 | 特殊攻擊未實作 | `server` | ShadowCloneSkillSpecialRate 與 SpecialChance 另有節奏與機率，本專案未實作，也未核實其倍率來源。 |
 
+### chesterson · `lib/engine.ts` 的 `chestersonStackLength`
+
+寶箱泰坦用同一套佇列但效果完全不同：打死一隻（要蛻變過）開啟 floor((ChestersonGoldStageAmount + 5) × SpecialTitanStackDurationMult) 關的效果，那幾關的每一隻普通泰坦都是寶箱泰坦，金幣倍率 treasureGold(15) × ChestAmount
+
+| 來源條目 | 狀態 | 依據 |
+|---|---|---|
+| 效果是換掉泰坦的類別，不是再擲一次骰 | `native` | `reference/tt2/8.2.0/special-titan-evidence.json`；MonsterModel.NewMonster 在 IsMonsterEffectActive(MonsterClass.Chesterson) 為真時，直接把新生成泰坦的類別 csel 成 Chesterson（列舉值 3）；Boss 與 StageSkipBoss 走各自的分支，保留原本的類別。所以效果作用中的那幾關，每一隻普通泰坦都是寶箱泰坦。 |
+| 一疊的關數與「只有一疊」 | `native` | `reference/tt2/8.2.0/special-titan-evidence.json`；ChestersonTitanScript.get_StageEffectLength 取 Bonus(ChestersonGoldStageAmount) 加上 [ServerVar] chestersonGoldDuration，再乘 Bonus(SpecialTitanStackDurationMult)，最後 floor。get_MaxStackCount 是常數 1（整個方法就是 mov w0,#1; ret），所以不像炸彈泰坦那樣會疊起來——本專案因此用一個「剩幾關」的數字，不用佇列。 |
+| 要蛻變過才會出現 | `native` | `reference/tt2/8.2.0/special-titan-evidence.json`；ChestersonTitanScript.CanSpawnTitan 先看 NumOfStacks 有沒有到上限，再尾呼叫 PrestigeModel.HasPrestigedBefore()。所以第一輪（還沒蛻變過）不會有寶箱泰坦——這一點以前沒有做。 |
+| 寶箱金幣倍率 15，不是 10 | `default` | `reference/tt2/8.2.0/special-titan-evidence.json`；BonusModel.GetChestersonMultiplier 是 [ServerVar] treasureGold 乘上 Bonus(ChestAmount)，而 treasureGold 的編譯期預設值是 **15**。引擎以前寫死 10，這一版改成 15。**妖精金幣沿用了同一個 10**：原生的妖精走 FairyRewardTableInfo，還沒查，所以先各走各的常數而不是一起改掉。 |
+| 關數 5 的基礎值 | `default` | `reference/tt2/8.2.0/special-titan-evidence.json`；[ServerVar] chestersonGoldDuration 的編譯期預設值是 5，線上可覆蓋。ChestersonGoldStageAmount 是加法型，中性值 0，所以未投資時一疊就是 5 關；天賦「Chesterson Incense」每級加一關，滿級（40）加 30 關。 |
+| 被效果轉成寶箱的那些不會續期 | `invented` | 原生是在生成時換類別，被換的那一隻走的仍然是 Chesterson 的擊殺路徑，而 CanSpawnTitan 在效果作用中為假，所以不會再推一疊。本專案把「擲骰打到的」與「被效果轉成的」分成兩個旗標，只有前者會設定剩餘關數——結果相同，但寫法是本專案自己的。 |
+
 ### specialTitans · `lib/engine.ts` 的 `megaBombChance`
 
 特殊泰坦是一疊有期限的效果：生成機率 = 自己那一項 × SpecialTitanSpawnChance × AllProbabilityBoost，打死一隻推一疊 floor(10 × SpecialTitanStackDurationMult) 關，每疊讓該關隻數再乘 0.9，滿層（MegaBombMaxStacks）就不再生成
@@ -267,7 +280,7 @@ max(1, floor(關卡^1.7 ÷ 100 × PrestigeRelic))，最高關卡到 60 後開放
 | 兩個生成機率是同一個模板 | `native` | `reference/tt2/8.2.0/special-titan-evidence.json`；ChestersonTitanScript 與 MegaBombTitanScript 的 GetSpawnChance 指令序列相同，只差第一個因子：寶箱是 Bonus(ChestChance)，炸彈是 Bonus(MegaBombSpawnChance)，後面都乘 Bonus(SpecialTitanSpawnChance) 與 Bonus(AllProbabilityBoost)。**引擎原本的寶箱機率少了中間那一項**，2.17.0 補上，屬於既有機制的修正。Hayst 與 Kratos 用同一個模板但各多一個加法項，綁在未實作的流派上，沒有接。 |
 | 機率 0.001、上限 1、一疊 10 關、每疊 0.9 四個基礎值 | `default` | `reference/tt2/8.2.0/bonus-defaults-evidence.json`；MegaBombSpawnChance 與 MegaBombMaxStacks 是加法型，基礎值由 BonusModel.SetDefaultBonuses 從 [ServerVar] megaBombMonsterSpawnChance（0.001）與 megaBombBaseStacks（1）設入；一疊的關數與每疊的比例直接讀 megaBombMonsterMaxStageEffectAmount（10）與 megaBombMonsterTitanRemovalPercent（0.9），兩者不是加成所以不在那張表裡。SpecialTitanSpawnChance 與 SpecialTitanStackDurationMult 是乘法型，中性值 1 就是它們的起點，不另外相加。四個都是編譯期預設值，線上可覆蓋。 |
 | 擲骰改在擊殺時，不是生成時 | `invented` | 原生在生成一隻泰坦時就決定它是哪一種，本專案沿用既有的寶箱做法，在擊殺當下擲骰決定剛打死的是不是特殊泰坦。兩者在統計上等價——每隻泰坦各擲一次同樣的骰——差別只在畫面上看不到牠走過來。一隻泰坦只能是一種，所以寶箱與炸彈在本專案是互斥的。 |
-| 寶箱泰坦的跨關金幣效果未實作 | `server` | ChestersonTitanScript 也有 StageEffectLength，形狀是 floor((ChestersonGoldStageAmount + chestersonGoldDuration=5) × SpecialTitanStackDurationMult)，但它的 MaxStackCount 與效果本身還沒解，所以 ChestersonGoldStageAmount 仍然沒有接。本專案的寶箱泰坦目前只在擊殺當下給金幣，沒有跨關效果。 |
+| Hayst 與 Kratos 兩種特殊泰坦未實作 | `server` | 兩者的 GetSpawnChance 用同一個模板，但各多一個加法項，而且綁在本專案未實作的流派上（HaystMonsterSpawnChance 與 KratosMonsterSpawnChance 都列在「等流派實作再說」那一組）。 |
 
 ### multiMonsters · `lib/engine.ts` 的 `multiMonsterChance`
 

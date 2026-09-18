@@ -4,8 +4,8 @@
   "packageSha256": "8d78c9aa877e6c0b291ee2116cab855bd26c59c1d080bc654f88ecf1ff268b5f",
   "binarySha256": "c13fc44321b1214c71ab0277a134fc3401fd7392c74a0bbb3935671c55a8713a",
   "scriptSha256": "62c2eeb8472bb107de516e4b6ae69d3dcdf5013fb1caa87223d82a54dd203f8b",
-  "finding": "特殊泰坦不是一種怪，是一疊有期限的效果。SpecialTitanScript 帶一個 Queue<int>，元素是「這一疊還剩幾關」：擊殺時 PushEndEffectToQueue 推入 StageEffectLength，推完若長度超過 StageEffectLength 就 Dequeue 丟掉最舊的；每清掉一關 UpdateEffectEnd 把每個元素減一、減到小於 1 的不再放回；NumOfStacks 就是佇列長度，IsEffectActive 是「長度至少 1 且隊首大於 0」。生成走 RollSpawnMonster：Random.value 小於 GetSpawnChance() 之後還要 CanSpawnTitan() 為真，而炸彈泰坦的 CanSpawnTitan 就是 NumOfStacks < MaxStackCount——滿層就不再生成。**層數上限是擋在生成端的**：擊殺那一側比對的是 StageEffectLength 而不是 MaxStackCount（三次虛擬呼叫都走同一個 vtable 槽），那只是防止同一關打死多隻時佇列無限增長的防護，真正的上限靠 CanSpawnTitan 不讓它生出來。兩個生成機率是同一個模板：炸彈是 MegaBombSpawnChance × SpecialTitanSpawnChance × AllProbabilityBoost，寶箱是把第一項換成 ChestChance。炸彈的 StageEffectLength 是 floor(10 × SpecialTitanStackDurationMult)，MaxStackCount 是 (int)MegaBombMaxStacks（基底 1）。效果在 GetMonsterCountPerStage 結尾：該關隻數乘上 pow(0.8999999761581421, 堆疊層數) 再向下取整。",
-  "consequence": "**引擎目前的寶箱泰坦機率少了 SpecialTitanSpawnChance 這一項**，接上等於修正既有機制。炸彈泰坦則是全新的：未投資的玩家上限 1 層，打死一隻之後的 10 關每關隻數乘 0.8999999761581421。三個基底與兩個靜態欄位都是 [ServerVar] 的編譯期預設值，線上可覆蓋，狀態為 default。",
+  "finding": "特殊泰坦不是一種怪，是一疊有期限的效果。SpecialTitanScript 帶一個 Queue<int>，元素是「這一疊還剩幾關」：擊殺時 PushEndEffectToQueue 推入 StageEffectLength，推完若長度超過 StageEffectLength 就 Dequeue 丟掉最舊的；每清掉一關 UpdateEffectEnd 把每個元素減一、減到小於 1 的不再放回；NumOfStacks 就是佇列長度，IsEffectActive 是「長度至少 1 且隊首大於 0」。生成走 RollSpawnMonster：Random.value 小於 GetSpawnChance() 之後還要 CanSpawnTitan() 為真，而炸彈泰坦的 CanSpawnTitan 就是 NumOfStacks < MaxStackCount——滿層就不再生成。**層數上限是擋在生成端的**：擊殺那一側比對的是 StageEffectLength 而不是 MaxStackCount（三次虛擬呼叫都走同一個 vtable 槽），那只是防止同一關打死多隻時佇列無限增長的防護，真正的上限靠 CanSpawnTitan 不讓它生出來。兩個生成機率是同一個模板：炸彈是 MegaBombSpawnChance × SpecialTitanSpawnChance × AllProbabilityBoost，寶箱是把第一項換成 ChestChance。炸彈的 StageEffectLength 是 floor(10 × SpecialTitanStackDurationMult)，MaxStackCount 是 (int)MegaBombMaxStacks（基底 1）。效果在 GetMonsterCountPerStage 結尾：該關隻數乘上 pow(0.8999999761581421, 堆疊層數) 再向下取整。**寶箱泰坦用同一套佇列，但效果完全不同**：它的 MaxStackCount 是常數 1，CanSpawnTitan 除了「還沒疊」還要求 PrestigeModel.HasPrestigedBefore()，一疊撐 floor((ChestersonGoldStageAmount + 5) × SpecialTitanStackDurationMult) 關；效果作用中，MonsterModel.NewMonster 會把新生成泰坦的類別直接換成 MonsterClass.Chesterson（Boss 與 StageSkipBoss 除外），也就是那幾關的每一隻都是寶箱泰坦。寶箱金幣的倍率是 BonusModel.GetChestersonMultiplier = treasureGold（15.0）× ChestAmount。",
+  "consequence": "**引擎目前的寶箱泰坦機率少了 SpecialTitanSpawnChance 這一項**，接上等於修正既有機制。炸彈泰坦則是全新的：未投資的玩家上限 1 層，打死一隻之後的 10 關每關隻數乘 0.8999999761581421。三個基底與兩個靜態欄位都是 [ServerVar] 的編譯期預設值，線上可覆蓋，狀態為 default。**引擎的寶箱金幣倍率一直寫死 10，原生是 treasureGold = 15.0**，接這一段時一併修正。寶箱的跨關效果對金幣影響很大：未投資時一疊就有 5 關，那幾關的每一隻普通泰坦都是寶箱。",
   "methods": {
     "chestersonChance": {
       "name": "ChestersonTitanScript$$GetSpawnChance",
@@ -66,6 +66,31 @@
       "name": "StageLogic$$GetMonsterCountPerStage",
       "rva": "0x2546594",
       "bytesSha256": "af5101c4a3c46851ba2e6192e618d52380df4dccc396e138742ec4a3679b605f"
+    },
+    "chestersonStackCap": {
+      "name": "ChestersonTitanScript$$get_MaxStackCount",
+      "rva": "0x2537938",
+      "bytesSha256": "5103ba3de080c52a046485f800433848701faa49ab8f60241a80987ca249d7ac"
+    },
+    "chestersonGate": {
+      "name": "ChestersonTitanScript$$CanSpawnTitan",
+      "rva": "0x2537a84",
+      "bytesSha256": "d1b2a1acaf43ed415143896b5c89bf055791d17eb0c5afa05fa3fb15afd4e109"
+    },
+    "chestersonStackLength": {
+      "name": "ChestersonTitanScript$$get_StageEffectLength",
+      "rva": "0x2537940",
+      "bytesSha256": "64ac3c5e2027f52ae4a595677499de875f8214151afd81aa452c99354edab256"
+    },
+    "chestersonClass": {
+      "name": "MonsterModel$$NewMonster",
+      "rva": "0x231df20",
+      "bytesSha256": "9cd0faa4e9ca06f54456977aa0f9bccd8f3d433311c4f29b00b6172f13eb1d2d"
+    },
+    "chestersonGold": {
+      "name": "BonusModel$$GetChestersonMultiplier",
+      "rva": "0x271852c",
+      "bytesSha256": "428fecde5acc5012f6689cf486125f5abbfc1f7c563505e5419b4a46d075c5ac"
     }
   },
   "formulas": {
@@ -76,7 +101,12 @@
     "stackCap": "(int)MegaBombMaxStacks",
     "onDefeat": "推入 StageEffectLength；長度超過 StageEffectLength 就丟掉最舊的一疊",
     "onStageCleared": "每一疊減一關，減到小於 1 就移除",
-    "titanCount": "floor(該關隻數 × pow(megaBombMonsterTitanRemovalPercent, 堆疊層數))"
+    "titanCount": "floor(該關隻數 × pow(megaBombMonsterTitanRemovalPercent, 堆疊層數))",
+    "chestersonStackCap": "常數 1",
+    "chestersonGate": "NumOfStacks < 1 且 PrestigeModel.HasPrestigedBefore()",
+    "chestersonStackLength": "floor((ChestersonGoldStageAmount + chestersonGoldDuration) × SpecialTitanStackDurationMult)",
+    "chestersonEffect": "效果作用中時 MonsterModel.NewMonster 把泰坦的類別換成 MonsterClass.Chesterson；Boss 與 StageSkipBoss 保留自己的類別",
+    "chestersonGold": "treasureGold × ChestAmount"
   },
   "traces": {
     "chestersonChance": [
@@ -712,6 +742,290 @@
         "sp, sp, #0xc0",
         "0x2546894"
       ]
+    ],
+    "chestersonStackCap": [],
+    "chestersonGate": [
+      [
+        "call",
+        "get_NumOfStacks",
+        "0x2537ab4"
+      ],
+      [
+        "vcall",
+        "0x1b8",
+        "0x2537ac8"
+      ],
+      [
+        "cmp",
+        "w20, w0",
+        "0x2537acc"
+      ],
+      [
+        "tail",
+        "HasPrestigedBefore",
+        "0x2537af4"
+      ]
+    ],
+    "chestersonStackLength": [
+      [
+        "sub",
+        "sp, sp, #0x90",
+        "0x2537940"
+      ],
+      [
+        "add",
+        "x8, sp, #0x48",
+        "0x25379a0"
+      ],
+      [
+        "GetBonus",
+        "ChestersonGoldStageAmount",
+        "0x25379b0"
+      ],
+      [
+        "add",
+        "x0, sp, #0x30",
+        "0x25379cc"
+      ],
+      [
+        "call",
+        "op_Explicit",
+        "0x25379dc"
+      ],
+      [
+        "add",
+        "x8, sp, #0x18",
+        "0x25379f4"
+      ],
+      [
+        "GetBonus",
+        "SpecialTitanStackDurationMult",
+        "0x2537a04"
+      ],
+      [
+        "call",
+        "op_Explicit",
+        "0x2537a20"
+      ],
+      [
+        "static",
+        "chestersonGoldDuration",
+        "0x2537a48"
+      ],
+      [
+        "scvtf",
+        "s0, s0",
+        "0x2537a50"
+      ],
+      [
+        "fadd",
+        "s0, s8, s0",
+        "0x2537a54"
+      ],
+      [
+        "fmul",
+        "s0, s9, s0",
+        "0x2537a58"
+      ],
+      [
+        "frintm",
+        "s1, s0",
+        "0x2537a60"
+      ],
+      [
+        "fcvtms",
+        "w9, s0",
+        "0x2537a64"
+      ],
+      [
+        "fcmp",
+        "s1, s0",
+        "0x2537a70"
+      ],
+      [
+        "csel",
+        "w0, w8, w9, eq",
+        "0x2537a74"
+      ],
+      [
+        "add",
+        "sp, sp, #0x90",
+        "0x2537a78"
+      ]
+    ],
+    "chestersonClass": [
+      [
+        "sub",
+        "sp, sp, #0x110",
+        "0x231df20"
+      ],
+      [
+        "cmp",
+        "w20, #1",
+        "0x231dfa8"
+      ],
+      [
+        "cmp",
+        "w20, #6",
+        "0x231dfb4"
+      ],
+      [
+        "call",
+        "GetStageSkipMonsterStagesSkipped",
+        "0x231dfd0"
+      ],
+      [
+        "call",
+        "IsMonsterEffectActive",
+        "0x231e00c"
+      ],
+      [
+        "csel",
+        "w27, w22, w20, ne",
+        "0x231e018"
+      ],
+      [
+        "call",
+        "op_Implicit",
+        "0x231e05c"
+      ],
+      [
+        "add",
+        "x8, sp, #0x98",
+        "0x231e064"
+      ],
+      [
+        "call",
+        "GetMonsterHP",
+        "0x231e074"
+      ],
+      [
+        "call",
+        "op_Implicit",
+        "0x231e090"
+      ],
+      [
+        "add",
+        "x8, sp, #0x80",
+        "0x231e094"
+      ],
+      [
+        "add",
+        "w1, w0, w26",
+        "0x231e098"
+      ],
+      [
+        "call",
+        "GetMonsterGoldDrop",
+        "0x231e0ac"
+      ],
+      [
+        "call",
+        "op_Implicit",
+        "0x231e0d0"
+      ],
+      [
+        "add",
+        "x8, sp, #0x28",
+        "0x231e0d4"
+      ],
+      [
+        "add",
+        "w1, w0, w26",
+        "0x231e0d8"
+      ],
+      [
+        "call",
+        "GetMonsterGoldDrop",
+        "0x231e0ec"
+      ],
+      [
+        "add",
+        "x2, sp, #0x60",
+        "0x231e100"
+      ],
+      [
+        "add",
+        "x3, sp, #0x40",
+        "0x231e10c"
+      ],
+      [
+        "add",
+        "x4, sp, #0x28",
+        "0x231e118"
+      ],
+      [
+        "call",
+        ".ctor",
+        "0x231e144"
+      ],
+      [
+        "vcall",
+        "0x18",
+        "0x231e190"
+      ],
+      [
+        "add",
+        "sp, sp, #0x110",
+        "0x231e1b0"
+      ]
+    ],
+    "chestersonGold": [
+      [
+        "sub",
+        "sp, sp, #0xa0",
+        "0x271852c"
+      ],
+      [
+        "static",
+        "treasureGold",
+        "0x27185a4"
+      ],
+      [
+        "add",
+        "x8, sp, #0x58",
+        "0x27185b8"
+      ],
+      [
+        "call",
+        "op_Implicit",
+        "0x27185c0"
+      ],
+      [
+        "add",
+        "x8, sp, #8",
+        "0x27185c4"
+      ],
+      [
+        "GetBonus",
+        "ChestAmount",
+        "0x27185d0"
+      ],
+      [
+        "add",
+        "x0, sp, #0x20",
+        "0x27185dc"
+      ],
+      [
+        "add",
+        "x1, sp, #8",
+        "0x27185e0"
+      ],
+      [
+        "add",
+        "x8, sp, #0x40",
+        "0x27185ec"
+      ],
+      [
+        "call",
+        "op_Multiply",
+        "0x27185f4"
+      ],
+      [
+        "add",
+        "sp, sp, #0xa0",
+        "0x2718618"
+      ]
     ]
   },
   "bases": {
@@ -732,6 +1046,14 @@
     "megaBombMonsterTitanRemovalPercent": {
       "offset": "0x9f8",
       "value": 0.8999999761581421
+    },
+    "chestersonGoldDuration": {
+      "offset": "0xa04",
+      "value": 5
+    },
+    "treasureGold": {
+      "offset": "0x9e4",
+      "value": 15.0
     }
   },
   "bonusIds": {
@@ -740,7 +1062,9 @@
     "SpecialTitanSpawnChance": 424,
     "SpecialTitanStackDurationMult": 425,
     "ChestChance": 100,
-    "AllProbabilityBoost": 27
+    "AllProbabilityBoost": 27,
+    "ChestersonGoldStageAmount": 101,
+    "ChestAmount": 97
   },
   "powThunk": {
     "rva": "0x49df500",
@@ -753,7 +1077,8 @@
   "limits": [
     "pow 的那個 thunk 在這份 binary 裡沒有符號，是靠呼叫者認出來的：GammaToLinear 與指數退避策略都經過它，兩者都只可能是 pow。認法寫在 powThunk 欄位裡，哪天它們不再呼叫同一個位址，這支工具就會停下來。",
     "Hayst 與 Kratos 的 GetSpawnChance 用同一個模板，但各自多一個 op_Addition，而且綁在本專案未實作的流派上，因此不在本文件範圍內。",
-    "寶箱泰坦的跨關金幣效果（ChestersonGoldStageAmount 與它的 StageEffectLength）不在本文件範圍內：它的 MaxStackCount 與效果本身還沒解。",
+    "MonsterModel.NewMonster 的那個分支只證明「類別被換成 Chesterson」。換了類別之後金幣怎麼算，是 GetMonsterGoldDrop 走 GetChestersonMultiplier 的事，兩者分別記錄，中間沒有第三段被省略。",
+    "Try10xGold 也檢查同一個效果（十倍金幣在寶箱關內另有規則），但 Goldx10Chance 在本專案沒有任何來源，因此不在範圍內。",
     "StageEffectLength 的推入端有一個 int.MaxValue 的防護分支，兩次呼叫同一個 getter；等價於推入 StageEffectLength 一次。",
     "虛擬呼叫的目標是 vtable 槽，指令本身無法具名，所以記的是槽位移。0x1b8 是 MaxStackCount——CanSpawnTitan 與 IsAtMaxStacks 都只比對這一個槽，而 dump.cs 說這兩個方法比的就是 NumOfStacks 與 MaxStackCount；0x1c8 是相鄰的下一個槽 StageEffectLength，與 dump.cs 的宣告順序一致。",
     "GetMonsterCountPerStage 的契約減免（BonusType 44）同樣屬於未實作的系統，形狀記在 trace 裡但不實作。"
