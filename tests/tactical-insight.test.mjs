@@ -1,6 +1,6 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {fresh,apply,hydrate,stateEffect,manaMax,critChance,tapDamage,BONUS_DEFAULTS,SKILLS,MANA_DEFAULTS,unlockedSkills} from '../lib/engine.ts';
+import {fresh,apply,hydrate,stateEffect,manaMax,critChance,critMultiplier,tapDamage,BONUS_DEFAULTS,SKILLS,MANA_DEFAULTS,unlockedSkills} from '../lib/engine.ts';
 import {TT2_TREE,TT2_BONUSES} from '../lib/tt2-data.ts';
 import {B,N} from './amounts.mjs';
 const insight=TT2_TREE.findIndex(k=>k.id==='HelperBoost');
@@ -15,7 +15,8 @@ test('Tactical Insight affects individual unlocked powers, not base player stats
  s.heroes[0]=500;
  near(manaMax(s),cap+3.06);near(critChance(s),BONUS_DEFAULTS.critChance+.00102);
  near(stateEffect(s,'CritDamage'),1.1*1.0032);
- near(N(tapDamage(s)),1.1*1.0032);
+ // 那個加成只走暴擊倍率，一般點擊傷害不吃它。
+ near(N(tapDamage(s)),1);near(critMultiplier(s)/11.5,1.1*1.0032);
  s.heroes[1]=100;
  near(stateEffect(s,'CritDamage'),(1.1*1.0032)**2);
 });

@@ -1,0 +1,84 @@
+{
+  "version": "8.2.0",
+  "role": "暴擊傷害加成只用在暴擊倍率：全映像只有一個讀取點，一般傷害那條路完全沒有它。",
+  "packageSha256": "8d78c9aa877e6c0b291ee2116cab855bd26c59c1d080bc654f88ecf1ff268b5f",
+  "binarySha256": "c13fc44321b1214c71ab0277a134fc3401fd7392c74a0bbb3935671c55a8713a",
+  "scriptSha256": "62c2eeb8472bb107de516e4b6ae69d3dcdf5013fb1caa87223d82a54dd203f8b",
+  "finding": "BonusType.CritDamage（134）在整個映像只有 PlayerModel.RefreshCriticalValues 一個 GetBonus 呼叫點，而且只用來算暴擊倍率＝playerCritMult × Bonus(CritDamage)。同一趟掃描的三個對照加成（SwordMasterDamage、TapDamage、AllDamage）都掃得到既知讀取點，所以「只有一處」不是掃描失效。PlayerModel.GetSwordMasterDamage 的乘數依序是 等級 × GetImprovementBonus(等級) × playerDamageMult × Bonus(SwordMasterDamage) × Bonus(TapDamage) × Bonus(AllDamage)，五次乘法、一次 Max 取下限，沒有暴擊項。TitanDamage 與 BossDamage 則留在 StageLogic.PerformAttackMonster，也就是每個傷害來源結算時都會付的那一段。",
+  "expression": "暴擊倍率 = playerCritMult × Bonus(CritDamage)；暴擊機率 = min(maxCritChance, Bonus(CritChance) × Bonus(AllProbabilityBoost))；劍術大師傷害 = max(下限, 等級 × 改良加成 × playerDamageMult × SwordMasterDamage × TapDamage × AllDamage)",
+  "methods": {
+    "BonusModel$$GetBonus": "0x2714c88",
+    "PlayerModel$$RefreshCriticalValues": "0x23da120",
+    "PlayerModel$$GetSwordMasterDamage": "0x23e272c",
+    "StageLogic$$PerformAttackMonster": "0x2542888"
+  },
+  "critDamageReaders": [
+    "PlayerModel$$RefreshCriticalValues"
+  ],
+  "critDamageCallSites": {
+    "PlayerModel$$RefreshCriticalValues": [
+      "0x23da29c"
+    ]
+  },
+  "controls": {
+    "SwordMasterDamage": {
+      "bonusType": 448,
+      "readers": [
+        "PlayerModel$$GetSwordMasterDamage"
+      ]
+    },
+    "TapDamage": {
+      "bonusType": 457,
+      "readers": [
+        "PlayerModel$$GetSwordMasterDamage",
+        "PlayerModel$$GetTapFromHelpers",
+        "PlayerModel$$PrintCurrentDamgage",
+        "StatsPanelScript$$InitDamageStats"
+      ]
+    },
+    "AllDamage": {
+      "bonusType": 37,
+      "readers": [
+        "AchievementModel$$TEST_GetStatsString",
+        "ArtifactModelBase<object>$$RefreshBonusPerOwnedCardLevel",
+        "HelperInfo$$UpdateHelperBonusMult",
+        "MegaBombTitanScript$$UpdateBonuses",
+        "PlayerModel$$GetSwordMasterDamage",
+        "PlayerModel$$PrintCurrentDamgage",
+        "PlayerModel$$RefreshSkillPointBonuses",
+        "StatsPanelScript$$InitDamageStats"
+      ]
+    }
+  },
+  "serverVars": {
+    "playerCritChance": {
+      "offset": "0xbb0",
+      "type": "float",
+      "defaultValue": 0.009999999776482582,
+      "status": "default"
+    },
+    "playerCritMult": {
+      "offset": "0xbb4",
+      "type": "float",
+      "defaultValue": 11.5,
+      "status": "default"
+    },
+    "maxCritChance": {
+      "offset": "0xbb8",
+      "type": "float",
+      "defaultValue": 1.0,
+      "status": "default"
+    },
+    "playerDamageMult": {
+      "offset": "0xba4",
+      "type": "float",
+      "defaultValue": 1.0,
+      "status": "default"
+    }
+  },
+  "consequence": "引擎把 CritDamage 乘進 buildMultiplier，等於每一種傷害都吃暴擊傷害加成，暴擊時還會再乘一次（critMultiplier 本來就有）。原生沒有這回事：一般傷害不吃，暴擊只乘一次。2.14.2 起把那一份從 buildMultiplier 移除；沒有任何 CritDamage 來源的存檔不受影響。",
+  "limits": [
+    "方法存在、位址與其 GetBonus 呼叫點是事實；靜態值引用的是編譯期預設值，線上可覆蓋",
+    "本表只涵蓋暴擊與劍術大師兩條路徑，其他流派的傷害算式尚未逐一還原"
+  ]
+}

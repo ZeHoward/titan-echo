@@ -110,7 +110,11 @@ export function spentPoints(t:TT2State,branch?:string){return TT2_TREE.reduce((n
 export function canBuyTalent(t:TT2State,i:number,best:number){const k=TT2_TREE[i],level=t.tree[i]||0;if(!k||level>=k.max||t.points<k.cost[level]||best<k.stage[level]||spentPoints(t,k.branch)<k.required)return false;const prerequisite=TT2_TREE.findIndex(n=>n.id===k.prerequisite);return prerequisite<0||t.tree[prerequisite]>0;}
 // Exponents are damage-reduction coefficients, not a linear percentage discount.
 export const BUILD_COEFFICIENTS:Record<Build,{tap:number;hero:number}>={tap:{tap:1,hero:0},pet:{tap:1,hero:.5},ship:{tap:0,hero:1},clone:{tap:.6,hero:.5},dagger:{tap:1,hero:.5},heavenly:{tap:1,hero:.5},goldGun:{tap:.45,hero:.9}};
-export function buildMultiplier(t:TT2State,build:Build,active:number,boss=false,resolve=(id:string)=>effect(t,id)){const c=BUILD_COEFFICIENTS[build];let n=artifactAllDamage(t)*resolve('AllDamage')*resolve('CritDamage')*resolve('TapDamage')**c.tap*resolve('AllHelperDamage')**c.hero;
+// CritDamage is deliberately absent. Natively it has exactly one GetBonus call site in the whole
+// image - PlayerModel.RefreshCriticalValues - and it only builds the critical multiplier there,
+// so ordinary damage never pays it and a crit pays it once. It used to sit in this product, which
+// charged every build for it and squared it on a crit. See critical-damage-evidence.json.
+export function buildMultiplier(t:TT2State,build:Build,active:number,boss=false,resolve=(id:string)=>effect(t,id)){const c=BUILD_COEFFICIENTS[build];let n=artifactAllDamage(t)*resolve('AllDamage')*resolve('TapDamage')**c.tap*resolve('AllHelperDamage')**c.hero;
  n*=resolve('DamagePerRunningActiveSkill')**Math.min(4,active);
  n*=1+(resolve('DamagePerOwnedCardLevel')-1)*t.cards;
  n*=1+(resolve('DamagePerOwnedArtifact')-1)*t.artifacts.filter(n=>n>0).length;

@@ -2,11 +2,11 @@
 
 每個核心公式的來源登記表：資料表、原生方法、原生預設值，或明確標記為 7.5 基準沿用、專案自訂或伺服器供給。
 
-版本 8.2.0。共 34 條公式、75 項來源條目。
+版本 8.2.0。共 34 條公式、76 項來源條目。
 
 | 狀態 | 意義 | 條目數 |
 |---|---|---|
-| `native` | 由反組譯證據確認 | 16 |
+| `native` | 由反組譯證據確認 | 17 |
 | `table` | 取自安裝包資料表 | 18 |
 | `default` | 原生靜態預設值，線上可覆蓋 | 16 |
 | `baseline-75` | 沿用 7.5 基準，尚未對 8.2 核實 | 0 |
@@ -138,6 +138,7 @@ round(8 + 關卡 × 148 ÷ (32000 + 關卡))
 | 來源條目 | 狀態 | 依據 |
 |---|---|---|
 | 基礎機率 0.01、倍率 11.5 與上限 1 | `default` | `reference/tt2/8.2.0/bonus-defaults-evidence.json`；兩張變數表確實沒帶值，但編譯期預設值有：BonusModel.SetDefaultBonuses 把 CritChance 的基礎值設為 playerCritChance（0.01），PlayerModel.RefreshCriticalValues 以 min(Bonus(CritChance) × Bonus(AllProbabilityBoost), maxCritChance) 算機率、以 playerCritMult（11.5）× Bonus(CritDamage) 算倍率，maxCritChance 為 1。引擎原本是 0.02 與固定 10 倍，而且點擊那一行寫死 10、沒有用 critMultiplier；2.13.0 起改用原生值並接上機率加成與暴擊傷害加成。線上可覆蓋，故為 default。 |
+| CritDamage 只進暴擊倍率，一般傷害不吃 | `native` | `reference/tt2/8.2.0/critical-damage-evidence.json`；BonusType.CritDamage（134）在整個映像只有一個 GetBonus 呼叫點，就是 PlayerModel.RefreshCriticalValues；同一趟掃描的三個對照加成（SwordMasterDamage、TapDamage、AllDamage）都掃得到既知讀取點，所以不是掃描失效。引擎原本把它乘進 buildMultiplier，等於每一種傷害都吃暴擊傷害加成、暴擊時還會再乘一次；2.14.2 起移除那一份。 |
 
 ### mana · `lib/engine.ts` 的 `manaMax`
 

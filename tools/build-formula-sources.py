@@ -161,7 +161,15 @@ FORMULAS = [
                             'min(Bonus(CritChance) × Bonus(AllProbabilityBoost), maxCritChance) 算機率、'
                             '以 playerCritMult（11.5）× Bonus(CritDamage) 算倍率，maxCritChance 為 1。'
                             '引擎原本是 0.02 與固定 10 倍，而且點擊那一行寫死 10、沒有用 critMultiplier；'
-                            '2.13.0 起改用原生值並接上機率加成與暴擊傷害加成。線上可覆蓋，故為 default。')]),
+                            '2.13.0 起改用原生值並接上機率加成與暴擊傷害加成。線上可覆蓋，故為 default。'),
+                 entry(part='CritDamage 只進暴擊倍率，一般傷害不吃', status='native',
+                       ref='critical-damage-evidence.json',
+                       note='BonusType.CritDamage（134）在整個映像只有一個 GetBonus 呼叫點，'
+                            '就是 PlayerModel.RefreshCriticalValues；同一趟掃描的三個對照加成'
+                            '（SwordMasterDamage、TapDamage、AllDamage）都掃得到既知讀取點，'
+                            '所以不是掃描失效。引擎原本把它乘進 buildMultiplier，'
+                            '等於每一種傷害都吃暴擊傷害加成、暴擊時還會再乘一次；'
+                            '2.14.2 起移除那一份。')]),
     entry(id='mana', module='lib/engine.ts', export='manaMax',
           expression='魔力上限 200 + ManaPoolCap；每秒回復 (2 + ManaRegen) ÷ 60 × ManaRegenMult × 藥水倍率',
           parts=[

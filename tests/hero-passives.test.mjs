@@ -1,6 +1,6 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {fresh,apply,hydrate,stateEffect,critChance,manaMax,heroDps,tapDamage,goldReward,BONUS_DEFAULTS,SKILLS,MANA_DEFAULTS,unlockedSkills} from '../lib/engine.ts';
+import {fresh,apply,hydrate,stateEffect,critChance,critMultiplier,manaMax,heroDps,tapDamage,goldReward,BONUS_DEFAULTS,SKILLS,MANA_DEFAULTS,unlockedSkills} from '../lib/engine.ts';
 const capOf=(s)=>MANA_DEFAULTS.capPerSkill*unlockedSkills(s);
 const near=(a,b)=>assert.ok(Math.abs(a-b)<1e-9,`${a} != ${b}`);
 import {heroPassiveTotals} from '../lib/tt2-hero-passives.ts';
@@ -21,7 +21,9 @@ test('source names join stable IDs, including reordered artifacts',()=>{
 test('Maya passives unlock at CSV boundaries and reach actual damage, gold and mana',()=>{
  const s=fresh(1000),tap=N(tapDamage(s)),gold=N(goldReward(s,'chest'));
  s.heroes[0]=19;assert.equal(stateEffect(s,'CritDamage'),1);
- s.heroes[0]=20;assert.equal(stateEffect(s,'CritDamage'),1.1);assert.equal(N(tapDamage(s)),tap*1.1);
+ // 暴擊傷害加成只走暴擊倍率，一般點擊傷害不吃它（原生只有 RefreshCriticalValues 讀 CritDamage）。
+ s.heroes[0]=20;assert.equal(stateEffect(s,'CritDamage'),1.1);assert.equal(N(tapDamage(s)),tap);
+ assert.equal(critMultiplier(s),11.5*1.1);
  s.heroes[0]=59;assert.equal(critChance(s),BONUS_DEFAULTS.critChance);
  s.heroes[0]=60;near(critChance(s),BONUS_DEFAULTS.critChance+.001);
  s.heroes[0]=99;assert.equal(N(goldReward(s,'chest')),gold);
