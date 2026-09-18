@@ -64,8 +64,8 @@
     ]
   },
   "counts": {
-    "live": 92,
-    "dead-native-uses-it": 136,
+    "live": 94,
+    "dead-native-uses-it": 134,
     "dead-native-ignores-it": 69,
     "read-without-source": 9,
     "not-in-project": 490
@@ -1695,15 +1695,15 @@
     },
     {
       "id": "DamagePerEquipmentSet",
-      "verdict": "dead-native-uses-it",
+      "verdict": "live",
       "sources": [
         "TT2_SETS"
       ],
-      "engineReads": false,
+      "engineReads": true,
       "nativeReaders": [
         "EquipmentModel"
       ],
-      "priority": true
+      "priority": false
     },
     {
       "id": "DamagePerManaCap",
@@ -1792,16 +1792,16 @@
     },
     {
       "id": "DamagePerHelperWeapon",
-      "verdict": "dead-native-uses-it",
+      "verdict": "live",
       "sources": [
         "TT2_GEAR",
         "TT2_SETS"
       ],
-      "engineReads": false,
+      "engineReads": true,
       "nativeReaders": [
         "HelperModel"
       ],
-      "priority": true
+      "priority": false
     },
     {
       "id": "DamagePerHelperWeaponMult",
@@ -8425,6 +8425,7 @@
   "limits": [
     "「掃不到取值點」不等於「原生不使用」：以暫存器傳入編號的呼叫點列在 unattributed，目前有 57 個；另外加成值可能先被算進某個欄位、之後從該欄位讀，例如 RefreshCriticalValues 把暴擊倍率存進 PlayerModel 的欄位再由攻擊流程讀。",
     "本表只涵蓋 GetBonus 與 HasBonus 兩個入口，不含 UI 顯示用的 GetBonusInfo 等後設方法。",
-    "要據此宣稱某個加成沒有作用，必須另外確認它沒有被快取到欄位、也不在 unattributed 的呼叫點裡。"
+    "要據此宣稱某個加成沒有作用，必須另外確認它沒有被快取到欄位、也不在 unattributed 的呼叫點裡。",
+    "低估有具體實例：EquipmentModel.EquipmentSetCountBonusHandler 依稀有度從表裡取 BonusType 再以暫存器傳給 GetBonus，所以 DamagePerLegendarySet 這一族會被歸成「原生也沒有取值點」，實際上就在那個方法裡被消費——見 reference/tt2/8.2.0/count-bonus-evidence.json。"
   ]
 }

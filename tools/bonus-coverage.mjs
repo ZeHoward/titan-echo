@@ -175,7 +175,10 @@ const report = {
     'not-in-project': '專案沒有來源，引擎也沒讀。',
   },
   rows,
-  limits: nativeEvidence.limits,
+  limits: [...nativeEvidence.limits,
+    '低估有具體實例：EquipmentModel.EquipmentSetCountBonusHandler 依稀有度從表裡取 BonusType 再以暫存器'
+    + '傳給 GetBonus，所以 DamagePerLegendarySet 這一族會被歸成「原生也沒有取值點」，'
+    + '實際上就在那個方法裡被消費——見 reference/tt2/8.2.0/count-bonus-evidence.json。'],
 };
 writeFileSync(fileURLToPath(new URL('docs/bonus-coverage.json', root)),
   JSON.stringify(report, null, 2) + '\n');

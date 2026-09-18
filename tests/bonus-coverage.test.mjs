@@ -63,14 +63,14 @@ test('查一個不存在的加成不會被當成秒數或魔力加進去', () =>
 
 test('覆蓋率的分布記下來，加成接上或掉線都是看得見的改動', () => {
   assert.deepEqual(coverage.counts, {
-    live: 92,
-    'dead-native-uses-it': 136,
+    live: 94,
+    'dead-native-uses-it': 134,
     'dead-native-ignores-it': 69,
     'read-without-source': 9,
     'not-in-project': 490,
   });
   const priority = coverage.rows.filter(r => r.priority);
-  assert.equal(priority.length, 72, '落在已實作系統、可以接上的加成數量變了');
+  assert.equal(priority.length, 70, '落在已實作系統、可以接上的加成數量變了');
 });
 
 test('判定彼此互斥，每個加成只會落在一類', () => {

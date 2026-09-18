@@ -167,6 +167,17 @@ FORMULAS = [
                          '唯一來源是「腐化」傳說套裝（每點魔力上限 ×0.05），六個技能全解鎖時為 10.5 倍。'
                          '**刻意偏離一處**：原生在魔力上限為 0 時會讓傷害歸零，本專案改為不套用，'
                          '因為本專案的存檔可能在劍術大師 100 級之前就湊齊那套套裝，而傷害歸零救不回來。'),
+              entry(part='集齊套裝數與英雄武器總等級的傷害乘數', status='native', ref='count-bonus-evidence.json',
+                    note='兩條都寫回 AllDamage，但算術不同。'
+                         'EquipmentModel.EquipmentSetCountBonusHandler 是**次方**：'
+                         'DamagePerEquipmentSet ^ 集齊的套裝數（乘法型加成沒有來源時是 1，1 的任何次方仍是 1，'
+                         '所以不需要中性值比對）。'
+                         'HelperModel.RefreshDamagePerHelperWeaponBonus 是**乘法且沒有加 1**：'
+                         '武器總等級 × DamagePerHelperWeapon，總等級為 0 或加成等於中性值時整個不套用。'
+                         '**總等級低時原生就會讓傷害變低**（每級 0.1、總等級 5 時是 ×0.5）；'
+                         '原生沒有夾下限，而總等級只會往上累積，所以照原生保留。'
+                         '來源分別是「鐵匠」與「武器大師」兩套傳說套裝，都可製作。'
+                         'DamagePerHelperWeaponMult 在本專案沒有來源，故不接。'),
               entry(part='主動技能倍率', status='table', ref='ActiveSkillInfo.json')]),
     entry(id='skillValues', module='lib/engine.ts', export='skillPower',
           expression='技能等級對應的倍率 × 對應加成 × 全主動技能加成',
@@ -513,7 +524,7 @@ NOT_FORMULAS = {
         'canDiscover', 'canBuyTalent', 'discoveryPool', 'drawArtifact', 'collectGear', 'dropGear', 'craftSet',
         'awardPet', 'heroPowerBoost', 'heroSkillValue', 'equipmentEffect', 'equipmentValue',
         'artifactCost', 'skillCost', 'skillDuration', 'skillCooldown', 'skillMana', 'critMultiplier',
-        'manaCapDamage',
+        'manaCapDamage', 'helperWeaponDamage',
         'monsterCount', 'unlockedSkills', 'skillStep', 'discoveryCost', 'craftPrice', 'buildMultiplier', 'manaRegen', 'achievementTier',
         'advanceEggs', 'playerUpgradeCost', 'playerBaseDamage', 'themeIndex', 'goldReward', 'health', 'heroDps',
         'cost', 'critChance', 'manaMax', 'bossDuration', 'relicGain', 'evolveCost', 'buildDamage', 'skillPower',

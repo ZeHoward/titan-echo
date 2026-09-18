@@ -489,13 +489,24 @@ export function manaCapDamage(s:State){
  const cap=Math.min(MANA_DEFAULTS.capBonusMax,Math.max(0,manaMax(s)));
  return cap?cap*perManaCap:1;
 }
+// Native RefreshDamagePerHelperWeaponBonus: AllDamage x= total weapon levels x the bonus, with two
+// guards and no leading 1 - it skips when the total is 0, and when the bonus is at its identity.
+// Neither guard covers a low total, so natively a set granting 0.1 per level is a loss below ten
+// levels. That is the native behaviour and it is recoverable, so it is kept as is.
+export function helperWeaponDamage(s:State){
+ const identity=bonusDefinitions['DamagePerHelperWeapon']?.additive?0:1;
+ const perWeapon=stateEffect(s,'DamagePerHelperWeapon');
+ if(perWeapon===identity)return 1;
+ const levels=s.weapons.reduce((a,b)=>a+b,0)+s.tt2!.extraWeapons.reduce((a,b)=>a+b,0);
+ return levels?levels*perWeapon:1;
+}
 export function buildDamage(s:State,build:Build):Big{const t=s.tt2!,active=s.active.filter(n=>n>s.last).length,c={tap:0,pet:.5,ship:1,clone:.5,dagger:.5,heavenly:.5,goldGun:.9}[build];
  // The intrinsic Sword Master curve is native-verified. Other build models
  // still use the existing reduction coefficients pending full reconstruction.
  const tapCoefficient={tap:1,pet:1,ship:0,clone:.6,dagger:1,heavenly:1,goldGun:.45}[build];
  let n=power(swordMasterBaseDamage(s),tapCoefficient);
  if(c)n=multiply(n,power(bigMax({...ONE},rawHeroDps(s)),c));
- n=scale(n,buildMultiplier(t,build,active,isBoss(s),id=>stateEffect(s,id))*gearBonus(s,0)*manaCapDamage(s));
+ n=scale(n,buildMultiplier(t,build,active,isBoss(s),id=>stateEffect(s,id))*gearBonus(s,0)*manaCapDamage(s)*helperWeaponDamage(s));
  if(s.active[3]>s.last)n=scale(n,skillPower(s,3)**({tap:1,pet:1,ship:0,clone:.6,dagger:1,heavenly:1,goldGun:.45}[build]));
  if(s.active[2]>s.last)n=scale(n,skillPower(s,2)**c);
  if(build==='clone')n=scale(n,SKILL_DATA[0].amount[skillStep(0,s.skillLevels[0])]);

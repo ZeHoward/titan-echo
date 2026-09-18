@@ -7,13 +7,13 @@
 
 | 判定 | 意義 | 個數 |
 |---|---|---|
-| `live` | 專案有來源、引擎有讀：正常運作。 | 92 |
-| `dead-native-uses-it` | 專案有來源、引擎沒讀，而且原生有取值點：**這些是可以接上的**。 | 136 |
+| `live` | 專案有來源、引擎有讀：正常運作。 | 94 |
+| `dead-native-uses-it` | 專案有來源、引擎沒讀，而且原生有取值點：**這些是可以接上的**。 | 134 |
 | `dead-native-ignores-it` | 專案有來源、引擎沒讀，原生也掃不到取值點：接了大概也沒有依據。 | 69 |
 | `read-without-source` | 引擎有讀，但專案沒有任何來源會給：恆為中性值，等來源出現才會生效。 | 9 |
 | `not-in-project` | 專案沒有來源，引擎也沒讀。 | 490 |
 
-## 優先：落在已實作系統的（72）
+## 優先：落在已實作系統的（70）
 
 原生有取值點、我們沒讀，而且**不屬於尚未實作的流派**——這些是可以直接接上的。
 依**原生讀取它的類別**分組，類別名就說明了它屬於哪個系統。
@@ -25,12 +25,6 @@
 - `PetQTEStageSkip` ← TT2_TREE
 - `ShadowCloneBossSplash` ← TT2_SETS
 - `StageSkipMonsterSpawnChance` ← TT2_ARTIFACTS、TT2_SETS
-
-### HelperModel（3）
-
-- `DamagePerHelperWeapon` ← TT2_GEAR、TT2_SETS
-- `HelperWeaponSetBoost` ← TT2_ARTIFACTS
-- `InspiredHelperCount` ← TT2_TREE
 
 ### StageLogic / StatsPanelScript（3）
 
@@ -48,15 +42,15 @@
 - `CloakedSkipAmount` ← TT2_SETS、TT2_TREE
 - `CloakedSkipChance` ← TT2_TREE
 
-### EquipmentModel（2）
-
-- `DamagePerEquipmentSet` ← TT2_SETS
-- `EquipmentSecondaryDamageEffect` ← TT2_SETS
-
 ### GameSettingsPanel / PetController（2）
 
 - `AutoActivatePetBossQTE` ← TT2_SETS
 - `AutoActivatePetGoldQTE` ← TT2_SETS
+
+### HelperModel（2）
+
+- `HelperWeaponSetBoost` ← TT2_ARTIFACTS
+- `InspiredHelperCount` ← TT2_TREE
 
 ### InactiveGameplayModel（2）
 
@@ -167,6 +161,10 @@
 ### DailyRewardModel（1）
 
 - `DamagePerConsecutiveLoginDay` ← TT2_SETS
+
+### EquipmentModel（1）
+
+- `EquipmentSecondaryDamageEffect` ← TT2_SETS
 
 ### FairyController（1）
 
@@ -313,3 +311,4 @@
 - 「掃不到取值點」不等於「原生不使用」：以暫存器傳入編號的呼叫點列在 unattributed，目前有 57 個；另外加成值可能先被算進某個欄位、之後從該欄位讀，例如 RefreshCriticalValues 把暴擊倍率存進 PlayerModel 的欄位再由攻擊流程讀。
 - 本表只涵蓋 GetBonus 與 HasBonus 兩個入口，不含 UI 顯示用的 GetBonusInfo 等後設方法。
 - 要據此宣稱某個加成沒有作用，必須另外確認它沒有被快取到欄位、也不在 unattributed 的呼叫點裡。
+- 低估有具體實例：EquipmentModel.EquipmentSetCountBonusHandler 依稀有度從表裡取 BonusType 再以暫存器傳給 GetBonus，所以 DamagePerLegendarySet 這一族會被歸成「原生也沒有取值點」，實際上就在那個方法裡被消費——見 reference/tt2/8.2.0/count-bonus-evidence.json。

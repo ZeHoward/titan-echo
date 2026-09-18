@@ -1,0 +1,121 @@
+{
+  "version": "8.2.0",
+  "role": "兩個依「擁有幾個」放大的加成：集齊的裝備套裝數、英雄武器的總等級。",
+  "packageSha256": "8d78c9aa877e6c0b291ee2116cab855bd26c59c1d080bc654f88ecf1ff268b5f",
+  "binarySha256": "c13fc44321b1214c71ab0277a134fc3401fd7392c74a0bbb3935671c55a8713a",
+  "scriptSha256": "62c2eeb8472bb107de516e4b6ae69d3dcdf5013fb1caa87223d82a54dd203f8b",
+  "finding": "EquipmentModel.EquipmentSetCountBonusHandler 對三個加成各做一次 Pow 再寫回，其中具名的那個是 DamagePerEquipmentSet，指數是**集齊的套裝總數**，寫進 AllDamage；另外兩個依稀有度從表裡選，以暫存器傳入。HelperModel.RefreshDamagePerHelperWeaponBonus 先取 GetTotalHelperWeaponLevels，**總等級是 0 就整個跳過**；否則在加成不等於 GetBonusIdentity 時，以「總等級 × 加成」寫進 AllDamage——**沒有加 1**，接著 DamagePerHelperWeaponMult 以總等級取次方再寫一次。",
+  "expressions": {
+    "equipmentSets": "AllDamage ×= DamagePerEquipmentSet ^ 集齊的套裝數",
+    "helperWeapons": "AllDamage ×= 武器總等級 × DamagePerHelperWeapon（總等級為 0 或加成為中性值時不套用）；AllDamage ×= DamagePerHelperWeaponMult ^ 武器總等級"
+  },
+  "methods": {
+    "EquipmentModel$$EquipmentSetCountBonusHandler": "0x218b8dc",
+    "HelperModel$$RefreshDamagePerHelperWeaponBonus": "0x2255760",
+    "HelperModel$$GetTotalHelperWeaponLevels": "0x2256844",
+    "BonusModel$$GetBonus": "0x2714c88",
+    "BonusModel$$ModifyBonus": "0x27152ac",
+    "BonusModel$$RemoveBonus": "0x27159e0",
+    "BonusModel$$GetBonusIdentity": "0x2715858"
+  },
+  "calls": {
+    "equipmentSets": [
+      {
+        "call": "GetBonus",
+        "at": "0x218bbd8",
+        "bonus": null
+      },
+      {
+        "call": "ModifyBonus",
+        "at": "0x218bc8c",
+        "bonus": 37
+      },
+      {
+        "call": "GetBonus",
+        "at": "0x218bcc4",
+        "bonus": null
+      },
+      {
+        "call": "ModifyBonus",
+        "at": "0x218bd44",
+        "bonus": 214
+      },
+      {
+        "call": "GetBonus",
+        "at": "0x218bdf4",
+        "bonus": 143
+      },
+      {
+        "call": "ModifyBonus",
+        "at": "0x218be7c",
+        "bonus": 37
+      }
+    ],
+    "helperWeapons": [
+      {
+        "call": "GetBonus",
+        "at": "0x2255804",
+        "bonus": 152
+      },
+      {
+        "call": "GetBonusIdentity",
+        "at": "0x2255840",
+        "bonus": 152
+      },
+      {
+        "call": "ModifyBonus",
+        "at": "0x2255924",
+        "bonus": 37
+      },
+      {
+        "call": "RemoveBonus",
+        "at": "0x2255944",
+        "bonus": null
+      },
+      {
+        "call": "RemoveBonus",
+        "at": "0x225599c",
+        "bonus": null
+      },
+      {
+        "call": "GetBonus",
+        "at": "0x22559b8",
+        "bonus": 153
+      },
+      {
+        "call": "GetBonusIdentity",
+        "at": "0x22559ec",
+        "bonus": 153
+      },
+      {
+        "call": "ModifyBonus",
+        "at": "0x2255ab0",
+        "bonus": 37
+      },
+      {
+        "call": "RemoveBonus",
+        "at": "0x2255ad4",
+        "bonus": null
+      }
+    ]
+  },
+  "sweepUndercount": {
+    "note": "這裡是 bonus-readers 掃描會低估的具體實例：套裝處理器依稀有度從表裡取 BonusType 再以暫存器傳給 GetBonus，所以那些加成在 docs/bonus-coverage.md 會被歸成 「原生也沒有取值點」，實際上就在這個方法裡被消費。",
+    "registerPassedReads": [
+      "0x218bbd8",
+      "0x218bcc4"
+    ],
+    "affectedBonuses": [
+      "DamagePerLegendarySet",
+      "DamagePerMythicSet",
+      "DamagePerUniqueSet",
+      "GoldPerLegendarySet"
+    ]
+  },
+  "consequence": "本專案兩條都接上了。裝備套裝那條的來源是「鐵匠」傳說套裝（1.19），集齊 10 套是 5.69 倍、20 套是 32.4 倍；武器那條是「武器大師」傳說套裝（0.1），33 位英雄各 1 級（總 33）是 3.3 倍。兩套都可製作。**武器那條在總等級低的時候會讓傷害變低**（總等級 5 時是 ×0.5）——原生就是這樣，沒有加 1 也沒有夾下限，而且總等級會一直累積上去，玩家自己走得出來，所以照原生保留。DamagePerHelperWeaponMult 在本專案沒有任何來源會給，故不接。",
+  "limits": [
+    "方法存在、位址、呼叫序列與具名參數是事實；以暫存器傳入的參數記為 null",
+    "「總等級低於門檻會變弱」是原生行為，不是本專案的取捨",
+    "本表不涵蓋套裝處理器裡那兩個依稀有度選出的加成，它們的身分要另外從選表的邏輯解"
+  ]
+}

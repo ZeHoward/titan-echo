@@ -118,6 +118,10 @@ export function buildMultiplier(t:TT2State,build:Build,active:number,boss=false,
  n*=resolve('DamagePerRunningActiveSkill')**Math.min(4,active);
  n*=1+(resolve('DamagePerOwnedCardLevel')-1)*t.cards;
  n*=1+(resolve('DamagePerOwnedArtifact')-1)*t.artifacts.filter(n=>n>0).length;
+ // Native EquipmentSetCountBonusHandler raises this one to the power of the number of completed sets
+ // rather than multiplying by it. A multiplicative bonus with no source reads 1, and 1**n is 1,
+ // so no identity guard is needed here.
+ n*=resolve('DamagePerEquipmentSet')**t.sets.length;
  // Native RefreshSkillPointBonuses folds this into AllDamage as 1 + points x bonus, where points is
  // skillPointsReceivedServer - every point collected, not the unspent ones - so it is what is held
  // now plus what is already in the tree. Natively there is a second, exponential term over
