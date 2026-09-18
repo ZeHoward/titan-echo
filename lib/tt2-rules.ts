@@ -92,15 +92,27 @@ function visitExtra(t:TT2State,see:(n:number)=>void){
  for(const item of t.inventory){see(item.id);see(item.definition);see(item.level);}
 }
 const fullCache=new WeakMap<TT2State,Cache>();
-export function effect(t:TT2State,target:string){
- const base=baseEntry(t);
+/** The full cache for this state, checked against the extra fields and the base cache's version. */
+function fullEntry(t:TT2State,base:Cache){
  let cached=fullCache.get(t);if(!cached){cached={values:new Map(),stamp:[],version:-1};fullCache.set(t,cached);}
  if(!sameAsStamp(t,cached.stamp,visitExtra)||cached.version!==base.version){cached.values.clear();cached.version=base.version;}
+ return cached;
+}
+/** Takes already-checked entries, so a batch of lookups pays for the stamp walk once. */
+function fullFrom(cached:Cache,base:Cache,t:TT2State,target:string){
  const found=cached.values.get(target);if(found!==undefined)return found;
  const additive=bonusDefinitions[target]?.additive;let n=baseFrom(base,t,target),p=petEffect(base,t,target);n=additive?n+p:cap(n*p);
  for(const item of t.inventory){const g=TT2_GEAR[item.definition];if(t.equipped[g.slot]===item.id&&reaches(g.effect,target)){const value=equipmentEffect(t,item,base);n=additive?n+value:cap(n*value);}}
  cached.values.set(target,n);return n;
 }
+// One damage or gold number asks for a dozen or more bonuses, and every effect() call re-walks both
+// stamps - the base fields and the extra ones, the latter three entries per inventory item. Taking
+// the resolver once and reusing it across the batch pays for that walk once instead of per lookup.
+export function effectResolver(t:TT2State){
+ const base=baseEntry(t),full=fullEntry(t,base);
+ return (target:string)=>fullFrom(full,base,t,target);
+}
+export function effect(t:TT2State,target:string){const base=baseEntry(t);return fullFrom(fullEntry(t,base),base,t,target);}
 export function discoveryCost(t:TT2State){return TT2_DISCOVERY[t.artifacts.filter(n=>n>0).length]||1e240;}
 export function upgradeArtifactCost(t:TT2State,i:number){const a=TT2_ARTIFACTS[i];return Math.max(1,Math.round(a.cost*(t.artifacts[i]+1)**a.costExponent));}
 export function canDiscover(t:TT2State){return t.artifacts.some(n=>n===0);}

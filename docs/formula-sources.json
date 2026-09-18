@@ -810,6 +810,8 @@
       "critMultiplier",
       "manaCapDamage",
       "helperWeaponDamage",
+      "stateResolver",
+      "effectResolver",
       "monsterCount",
       "unlockedSkills",
       "skillStep",

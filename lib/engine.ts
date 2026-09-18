@@ -11,7 +11,7 @@ import {RESOURCE_PERKS,perkValue,perkLevel,perkLimit,activatePerk,manaSeconds} f
 import {HERO_NAMES,PET_NAMES} from './zh-tw.ts';
 import {advanceEggs,awardPet,dropGear,craftSet} from './tt2-collection.ts';
 import {TT2_PETS,TT2_GEAR,TT2_DAILY,TT2_HEROES,TT2_HERO_MILESTONES} from './tt2-data.ts';
-import {freshTT2,TT2_RULESET,TT2_ARTIFACTS,TT2_ACTIVE,TT2_TREE,effect,artifactAllDamage,buildMultiplier,upgradeArtifactCost,discoveryCost,drawArtifact,canBuyTalent,spentPoints,tt2Random,bonusDefinitions, type TT2State, type Build} from './tt2-rules.ts';
+import {freshTT2,TT2_RULESET,TT2_ARTIFACTS,TT2_ACTIVE,TT2_TREE,effect,effectResolver,artifactAllDamage,buildMultiplier,upgradeArtifactCost,discoveryCost,drawArtifact,canBuyTalent,spentPoints,tt2Random,bonusDefinitions, type TT2State, type Build} from './tt2-rules.ts';
 export {TT2_ARTIFACTS,TT2_TREE,discoveryCost};
 import { EXTRA_HEROES, ARTIFACTS, MONSTERS, PERKS, ACTION_TYPES, type Effect } from './content.ts';
 import { bossSprite, pickMonsterSprite, spriteForMonster, stagePool } from './tt2-stages.ts';
@@ -141,7 +141,8 @@ export function weaponSets(s:State){return Math.min(...s.weapons,...s.tt2!.extra
 const HERO_EFFECT_KEYS=['HelperWeaponBoost','MeleeHelperDamage','RangedHelperDamage','SpellHelperDamage',
  'GroundHelperDamage','FlyingHelperDamage'] as const;
 type HeroEffects=Record<string,number>;
-const heroEffects=(s:State):HeroEffects=>Object.fromEntries(HERO_EFFECT_KEYS.map(key=>[key,stateEffect(s,key)]));
+const heroEffects=(s:State):HeroEffects=>{const resolve=stateResolver(s);
+ return Object.fromEntries(HERO_EFFECT_KEYS.map(key=>[key,resolve(key)])) as HeroEffects;};
 export function heroDps(s:State,i:number,shared?:HeroEffects):Big{const n=heroLevel(s,i),kind=TT2_HEROES[i].kind as 'Melee'|'Ranged'|'Spell';const milestone=TT2_HERO_MILESTONES.findLast(m=>m.level<=n)?.[kind]||1;
  if(n<=0)return {...ZERO};
  const effects=shared??heroEffects(s);
@@ -149,8 +150,8 @@ export function heroDps(s:State,i:number,shared?:HeroEffects):Big{const n=heroLe
  let value=scale(pow(1.035,Math.max(0,n-1)),HEROES[i].power*n);
  for(const factor of [milestone,1+((i<33?s.weapons[i]:s.tt2!.extraWeapons[i-33])||0)*.5*effects.HelperWeaponBoost,effects[kind+'HelperDamage'],effects[TT2_HEROES[i].spatial]])value=scale(value,factor);
  return value;}
-export function dps(s:State):Big{let value=rawHeroDps(s);
- for(const factor of [stateEffect(s,'AllHelperDamage'),artifactAllDamage(s.tt2!),stateEffect(s,'AllDamage'),s.active[2]>s.last?skillPower(s,2):1,gearBonus(s,1)])value=scale(value,factor);
+export function dps(s:State):Big{let value=rawHeroDps(s);const resolve=stateResolver(s);
+ for(const factor of [resolve('AllHelperDamage'),artifactAllDamage(s.tt2!),resolve('AllDamage'),s.active[2]>s.last?skillPower(s,2):1,gearBonus(s,1)])value=scale(value,factor);
  return value;}
 // A trial fights its own wave order; a stage draws from the level's loaded monsters, and its
 // boss is the one that level names rather than the same small monster tinted.
@@ -479,12 +480,12 @@ export function critChance(s:State){
 // never reaches that state, but this project can - the Corrupted set has no stage requirement, so
 // a save can own it before the Sword Master hits 100 and unlocks the first skill, and a damage of
 // zero is unrecoverable because gold only comes from kills. With no cap yet, the term is skipped.
-export function manaCapDamage(s:State){
+export function manaCapDamage(s:State,resolve=stateResolver(s)){
  // The native check is against GetBonusIdentity, not zero, and that distinction matters here:
  // DamagePerManaCap is a multiplicative bonus, so with no source it reads 1, and treating 1 as
  // "present" would multiply everyone's damage by their whole mana cap.
  const identity=bonusDefinitions['DamagePerManaCap']?.additive?0:1;
- const perManaCap=stateEffect(s,'DamagePerManaCap');
+ const perManaCap=resolve('DamagePerManaCap');
  if(perManaCap===identity)return 1;
  const cap=Math.min(MANA_DEFAULTS.capBonusMax,Math.max(0,manaMax(s)));
  return cap?cap*perManaCap:1;
@@ -493,9 +494,9 @@ export function manaCapDamage(s:State){
 // guards and no leading 1 - it skips when the total is 0, and when the bonus is at its identity.
 // Neither guard covers a low total, so natively a set granting 0.1 per level is a loss below ten
 // levels. That is the native behaviour and it is recoverable, so it is kept as is.
-export function helperWeaponDamage(s:State){
+export function helperWeaponDamage(s:State,resolve=stateResolver(s)){
  const identity=bonusDefinitions['DamagePerHelperWeapon']?.additive?0:1;
- const perWeapon=stateEffect(s,'DamagePerHelperWeapon');
+ const perWeapon=resolve('DamagePerHelperWeapon');
  if(perWeapon===identity)return 1;
  const levels=s.weapons.reduce((a,b)=>a+b,0)+s.tt2!.extraWeapons.reduce((a,b)=>a+b,0);
  return levels?levels*perWeapon:1;
@@ -506,7 +507,8 @@ export function buildDamage(s:State,build:Build):Big{const t=s.tt2!,active=s.act
  const tapCoefficient={tap:1,pet:1,ship:0,clone:.6,dagger:1,heavenly:1,goldGun:.45}[build];
  let n=power(swordMasterBaseDamage(s),tapCoefficient);
  if(c)n=multiply(n,power(bigMax({...ONE},rawHeroDps(s)),c));
- n=scale(n,buildMultiplier(t,build,active,isBoss(s),id=>stateEffect(s,id))*gearBonus(s,0)*manaCapDamage(s)*helperWeaponDamage(s));
+ const resolve=stateResolver(s);
+ n=scale(n,buildMultiplier(t,build,active,isBoss(s),resolve)*gearBonus(s,0)*manaCapDamage(s,resolve)*helperWeaponDamage(s,resolve));
  if(s.active[3]>s.last)n=scale(n,skillPower(s,3)**({tap:1,pet:1,ship:0,clone:.6,dagger:1,heavenly:1,goldGun:.45}[build]));
  if(s.active[2]>s.last)n=scale(n,skillPower(s,2)**c);
  if(build==='clone')n=scale(n,SKILL_DATA[0].amount[skillStep(0,s.skillLevels[0])]);
@@ -518,11 +520,12 @@ export function goldReward(s:State,source:'monster'|'boss'|'fairy'|'chest'|'pet'
  let n=scale(pow(1.27,s.stage-1),5);
  // Native RefreshGoldPerPlayerLevelBonus: GoldAll x= 1 + Sword Master level x GoldPerSwordMasterLevel,
  // applied only when the bonus is above zero. Shaped like the card-level term just below it.
- for(const factor of [stateEffect(s,'GoldAll'),stateEffect(s,'JackpotGold'),stateEffect(s,'GoldPerRunningActiveSkill')**running,1+stateEffect(s,'GoldPerOwnedCardLevel')*t.cards,1+stateEffect(s,'GoldPerSwordMasterLevel')*s.level,gearBonus(s,2)])n=scale(n,factor);
- if(source==='boss'||source==='pet')n=scale(n,10*stateEffect(s,'GoldBoss'));
- if(source==='chest'||source==='fairy'||source==='multi')n=scale(n,10*stateEffect(s,'ChestAmount'));
- if(source==='fairy'||source==='pet')n=scale(n,stateEffect(s,'GoldSpecialty'));
- if(source==='fairy')n=scale(n,stateEffect(s,'FairyGold'));if(source==='pet')n=scale(n,stateEffect(s,'PetGoldQTEAmount'));if(source==='multi')n=scale(n,stateEffect(s,'MultiMonstersGold'));
+ const resolve=stateResolver(s);
+ for(const factor of [resolve('GoldAll'),resolve('JackpotGold'),resolve('GoldPerRunningActiveSkill')**running,1+resolve('GoldPerOwnedCardLevel')*t.cards,1+resolve('GoldPerSwordMasterLevel')*s.level,gearBonus(s,2)])n=scale(n,factor);
+ if(source==='boss'||source==='pet')n=scale(n,10*resolve('GoldBoss'));
+ if(source==='chest'||source==='fairy'||source==='multi')n=scale(n,10*resolve('ChestAmount'));
+ if(source==='fairy'||source==='pet')n=scale(n,resolve('GoldSpecialty'));
+ if(source==='fairy')n=scale(n,resolve('FairyGold'));if(source==='pet')n=scale(n,resolve('PetGoldQTEAmount'));if(source==='multi')n=scale(n,resolve('MultiMonstersGold'));
  if(s.active[4]>s.last)n=scale(n,skillPower(s,4)**(['fairy','pet'].includes(source)?.7:1));
  return n;
 }
@@ -540,14 +543,25 @@ export function petAttackDamage(s:State):Big{return scale(buildDamage(s,'pet'),p
 
 // Derived only; no duplicated levels or passive multipliers enter cloud saves.
 const heroPassiveCache=new WeakMap<State,{signature:string;totals:Record<string,number>}>();
-export function stateEffect(s:State,target:string){
+/** The hero-passive totals for this save, rebuilt only when a level or the boost moved. */
+function heroPassives(s:State){
  const levels=[...s.heroes,...s.tt2!.extraHeroes],boost=heroPowerBoost(s.tt2!),signature=levels.join(',')+'|'+boost.multiplicative+'|'+boost.additive;
  let cached=heroPassiveCache.get(s);
  if(!cached||cached.signature!==signature){cached={signature,totals:heroPassiveTotals(levels,boost)};heroPassiveCache.set(s,cached);}
- const additive=bonusDefinitions[target]?.additive,base=effect(s.tt2!,target),hero=cached.totals[target]??(additive?0:1);
- // Both branches are clamped: an unbounded effect used to reach the save as Infinity through mana,
- // skill duration and cooldown, which then failed snapshot validation on every write.
- return limit(additive?base+hero:base*hero);
+ return cached.totals;
 }
+// Building that signature copies 37 levels and joins them into a string, and the bonus lookup under
+// it re-walks both cache stamps. A damage number asks for well over a dozen bonuses, so the hot
+// paths take the resolver once and reuse it; stateEffect stays for the one-off callers.
+export function stateResolver(s:State){
+ const totals=heroPassives(s),resolve=effectResolver(s.tt2!);
+ return (target:string)=>{
+  const additive=bonusDefinitions[target]?.additive,hero=totals[target]??(additive?0:1);
+  // Both branches are clamped: an unbounded effect used to reach the save as Infinity through mana,
+  // skill duration and cooldown, which then failed snapshot validation on every write.
+  return limit(additive?resolve(target)+hero:resolve(target)*hero);
+ };
+}
+export function stateEffect(s:State,target:string){return stateResolver(s)(target);}
 
 export function swordMasterBaseDamage(s:State):Big{return scale(playerBaseDamage(s.level),stateEffect(s,'SwordMasterDamage'));}
