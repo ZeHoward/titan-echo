@@ -76,8 +76,8 @@
     }
   },
   "counts": {
-    "live": 113,
-    "dead-native-uses-it": 116,
+    "live": 114,
+    "dead-native-uses-it": 115,
     "dead-native-ignores-it": 68,
     "read-without-source": 13,
     "not-in-project": 486
@@ -1836,16 +1836,16 @@
     },
     {
       "id": "DamagePerConsecutiveLoginDay",
-      "verdict": "dead-native-uses-it",
+      "verdict": "live",
       "sources": [
         "TT2_SETS"
       ],
-      "engineReads": false,
+      "engineReads": true,
       "nativeReaders": [
         "DailyRewardModel"
       ],
       "indirect": null,
-      "priority": true
+      "priority": false
     },
     {
       "id": "DamagePerEquipmentSet",

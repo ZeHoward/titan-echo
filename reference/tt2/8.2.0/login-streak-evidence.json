@@ -1,0 +1,288 @@
+{
+  "version": "8.2.0",
+  "role": "連續登入天數的傷害加成：指數是天數、底數是加成，漏領一天就整項失效。",
+  "packageSha256": "8d78c9aa877e6c0b291ee2116cab855bd26c59c1d080bc654f88ecf1ff268b5f",
+  "binarySha256": "c13fc44321b1214c71ab0277a134fc3401fd7392c74a0bbb3935671c55a8713a",
+  "scriptSha256": "62c2eeb8472bb107de516e4b6ae69d3dcdf5013fb1caa87223d82a54dd203f8b",
+  "finding": "DailyRewardModel.UpdateBonusPerConsecutiveLoginDay 是 DamagePerConsecutiveLoginDay 唯一的取值點，而它不是單純相乘：指數先設 0，只有在 GetCollected() ≤ COLLECTED_TODAY 時才換成 LoginStreakCapped，然後 AllDamage ×= Pow(該加成, 指數)。LoginStreak 是 currentDayNumber − 1，LoginStreakCapped 再夾到 [0, NUMBER_OF_DAYS=14]。GetCollected 比對上次領取的日期與今天：同一天是 COLLECTED_TODAY(1)，上次領取加一天等於今天是 CAN_COLLECT_TODAY(0)，上次領取加一天早於今天是 MISSED_COLLECT_RESET(2)，其餘是 ERROR(3)。**所以漏掉一天，整個加成就變成 Pow(加成, 0) = 1**，不是慢慢遞減。",
+  "consequence": "本專案目前只有「第幾天領獎」的循環索引，沒有「連續幾天」與「中斷」的概念，所以這個加成一直沒有來源可用。接上之後，有對應套裝的玩家每連續登入一天傷害就多乘一次，最多十四次；漏領一天就全部歸零，要從頭再累積。",
+  "methods": {
+    "bonus": {
+      "name": "DailyRewardModel$$UpdateBonusPerConsecutiveLoginDay",
+      "rva": "0x21377c4",
+      "bytesSha256": "07b4a5f85289d2639939460d0d2c5f420e4e118f917b515c1afb0a3d6fd4ef66"
+    },
+    "state": {
+      "name": "DailyRewardModel$$GetCollected",
+      "rva": "0x21371dc",
+      "bytesSha256": "6719b51496cabf4b418f5b58603196a3e45c732e7c7f90e15514786630539ae2"
+    },
+    "streak": {
+      "name": "DailyRewardModel$$get_LoginStreak",
+      "rva": "0x213790c",
+      "bytesSha256": "141ba8273ada4d3f8374cfe5d5967ca1f6a9c65ba6879169058866519f3269b4"
+    },
+    "capped": {
+      "name": "DailyRewardModel$$get_LoginStreakCapped",
+      "rva": "0x2137918",
+      "bytesSha256": "24b29ade6e29c4128bc030af3e6abd930a35defecc5ed49771d02850e71f989d"
+    }
+  },
+  "formulas": {
+    "streak": "currentDayNumber − 1",
+    "cappedStreak": "clamp(currentDayNumber − 1, 0, 14)",
+    "state": "同一天→COLLECTED_TODAY；上次＋1 天＝今天→CAN_COLLECT_TODAY；上次＋1 天＜今天→MISSED_COLLECT_RESET；其餘→ERROR",
+    "damage": "AllDamage ×= Pow(DamagePerConsecutiveLoginDay, 狀態 ≤ COLLECTED_TODAY ? 夾住的連續天數 : 0)"
+  },
+  "traces": {
+    "bonus": [
+      [
+        "const",
+        "w8, #1",
+        "0x2137808"
+      ],
+      [
+        "call",
+        "GetCollected",
+        "0x2137824"
+      ],
+      [
+        "cmp",
+        "w0, #1",
+        "0x213782c"
+      ],
+      [
+        "field",
+        "currentDayNumber",
+        "0x2137834"
+      ],
+      [
+        "const",
+        "w9, #0xe",
+        "0x2137838"
+      ],
+      [
+        "sub",
+        "w8, w8, #1",
+        "0x213783c"
+      ],
+      [
+        "cmp",
+        "w8, #0xe",
+        "0x2137840"
+      ],
+      [
+        "csel",
+        "w8, w8, w9, lt",
+        "0x2137844"
+      ],
+      [
+        "bic",
+        "w8, w8, w8, asr #31",
+        "0x2137848"
+      ],
+      [
+        "scvtf",
+        "d8, w8",
+        "0x213784c"
+      ],
+      [
+        "const",
+        "w1, #0x8e",
+        "0x2137864"
+      ],
+      [
+        "GetBonus",
+        "DamagePerConsecutiveLoginDay",
+        "0x2137870"
+      ],
+      [
+        "fmov",
+        "d0, d8",
+        "0x2137898"
+      ],
+      [
+        "call",
+        "Pow",
+        "0x21378a4"
+      ],
+      [
+        "const",
+        "w1, #0x25",
+        "0x21378cc"
+      ],
+      [
+        "const",
+        "w4, #1",
+        "0x21378dc"
+      ],
+      [
+        "call",
+        "ModifyBonus",
+        "0x21378f0"
+      ]
+    ],
+    "state": [
+      [
+        "const",
+        "w8, #1",
+        "0x2137220"
+      ],
+      [
+        "call",
+        "get_Date",
+        "0x2137264"
+      ],
+      [
+        "call",
+        "get_currentTimeUTC",
+        "0x2137284"
+      ],
+      [
+        "call",
+        "get_Date",
+        "0x2137294"
+      ],
+      [
+        "call",
+        "op_Equality",
+        "0x21372a4"
+      ],
+      [
+        "const",
+        "w0, #1",
+        "0x21372ac"
+      ],
+      [
+        "call",
+        "get_Date",
+        "0x21372dc"
+      ],
+      [
+        "fmov",
+        "d0, #1.00000000",
+        "0x21372e0"
+      ],
+      [
+        "call",
+        "AddDays",
+        "0x21372f0"
+      ],
+      [
+        "call",
+        "get_currentTimeUTC",
+        "0x2137310"
+      ],
+      [
+        "call",
+        "get_Date",
+        "0x2137320"
+      ],
+      [
+        "call",
+        "op_Equality",
+        "0x2137330"
+      ],
+      [
+        "call",
+        "get_Date",
+        "0x2137368"
+      ],
+      [
+        "fmov",
+        "d0, #1.00000000",
+        "0x213736c"
+      ],
+      [
+        "call",
+        "AddDays",
+        "0x213737c"
+      ],
+      [
+        "call",
+        "get_currentTimeUTC",
+        "0x213739c"
+      ],
+      [
+        "call",
+        "get_Date",
+        "0x21373ac"
+      ],
+      [
+        "call",
+        "op_LessThan",
+        "0x21373bc"
+      ],
+      [
+        "const",
+        "w8, #2",
+        "0x21373c0"
+      ],
+      [
+        "cinc",
+        "w0, w8, eq",
+        "0x21373c8"
+      ]
+    ],
+    "streak": [
+      [
+        "field",
+        "currentDayNumber",
+        "0x213790c"
+      ],
+      [
+        "sub",
+        "w0, w8, #1",
+        "0x2137910"
+      ]
+    ],
+    "capped": [
+      [
+        "field",
+        "currentDayNumber",
+        "0x2137918"
+      ],
+      [
+        "const",
+        "w8, #0xe",
+        "0x213791c"
+      ],
+      [
+        "sub",
+        "w9, w9, #1",
+        "0x2137920"
+      ],
+      [
+        "cmp",
+        "w9, #0xe",
+        "0x2137924"
+      ],
+      [
+        "csel",
+        "w8, w9, w8, lt",
+        "0x2137928"
+      ],
+      [
+        "bic",
+        "w0, w8, w8, asr #31",
+        "0x213792c"
+      ]
+    ]
+  },
+  "states": {
+    "CAN_COLLECT_TODAY": 0,
+    "COLLECTED_TODAY": 1,
+    "MISSED_COLLECT_RESET": 2,
+    "ERROR": 3
+  },
+  "numberOfDays": 14,
+  "bonusIds": {
+    "DamagePerConsecutiveLoginDay": 142,
+    "AllDamage": 37
+  },
+  "limits": [
+    "日期比較走的是 UTC 的日界（GHTime.currentTimeUTC 取 .Date），本專案的每日重置用的是本地日界，兩者在時區上會差一段。這一項沿用本專案既有的做法，沒有為了這個加成單獨改成 UTC。",
+    "ERROR(3) 這個狀態要上次領取的日期在未來才會出現（改過系統時間或存檔被動過）。它與 MISSED 一樣讓加成失效，所以本專案不分這兩者。",
+    "currentDayNumber 怎麼在領取時前進與重置，不在這個方法裡；本文件只釘住「它減一夾住之後當指數」與「狀態決定要不要用」這兩件事。"
+  ]
+}

@@ -80,6 +80,12 @@ function normaliseTallies(s:State){
  }
  // 這一波的隻數是 2.16.0 才有的欄位，舊存檔沒有；沒有就是一隻，不是零隻。
  if(!Number.isFinite(t.multi)||t.multi<1)t.multi=1;
+ // 連續登入天數是 2.20.0 才有的欄位。舊存檔沒有這個數字，但它們有 loginAt——
+ // 上次領取如果就在昨天或今天，至少算一天，否則從零算起。
+ if(!Number.isFinite(t.loginStreak)||t.loginStreak<0){
+  const today=dayAt(s.last);
+  t.loginStreak=t.loginAt===today||t.loginAt===today-1?1:0;
+ }else t.loginStreak=Math.trunc(t.loginStreak);
  // 寶箱效果剩幾關是 2.18.0 才有的欄位。
  if(!Number.isFinite(t.chestStages)||t.chestStages<0)t.chestStages=0;
  else t.chestStages=Math.trunc(t.chestStages);
@@ -580,6 +586,8 @@ export function apply(s:State,a:Action){advance(s,a.at);const i=a.index??0,t=s.t
  if(a.type==='daily'&&t.loginAt!==dayAt(s.last)){
   const reward=TT2_DAILY[t.loginIndex%TT2_DAILY.length];
   if(reward.reward==='Equipment'&&t.inventory.length+reward.amount>100)return s;
+  // 上次領取就在昨天才算接下去；隔了一天以上就從第一天重新算起。
+  t.loginStreak=t.loginAt===dayAt(s.last)-1?t.loginStreak+1:1;
   t.loginAt=dayAt(s.last);t.loginIndex++;t.eventCurrency+=reward.event;
   if(reward.reward==='MonsterGold')earnGold(s,scale(goldReward(s,'monster'),reward.amount));
   if(reward.reward==='Diamonds')s.diamonds+=reward.amount;
@@ -662,6 +670,23 @@ export function helperWeaponDamage(s:State,resolve=stateResolver(s)){
  const levels=s.weapons.reduce((a,b)=>a+b,0)+s.tt2!.extraWeapons.reduce((a,b)=>a+b,0);
  return levels?levels*perWeapon:1;
 }
+// 連續登入天數。原生 DailyRewardModel.UpdateBonusPerConsecutiveLoginDay 把「連續幾天」當**指數**：
+// AllDamage ×= Pow(DamagePerConsecutiveLoginDay, 狀態完好 ? 夾住的天數 : 0)。
+// 指數先設 0，只有在 GetCollected() ≤ COLLECTED_TODAY 時才換成 LoginStreakCapped，
+// 所以**漏領一天整項就變成 1**，不是慢慢遞減。夾的上限是 NUMBER_OF_DAYS。
+// 見 reference/tt2/8.2.0/login-streak-evidence.json。
+export const LOGIN_STREAK_DAYS=14;
+/** 連續登入還算不算數：今天領過，或上次領取就在昨天。 */
+export function loginStreakIntact(s:State){
+ const t=s.tt2!,today=dayAt(s.last);
+ return t.loginAt===today||t.loginAt===today-1;}
+/** 目前算數的連續天數，已經夾在 0 與上限之間。 */
+export function loginStreakDays(s:State){
+ return loginStreakIntact(s)?Math.min(LOGIN_STREAK_DAYS,Math.max(0,s.tt2!.loginStreak-1)):0;}
+export function consecutiveLoginDamage(s:State,resolve=stateResolver(s)){
+ const per=resolve('DamagePerConsecutiveLoginDay');
+ return per===1?1:per**loginStreakDays(s);
+}
 // Native StatsTrackedBonusModel.UpdateDamagePerMaxStageBonus: AllDamage x= bonus ** max stage.
 // GHDouble.Pow(value, exponent) takes the bonus as the base, so the stage is the exponent. The
 // bonus is multiplicative, so with no source it reads 1 and 1 ** anything is still 1.
@@ -676,7 +701,7 @@ export function buildDamage(s:State,build:Build):Big{const t=s.tt2!,active=s.act
  let n=power(swordMasterBaseDamage(s),tapCoefficient);
  if(c)n=multiply(n,power(bigMax({...ONE},rawHeroDps(s)),c));
  const resolve=stateResolver(s);
- n=scale(n,buildMultiplier(t,build,active,isBoss(s),resolve)*gearBonus(s,0)*manaCapDamage(s,resolve)*helperWeaponDamage(s,resolve)*maxStageDamage(s,resolve));
+ n=scale(n,buildMultiplier(t,build,active,isBoss(s),resolve)*gearBonus(s,0)*manaCapDamage(s,resolve)*helperWeaponDamage(s,resolve)*maxStageDamage(s,resolve)*consecutiveLoginDamage(s,resolve));
  if(s.active[3]>s.last)n=scale(n,skillPower(s,3)**({tap:1,pet:1,ship:0,clone:.6,dagger:1,heavenly:1,goldGun:.45}[build]));
  if(s.active[2]>s.last)n=scale(n,skillPower(s,2)**c);
  if(build==='clone')n=scale(n,SKILL_DATA[0].amount[skillStep(0,s.skillLevels[0])]);

@@ -2,16 +2,16 @@
 
 每個核心公式的來源登記表：資料表、原生方法、原生預設值，或明確標記為 7.5 基準沿用、專案自訂或伺服器供給。
 
-版本 8.2.0。共 40 條公式、109 項來源條目。
+版本 8.2.0。共 41 條公式、115 項來源條目。
 
 | 狀態 | 意義 | 條目數 |
 |---|---|---|
-| `native` | 由反組譯證據確認 | 36 |
+| `native` | 由反組譯證據確認 | 39 |
 | `table` | 取自安裝包資料表 | 19 |
 | `default` | 原生靜態預設值，線上可覆蓋 | 21 |
 | `baseline-75` | 沿用 7.5 基準，尚未對 8.2 核實 | 0 |
 | `table-differs` | 安裝包有值但引擎目前未照做 | 12 |
-| `invented` | 本專案自訂，安裝包未提供 | 17 |
+| `invented` | 本專案自訂，安裝包未提供 | 20 |
 | `server` | 原生為伺服器變數，安裝包未帶值 | 4 |
 
 ## 逐條登記
@@ -256,6 +256,19 @@ max(1, floor(關卡^1.7 ÷ 100 × PrestigeRelic))，最高關卡到 60 後開放
 | 加法型加成代入 基礎值＋增量 | `default` | `reference/tt2/8.2.0/bonus-defaults-evidence.json`；加法型加成的基礎值就是 SetDefaultBonuses 設的那一個：ShadowCloneSkillAttackRate 為 4，天賦提供 0.1–0.95 的增量，兩者相加。 |
 | 離散到 100ms 模擬步長，單次傷害為每秒總量 ÷ 速率 | `invented` | 引擎以 100ms 為一步推進，攻擊只在步邊界結算，因此單次間隔最多晚 100ms；計時器累加間隔而非改設為當下時間，長期平均頻率與速率一致。另外 buildDamage 是本專案的「每秒總量」近似，所以一次攻擊取其 ÷ 速率——節奏照原生，總量不因節奏改變，但單次數值不是原生的單次傷害。 |
 | 特殊攻擊未實作 | `server` | ShadowCloneSkillSpecialRate 與 SpecialChance 另有節奏與機率，本專案未實作，也未核實其倍率來源。 |
+
+### loginStreak · `lib/engine.ts` 的 `consecutiveLoginDamage`
+
+所有傷害 ×= DamagePerConsecutiveLoginDay ^ (連續登入天數夾在 0–14)，漏領一天指數直接歸零
+
+| 來源條目 | 狀態 | 依據 |
+|---|---|---|
+| 天數是指數，不是乘數 | `native` | `reference/tt2/8.2.0/login-streak-evidence.json`；DailyRewardModel.UpdateBonusPerConsecutiveLoginDay 是這個加成唯一的取值點：指數先被設成 0，只有在 GetCollected() ≤ COLLECTED_TODAY 時才換成 LoginStreakCapped，然後 AllDamage ×= Pow(該加成, 指數)。GHDouble.Pow 的第一個參數是底數，所以天數在指數上。 |
+| 中斷就整項失效，不是遞減 | `native` | `reference/tt2/8.2.0/login-streak-evidence.json`；GetCollected 比對上次領取的日期與今天：同一天是 COLLECTED_TODAY(1)，上次＋1 天＝今天是 CAN_COLLECT_TODAY(0)，上次＋1 天＜今天是 MISSED_COLLECT_RESET(2)，其餘是 ERROR(3)。只有前兩者讓加成生效，所以**漏掉一天就變成 Pow(加成, 0) = 1**。 |
+| 上限 14 天 | `native` | `reference/tt2/8.2.0/login-streak-evidence.json`；LoginStreak 是 currentDayNumber − 1，LoginStreakCapped 再夾到 [0, NUMBER_OF_DAYS]，而 NUMBER_OF_DAYS 是 DailyRewardModel 的常數 14——和十四天獎勵表用的是同一個常數。加成自己的說明也寫著 max 14。 |
+| 日界用本專案既有的本地日，不是 UTC | `invented` | 原生的日期比較走 GHTime.currentTimeUTC 的 .Date，本專案的每日重置一直用本地日界（dayAt）。這一項沿用既有做法，沒有為了它單獨改成 UTC，差別只在跨日的那一小時落在哪裡。 |
+| 不分 MISSED 與 ERROR | `invented` | 原生的 ERROR(3) 要上次領取的日期在未來才會出現（改過系統時間或存檔被動過），它與 MISSED(2) 一樣讓加成失效，所以本專案只判斷「上次領取是不是今天或昨天」，不分這兩種。 |
+| 連續天數怎麼前進與重置 | `invented` | 原生的 currentDayNumber 在哪裡前進與重置不在那個方法裡，沒有一併解出來。本專案在領取獎勵時判斷：上次領取就在昨天就加一，否則從 1 重新算起。這與 GetCollected 的三個狀態一致，但不是從原生讀出來的。 |
 
 ### fairies · `lib/engine.ts` 的 `rollExtraFairies`
 

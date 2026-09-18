@@ -450,6 +450,35 @@ FORMULAS = [
               entry(part='特殊攻擊未實作', status='server',
                     note='ShadowCloneSkillSpecialRate 與 SpecialChance 另有節奏與機率，'
                          '本專案未實作，也未核實其倍率來源。')]),
+    entry(id='loginStreak', module='lib/engine.ts', export='consecutiveLoginDamage',
+          expression='所有傷害 ×= DamagePerConsecutiveLoginDay ^ (連續登入天數夾在 0–14)，漏領一天指數直接歸零',
+          parts=[
+              entry(part='天數是指數，不是乘數', status='native', ref='login-streak-evidence.json',
+                    note='DailyRewardModel.UpdateBonusPerConsecutiveLoginDay 是這個加成唯一的取值點：'
+                         '指數先被設成 0，只有在 GetCollected() ≤ COLLECTED_TODAY 時才換成 '
+                         'LoginStreakCapped，然後 AllDamage ×= Pow(該加成, 指數)。'
+                         'GHDouble.Pow 的第一個參數是底數，所以天數在指數上。'),
+              entry(part='中斷就整項失效，不是遞減', status='native', ref='login-streak-evidence.json',
+                    note='GetCollected 比對上次領取的日期與今天：同一天是 COLLECTED_TODAY(1)，'
+                         '上次＋1 天＝今天是 CAN_COLLECT_TODAY(0)，上次＋1 天＜今天是 '
+                         'MISSED_COLLECT_RESET(2)，其餘是 ERROR(3)。只有前兩者讓加成生效，'
+                         '所以**漏掉一天就變成 Pow(加成, 0) = 1**。'),
+              entry(part='上限 14 天', status='native', ref='login-streak-evidence.json',
+                    note='LoginStreak 是 currentDayNumber − 1，LoginStreakCapped 再夾到 '
+                         '[0, NUMBER_OF_DAYS]，而 NUMBER_OF_DAYS 是 DailyRewardModel 的常數 14——'
+                         '和十四天獎勵表用的是同一個常數。加成自己的說明也寫著 max 14。'),
+              entry(part='日界用本專案既有的本地日，不是 UTC', status='invented',
+                    note='原生的日期比較走 GHTime.currentTimeUTC 的 .Date，本專案的每日重置一直'
+                         '用本地日界（dayAt）。這一項沿用既有做法，沒有為了它單獨改成 UTC，'
+                         '差別只在跨日的那一小時落在哪裡。'),
+              entry(part='不分 MISSED 與 ERROR', status='invented',
+                    note='原生的 ERROR(3) 要上次領取的日期在未來才會出現（改過系統時間或存檔被動過），'
+                         '它與 MISSED(2) 一樣讓加成失效，所以本專案只判斷「上次領取是不是今天或昨天」，'
+                         '不分這兩種。'),
+              entry(part='連續天數怎麼前進與重置', status='invented',
+                    note='原生的 currentDayNumber 在哪裡前進與重置不在那個方法裡，沒有一併解出來。'
+                         '本專案在領取獎勵時判斷：上次領取就在昨天就加一，否則從 1 重新算起。'
+                         '這與 GetCollected 的三個狀態一致，但不是從原生讀出來的。')]),
     entry(id='fairies', module='lib/engine.ts', export='rollExtraFairies',
           expression='領一次妖精必得一隻，之後最多七隻額外的：每一隻各擲一次 Random < FairySpawnChance × AllProbabilityBoost，中了就多一隻並把機率乘 0.5，沒中就結束；最高關卡要先到第 10 關才有妖精',
           parts=[
@@ -715,7 +744,7 @@ NOT_FORMULAS = {
         'manaCapDamage', 'helperWeaponDamage', 'maxStageDamage', 'skillCap', 'cloakedStageSkip', 'stateResolver', 'effectResolver',
         'multiMonsterMaxCount', 'multiMonsterGold',
         'chestChance', 'megaBombMaxStacks', 'megaBombStackLength', 'chestersonActive',
-        'fairiesUnlocked',
+        'fairiesUnlocked', 'loginStreakIntact', 'loginStreakDays',
         'monsterCount', 'unlockedSkills', 'skillStep', 'discoveryCost', 'craftPrice', 'buildMultiplier', 'manaRegen', 'achievementTier',
         'advanceEggs', 'playerUpgradeCost', 'playerBaseDamage', 'themeIndex', 'goldReward', 'health', 'heroDps',
         'cost', 'critChance', 'manaMax', 'bossDuration', 'relicGain', 'evolveCost', 'buildDamage', 'skillPower',
@@ -726,7 +755,7 @@ NOT_FORMULAS = {
         'HEROES', 'SKILLS', 'SKILL_DATA', 'SKILL_ORDER', 'TT2_RULESET', 'bonusDefinitions',
         'EFFECT_LABELS', 'effectLabel', 'BUILD_COEFFICIENTS', 'PLAYER_DEFAULTS', 'RESOURCE_PERKS',
         'EGG_INTERVAL', 'PENDING_HERO_EFFECTS', 'heroSkills', 'THEME_STAGES', 'TT2_THEMES', 'HELPER_DEFAULTS',
-        'BONUS_DEFAULTS', 'MANA_DEFAULTS', 'PRESTIGE_DEFAULTS', 'MULTI_MONSTER_MIN', 'MEGA_BOMB', 'CHESTERSON', 'FAIRY',
+        'BONUS_DEFAULTS', 'MANA_DEFAULTS', 'PRESTIGE_DEFAULTS', 'MULTI_MONSTER_MIN', 'MEGA_BOMB', 'CHESTERSON', 'FAIRY', 'LOGIN_STREAK_DAYS',
         'HERO_LEVEL_CAP', 'PLAYER_LEVEL_CAP', 'UNMEASURED_ACHIEVEMENTS', 'UNMEASURED_DAILY_TASKS',
         'DAILY_TASK_PAID', 'cap'],
     'arithmetic': [
