@@ -193,6 +193,19 @@ FORMULAS = [
                          '來源分別是「鐵匠」與「武器大師」兩套傳說套裝，都可製作。'
                          'DamagePerHelperWeaponMult 在本專案沒有來源，故不接。'),
               entry(part='主動技能倍率', status='table', ref='ActiveSkillInfo.json')]),
+    entry(id='cloaking', module='lib/engine.ts', export='cloakedStageSkip',
+          expression='每次擊殺：若 目前關卡 ≤ 最高關卡 + 1 且 隨機值 < CloakedSkipChance，跳關數 += CloakedSkipAmount',
+          parts=[
+              entry(part='觸發條件與順序', status='native', ref='cloaking-evidence.json',
+                    note='原生 StageLogic.OnMonsterDeath 依序呼叫 Cloaking.get_IsCloaking、RollCloaking、'
+                         'GetCloakingStagesSkipped。**順序就是規則**：先看能不能潛行才擲骰。'
+                         'get_IsCloaking 是「天賦已解鎖」且「目前關卡 ≤ GetCloakingEndStage()」，'
+                         '後者是本季最高關卡加上 CloakedStageDuration，'
+                         '所以潛行只在重打已推過的關卡時有用，不會越過自己的紀錄。'),
+              entry(part='持續關數 1', status='table', ref='SkillTreeInfo2.0.json',
+                    note='天賦「潛行」的第四個加成欄（BonusTypeD＝CloakedStageDuration、BonusAmountD＝1）。'
+                         '**本專案的天賦執行時資料只匯了前兩個加成欄**，所以這個值直接取自參考資料表。'
+                         '同一個缺口影響 13 個天賦的第四個加成，已記在 ROADMAP 待補。')]),
     entry(id='skillValues', module='lib/engine.ts', export='skillPower',
           expression='技能等級對應的倍率 × 對應加成 × 全主動技能加成',
           parts=[entry(part='各級倍率、持續、冷卻與魔力', status='table', ref='ActiveSkillInfo.json'),
@@ -552,7 +565,7 @@ NOT_FORMULAS = {
         'canDiscover', 'canBuyTalent', 'discoveryPool', 'drawArtifact', 'collectGear', 'dropGear', 'craftSet',
         'awardPet', 'heroPowerBoost', 'heroSkillValue', 'equipmentEffect', 'equipmentValue',
         'artifactCost', 'skillCost', 'skillDuration', 'skillCooldown', 'skillMana', 'critMultiplier',
-        'manaCapDamage', 'helperWeaponDamage', 'maxStageDamage', 'skillCap', 'stateResolver', 'effectResolver',
+        'manaCapDamage', 'helperWeaponDamage', 'maxStageDamage', 'skillCap', 'cloakedStageSkip', 'stateResolver', 'effectResolver',
         'monsterCount', 'unlockedSkills', 'skillStep', 'discoveryCost', 'craftPrice', 'buildMultiplier', 'manaRegen', 'achievementTier',
         'advanceEggs', 'playerUpgradeCost', 'playerBaseDamage', 'themeIndex', 'goldReward', 'health', 'heroDps',
         'cost', 'critChance', 'manaMax', 'bossDuration', 'relicGain', 'evolveCost', 'buildDamage', 'skillPower',

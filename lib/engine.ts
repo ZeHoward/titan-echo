@@ -361,11 +361,27 @@ function clearStage(s:State,cleared:number){
  const points=Math.max(0,Math.floor(s.best/50)-1);
  if(points>s.tt2!.earnedPoints){s.tt2!.points+=points-s.tt2!.earnedPoints;s.tt2!.earnedPoints=points;}}
 // 被跳過的泰坦與關卡照樣給金幣：原生分別走 GetNonBossSplashGoldDrop 與 GetBossSplashGoldDrop。
+// Native Cloaking, read off StageLogic.OnMonsterDeath: after each kill, if the player is cloaking
+// and a roll comes in under CloakedSkipChance, CloakedSkipAmount stages are added to the skip.
+// IsCloaking is "the talent is unlocked and the current stage is no further than the season's best
+// plus CloakedStageDuration" - so it only helps while re-clearing ground already taken.
+//
+// CloakedStageDuration is the talent's fourth bonus column, and this project's talent data only
+// carries the first two, so the native table value of 1 is used directly. The same gap hides a
+// fourth bonus on twelve other talents; recorded in ROADMAP.md rather than papered over here.
+const CLOAKED_STAGE_DURATION=1;
+export function cloakedStageSkip(s:State,resolve=stateResolver(s)){
+ const chance=resolve('CloakedSkipChance');
+ if(chance<=0)return 0;
+ if(s.stage>s.best+CLOAKED_STAGE_DURATION)return 0;
+ if(tt2Random(s.tt2!)>=chance)return 0;
+ return Math.max(0,Math.floor(resolve('CloakedSkipAmount')));
+}
 function applySkips(s:State,source:SkipSource){
  if(!isBoss(s)&&!s.farming){
   const room=Math.max(0,monsterCount(s)-1-s.kills),skipped=Math.min(titanSkip(s,source),room);
   for(let n=0;n<skipped;n++){earnGold(s,goldReward(s,'monster'));s.totalKills++;s.daily.kills++;s.kills++;}}
- const stages=stageSkip(s,source);
+ const stages=stageSkip(s,source)+cloakedStageSkip(s);
  for(let n=0;n<stages&&s.stage<STAGE_CAP;n++){
   earnGold(s,goldReward(s,'boss'));s.bossKills++;clearStage(s,s.stage);}}
 function damage(s:State,hit:Big,source?:SkipSource){if(compare(hit,{...ZERO})<=0)return;s.hp=subtract(s.hp,hit);if(compare(s.hp,{...ZERO})>0)return;

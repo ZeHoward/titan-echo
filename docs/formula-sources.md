@@ -2,12 +2,12 @@
 
 每個核心公式的來源登記表：資料表、原生方法、原生預設值，或明確標記為 7.5 基準沿用、專案自訂或伺服器供給。
 
-版本 8.2.0。共 35 條公式、84 項來源條目。
+版本 8.2.0。共 36 條公式、86 項來源條目。
 
 | 狀態 | 意義 | 條目數 |
 |---|---|---|
-| `native` | 由反組譯證據確認 | 25 |
-| `table` | 取自安裝包資料表 | 18 |
+| `native` | 由反組譯證據確認 | 26 |
+| `table` | 取自安裝包資料表 | 19 |
 | `default` | 原生靜態預設值，線上可覆蓋 | 16 |
 | `baseline-75` | 沿用 7.5 基準，尚未對 8.2 核實 | 0 |
 | `table-differs` | 安裝包有值但引擎目前未照做 | 12 |
@@ -135,6 +135,15 @@ round(8 + 關卡 × 148 ÷ (32000 + 關卡))
 | 最高關卡的傷害乘數 | `native` | `reference/tt2/8.2.0/count-bonus-evidence.json`；原生 StatsTrackedBonusModel.UpdateDamagePerMaxStageBonus 以本季最高關卡對 DamagePerMaxStage 取次方後寫進 AllDamage，只有一次 Pow。來源是「游牧」神話套裝（1.00005），第 2000 關 ×1.11、關卡上限 98000 時 ×134。 |
 | 集齊套裝數與英雄武器總等級的傷害乘數 | `native` | `reference/tt2/8.2.0/count-bonus-evidence.json`；兩條都寫回 AllDamage，但算術不同。EquipmentModel.EquipmentSetCountBonusHandler 是**次方**：DamagePerEquipmentSet ^ 集齊的套裝數（乘法型加成沒有來源時是 1，1 的任何次方仍是 1，所以不需要中性值比對）。HelperModel.RefreshDamagePerHelperWeaponBonus 是**乘法且沒有加 1**：武器總等級 × DamagePerHelperWeapon，總等級為 0 或加成等於中性值時整個不套用。**總等級低時原生就會讓傷害變低**（每級 0.1、總等級 5 時是 ×0.5）；原生沒有夾下限，而總等級只會往上累積，所以照原生保留。來源分別是「鐵匠」與「武器大師」兩套傳說套裝，都可製作。DamagePerHelperWeaponMult 在本專案沒有來源，故不接。 |
 | 主動技能倍率 | `table` | `reference/tt2/8.2.0/ActiveSkillInfo.json` |
+
+### cloaking · `lib/engine.ts` 的 `cloakedStageSkip`
+
+每次擊殺：若 目前關卡 ≤ 最高關卡 + 1 且 隨機值 < CloakedSkipChance，跳關數 += CloakedSkipAmount
+
+| 來源條目 | 狀態 | 依據 |
+|---|---|---|
+| 觸發條件與順序 | `native` | `reference/tt2/8.2.0/cloaking-evidence.json`；原生 StageLogic.OnMonsterDeath 依序呼叫 Cloaking.get_IsCloaking、RollCloaking、GetCloakingStagesSkipped。**順序就是規則**：先看能不能潛行才擲骰。get_IsCloaking 是「天賦已解鎖」且「目前關卡 ≤ GetCloakingEndStage()」，後者是本季最高關卡加上 CloakedStageDuration，所以潛行只在重打已推過的關卡時有用，不會越過自己的紀錄。 |
+| 持續關數 1 | `table` | `reference/tt2/8.2.0/SkillTreeInfo2.0.json`；天賦「潛行」的第四個加成欄（BonusTypeD＝CloakedStageDuration、BonusAmountD＝1）。**本專案的天賦執行時資料只匯了前兩個加成欄**，所以這個值直接取自參考資料表。同一個缺口影響 13 個天賦的第四個加成，已記在 ROADMAP 待補。 |
 
 ### skillValues · `lib/engine.ts` 的 `skillPower`
 

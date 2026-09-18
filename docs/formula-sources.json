@@ -281,6 +281,26 @@
       ]
     },
     {
+      "id": "cloaking",
+      "module": "lib/engine.ts",
+      "export": "cloakedStageSkip",
+      "expression": "每次擊殺：若 目前關卡 ≤ 最高關卡 + 1 且 隨機值 < CloakedSkipChance，跳關數 += CloakedSkipAmount",
+      "parts": [
+        {
+          "part": "觸發條件與順序",
+          "status": "native",
+          "ref": "cloaking-evidence.json",
+          "note": "原生 StageLogic.OnMonsterDeath 依序呼叫 Cloaking.get_IsCloaking、RollCloaking、GetCloakingStagesSkipped。**順序就是規則**：先看能不能潛行才擲骰。get_IsCloaking 是「天賦已解鎖」且「目前關卡 ≤ GetCloakingEndStage()」，後者是本季最高關卡加上 CloakedStageDuration，所以潛行只在重打已推過的關卡時有用，不會越過自己的紀錄。"
+        },
+        {
+          "part": "持續關數 1",
+          "status": "table",
+          "ref": "SkillTreeInfo2.0.json",
+          "note": "天賦「潛行」的第四個加成欄（BonusTypeD＝CloakedStageDuration、BonusAmountD＝1）。**本專案的天賦執行時資料只匯了前兩個加成欄**，所以這個值直接取自參考資料表。同一個缺口影響 13 個天賦的第四個加成，已記在 ROADMAP 待補。"
+        }
+      ]
+    },
+    {
       "id": "skillValues",
       "module": "lib/engine.ts",
       "export": "skillPower",
@@ -844,6 +864,7 @@
       "helperWeaponDamage",
       "maxStageDamage",
       "skillCap",
+      "cloakedStageSkip",
       "stateResolver",
       "effectResolver",
       "monsterCount",

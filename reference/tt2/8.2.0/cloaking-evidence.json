@@ -1,0 +1,54 @@
+{
+  "version": "8.2.0",
+  "role": "潛行跳關：什麼時候可以觸發、機率多少、跳幾關。",
+  "packageSha256": "8d78c9aa877e6c0b291ee2116cab855bd26c59c1d080bc654f88ecf1ff268b5f",
+  "binarySha256": "c13fc44321b1214c71ab0277a134fc3401fd7392c74a0bbb3935671c55a8713a",
+  "scriptSha256": "62c2eeb8472bb107de516e4b6ae69d3dcdf5013fb1caa87223d82a54dd203f8b",
+  "finding": "StageLogic.OnMonsterDeath 依序呼叫 Cloaking.get_IsCloaking、RollCloaking、GetCloakingStagesSkipped，命中的關數累加到該次擊殺的跳關總數上。**順序就是規則**：先看能不能潛行，再擲骰。get_IsCloaking 是「天賦已解鎖」且「目前關卡 ≤ GetCloakingEndStage()」，而 GetCloakingEndStage 取 PlayerModel.GetSeasonalMaxStageReached 再加上 CloakedStageDuration（資料表值 1）。所以潛行只在**重打已經推過的關卡**時有用，不會幫玩家越過自己的紀錄。RollCloaking 是 Random.value < CloakedSkipChance；GetCloakingStagesSkipped 回傳 CloakedSkipAmount。",
+  "expression": "每次擊殺：若 目前關卡 ≤ 最高關卡 + CloakedStageDuration 且 隨機值 < CloakedSkipChance，跳關數 += CloakedSkipAmount",
+  "methods": {
+    "StageLogic.<>c__DisplayClass39_0$$<OnMonsterDeath>b__0": "0x2546ad4",
+    "Cloaking$$get_IsCloaking": "0x2510e7c",
+    "Cloaking$$RollCloaking": "0x251147c",
+    "Cloaking$$GetCloakingStagesSkipped": "0x2511648",
+    "Cloaking$$GetCloakingEndStage": "0x2511580",
+    "BonusModel$$GetBonus": "0x2714c88",
+    "PlayerModel$$GetSeasonalMaxStageReached": "0x23df798",
+    "SkillTreeSkill$$get_IsUnlocked": "0x2518070"
+  },
+  "callOrder": [
+    "Cloaking$$get_IsCloaking",
+    "Cloaking$$RollCloaking",
+    "Cloaking$$GetCloakingStagesSkipped"
+  ],
+  "stageDuration": {
+    "column": "CloakedStageDuration",
+    "value": 1,
+    "talent": "Cloaking"
+  },
+  "talentFourthColumnGap": {
+    "note": "本專案的天賦資料只匯了前兩個加成欄，第四欄（BonusTypeD／BonusAmountD）沒有進來。潛行的持續關數就在那一欄，所以這裡直接用參考資料表的值。同一個缺口影響下列天賦，它們各自的第四個加成目前都沒有來源。",
+    "count": 13,
+    "talents": [
+      "TwilightGathering",
+      "PetDmg",
+      "BossDmgQTE",
+      "HelperDmgQTE",
+      "CloneSkillBoost",
+      "CritSkillBoost",
+      "ForbiddenContract",
+      "PuppetMaster",
+      "UltraDagger",
+      "Cloaking",
+      "PoisonedBlade",
+      "CriticalHit",
+      "RoyalContract"
+    ]
+  },
+  "consequence": "本專案接上了這條：天賦「潛行」的機率由 3% 到 40%（九級），每次命中跳 10 關，套裝「匕首盜賊」與「盜賊」另外各加 2 與 1 關。**只在目前關卡不超過最高關卡加一的時候生效**，所以它加速的是蛻變之後重推的那一段，不會讓人越過自己的最高紀錄。",
+  "limits": [
+    "方法存在、位址、呼叫順序與它們讀的加成是事實",
+    "CloakedStageDuration 取自參考資料表而不是本專案的執行時資料，因為第四欄尚未匯入",
+    "本表不涵蓋潛行的視覺表現（CloakDevice）"
+  ]
+}
