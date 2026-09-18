@@ -3,7 +3,8 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { referenceRoot } from '../tools/reference-validation.mjs';
 import { fresh, apply, titanSkip, stageSkip, monsterCount, isBoss } from '../lib/engine.ts';
-import { TT2_TREE } from '../lib/tt2-rules.ts';
+import { TT2_TREE, bonusDefinitions } from '../lib/tt2-rules.ts';
+import { TT2_ARTIFACTS, TT2_SETS, TT2_PETS } from '../lib/tt2-data.ts';
 import { fromNumber, toNumber } from '../lib/big-number.ts';
 
 const evidence = JSON.parse(readFileSync(new URL('skip-evidence.json', referenceRoot), 'utf8'));
@@ -139,4 +140,41 @@ test('不帶跳過天賦的一般推進沒有被這次改動影響', () => {
   assert.equal(s.stage, 2);
   assert.equal(s.kills, 0);
   assert.equal(isBoss(s), false);
+});
+
+test('濺射在 8.2 沒有獨立的機制：DoSplashOverkill 只是表現層', () => {
+  const splash = evidence.splash;
+  assert.match(splash.overkillMethod.rva, /^0x[0-9a-f]+$/);
+  assert.match(splash.overkillMethod.role, /表現層/);
+  // 兩個看起來很關鍵的濺射參數帶著預設值，卻沒有任何讀取點——照著它們做等於自己發明規則。
+  assert.deepEqual(Object.keys(splash.deadServerVars).sort(),
+    ['maxDefaultSplashKills', 'maxSpecialSplashKills']);
+  for (const fact of Object.values(splash.deadServerVars)) assert.equal(fact.readers, 0);
+});
+
+test('證據宣稱「沒有來源」的濺射加成，在資料表裡真的沒有來源', () => {
+  // 這條把證據檔的說法拿回資料表對一次，避免證據自己說自己對。
+  for (const name of evidence.splash.enumOnlyBonuses) {
+    assert.equal(bonusDefinitions[name], undefined, `${name} 其實在加成資料表裡`);
+  }
+  for (const name of evidence.splash.noSourceBonuses) {
+    assert.ok(bonusDefinitions[name], `${name} 不在加成資料表裡`);
+    const sources = [
+      TT2_TREE.filter(k => k.effects.some(e => e.type === name)).length,
+      TT2_ARTIFACTS.filter(a => a.effect === name).length,
+      TT2_SETS.filter(k => k.effect === name).length,
+      TT2_PETS.filter(k => k.effect === name).length,
+    ];
+    assert.deepEqual(sources, [0, 0, 0, 0], `${name} 其實有來源，應該要實作`);
+  }
+});
+
+test('引擎沒有替沒有來源的濺射加成憑空長出實作', () => {
+  const Q = String.fromCharCode(39);
+  const engine = readFileSync(new URL('../lib/engine.ts', import.meta.url), 'utf8');
+  for (const name of ['SplashGold', 'PetAttackQTESplashCount', 'ShadowCloneBossSplash',
+                      'maxDefaultSplashKills', 'maxSpecialSplashKills']) {
+    // 引擎引用加成的形式是帶引號的字串，只比子字串會被註解裡的方法名誤判。
+    assert.ok(!engine.includes(Q + name + Q), `lib/engine.ts 出現了 ${name}`);
+  }
 });

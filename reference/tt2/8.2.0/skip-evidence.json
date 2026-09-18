@@ -127,6 +127,32 @@
     "titanSkipMult": "TitanSkipMult",
     "stageSkip": "StageSkip"
   },
+  "splash": {
+    "finding": "濺射在 8.2 沒有獨立於跳泰坦之外的機制。DoSplashOverkill 只呼叫掉金幣動畫（CoinsQueue.DropInGame）與「擊殺 N 隻」浮動文字（FadingTextQueue.ShowMultiMonsterText），結算在它之前就做完了；濺射的隻數就是 GetTitanSkip 的結果。",
+    "overkillMethod": {
+      "method": "StageLogic$$DoSplashOverkill",
+      "rva": "0x2544650",
+      "role": "表現層：掉金幣動畫與浮動文字，沒有任何結算。"
+    },
+    "enumOnlyBonuses": [
+      "SplashGold",
+      "PetAttackQTESplashCount"
+    ],
+    "noSourceBonuses": [
+      "ShadowCloneBossSplash"
+    ],
+    "deadServerVars": {
+      "maxDefaultSplashKills": {
+        "offset": "0xd64",
+        "readers": 0
+      },
+      "maxSpecialSplashKills": {
+        "offset": "0xd68",
+        "readers": 0
+      }
+    },
+    "note": "SplashGold 與 PetAttackQTESplashCount 只存在於 BonusType 列舉，不在加成資料表裡；ShadowCloneBossSplash 在資料表裡，但沒有任何天賦、神器、套裝或寵物給它，恆為 0。SorcererStageSkipMult 的說明提到 BurstSkillSplashCountMult 與 ShadowCloneSplashCountMult，這兩個名字在 BonusType 列舉裡根本不存在——說明文字是過時的。maxDefaultSplashKills 與 maxSpecialSplashKills 帶著預設值 3 與 928，但整個映像沒有任何 32 位元 LDR 讀它們，在 8.2 是死的。"
+  },
   "implementableHere": [
     "ActiveSkillHeavenlyStrike",
     "ActiveSkillShadowClone",

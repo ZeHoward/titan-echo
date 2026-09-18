@@ -4,7 +4,10 @@ Titan skip and stage skip are not one global stat. StageLogic.GetTitanSkip and G
 switch on DamageType and add a source-specific bonus to a shared base, so Heavenly Strike, the pet
 and the Shadow Clone each carry their own skip. StatsPanelScript.InitTitanAndStageSkipStats spells
 the same pairing out as (BonusType, DamageType) literals, which is where the table below comes from;
-this audit reads both and fails if they stop agreeing. It also pins where the skips fire
+this audit reads both and fails if they stop agreeing. It also settles what is left of "splash":
+DoSplashOverkill only drives the coin animation and the floating text, and the splash-count bonuses
+that would matter here either are not in the data table or have no source, so for the sources this
+project simulates the splash *is* the titan skip. It also pins where the skips fire
 (OnMonsterDeath, not on every hit) and that skipped titans and stages still pay gold.
 """
 import hashlib
@@ -26,6 +29,7 @@ GET_TITAN_SKIP = 0x2544194
 GET_STAGE_SKIP = 0x25448E4
 DO_TITAN_SKIP = 0x2544080
 DO_STAGE_SKIP = 0x2544724
+DO_OVERKILL = 0x2544650
 INIT_STATS = 0x255BC64
 CREATE_TITAN_ITEM = 0x255D834
 CREATE_STAGE_ITEM = 0x255DB30
@@ -35,6 +39,7 @@ IDENTITIES = {
     GET_STAGE_SKIP: 'StageLogic$$GetStageSkip',
     DO_TITAN_SKIP: 'StageLogic$$DoSplashTitanSkip',
     DO_STAGE_SKIP: 'StageLogic$$DoSplashStageSkip',
+    DO_OVERKILL: 'StageLogic$$DoSplashOverkill',
     INIT_STATS: 'StatsPanelScript$$InitTitanAndStageSkipStats',
     CREATE_TITAN_ITEM: 'StatsPanelScript$$CreateTitanSkipItem',
     CREATE_STAGE_ITEM: 'StatsPanelScript$$CreateStageSkipItem',
@@ -47,6 +52,12 @@ BASE_STAGE_SKIP = 443      # BonusType.StageSkip
 # The damage sources this project actually simulates, so the evidence says what is implementable
 # rather than only what exists. The rest belong to builds that are not written yet (B03-B09).
 IMPLEMENTED = {'ActiveSkillHeavenlyStrike', 'Pet', 'ActiveSkillShadowClone'}
+
+# 帶著編譯期預設值、但整個映像沒有任何 32 位元 LDR 讀它們的欄位。名字看起來像濺射的關鍵參數，
+# 實際上在 8.2 是死的——照著它們實作等於自己發明規則。
+DEAD_SPLASH_VARS = {'maxDefaultSplashKills': 0xD64, 'maxSpecialSplashKills': 0xD68}
+# 對照組：這個位移確定有讀取點，用來證明掃描本身有效而不是永遠回空。
+LIVE_CONTROL = ('equipmentStageMin', 0x4AC, 'EquipmentModel$$IsEquipmentDropBoss')
 
 
 def sha(data):
@@ -174,10 +185,34 @@ def main():
         if name not in stage_calls:
             raise ValueError(f'DoSplashStageSkip no longer uses {name}')
 
+    # 兩個 Do* 都在結算完之後才叫 DoSplashOverkill，而它只播動畫與浮動文字：
+    # 沒有 GetBonus、沒有金幣結算、沒有擊殺計數，所以濺射沒有額外的機制藏在那裡。
+    overkill = set(calls(DO_OVERKILL))
+    for name in ('CoinsQueue$$DropInGame', 'FadingTextQueue$$ShowMultiMonsterText'):
+        if name not in overkill:
+            raise ValueError(f'DoSplashOverkill no longer calls {name}')
+    for name in overkill:
+        if 'GetBonus' in name or 'GoldDrop' in name or 'enemyKillCount' in name:
+            raise ValueError(f'DoSplashOverkill grew real bookkeeping: {name}')
+
     # Both are reached from OnMonsterDeath only, which is what makes "on a kill" a fact.
-    def callers(target):
-        found = set()
+    # The same walk answers "does anything read this server variable", so it happens once.
+    def owner(site, starts):
+        low, high, best = 0, len(starts)-1, None
+        while low <= high:
+            middle = (low+high)//2
+            if starts[middle] <= site:
+                best, low = starts[middle], middle+1
+            else:
+                high = middle-1
+        return by_address.get(best, "?")
+
+    def walk(bl_targets, ldr_offsets):
         starts = addresses
+        bl_hits = {target: set() for target in bl_targets}
+        # ldr Wt, [Xn, #imm12*4] is 1011 1001 01 imm12 Rn Rt, fixed apart from the registers.
+        wanted = {0xB9400000 | ((offset // 4) << 10): offset for offset in ldr_offsets}
+        ldr_hits = {offset: set() for offset in ldr_offsets}
         for segment in elf.iter_segments():
             if segment['p_type'] != 'PT_LOAD':
                 continue
@@ -185,28 +220,42 @@ def main():
             data = binary[segment['p_offset']:segment['p_offset']+segment['p_filesz']]
             for offset in range(0, len(data)-3, 4):
                 word = struct.unpack_from('<I', data, offset)[0]
-                if word >> 26 != 0b100101:
-                    continue
-                immediate = word & 0x03FFFFFF
-                if immediate & 0x02000000:
-                    immediate -= 0x04000000
                 site = base + offset
-                if site + immediate*4 != target:
+                if word >> 26 == 0b100101:
+                    immediate = word & 0x03FFFFFF
+                    if immediate & 0x02000000:
+                        immediate -= 0x04000000
+                    target = site + immediate*4
+                    if target in bl_hits:
+                        bl_hits[target].add(owner(site, starts))
                     continue
-                low, high, best = 0, len(starts)-1, None
-                while low <= high:
-                    middle = (low+high)//2
-                    if starts[middle] <= site:
-                        best, low = starts[middle], middle+1
-                    else:
-                        high = middle-1
-                found.add(by_address.get(best, '?'))
+                masked = word & 0xFFFFFC00
+                if masked in wanted:
+                    ldr_hits[wanted[masked]].add(owner(site, starts))
+        return bl_hits, ldr_hits
+
+    bl_hits, ldr_hits = walk(
+        [DO_TITAN_SKIP, DO_STAGE_SKIP],
+        list(DEAD_SPLASH_VARS.values()) + [LIVE_CONTROL[1]])
+
+    def callers(target):
+        found = bl_hits[target]
         return found
 
     for target, label in ((DO_TITAN_SKIP, 'DoSplashTitanSkip'), (DO_STAGE_SKIP, 'DoSplashStageSkip')):
         sites = callers(target)
         if not sites or not all('OnMonsterDeath' in name for name in sites):
             raise ValueError(f'{label} is no longer reached only from OnMonsterDeath: {sorted(sites)}')
+
+    # 對照組先證明掃描會找到東西，再宣稱那兩個欄位沒有人讀。
+    control_name, control_offset, control_reader = LIVE_CONTROL
+    if control_reader not in ldr_hits[control_offset]:
+        raise ValueError(f'the LDR scan is broken: it cannot even find {control_reader}')
+    dead = {}
+    for name, offset in DEAD_SPLASH_VARS.items():
+        if ldr_hits[offset]:
+            raise ValueError(f'{name} now has readers: {sorted(ldr_hits[offset])}')
+        dead[name] = {'offset': hex(offset), 'readers': 0}
 
     document = {
         'version': '8.2.0',
@@ -238,6 +287,22 @@ def main():
         'baseBonuses': {'titanSkip': bonus_names[BASE_TITAN_SKIP],
                         'titanSkipMult': bonus_names[TITAN_SKIP_MULT],
                         'stageSkip': bonus_names[BASE_STAGE_SKIP]},
+        'splash': {
+            'finding': '濺射在 8.2 沒有獨立於跳泰坦之外的機制。DoSplashOverkill 只呼叫掉金幣動畫'
+                       '（CoinsQueue.DropInGame）與「擊殺 N 隻」浮動文字（FadingTextQueue.ShowMultiMonsterText），'
+                       '結算在它之前就做完了；濺射的隻數就是 GetTitanSkip 的結果。',
+            'overkillMethod': {'method': IDENTITIES[DO_OVERKILL], 'rva': hex(DO_OVERKILL),
+                               'role': '表現層：掉金幣動畫與浮動文字，沒有任何結算。'},
+            'enumOnlyBonuses': ['SplashGold', 'PetAttackQTESplashCount'],
+            'noSourceBonuses': ['ShadowCloneBossSplash'],
+            'deadServerVars': dead,
+            'note': 'SplashGold 與 PetAttackQTESplashCount 只存在於 BonusType 列舉，不在加成資料表裡；'
+                    'ShadowCloneBossSplash 在資料表裡，但沒有任何天賦、神器、套裝或寵物給它，恆為 0。'
+                    'SorcererStageSkipMult 的說明提到 BurstSkillSplashCountMult 與 ShadowCloneSplashCountMult，'
+                    '這兩個名字在 BonusType 列舉裡根本不存在——說明文字是過時的。'
+                    'maxDefaultSplashKills 與 maxSpecialSplashKills 帶著預設值 3 與 928，'
+                    '但整個映像沒有任何 32 位元 LDR 讀它們，在 8.2 是死的。',
+        },
         'implementableHere': sorted(IMPLEMENTED),
         'consequence': '本專案有天堂聖擊、寵物攻擊與影分身三個來源，這三條可以照做；'
                        '公會飛船、匕首、金槍與寵物爆發的跳過要等對應流派實作，'
@@ -249,7 +314,7 @@ def main():
     target.write_text(json.dumps(document, ensure_ascii=False, indent=2)+'\n', encoding='utf-8', newline='\n')
     usable = sum(1 for row in titan + stage if row['implementedHere'])
     print(f'Verified the skip boundary: {len(titan)} titan sources, {len(stage)} stage sources, '
-          f'{usable} of them implementable here')
+          f'{usable} of them implementable here; {len(dead)} splash server variables have no reader')
 
 
 if __name__ == '__main__':
