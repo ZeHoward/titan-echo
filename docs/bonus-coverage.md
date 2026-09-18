@@ -7,22 +7,21 @@
 
 | 判定 | 意義 | 個數 |
 |---|---|---|
-| `live` | 專案有來源、引擎有讀：正常運作。 | 120 |
-| `dead-native-uses-it` | 專案有來源、引擎沒讀，而且原生有取值點：**這些是可以接上的**。 | 113 |
+| `live` | 專案有來源、引擎有讀：正常運作。 | 122 |
+| `dead-native-uses-it` | 專案有來源、引擎沒讀，而且原生有取值點：**這些是可以接上的**。 | 111 |
 | `dead-native-ignores-it` | 專案有來源、引擎沒讀，原生也掃不到取值點：接了大概也沒有依據。 | 64 |
 | `read-without-source` | 引擎有讀，但專案沒有任何來源會給：恆為中性值，等來源出現才會生效。 | 18 |
 | `not-in-project` | 專案沒有來源，引擎也沒讀。 | 481 |
 
-## 優先：落在已實作系統的（49）
+## 優先：落在已實作系統的（47）
 
 原生有取值點、我們沒讀，而且**不屬於尚未實作的流派**——這些是可以直接接上的。
 依**原生讀取它的類別**分組，類別名就說明了它屬於哪個系統。
 
-### StageLogic（5）
+### StageLogic（4）
 
 - `DualPetStageSkipMult` ← TT2_SETS
 - `ManaMonsterSpawnChance` ← TT2_ARTIFACTS、TT2_SETS、TT2_TREE
-- `PetQTEStageSkip` ← TT2_TREE
 - `ShadowCloneBossSplash` ← TT2_SETS
 - `StageSkipMonsterSpawnChance` ← TT2_ARTIFACTS、TT2_SETS
 
@@ -144,10 +143,6 @@
 ### PetInfo（1）
 
 - `ExoticPetDamageEffect` ← TT2_ARTIFACTS
-
-### PetModel（1）
-
-- `PetAttackQTEDamage` ← TT2_TREE
 
 ### PetModel / StatsPanelScript（1）
 

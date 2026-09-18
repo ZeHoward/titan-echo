@@ -76,8 +76,8 @@
     }
   },
   "counts": {
-    "live": 120,
-    "dead-native-uses-it": 113,
+    "live": 122,
+    "dead-native-uses-it": 111,
     "dead-native-ignores-it": 64,
     "read-without-source": 18,
     "not-in-project": 481
@@ -4439,16 +4439,16 @@
     },
     {
       "id": "PetAttackQTEDamage",
-      "verdict": "dead-native-uses-it",
+      "verdict": "live",
       "sources": [
         "TT2_TREE"
       ],
-      "engineReads": false,
+      "engineReads": true,
       "nativeReaders": [
         "PetModel"
       ],
       "indirect": null,
-      "priority": true
+      "priority": false
     },
     {
       "id": "PetAttackQTECooldown",
@@ -4581,16 +4581,16 @@
     },
     {
       "id": "PetQTEStageSkip",
-      "verdict": "dead-native-uses-it",
+      "verdict": "live",
       "sources": [
         "TT2_TREE"
       ],
-      "engineReads": false,
+      "engineReads": true,
       "nativeReaders": [
         "StageLogic"
       ],
       "indirect": null,
-      "priority": true
+      "priority": false
     },
     {
       "id": "PetTapCountToAttack",

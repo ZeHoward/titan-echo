@@ -1,0 +1,1167 @@
+{
+  "version": "8.2.0",
+  "role": "寵物的三種 QTE：雷霆爆發可以做、閃現做了也不會生效、米達斯之心缺兩個金幣前置。",
+  "packageSha256": "8d78c9aa877e6c0b291ee2116cab855bd26c59c1d080bc654f88ecf1ff268b5f",
+  "binarySha256": "c13fc44321b1214c71ab0277a134fc3401fd7392c74a0bbb3935671c55a8713a",
+  "scriptSha256": "62c2eeb8472bb107de516e4b6ae69d3dcdf5013fb1caa87223d82a54dd203f8b",
+  "finding": "雷霆爆發（PetAttack，QTEType 1）的傷害是 PetModel.GetQTEBigAttack＝GetNormalAttack(true) × Bonus(PetAttackQTEDamage)，沒有別的因子；GetNormalAttack 只在致命一擊執行中時多乘 GetAverageDeadlyStrike × Bonus(DeadlyDamagePet)。要連打幾下由 PetController.BonusUpdatedHandler 維護：max(1, mashQTENumTaps(30) − Bonus(PetTapCountToAttack))，MashQTETapHandler 每次點擊比對 currentQTETapCount 與 mashQTENumTaps，到了才 ApplyChargedBonus、GetQTEBigAttack、QueueMonsterAttack 與 HandleQTEFinished。那一擊帶的是 DamageType.PetBurst（11），**GetStageSkip 對它有一支（StageSkip ＋ PetQTEStageSkip），GetTitanSkip 完全沒有那一支**——它落在 default，而 default 路上的結果槽在方法開頭就被清成 0，所以雷霆爆發一隻泰坦都不跳。閃現（PetBoss，QTEType 3）走 ApplyChargedBonus：它先讀 Bonus(PetBossQTEDuration) 與 0 比大小，**不大於 0 就直接返回**；過了才把 Bonus(PetBossQTEDamage) 經 ModifyBonus 疊到 PetDamage 上，並在 duration 秒後移除。米達斯之心（PetGold，QTEType 2）走 PetModel.GetPetHomGold，它以 GetAverageBossGoldDrop 起算，再乘 Pow(GetStageScaleGoldAmount, 指數)、Bonus(PetGoldQTEAmount) 與 petHomGoldMult，點石成金開著時還要再乘 Pow(HandOfMidasSkillAmount, petMidasBonusExpo)。",
+  "consequence": "本專案接上雷霆爆發：學了天賦「雷霆爆發」之後，QTE 冷卻結束時寵物進入連打狀態，打滿 max(1, 30 − PetTapCountToAttack) 下就放一次 PetAttackQTEDamage 倍的大攻擊，那一擊照原生吃跳關、不吃跳泰坦。閃現與米達斯之心**刻意不做**，理由分別記在 blocked 與 deferred。",
+  "methods": {
+    "bigAttack": {
+      "name": "PetModel$$GetQTEBigAttack",
+      "rva": "0x2391e40",
+      "bytesSha256": "2cddf0188ba5670593e41357f76ac620d7d3c0f286da09370926a49fef8695f3"
+    },
+    "normalAttack": {
+      "name": "PetModel$$GetNormalAttack",
+      "rva": "0x2390488",
+      "bytesSha256": "0d9563dbbfd68c5bd22e4dd79b2b2880aef9349947abd38e9f83f0db46245ec9"
+    },
+    "tapCount": {
+      "name": "PetController$$BonusUpdatedHandler",
+      "rva": "0x2395bd0",
+      "bytesSha256": "b8e5193b294ff24d57672265544e704254d4daa34fc760348ff326b9322d92ae"
+    },
+    "mashTap": {
+      "name": "PetController$$MashQTETapHandler",
+      "rva": "0x2396324",
+      "bytesSha256": "b9cf6036dc99034c788a66812b96739517ee38ce219c35ae78665c81727a08f4"
+    },
+    "chargedBonus": {
+      "name": "PetController$$ApplyChargedBonus",
+      "rva": "0x2394f7c",
+      "bytesSha256": "871583056cc0ec26c9dbb0a7f58416edb8f742c04df436fc89f34d7ea4b05949"
+    },
+    "petReady": {
+      "name": "PetController$$OnQTEReady",
+      "rva": "0x2396d68",
+      "bytesSha256": "48bbc46bd80052def044d50b4f1c34830a0bc7d5141cce61541687c379424e4c"
+    },
+    "homGold": {
+      "name": "PetModel$$GetPetHomGold",
+      "rva": "0x239ed20",
+      "bytesSha256": "a2bb376aefacf5c1958490e20e497e20fc45d52624bc8ad517810c0dace26a55"
+    },
+    "titanSkip": {
+      "name": "StageLogic$$GetTitanSkip",
+      "rva": "0x2544194",
+      "bytesSha256": "e7016d33aa49b5adf99de1b2d26b291b5b57e77b2a665aa5d6656df2fdb1f587"
+    },
+    "stageSkip": {
+      "name": "StageLogic$$GetStageSkip",
+      "rva": "0x25448e4",
+      "bytesSha256": "466b82e0e847e8e68afa72a8ceeb31b66befe9f29a8763b8585a7484359ee4bb"
+    }
+  },
+  "damageTypes": {
+    "Pet": 9,
+    "PetCrit": 10,
+    "PetBurst": 11,
+    "PetBurstCrit": 12
+  },
+  "petQTETypes": {
+    "PetAttack": 1,
+    "PetGold": 2,
+    "PetBoss": 3
+  },
+  "fields": {
+    "mashQTENumTaps": {
+      "offset": "0x50",
+      "type": "int"
+    },
+    "currentTapCount": {
+      "offset": "0x54",
+      "type": "int"
+    },
+    "currentQTETapCount": {
+      "offset": "0x58",
+      "type": "int"
+    },
+    "mashQTEburstReady": {
+      "offset": "0x5c",
+      "type": "bool"
+    },
+    "mashQTEbursting": {
+      "offset": "0x5d",
+      "type": "bool"
+    },
+    "bossQTEburstReady": {
+      "offset": "0x5e",
+      "type": "bool"
+    },
+    "bossQTEbursting": {
+      "offset": "0x5f",
+      "type": "bool"
+    },
+    "goldQTEOn": {
+      "offset": "0x60",
+      "type": "bool"
+    }
+  },
+  "formulas": {
+    "burstDamage": "GetNormalAttack(true) × Bonus(PetAttackQTEDamage)",
+    "normalAttack": "寵物攻擊；致命一擊執行中時再乘 GetAverageDeadlyStrike × Bonus(DeadlyDamagePet)",
+    "mashTaps": "max(1, mashQTENumTaps(30) − Bonus(PetTapCountToAttack))",
+    "burstTitanSkip": "沒有這一支：DamageType.PetBurst 落在 GetTitanSkip 的 default，回 0",
+    "burstStageSkip": "(Bonus(StageSkip) + Bonus(PetQTEStageSkip)) × 倍率，取整數",
+    "flashZipGate": "Bonus(PetBossQTEDuration) > 0 才套用，否則整個方法直接返回",
+    "heartOfGold": "GetAverageBossGoldDrop × Pow(GetStageScaleGoldAmount, petGoldStageScaleExpo) × Bonus(PetGoldQTEAmount) × petHomGoldMult（點石成金開著時再乘 Pow(HandOfMidasSkillAmount, petMidasBonusExpo)）"
+  },
+  "skipArms": {
+    "titanSkip": {
+      "petBurstLandsAt": "0x254459c",
+      "petBurstBonuses": [
+        "TitanSkipMult"
+      ],
+      "sharedWithArmlessTypes": {
+        "PetZip": "0x254459c",
+        "Splash": "0x254459c"
+      },
+      "controlArmPet": [
+        "TitanSkip",
+        "PetAttackTitanSkip"
+      ]
+    },
+    "stageSkip": {
+      "source": "skip-evidence.json 的配對表（GetStageSkip 走跳表，無法逐步走）",
+      "petBurstBonuses": [
+        "StageSkip",
+        "PetQTEStageSkip"
+      ]
+    }
+  },
+  "blocked": {
+    "PetBoss": "閃現（QTEType 3）在本專案做了也不會生效。ApplyChargedBonus 的第一件事就是拿 Bonus(PetBossQTEDuration) 與 0 比大小，不大於 0 就返回，連 PetBossQTEDamage 都不會被套用。那個加成是加法型的秒數（中性值 0），而本專案匯入的加成資料表裡**沒有任何天賦、神器、套裝或寵物給它**，所以閘門永遠關著。天賦「閃現」給的是 PetBossQTEDamage 與 PetQTECooldownMult，不是 duration。"
+  },
+  "deferred": {
+    "PetGold": "米達斯之心（QTEType 2）不是做不了，是缺前置：GetPetHomGold 需要 MonsterModel.GetAverageBossGoldDrop 與 PlayerModel.GetStageScaleGoldAmount，這兩條金幣公式本專案都還沒還原。GetStageScaleGoldAmount 同時也是妖精金幣缺的四項之一，做掉它會一併改動妖精的金幣數額，屬於獨立的一段工作。"
+  },
+  "traces": {
+    "bigAttack": [
+      [
+        "call",
+        "GetNormalAttack",
+        "0x2391e98"
+      ],
+      [
+        "GetBonus",
+        "PetAttackQTEDamage",
+        "0x2391ebc"
+      ],
+      [
+        "call",
+        "op_Multiply",
+        "0x2391f00"
+      ]
+    ],
+    "normalAttack": [
+      [
+        "call",
+        "op_Multiply",
+        "0x2390568"
+      ],
+      [
+        "call",
+        "IsSkillActive",
+        "0x239058c"
+      ],
+      [
+        "call",
+        "GetAverageDeadlyStrike",
+        "0x23905f0"
+      ],
+      [
+        "GetBonus",
+        "DeadlyDamagePet",
+        "0x2390614"
+      ],
+      [
+        "call",
+        "op_Multiply",
+        "0x2390658"
+      ],
+      [
+        "call",
+        "op_Multiply",
+        "0x239068c"
+      ]
+    ],
+    "tapCount": [
+      [
+        "cmp",
+        "w21, #0x15e",
+        "0x2395c18"
+      ],
+      [
+        "cmp",
+        "w21, #0x174",
+        "0x2395c20"
+      ],
+      [
+        "static",
+        "mashQTENumTaps",
+        "0x2395c5c"
+      ],
+      [
+        "call",
+        "op_Explicit->int",
+        "0x2395c90"
+      ],
+      [
+        "sub",
+        "w8, w20, w0",
+        "0x2395c94"
+      ],
+      [
+        "cmp",
+        "w8, #1",
+        "0x2395c98"
+      ],
+      [
+        "csinc",
+        "w8, w8, wzr, gt",
+        "0x2395c9c"
+      ],
+      [
+        "call",
+        "CheckAndEnableAutoAttack",
+        "0x2395ccc"
+      ]
+    ],
+    "mashTap": [
+      [
+        "field",
+        "currentQTETapCount",
+        "0x23963a0"
+      ],
+      [
+        "field",
+        "mashQTENumTaps",
+        "0x23963a4"
+      ],
+      [
+        "cmp",
+        "w8, w9",
+        "0x23963a8"
+      ],
+      [
+        "cmp",
+        "w8, #1",
+        "0x23963c4"
+      ],
+      [
+        "scvtf",
+        "s0, w9",
+        "0x23963cc"
+      ],
+      [
+        "scvtf",
+        "s3, w8",
+        "0x23963d4"
+      ],
+      [
+        "fdiv",
+        "s2, s0, s1",
+        "0x23963d8"
+      ],
+      [
+        "fdiv",
+        "s0, s0, s1",
+        "0x23963e0"
+      ],
+      [
+        "call",
+        "PlaySound",
+        "0x2396420"
+      ],
+      [
+        "field",
+        "currentQTETapCount",
+        "0x239642c"
+      ],
+      [
+        "field",
+        "mashQTENumTaps",
+        "0x2396430"
+      ],
+      [
+        "scvtf",
+        "s0, s0",
+        "0x239643c"
+      ],
+      [
+        "scvtf",
+        "s1, s1",
+        "0x2396440"
+      ],
+      [
+        "fdiv",
+        "s0, s0, s1",
+        "0x2396448"
+      ],
+      [
+        "call",
+        "PetQTECharge",
+        "0x2396450"
+      ],
+      [
+        "field",
+        "mashQTEburstReady",
+        "0x2396454"
+      ],
+      [
+        "field",
+        "mashQTEburstReady",
+        "0x239645c"
+      ],
+      [
+        "field",
+        "mashQTEbursting",
+        "0x2396478"
+      ],
+      [
+        "call",
+        "ApplyChargedBonus",
+        "0x2396484"
+      ],
+      [
+        "call",
+        "GetQTEBigAttack",
+        "0x23964b8"
+      ],
+      [
+        "call",
+        "QueueMonsterAttack",
+        "0x23964e8"
+      ],
+      [
+        "call",
+        "NotifyPetAttack",
+        "0x23964f0"
+      ],
+      [
+        "call",
+        "op_Inequality",
+        "0x2396520"
+      ],
+      [
+        "call",
+        "Stop",
+        "0x2396534"
+      ],
+      [
+        "call",
+        "PlaySound",
+        "0x239656c"
+      ],
+      [
+        "call",
+        ".ctor",
+        "0x23965a4"
+      ],
+      [
+        "call",
+        "PetQTEBurst",
+        "0x23965b8"
+      ],
+      [
+        "call",
+        "HandleQTEFinished",
+        "0x23965d8"
+      ],
+      [
+        "call",
+        "PetQTEChargeComplete",
+        "0x2396600"
+      ],
+      [
+        "call",
+        "PetQTECharge",
+        "0x2396618"
+      ],
+      [
+        "call",
+        "PlaySound",
+        "0x2396640"
+      ],
+      [
+        "call",
+        "PlaySound",
+        "0x239667c"
+      ]
+    ],
+    "chargedBonus": [
+      [
+        "GetBonus",
+        "PetBossQTEDuration",
+        "0x239500c"
+      ],
+      [
+        "call",
+        "op_Implicit",
+        "0x239502c"
+      ],
+      [
+        "call",
+        "op_GreaterThan",
+        "0x239505c"
+      ],
+      [
+        "GetBonus",
+        "PetBossQTEDamage",
+        "0x239507c"
+      ],
+      [
+        "ModifyBonus",
+        "PetDamage",
+        "0x23950ec"
+      ],
+      [
+        "call",
+        "SetChargedState",
+        "0x2395100"
+      ],
+      [
+        "call",
+        "CancelInvoke",
+        "0x2395118"
+      ],
+      [
+        "GetBonus",
+        "PetBossQTEDuration",
+        "0x2395134"
+      ],
+      [
+        "call",
+        "op_Explicit->float",
+        "0x2395160"
+      ],
+      [
+        "call",
+        "Invoke",
+        "0x2395170"
+      ]
+    ],
+    "petReady": [
+      [
+        "call",
+        "IsQTEUnlocked",
+        "0x2396e08"
+      ],
+      [
+        "call",
+        "op_Inequality",
+        "0x2396e38"
+      ],
+      [
+        "call",
+        "get_gameObject",
+        "0x2396e4c"
+      ],
+      [
+        "call",
+        "get_activeInHierarchy",
+        "0x2396e58"
+      ],
+      [
+        "cmp",
+        "w20, #2",
+        "0x2396e60"
+      ],
+      [
+        "cmp",
+        "w20, #1",
+        "0x2396e68"
+      ],
+      [
+        "call",
+        "get_Now",
+        "0x2396ea8"
+      ],
+      [
+        "call",
+        "GetCurrentMonsterSpawnTime",
+        "0x2396ecc"
+      ],
+      [
+        "call",
+        "AddSeconds",
+        "0x2396f08"
+      ],
+      [
+        "call",
+        "op_LessThan",
+        "0x2396f18"
+      ],
+      [
+        "cmp",
+        "w23, #0",
+        "0x2396f20"
+      ],
+      [
+        "call",
+        "ChangePetState",
+        "0x2396f3c"
+      ],
+      [
+        "field",
+        "goldQTEOn",
+        "0x2396f44"
+      ],
+      [
+        "call",
+        "set_enabled",
+        "0x2396f64"
+      ],
+      [
+        "call",
+        "PetGoldActivate",
+        "0x2396f74"
+      ],
+      [
+        "call",
+        "get_IsAutoActivatePetGoldEnabled",
+        "0x2396f78"
+      ],
+      [
+        "call",
+        "PerformPetGoldTapped",
+        "0x2396f94"
+      ],
+      [
+        "cmp",
+        "w8, #2",
+        "0x2396fb0"
+      ],
+      [
+        "call",
+        "RescheduleCooldown",
+        "0x2396ffc"
+      ]
+    ],
+    "homGold": [
+      [
+        "call",
+        "GetAverageBossGoldDrop",
+        "0x239ee00"
+      ],
+      [
+        "call",
+        "GetStageScaleGoldAmount",
+        "0x239ee28"
+      ],
+      [
+        "call",
+        "Pow",
+        "0x239ee88"
+      ],
+      [
+        "call",
+        "op_Multiply",
+        "0x239eebc"
+      ],
+      [
+        "GetBonus",
+        "PetGoldQTEAmount",
+        "0x239eed8"
+      ],
+      [
+        "call",
+        "op_Multiply",
+        "0x239ef0c"
+      ],
+      [
+        "call",
+        "op_Implicit",
+        "0x239ef24"
+      ],
+      [
+        "call",
+        "op_Multiply",
+        "0x239ef58"
+      ],
+      [
+        "call",
+        "get_Value",
+        "0x239ef78"
+      ],
+      [
+        "call",
+        "Pow",
+        "0x239efec"
+      ],
+      [
+        "call",
+        "op_Multiply",
+        "0x239f020"
+      ],
+      [
+        "call",
+        "IsSkillActive",
+        "0x239f07c"
+      ],
+      [
+        "GetBonus",
+        "HandOfMidasSkillAmount",
+        "0x239f0a4"
+      ]
+    ],
+    "titanSkip": [
+      [
+        "cmp",
+        "w19, #0x16",
+        "0x2544204"
+      ],
+      [
+        "cmp",
+        "w19, #8",
+        "0x2544224"
+      ],
+      [
+        "sub",
+        "w8, w19, #1",
+        "0x254422c"
+      ],
+      [
+        "cmp",
+        "w8, #8",
+        "0x2544230"
+      ],
+      [
+        "GetBonus",
+        "TitanSkip",
+        "0x2544250"
+      ],
+      [
+        "cmp",
+        "w19, #0x1e",
+        "0x2544258"
+      ],
+      [
+        "sub",
+        "w8, w19, #0x19",
+        "0x2544260"
+      ],
+      [
+        "cmp",
+        "w8, #5",
+        "0x2544264"
+      ],
+      [
+        "GetBonus",
+        "TitanSkip",
+        "0x2544284"
+      ],
+      [
+        "GetBonus",
+        "BonusType#113",
+        "0x25442a0"
+      ],
+      [
+        "sub",
+        "w8, w19, #0x1f",
+        "0x25442e4"
+      ],
+      [
+        "cmp",
+        "w8, #2",
+        "0x25442e8"
+      ],
+      [
+        "sub",
+        "w8, w19, #0x25",
+        "0x25442f0"
+      ],
+      [
+        "cmp",
+        "w8, #2",
+        "0x25442f4"
+      ],
+      [
+        "GetBonus",
+        "TitanSkip",
+        "0x2544314"
+      ],
+      [
+        "GetBonus",
+        "BonusType#229",
+        "0x2544330"
+      ],
+      [
+        "sub",
+        "w8, w19, #9",
+        "0x2544374"
+      ],
+      [
+        "cmp",
+        "w8, #2",
+        "0x2544378"
+      ],
+      [
+        "sub",
+        "w8, w19, #0x12",
+        "0x2544380"
+      ],
+      [
+        "cmp",
+        "w8, #2",
+        "0x2544384"
+      ],
+      [
+        "sub",
+        "w8, w19, #0x17",
+        "0x2544390"
+      ],
+      [
+        "cmp",
+        "w8, #2",
+        "0x2544394"
+      ],
+      [
+        "GetBonus",
+        "TitanSkip",
+        "0x25443b4"
+      ],
+      [
+        "GetBonus",
+        "BonusType#407",
+        "0x25443d0"
+      ],
+      [
+        "GetBonus",
+        "TitanSkip",
+        "0x254442c"
+      ],
+      [
+        "GetBonus",
+        "BonusType#520",
+        "0x2544448"
+      ],
+      [
+        "GetBonus",
+        "TitanSkip",
+        "0x25444a4"
+      ],
+      [
+        "GetBonus",
+        "PetAttackTitanSkip",
+        "0x25444c0"
+      ],
+      [
+        "cmp",
+        "w19, #0x28",
+        "0x2544504"
+      ],
+      [
+        "GetBonus",
+        "TitanSkip",
+        "0x2544524"
+      ],
+      [
+        "GetBonus",
+        "BonusType#90",
+        "0x2544540"
+      ],
+      [
+        "call",
+        "op_Addition",
+        "0x2544584"
+      ],
+      [
+        "GetBonus",
+        "TitanSkipMult",
+        "0x25445b0"
+      ],
+      [
+        "call",
+        "op_Multiply",
+        "0x25445f4"
+      ],
+      [
+        "call",
+        "op_Explicit->int",
+        "0x2544610"
+      ],
+      [
+        "call",
+        "op_Implicit",
+        "0x2544644"
+      ]
+    ],
+    "stageSkip": [
+      [
+        "cmp",
+        "w20, #0x28",
+        "0x2544970"
+      ],
+      [
+        "GetBonus",
+        "StageSkip",
+        "0x25449c8"
+      ],
+      [
+        "GetBonus",
+        "BonusType#110",
+        "0x25449e4"
+      ],
+      [
+        "GetBonus",
+        "StageSkip",
+        "0x2544a48"
+      ],
+      [
+        "GetBonus",
+        "PetAttackStageSkip",
+        "0x2544a64"
+      ],
+      [
+        "call",
+        "op_Addition",
+        "0x2544aa8"
+      ],
+      [
+        "GetBonus",
+        "PetQTEStageSkip",
+        "0x2544ac4"
+      ],
+      [
+        "GetBonus",
+        "StageSkip",
+        "0x2544b18"
+      ],
+      [
+        "GetBonus",
+        "BonusType#110",
+        "0x2544b34"
+      ],
+      [
+        "call",
+        "op_Addition",
+        "0x2544b78"
+      ],
+      [
+        "GetBonus",
+        "BonusType#471",
+        "0x2544b94"
+      ],
+      [
+        "GetBonus",
+        "StageSkip",
+        "0x2544be8"
+      ],
+      [
+        "GetBonus",
+        "BonusType#88",
+        "0x2544c04"
+      ],
+      [
+        "call",
+        "op_Addition",
+        "0x2544c48"
+      ],
+      [
+        "GetBonus",
+        "BonusType#89",
+        "0x2544c64"
+      ],
+      [
+        "GetBonus",
+        "StageSkip",
+        "0x2544cb8"
+      ],
+      [
+        "GetBonus",
+        "PetAttackStageSkip",
+        "0x2544cd4"
+      ],
+      [
+        "GetBonus",
+        "StageSkip",
+        "0x2544d38"
+      ],
+      [
+        "GetBonus",
+        "BonusType#405",
+        "0x2544d54"
+      ],
+      [
+        "call",
+        "op_Addition",
+        "0x2544d98"
+      ],
+      [
+        "GetBonus",
+        "BonusType#406",
+        "0x2544db4"
+      ],
+      [
+        "GetBonus",
+        "StageSkip",
+        "0x2544e08"
+      ],
+      [
+        "GetBonus",
+        "BonusType#235",
+        "0x2544e24"
+      ],
+      [
+        "GetBonus",
+        "StageSkip",
+        "0x2544e88"
+      ],
+      [
+        "GetBonus",
+        "BonusType#502",
+        "0x2544ea4"
+      ],
+      [
+        "GetBonus",
+        "StageSkip",
+        "0x2544f08"
+      ],
+      [
+        "GetBonus",
+        "PetAttackStageSkip",
+        "0x2544f24"
+      ],
+      [
+        "call",
+        "op_Addition",
+        "0x2544f68"
+      ],
+      [
+        "GetBonus",
+        "PetQTEStageSkip",
+        "0x2544f84"
+      ],
+      [
+        "call",
+        "op_Addition",
+        "0x2544fb8"
+      ],
+      [
+        "GetBonus",
+        "BonusType#190",
+        "0x2544fd4"
+      ],
+      [
+        "call",
+        "op_Implicit",
+        "0x2545020"
+      ],
+      [
+        "GetBonus",
+        "StageSkip",
+        "0x2545048"
+      ],
+      [
+        "GetBonus",
+        "PetAttackStageSkip",
+        "0x2545064"
+      ],
+      [
+        "call",
+        "op_Addition",
+        "0x25450a8"
+      ],
+      [
+        "GetBonus",
+        "PetQTEStageSkip",
+        "0x25450c4"
+      ],
+      [
+        "call",
+        "op_Addition",
+        "0x25450f8"
+      ],
+      [
+        "GetBonus",
+        "BonusType#189",
+        "0x2545114"
+      ],
+      [
+        "GetBonus",
+        "StageSkip",
+        "0x2545168"
+      ],
+      [
+        "GetBonus",
+        "BonusType#516",
+        "0x2545184"
+      ],
+      [
+        "GetBonus",
+        "StageSkip",
+        "0x25451e8"
+      ],
+      [
+        "GetBonus",
+        "BonusType#516",
+        "0x2545204"
+      ],
+      [
+        "call",
+        "op_Addition",
+        "0x2545248"
+      ],
+      [
+        "call",
+        "op_Implicit",
+        "0x25452a4"
+      ],
+      [
+        "GetBonus",
+        "BonusType#519",
+        "0x25452c0"
+      ],
+      [
+        "call",
+        "op_Multiply",
+        "0x25452f4"
+      ],
+      [
+        "GetBonus",
+        "StageSkip",
+        "0x2545348"
+      ],
+      [
+        "GetBonus",
+        "PetAttackStageSkip",
+        "0x2545364"
+      ],
+      [
+        "call",
+        "op_Addition",
+        "0x25453a8"
+      ],
+      [
+        "GetBonus",
+        "PetQTEStageSkip",
+        "0x25453c4"
+      ],
+      [
+        "call",
+        "op_Addition",
+        "0x25453f8"
+      ],
+      [
+        "GetBonus",
+        "BonusType#190",
+        "0x2545414"
+      ],
+      [
+        "call",
+        "op_Multiply",
+        "0x2545448"
+      ],
+      [
+        "GetBonus",
+        "StageSkip",
+        "0x2545470"
+      ],
+      [
+        "GetBonus",
+        "BonusType#516",
+        "0x254548c"
+      ],
+      [
+        "call",
+        "op_Addition",
+        "0x25454d0"
+      ],
+      [
+        "GetBonus",
+        "BonusType#509",
+        "0x25454ec"
+      ],
+      [
+        "call",
+        "op_Explicit->int",
+        "0x2545508"
+      ],
+      [
+        "scvtf",
+        "s0, w19",
+        "0x2545534"
+      ],
+      [
+        "call",
+        "op_Implicit",
+        "0x2545550"
+      ],
+      [
+        "call",
+        "op_Multiply",
+        "0x2545584"
+      ],
+      [
+        "call",
+        "op_Implicit",
+        "0x25455ac"
+      ],
+      [
+        "GetBonus",
+        "BonusType#519",
+        "0x25455c8"
+      ],
+      [
+        "call",
+        "op_Multiply",
+        "0x25455fc"
+      ],
+      [
+        "GetBonus",
+        "StageSkip",
+        "0x2545650"
+      ],
+      [
+        "GetBonus",
+        "BonusType#228",
+        "0x254566c"
+      ],
+      [
+        "call",
+        "op_Addition",
+        "0x25456b0"
+      ],
+      [
+        "call",
+        "op_Explicit->int",
+        "0x25456ec"
+      ]
+    ]
+  },
+  "statics": {
+    "mashQTENumTaps": {
+      "offset": "0xaf0",
+      "value": 30
+    }
+  },
+  "bonusIds": {
+    "PetAttackQTEDamage": 359,
+    "PetTapCountToAttack": 372,
+    "PetBossQTEDuration": 357,
+    "PetBossQTEDamage": 358,
+    "PetDamage": 352,
+    "PetQTEStageSkip": 371,
+    "PetAttackStageSkip": 362,
+    "PetAttackTitanSkip": 363,
+    "StageSkip": 443,
+    "TitanSkip": 472,
+    "TitanSkipMult": 473,
+    "DeadlyDamagePet": 171,
+    "PetGoldQTEAmount": 366,
+    "HandOfMidasSkillAmount": 255,
+    "PetAutoAttackEnabledOverride": 350,
+    "PetQTEDamage": 370
+  },
+  "limits": [
+    "連打次數的 mashQTENumTaps（30）與本專案平常寵物攻擊的蓄力次數（20）是**兩個不同的數字**：前者是 [ServerVar]，後者是本專案沿用 7.5 的值。不要互相套用。",
+    "原生的 OnQTEReady 對雷霆爆發還有兩個表現層條件（寵物目前的 PetState，以及這隻怪是不是在 petMashQTEStartOfBattleSeconds 秒內剛生成）。本專案沒有場上的寵物實體與 PetState，所以只要求「有出戰中的傷害寵物」，其餘照 QTE 排程走。",
+    "原生的連打是寵物身上獨立的按鈕，本專案沒有場上實體，所以把連打併進戰鬥區的點擊——同一下點擊既打泰坦也算進連打。",
+    "原生另有 DamageType.PetBurstCrit（12）的暴擊版本，本專案的寵物攻擊沒有暴擊分支，所以只用 PetBurst（11）。",
+    "PetQTEDamage（370）在整個映像沒有取值點，套裝給了它也沒有用，因此沒有接。",
+    "PetAttackQTESplashCount 既沒有來源也沒有取值點，2.14.0 的濺射調查已經確認過。",
+    "連打次數的下限 1 **現在驗不出來**：PetTapCountToAttack 唯一的來源是天賦「寵物傷害」，滿級只減 15，碰不到 30，所以 max(1, …) 那一步永遠不會作用。這是這份資料下無法區分，不是測試的漏洞；照原生保留下限，tests/pet-qte.test.mjs 把前提釘住，哪天有來源推得過去就會先轉紅。"
+  ]
+}

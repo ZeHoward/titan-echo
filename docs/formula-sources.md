@@ -2,16 +2,16 @@
 
 每個核心公式的來源登記表：資料表、原生方法、原生預設值，或明確標記為 7.5 基準沿用、專案自訂或伺服器供給。
 
-版本 8.2.0。共 42 條公式、124 項來源條目。
+版本 8.2.0。共 43 條公式、133 項來源條目。
 
 | 狀態 | 意義 | 條目數 |
 |---|---|---|
-| `native` | 由反組譯證據確認 | 45 |
+| `native` | 由反組譯證據確認 | 49 |
 | `table` | 取自安裝包資料表 | 20 |
-| `default` | 原生靜態預設值，線上可覆蓋 | 21 |
+| `default` | 原生靜態預設值，線上可覆蓋 | 22 |
 | `baseline-75` | 沿用 7.5 基準，尚未對 8.2 核實 | 0 |
-| `table-differs` | 安裝包有值但引擎目前未照做 | 13 |
-| `invented` | 本專案自訂，安裝包未提供 | 21 |
+| `table-differs` | 安裝包有值但引擎目前未照做 | 15 |
+| `invented` | 本專案自訂，安裝包未提供 | 23 |
 | `server` | 原生為伺服器變數，安裝包未帶值 | 4 |
 
 ## 逐條登記
@@ -297,6 +297,22 @@ max(1, floor(關卡^1.7 ÷ 100 × PrestigeRelic))，最高關卡到 60 後開放
 | 隨機來源 | `invented` | 原生用 UnityEngine.Random.Range(−1, 1)，本專案改用自己的確定性亂數 tt2Random。期望值同樣是 1，但同一個存檔在原生與本專案不會擲出相同的序列。 |
 | 匕首那一支沒有照做 | `table-differs` | `reference/tt2/8.2.0/qte-evidence.json`；QTEType 7 原生還有條件分支：幻影刃在跑時先扣 StreamOfBladesCooldownReduction，接著乘 UltraDaggerCooldownMult，幻影刃沒在跑且待命匕首數達到 UltraDaggerCount 時再乘 daggerCooldownAutoThrowMult(1.1)。本專案沒有匕首流派，而且 UltraDaggerCount 是**數量不是倍率**，照抄成一串乘法會把數量乘進冷卻裡，所以刻意留空。飛船與兩種契約同理：分支已經解出來並記在證據檔，但沒有消費端。 |
 | 只有妖精接上消費端 | `invented` | 原生的 QTEController 對每個已解鎖的類型都排程，本專案目前只排妖精那一型——寵物的三種與英雄那一種各自需要自己的傷害、金幣與跳關規則，留給後續的段落。 |
+
+### petBurst · `lib/engine.ts` 的 `petBurstDamage`
+
+雷霆爆發：連打 max(1, 30 − PetTapCountToAttack) 下，放一次「平常那一擊 × PetAttackQTEDamage」的大攻擊；那一擊吃跳關但不吃跳泰坦
+
+| 來源條目 | 狀態 | 依據 |
+|---|---|---|
+| 大攻擊的傷害 | `native` | `reference/tt2/8.2.0/pet-qte-evidence.json`；PetModel.GetQTEBigAttack 就是 GetNormalAttack(true) × Bonus(PetAttackQTEDamage)，整個方法只有這一次乘法，沒有別的因子。 |
+| 要連打幾下 | `default` | `reference/tt2/8.2.0/pet-qte-evidence.json`；PetController.BonusUpdatedHandler 在 PetTapCountToAttack 變動時重算 max(1, mashQTENumTaps − 該加成)；mashQTENumTaps 是 [ServerVar] 的編譯期預設值 30，線上可覆蓋。**那個 30 與本專案平常寵物蓄力的 20 是兩個不同的數字**，不要互相套用。 |
+| 不跳泰坦 | `native` | `reference/tt2/8.2.0/pet-qte-evidence.json`；DamageType.PetBurst（11）在 StageLogic.GetTitanSkip 的分派裡**沒有自己的那一支**，落在 default，而結果槽在方法開頭就被 GetBonus 之前的 GHDouble.Zero 填過，所以回 0——連基礎的 TitanSkip 都不加。這一條是把分派區塊抽象執行出來的，並以 DamageType.Pet（確實有那一支）當對照組。 |
+| 跳關 | `native` | `reference/tt2/8.2.0/skip-evidence.json`；GetStageSkip 對 PetBurst 有一支：(StageSkip + PetQTEStageSkip)。那個方法走跳表，無法逐步走，配對來自統計面板的 (BonusType, DamageType) 字面量表，與 skip-evidence.json 同一份事實。 |
+| 連打併進戰鬥區的點擊 | `invented` | 原生的連打是寵物身上獨立的按鈕，本專案沒有場上的寵物實體，所以同一下點擊既打泰坦也算進連打。次數與傷害都與原生一致，差別只在按的是哪一個按鈕。 |
+| ready 的條件簡化 | `invented` | 原生 PetController.OnQTEReady 對這一型還看寵物目前的 PetState，以及這隻怪是不是在 petMashQTEStartOfBattleSeconds（1 秒）內剛生成。本專案沒有 PetState 與場上實體，只要求「有出戰中的傷害寵物」。 |
+| 閃現（PetBoss）沒有做 | `table-differs` | `reference/tt2/8.2.0/pet-qte-evidence.json`；**做了也不會生效。**PetController.ApplyChargedBonus 第一件事就是拿 Bonus(PetBossQTEDuration) 與 0 比大小，不大於 0 就整個返回，連 PetBossQTEDamage 都不會被套用。那個加成是加法型的秒數（中性值 0），而本專案匯入的加成資料表裡沒有任何天賦、神器、套裝或寵物給它——天賦「閃現」給的是 PetBossQTEDamage 與 PetQTECooldownMult，不是 duration。哪天有來源了，tests/pet-qte.test.mjs 會轉紅。 |
+| 米達斯之心（PetGold）沒有做 | `table-differs` | `reference/tt2/8.2.0/pet-qte-evidence.json`；**缺前置，不是做不了。**PetModel.GetPetHomGold 以 MonsterModel.GetAverageBossGoldDrop 起算，再乘 Pow(GetStageScaleGoldAmount, petGoldStageScaleExpo)、Bonus(PetGoldQTEAmount) 與 petHomGoldMult，點石成金開著時還要再乘 Pow(HandOfMidasSkillAmount, petMidasBonusExpo)。前兩條金幣公式本專案都還沒還原，而 GetStageScaleGoldAmount 同時也是妖精金幣缺的四項之一，做掉它會一併改動妖精的金幣，屬於獨立的一段工作。 |
+| PetQTEDamage 沒有接 | `native` | `reference/tt2/8.2.0/pet-qte-evidence.json`；那個加成（370）在整個映像沒有取值點，套裝給了它也沒有用。PetAttackQTESplashCount 則是既沒有來源也沒有取值點，2.14.0 的濺射調查已經確認過。 |
 
 ### chesterson · `lib/engine.ts` 的 `chestersonStackLength`
 
