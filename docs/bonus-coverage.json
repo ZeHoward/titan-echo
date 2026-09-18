@@ -76,8 +76,8 @@
     }
   },
   "counts": {
-    "live": 105,
-    "dead-native-uses-it": 124,
+    "live": 107,
+    "dead-native-uses-it": 122,
     "dead-native-ignores-it": 68,
     "read-without-source": 13,
     "not-in-project": 486
@@ -4200,20 +4200,20 @@
     },
     {
       "id": "MultiMonsters",
-      "verdict": "dead-native-uses-it",
+      "verdict": "live",
       "sources": [
         "TT2_ARTIFACTS",
         "TT2_SETS",
         "TT2_TREE"
       ],
-      "engineReads": false,
+      "engineReads": true,
       "nativeReaders": [
         "BonusModel",
         "InactiveGameplayModel",
         "MonsterController"
       ],
       "indirect": null,
-      "priority": true
+      "priority": false
     },
     {
       "id": "MultiMonstersGold",
@@ -4245,11 +4245,11 @@
     },
     {
       "id": "MultiMonstersMaxCount",
-      "verdict": "dead-native-uses-it",
+      "verdict": "live",
       "sources": [
         "TT2_TREE"
       ],
-      "engineReads": false,
+      "engineReads": true,
       "nativeReaders": [
         "BonusModel",
         "InactiveGameplayModel",
@@ -4257,7 +4257,7 @@
         "PlayerModel"
       ],
       "indirect": null,
-      "priority": true
+      "priority": false
     },
     {
       "id": "NohniComboBoost",

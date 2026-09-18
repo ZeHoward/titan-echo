@@ -17,8 +17,14 @@ def entry(**fields):
 
 FORMULAS = [
     entry(id='monsterHealth', module='lib/engine.ts', export='health',
-          expression='18 × 1.32^(關卡-1) × 頭目倍率 × (1 − MonsterHP 減免)',
+          expression='18 × 1.32^(關卡-1) × 頭目倍率 × 這一波的隻數 × (1 − MonsterHP 減免)',
           parts=[
+              entry(part='多重生成的一波算成同一個血條', status='invented', ref='multi-monster-evidence.json',
+                    note='原生把一波 N 隻各自滿血的泰坦放上場，本專案沒有場上多目標的概念，'
+                         '所以把整波折成一個 N 倍血量的血條。金幣與擊殺數原生本來就是整波一次結算'
+                         '（GetMonsterGoldDrop 收隻數、算 1 + (隻數 − 1) × MultiMonstersGold），'
+                         '因此打完一波的時間、金幣與推進量都與原生一致，差別只在畫面上是一隻還是一群。'
+                         '頭目不參與多重生成，隻數恆為 1。'),
               entry(part='頭目倍率序列 [2,3,4,5,8]', status='table-differs', ref='TitanScalingInfo.json',
                     note='安裝包的 ThemeMultiplierSequence 分四段：關卡 1–5 為 2,3,4,5,8、6–39 為 4,6,8,15,24、'
                          '40–59 為 8,12,16,30,48、60 起回到 2,3,4,5,8，四個來源變體（含 A／B／C）在這四列完全一致。'
@@ -444,6 +450,31 @@ FORMULAS = [
               entry(part='特殊攻擊未實作', status='server',
                     note='ShadowCloneSkillSpecialRate 與 SpecialChance 另有節奏與機率，'
                          '本專案未實作，也未核實其倍率來源。')]),
+    entry(id='multiMonsters', module='lib/engine.ts', export='multiMonsterChance',
+          expression='每次生成擲一次骰，命中機率 min(1, (0.01 ＋ MultiMonsters) × AllProbabilityBoost)，'
+                     '命中則這一波是 trunc(Random[2, 4 ＋ MultiMonstersMaxCount ＋ 1)) 隻，'
+                     '整波金幣乘 1 ＋ (隻數 − 1) × MultiMonstersGold',
+          parts=[
+              entry(part='擲骰、隻數與整波金幣的三段形狀', status='native', ref='multi-monster-evidence.json',
+                    note='MonsterController.SpawnMonster(int, MonsterClass) 取 Random.value 與 '
+                         'Bonus(MultiMonsters) × Bonus(AllProbabilityBoost) 相比，命中後以 '
+                         '(int)Random.Range(minMultiMonsterSpawns, Bonus(MultiMonstersMaxCount) + 1) 取隻數；'
+                         'MonsterModel.GetMonsterGoldDrop(關卡, 類別, 隻數, 變異) 對隻數大於 1 的一波乘上 '
+                         '1 + (隻數 − 1) × Bonus(MultiMonstersGold)。三段的指令序列逐一比對過，'
+                         '另以 BonusModel.GetAverageMultiMonsterSpawn 交叉核對。'),
+              entry(part='機率 0.01、上限 4、下限 2 三個基礎值', status='default',
+                    ref='bonus-defaults-evidence.json',
+                    note='MultiMonsters 與 MultiMonstersMaxCount 是加法型，基礎值由 '
+                         'BonusModel.SetDefaultBonuses 從 [ServerVar] multiMonsterBaseChance（0.01）與 '
+                         'maxMultiMonsterSpawns（4）設入；下限直接讀 minMultiMonsterSpawns（2），'
+                         '它不是加成所以不在那張表裡。MultiMonstersGold 的基礎值也是 1.0，但它是乘法型，'
+                         '1.0 就是中性值，引擎不另外相加以免重複計入。三者都是編譯期預設值，線上可覆蓋。'),
+              entry(part='物件池上限未實作', status='invented',
+                    note='原生取到隻數後還會夾到場上怪物物件池的大小，那是 Unity 的資源上限而非遊戲規則；'
+                         '本專案沒有場上多目標，無對應概念，因此不夾。'),
+              entry(part='擲骰用本專案的 LCG，不是 Unity 的 Random', status='invented',
+                    note='原生走 UnityEngine.Random，本專案一律走可重現的 tt2Random，'
+                         '所以序列不同、長期分布相同。隻數取整同樣是截斷，與原生的 (int) 轉換一致。')]),
     entry(id='perks', module='lib/tt2-perks.ts', export='perkValue',
           expression='增益每層 12 小時獨立計時；魔力藥水提高回復倍率，'
                      '黃金雨依層數縮短自動購買間隔，再乘上 1 − min(AutoBuyHeroesMultDuringMakeItRain, 0.95)',
@@ -580,6 +611,7 @@ NOT_FORMULAS = {
         'awardPet', 'heroPowerBoost', 'heroSkillValue', 'equipmentEffect', 'equipmentValue',
         'artifactCost', 'skillCost', 'skillDuration', 'skillCooldown', 'skillMana', 'critMultiplier',
         'manaCapDamage', 'helperWeaponDamage', 'maxStageDamage', 'skillCap', 'cloakedStageSkip', 'stateResolver', 'effectResolver',
+        'multiMonsterMaxCount', 'multiMonsterGold',
         'monsterCount', 'unlockedSkills', 'skillStep', 'discoveryCost', 'craftPrice', 'buildMultiplier', 'manaRegen', 'achievementTier',
         'advanceEggs', 'playerUpgradeCost', 'playerBaseDamage', 'themeIndex', 'goldReward', 'health', 'heroDps',
         'cost', 'critChance', 'manaMax', 'bossDuration', 'relicGain', 'evolveCost', 'buildDamage', 'skillPower',
@@ -590,7 +622,7 @@ NOT_FORMULAS = {
         'HEROES', 'SKILLS', 'SKILL_DATA', 'SKILL_ORDER', 'TT2_RULESET', 'bonusDefinitions',
         'EFFECT_LABELS', 'effectLabel', 'BUILD_COEFFICIENTS', 'PLAYER_DEFAULTS', 'RESOURCE_PERKS',
         'EGG_INTERVAL', 'PENDING_HERO_EFFECTS', 'heroSkills', 'THEME_STAGES', 'TT2_THEMES', 'HELPER_DEFAULTS',
-        'BONUS_DEFAULTS', 'MANA_DEFAULTS', 'PRESTIGE_DEFAULTS',
+        'BONUS_DEFAULTS', 'MANA_DEFAULTS', 'PRESTIGE_DEFAULTS', 'MULTI_MONSTER_MIN',
         'HERO_LEVEL_CAP', 'PLAYER_LEVEL_CAP', 'UNMEASURED_ACHIEVEMENTS', 'UNMEASURED_DAILY_TASKS',
         'DAILY_TASK_PAID', 'cap'],
     'arithmetic': [

@@ -78,6 +78,8 @@ function normaliseTallies(s:State){
  for(const key of ['chestKills','fairyRewards','heavenlyStrikes','crits','cloneAttacks','equipmentCollected','relicsCollected','perksUsed','tutorialStep','tutorialTaps'] as const){
   if(!Number.isFinite(t[key]))t[key]=0;
  }
+ // 這一波的隻數是 2.16.0 才有的欄位，舊存檔沒有；沒有就是一隻，不是零隻。
+ if(!Number.isFinite(t.multi)||t.multi<1)t.multi=1;
  // Claimed tiers used to be positions in a list this project invented, which was never claimable
  // and never written to. Anything an older build left there names nothing, so it is dropped.
  if(!s.achievements||Array.isArray(s.achievements))s.achievements={};
@@ -123,7 +125,13 @@ export function skillCooldown(s:State,i:number){return SKILLS[i].cooldown*(1-Mat
 // static; live server overrides are unknown. Recorded in
 // reference/tt2/8.2.0/bonus-defaults-evidence.json.
 export const BONUS_DEFAULTS={critChance:Math.fround(.01),chestChance:Math.fround(.01),
- cloneAttackRate:4} as const;
+ cloneAttackRate:4,multiMonsterChance:Math.fround(.01),multiMonsterMaxCount:4} as const;
+// MultiMonstersGold has a base in that table too, but it is 1.0 and the bonus is multiplicative, so
+// it is already this project's neutral value - adding it here would double-count it. The two above
+// are additive, whose neutral value is 0, so they do need their base.
+// Not a bonus at all, so not in that table: the group's lower bound is read straight off the
+// minMultiMonsterSpawns [ServerVar]. Same evidence file as the two bases above it.
+export const MULTI_MONSTER_MIN=2;
 /** The crit boost skill's slot in this project's arrays; natively ActiveSkillID 3. */
 const CRIT_BOOST_SKILL=SKILL_DATA.findIndex(k=>k.id==='CritBoost');
 // Native PlayerModel.RefreshCriticalValues: the multiplier is playerCritMult x Bonus(CritDamage).
@@ -199,7 +207,10 @@ export function monsterCount(s:State){const stage=Math.max(1,s.stage);
  const raw=roundHalfEven(Math.fround(ratio+Math.fround(MONSTER_COUNT.base)));
  return Math.max(1,raw-Math.trunc(stateEffect(s,'MonsterCountPerStage')));}
 export function bossDuration(s:State){return 30+stateEffect(s,'BossTimerDuration');}
-export function health(s:State):Big{return scale(pow(1.32,s.stage-1),18*(isBoss(s)?[2,3,4,5,8][(s.stage-1)%5]:1)*(1-Math.min(.9,stateEffect(s,'MonsterHP'))));}
+// 多重生成的一波是好幾隻各自滿血的泰坦，本專案把它們算成同一個血條：打完一波要花的時間、
+// 拿到的金幣與推進的擊殺數因此都與原生一致。頭目不會多重生成。
+export function health(s:State):Big{const group=isBoss(s)?1:Math.max(1,s.tt2?.multi||1);
+ return scale(pow(1.32,s.stage-1),18*(isBoss(s)?[2,3,4,5,8][(s.stage-1)%5]:1)*group*(1-Math.min(.9,stateEffect(s,'MonsterHP'))));}
 export function isBoss(s:State){return !s.trial&&!s.farming&&s.kills>=monsterCount(s);}
 export function reward(s:State):Big{return goldReward(s,'monster');}
 // APK 8.2.0 ServerVarsModel static default; live server overrides are unknown. The ratio is stored
@@ -352,7 +363,26 @@ export function achievementReward(s:State,index:number){
  const a=TT2_ACHIEVEMENTS[index];if(!a)return 0;
  return a.diamondReward.slice(achievementClaimed(s,index),achievementTier(s,index)).reduce((n,v)=>n+v,0);
 }
-function spawn(s:State){s.hp=health(s);s.bossEnd=isBoss(s)?s.last+bossDuration(s)*1000:0;s.bossWounded=false;s.monster=chooseMonster(s);const id=monsterIndex(s);if(!s.seen.includes(id))s.seen.push(id);}
+// 多重泰坦生成。原生 MonsterController.SpawnMonster 每生成一次擲一次骰，中了就一次放一群上場，
+// 而 MonsterModel.GetMonsterGoldDrop 收到那群的隻數，把整群的金幣一次結算。所以「一波幾隻」
+// 同時決定血量、擊殺數與金幣倍率，這三者在本專案裡也就綁在同一個 s.tt2.multi 上。
+// 見 reference/tt2/8.2.0/multi-monster-evidence.json。
+export function multiMonsterChance(s:State,resolve=stateResolver(s)){
+ return Math.min(1,(BONUS_DEFAULTS.multiMonsterChance+resolve('MultiMonsters'))*resolve('AllProbabilityBoost'));}
+export function multiMonsterMaxCount(s:State,resolve=stateResolver(s)){
+ return Math.max(MULTI_MONSTER_MIN,BONUS_DEFAULTS.multiMonsterMaxCount+resolve('MultiMonstersMaxCount'));}
+/** 這一波的隻數：沒中骰就是一隻，中了就是 [下限, 上限] 之間的一個整數。頭目不參與。 */
+function rollMultiMonsters(s:State){
+ if(isBoss(s))return 1;
+ const resolve=stateResolver(s);
+ if(tt2Random(s.tt2!)>=multiMonsterChance(s,resolve))return 1;
+ // 原生是 (int)Random.Range(min, max+1)：float 版是半開區間，取整後落在 min..max。
+ const span=multiMonsterMaxCount(s,resolve)+1-MULTI_MONSTER_MIN;
+ return Math.max(1,Math.trunc(MULTI_MONSTER_MIN+tt2Random(s.tt2!)*span));}
+/** 一波金幣的倍率：原生只放大額外的那幾隻，所以一隻的一波永遠是 1 倍。 */
+export function multiMonsterGold(s:State,count:number,resolve=stateResolver(s)){
+ return count<2?1:1+(count-1)*resolve('MultiMonstersGold');}
+function spawn(s:State){s.tt2!.multi=rollMultiMonsters(s);s.hp=health(s);s.bossEnd=isBoss(s)?s.last+bossDuration(s)*1000:0;s.bossWounded=false;s.monster=chooseMonster(s);const id=monsterIndex(s);if(!s.seen.includes(id))s.seen.push(id);}
 // 跳泰坦與跳關不是一個全域數值：原生 StageLogic.GetTitanSkip／GetStageSkip 都以傷害來源分支，
 // 把該來源專屬的加成加到共用的基礎值上再乘倍率，最後取整數；而且兩者都只從 OnMonsterDeath 進入，
 // 所以是擊殺時觸發，不是每次命中。本專案有天堂聖擊、寵物攻擊與影分身三個來源；公會飛船、匕首、
@@ -400,8 +430,11 @@ function applySkips(s:State,source:SkipSource){
   earnGold(s,goldReward(s,'boss'));s.bossKills++;clearStage(s,s.stage);}}
 function damage(s:State,hit:Big,source?:SkipSource){if(compare(hit,{...ZERO})<=0)return;s.hp=subtract(s.hp,hit);if(compare(s.hp,{...ZERO})>0)return;
  const boss=isBoss(s),chest=!boss&&tt2Random(s.tt2!)<Math.min(1,(BONUS_DEFAULTS.chestChance+stateEffect(s,'ChestChance'))*stateEffect(s,'AllProbabilityBoost'));
- earnGold(s,goldReward(s,boss?'boss':chest?'chest':'monster'));if(chest)s.tt2!.chestKills++;s.totalKills++;s.daily.kills++;
- if(boss){s.bossKills++;clearStage(s,s.stage);}else if(!s.farming)s.kills++;
+ // 原生一次結算整群，不是逐隻給：隻數同時決定金幣倍率與擊殺數。
+ const group=boss?1:Math.max(1,s.tt2!.multi||1);
+ earnGold(s,scale(goldReward(s,boss?'boss':chest?'chest':'monster'),multiMonsterGold(s,group)));if(chest)s.tt2!.chestKills++;
+ s.totalKills+=group;s.daily.kills+=group;
+ if(boss){s.bossKills++;clearStage(s,s.stage);}else if(!s.farming)s.kills+=group;
  if(source)applySkips(s,source);
  spawn(s);
 }
@@ -569,7 +602,9 @@ export function buildDamage(s:State,build:Build):Big{const t=s.tt2!,active=s.act
  if(build==='heavenly')n=scale(n,SKILL_DATA[5].amount[skillStep(5,s.skillLevels[5])]);
  return n;
 }
-export function goldReward(s:State,source:'monster'|'boss'|'fairy'|'chest'|'pet'|'multi'):Big{
+// 多重生成的倍率不在這裡：原生 GetMonsterGoldDrop 對整群只乘 1 + (隻數 − 1) × MultiMonstersGold，
+// 既不走寶箱那條 ChestAmount，也不是逐隻給，所以它由 multiMonsterGold() 套在結果外面。
+export function goldReward(s:State,source:'monster'|'boss'|'fairy'|'chest'|'pet'):Big{
  const t=s.tt2!,running=Math.min(4,s.active.filter(n=>n>s.last).length);
  let n=scale(pow(1.27,s.stage-1),5);
  // Native RefreshGoldPerPlayerLevelBonus: GoldAll x= 1 + Sword Master level x GoldPerSwordMasterLevel,
@@ -577,9 +612,9 @@ export function goldReward(s:State,source:'monster'|'boss'|'fairy'|'chest'|'pet'
  const resolve=stateResolver(s);
  for(const factor of [resolve('GoldAll'),resolve('JackpotGold'),resolve('GoldPerRunningActiveSkill')**running,1+resolve('GoldPerOwnedCardLevel')*t.cards,1+resolve('GoldPerSwordMasterLevel')*s.level,gearBonus(s,2)])n=scale(n,factor);
  if(source==='boss'||source==='pet')n=scale(n,10*resolve('GoldBoss'));
- if(source==='chest'||source==='fairy'||source==='multi')n=scale(n,10*resolve('ChestAmount'));
+ if(source==='chest'||source==='fairy')n=scale(n,10*resolve('ChestAmount'));
  if(source==='fairy'||source==='pet')n=scale(n,resolve('GoldSpecialty'));
- if(source==='fairy')n=scale(n,resolve('FairyGold'));if(source==='pet')n=scale(n,resolve('PetGoldQTEAmount'));if(source==='multi')n=scale(n,resolve('MultiMonstersGold'));
+ if(source==='fairy')n=scale(n,resolve('FairyGold'));if(source==='pet')n=scale(n,resolve('PetGoldQTEAmount'));
  if(s.active[4]>s.last)n=scale(n,skillPower(s,4)**(['fairy','pet'].includes(source)?.7:1));
  return n;
 }

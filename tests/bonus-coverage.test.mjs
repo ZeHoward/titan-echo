@@ -77,14 +77,14 @@ test('以其他方式讀取的加成逐項登記，而且登記本身有被檢�
 
 test('覆蓋率的分布記下來，加成接上或掉線都是看得見的改動', () => {
   assert.deepEqual(coverage.counts, {
-    live: 105,
-    'dead-native-uses-it': 124,
+    live: 107,
+    'dead-native-uses-it': 122,
     'dead-native-ignores-it': 68,
     'read-without-source': 13,
     'not-in-project': 486,
   });
   const priority = coverage.rows.filter(r => r.priority);
-  assert.equal(priority.length, 60, '落在已實作系統、可以接上的加成數量變了');
+  assert.equal(priority.length, 58, '落在已實作系統、可以接上的加成數量變了');
 });
 
 test('判定彼此互斥，每個加成只會落在一類', () => {

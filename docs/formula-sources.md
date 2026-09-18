@@ -2,26 +2,27 @@
 
 每個核心公式的來源登記表：資料表、原生方法、原生預設值，或明確標記為 7.5 基準沿用、專案自訂或伺服器供給。
 
-版本 8.2.0。共 36 條公式、88 項來源條目。
+版本 8.2.0。共 37 條公式、93 項來源條目。
 
 | 狀態 | 意義 | 條目數 |
 |---|---|---|
-| `native` | 由反組譯證據確認 | 28 |
+| `native` | 由反組譯證據確認 | 29 |
 | `table` | 取自安裝包資料表 | 19 |
-| `default` | 原生靜態預設值，線上可覆蓋 | 16 |
+| `default` | 原生靜態預設值，線上可覆蓋 | 17 |
 | `baseline-75` | 沿用 7.5 基準，尚未對 8.2 核實 | 0 |
 | `table-differs` | 安裝包有值但引擎目前未照做 | 12 |
-| `invented` | 本專案自訂，安裝包未提供 | 10 |
+| `invented` | 本專案自訂，安裝包未提供 | 13 |
 | `server` | 原生為伺服器變數，安裝包未帶值 | 3 |
 
 ## 逐條登記
 
 ### monsterHealth · `lib/engine.ts` 的 `health`
 
-18 × 1.32^(關卡-1) × 頭目倍率 × (1 − MonsterHP 減免)
+18 × 1.32^(關卡-1) × 頭目倍率 × 這一波的隻數 × (1 − MonsterHP 減免)
 
 | 來源條目 | 狀態 | 依據 |
 |---|---|---|
+| 多重生成的一波算成同一個血條 | `invented` | `reference/tt2/8.2.0/multi-monster-evidence.json`；原生把一波 N 隻各自滿血的泰坦放上場，本專案沒有場上多目標的概念，所以把整波折成一個 N 倍血量的血條。金幣與擊殺數原生本來就是整波一次結算（GetMonsterGoldDrop 收隻數、算 1 + (隻數 − 1) × MultiMonstersGold），因此打完一波的時間、金幣與推進量都與原生一致，差別只在畫面上是一隻還是一群。頭目不參與多重生成，隻數恆為 1。 |
 | 頭目倍率序列 [2,3,4,5,8] | `table-differs` | `reference/tt2/8.2.0/TitanScalingInfo.json`；安裝包的 ThemeMultiplierSequence 分四段：關卡 1–5 為 2,3,4,5,8、6–39 為 4,6,8,15,24、40–59 為 8,12,16,30,48、60 起回到 2,3,4,5,8，四個來源變體（含 A／B／C）在這四列完全一致。引擎對所有關卡只用第一段，因此 6–59 關的頭目血量偏低。**尚未套用**，原因有三：一、選列不是關卡的純函數——MonsterModel.StageChangedPreSpawnHandler 會呼叫 UpdateCurrentScalingInfo，後者用 GetScalingIndex 從目前索引往前掃，GetCurrentScalingInfo 只是對這個有狀態的索引做邊界檢查後取 list[index]；二、換段時還會先 RemoveCurrentScalingBonuses 再以 BonusModel.ModifyBonus 套用該列的 bonusA／bonusB，倍率序列只是該列的一部分；三、themeMultiplierSequence 同時是 ServerVarsModel 的 [ServerVar] 靜態欄位，線上可整份覆蓋。 |
 | 基礎值 18 與每關成長率 1.32 | `table-differs` | `reference/tt2/8.2.0/monster-curve-evidence.json`；原生沒有「基礎值 × 成長率^關卡」這種寫法：MonsterModel.GetMonsterBaseHP 把關卡先加上 ActiveHonourAmount × honourStageOffset（安裝包值 250），再呼叫共用的 GetMonsterBase，其形狀已逐式還原為 mult × base1^min(關卡, levelOff) × base2^(expo1 × max(關卡−levelOff,0)^expo2) ÷ base3^(expo3 × max(關卡−transcendenceLevelOff,0)^expo4)。十個具名 [ServerVar] 的編譯期預設值也都解出來了：mult 17.5、base1 1.38、base2／base3 10、expo1 0.03、expo2 1.098、expo3 1、expo4 1.098、levelOff 100、transcendenceLevelOff 180000（高於關卡上限，故除數在可玩範圍恆為 1）。**尚未採用**：照原生算，基礎血量在第 250 關之後就低於引擎現值，第 2000 關差 10^107、第 98000 關差 10^2745，等於整條難度曲線換掉；金幣曲線同樣要一起換，英雄傷害那邊也還多著一項 1.035。取捨記在 ROADMAP 的「待決定的取捨」。另外 MonsterHPScaling 的 A／B 變體彼此不同（B 在關卡 1–3 為 0.3／0.4／0.475），屬 A／B 指派結果。 |
 | MonsterHP 減免上限 0.9 | `invented` | 引擎自訂的安全上限，避免血量歸零；安裝包未見對應上限。 |
@@ -255,6 +256,17 @@ max(1, floor(關卡^1.7 ÷ 100 × PrestigeRelic))，最高關卡到 60 後開放
 | 加法型加成代入 基礎值＋增量 | `default` | `reference/tt2/8.2.0/bonus-defaults-evidence.json`；加法型加成的基礎值就是 SetDefaultBonuses 設的那一個：ShadowCloneSkillAttackRate 為 4，天賦提供 0.1–0.95 的增量，兩者相加。 |
 | 離散到 100ms 模擬步長，單次傷害為每秒總量 ÷ 速率 | `invented` | 引擎以 100ms 為一步推進，攻擊只在步邊界結算，因此單次間隔最多晚 100ms；計時器累加間隔而非改設為當下時間，長期平均頻率與速率一致。另外 buildDamage 是本專案的「每秒總量」近似，所以一次攻擊取其 ÷ 速率——節奏照原生，總量不因節奏改變，但單次數值不是原生的單次傷害。 |
 | 特殊攻擊未實作 | `server` | ShadowCloneSkillSpecialRate 與 SpecialChance 另有節奏與機率，本專案未實作，也未核實其倍率來源。 |
+
+### multiMonsters · `lib/engine.ts` 的 `multiMonsterChance`
+
+每次生成擲一次骰，命中機率 min(1, (0.01 ＋ MultiMonsters) × AllProbabilityBoost)，命中則這一波是 trunc(Random[2, 4 ＋ MultiMonstersMaxCount ＋ 1)) 隻，整波金幣乘 1 ＋ (隻數 − 1) × MultiMonstersGold
+
+| 來源條目 | 狀態 | 依據 |
+|---|---|---|
+| 擲骰、隻數與整波金幣的三段形狀 | `native` | `reference/tt2/8.2.0/multi-monster-evidence.json`；MonsterController.SpawnMonster(int, MonsterClass) 取 Random.value 與 Bonus(MultiMonsters) × Bonus(AllProbabilityBoost) 相比，命中後以 (int)Random.Range(minMultiMonsterSpawns, Bonus(MultiMonstersMaxCount) + 1) 取隻數；MonsterModel.GetMonsterGoldDrop(關卡, 類別, 隻數, 變異) 對隻數大於 1 的一波乘上 1 + (隻數 − 1) × Bonus(MultiMonstersGold)。三段的指令序列逐一比對過，另以 BonusModel.GetAverageMultiMonsterSpawn 交叉核對。 |
+| 機率 0.01、上限 4、下限 2 三個基礎值 | `default` | `reference/tt2/8.2.0/bonus-defaults-evidence.json`；MultiMonsters 與 MultiMonstersMaxCount 是加法型，基礎值由 BonusModel.SetDefaultBonuses 從 [ServerVar] multiMonsterBaseChance（0.01）與 maxMultiMonsterSpawns（4）設入；下限直接讀 minMultiMonsterSpawns（2），它不是加成所以不在那張表裡。MultiMonstersGold 的基礎值也是 1.0，但它是乘法型，1.0 就是中性值，引擎不另外相加以免重複計入。三者都是編譯期預設值，線上可覆蓋。 |
+| 物件池上限未實作 | `invented` | 原生取到隻數後還會夾到場上怪物物件池的大小，那是 Unity 的資源上限而非遊戲規則；本專案沒有場上多目標，無對應概念，因此不夾。 |
+| 擲骰用本專案的 LCG，不是 Unity 的 Random | `invented` | 原生走 UnityEngine.Random，本專案一律走可重現的 tt2Random，所以序列不同、長期分布相同。隻數取整同樣是截斷，與原生的 (int) 轉換一致。 |
 
 ### perks · `lib/tt2-perks.ts` 的 `perkValue`
 

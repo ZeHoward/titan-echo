@@ -1,0 +1,226 @@
+{
+  "version": "8.2.0",
+  "role": "多重泰坦生成：生成骰、一波的隻數、一波的金幣結算，以及原生自己的平均隻數估計。",
+  "packageSha256": "8d78c9aa877e6c0b291ee2116cab855bd26c59c1d080bc654f88ecf1ff268b5f",
+  "binarySha256": "c13fc44321b1214c71ab0277a134fc3401fd7392c74a0bbb3935671c55a8713a",
+  "scriptSha256": "62c2eeb8472bb107de516e4b6ae69d3dcdf5013fb1caa87223d82a54dd203f8b",
+  "finding": "MonsterController.SpawnMonster 每次生成擲一次骰：Random.value 小於 MultiMonsters × AllProbabilityBoost 時，這一波不是一隻而是一群，隻數為 (int)Random.Range(minMultiMonsterSpawns, MultiMonstersMaxCount + 1)。MonsterModel.GetMonsterGoldDrop 收到那個隻數，把一波的金幣一次結算成 單隻金幣 × (1 + (隻數 − 1) × MultiMonstersGold)。三個加成的基底分別是 0.009999999776482582、4.0、1.0，下限 minMultiMonsterSpawns 是 2.0，所以未投資的玩家是 1% 機率生出 2–4 隻。",
+  "consequence": "金幣是一次結算而不是逐隻給，所以「一波幾隻」同時決定血量、擊殺數與金幣倍率；MultiMonstersGold 只放大額外的那幾隻，一隻的一波永遠是 1 倍。三個基底與 minMultiMonsterSpawns 都是 [ServerVar] 的編譯期預設值，線上可覆蓋，狀態為 default。",
+  "methods": {
+    "spawn": {
+      "name": "MonsterController$$SpawnMonster",
+      "rva": "0x231e2d8",
+      "bytesSha256": "e3afa5b0971872f29b79af25b95a6ddde813bef700f7e4059d35b6b39ef05ed0"
+    },
+    "gold": {
+      "name": "MonsterModel$$GetMonsterGoldDrop",
+      "rva": "0x2326d1c",
+      "bytesSha256": "060807abde6fbc58fff43a52c5abe7282900ae5b0809349bca490c96f1060653"
+    },
+    "average": {
+      "name": "BonusModel$$GetAverageMultiMonsterSpawn",
+      "rva": "0x2718620",
+      "bytesSha256": "e844bd0dad6dd0a3166e0333e45c5b53c14c597af77ec168633aa01725a402b0"
+    }
+  },
+  "formulas": {
+    "spawnRoll": "Random.value < MultiMonsters × AllProbabilityBoost",
+    "groupSize": "(int)Random.Range(minMultiMonsterSpawns, MultiMonstersMaxCount + 1)",
+    "groupGold": "單隻金幣 × (1 + (隻數 − 1) × MultiMonstersGold)",
+    "averageSize": "1 + ((minMultiMonsterSpawns + MultiMonstersMaxCount) ÷ 2) × MultiMonsters × AllProbabilityBoost"
+  },
+  "traces": {
+    "spawnRoll": [
+      [
+        "call",
+        "get_value",
+        "0x231e44c"
+      ],
+      [
+        "GetBonus",
+        "MultiMonsters",
+        "0x231e46c"
+      ],
+      [
+        "GetBonus",
+        "AllProbabilityBoost",
+        "0x231e494"
+      ],
+      [
+        "call",
+        "op_Multiply",
+        "0x231e4d8"
+      ],
+      [
+        "call",
+        "op_Explicit",
+        "0x231e4f4"
+      ],
+      [
+        "fcmp",
+        "s8, s0",
+        "0x231e4f8"
+      ]
+    ],
+    "groupSize": [
+      [
+        "static",
+        "minMultiMonsterSpawns",
+        "0x231e524"
+      ],
+      [
+        "GetBonus",
+        "MultiMonstersMaxCount",
+        "0x231e53c"
+      ],
+      [
+        "call",
+        "op_Explicit",
+        "0x231e568"
+      ],
+      [
+        "const",
+        "1.00000000",
+        "0x231e56c"
+      ],
+      [
+        "fadd",
+        "s1, s0, s1",
+        "0x231e574"
+      ],
+      [
+        "call",
+        "Range",
+        "0x231e57c"
+      ],
+      [
+        "fcvtzs",
+        "w10, s0",
+        "0x231e58c"
+      ]
+    ],
+    "groupGold": [
+      [
+        "call",
+        "op_Implicit",
+        "0x23270c0"
+      ],
+      [
+        "call",
+        "op_Implicit",
+        "0x23270d0"
+      ],
+      [
+        "GetBonus",
+        "MultiMonstersGold",
+        "0x23270ec"
+      ],
+      [
+        "call",
+        "op_Multiply",
+        "0x2327120"
+      ],
+      [
+        "call",
+        "op_Addition",
+        "0x2327154"
+      ]
+    ],
+    "averageSize": [
+      [
+        "static",
+        "minMultiMonsterSpawns",
+        "0x2718690"
+      ],
+      [
+        "GetBonus",
+        "MultiMonstersMaxCount",
+        "0x2718698"
+      ],
+      [
+        "call",
+        "op_Explicit",
+        "0x27186c4"
+      ],
+      [
+        "fadd",
+        "s0, s8, s0",
+        "0x27186c8"
+      ],
+      [
+        "const",
+        "0.50000000",
+        "0x27186cc"
+      ],
+      [
+        "fmul",
+        "s8, s0, s1",
+        "0x27186dc"
+      ],
+      [
+        "GetBonus",
+        "MultiMonsters",
+        "0x27186e0"
+      ],
+      [
+        "GetBonus",
+        "AllProbabilityBoost",
+        "0x27186f0"
+      ],
+      [
+        "call",
+        "op_Multiply",
+        "0x2718714"
+      ],
+      [
+        "call",
+        "op_Explicit",
+        "0x2718730"
+      ],
+      [
+        "fmul",
+        "s0, s8, s0",
+        "0x2718734"
+      ],
+      [
+        "const",
+        "1.00000000",
+        "0x2718738"
+      ],
+      [
+        "fadd",
+        "s0, s0, s1",
+        "0x2718748"
+      ]
+    ]
+  },
+  "bases": {
+    "MultiMonsters": {
+      "field": "multiMonsterBaseChance",
+      "value": 0.009999999776482582
+    },
+    "MultiMonstersMaxCount": {
+      "field": "maxMultiMonsterSpawns",
+      "value": 4.0
+    },
+    "MultiMonstersGold": {
+      "field": "monsterMultiSpawnGoldBonus",
+      "value": 1.0
+    }
+  },
+  "minMultiMonsterSpawns": {
+    "offset": "0xa14",
+    "value": 2.0
+  },
+  "bonusIds": {
+    "MultiMonsters": 340,
+    "MultiMonstersMaxCount": 343,
+    "MultiMonstersGold": 341,
+    "AllProbabilityBoost": 27
+  },
+  "limits": [
+    "原生的平均估計把 Random.Range 的半開區間當成閉區間，少算了 0.5 隻，而且沒有乘上「沒中骰時是一隻」那一項；它只用在 UI 預覽，不是實際生成，所以兩者本來就不會相等。",
+    "原生在取到隻數後還會夾到場上怪物物件池的大小（SpawnMonster 尾端的 csel）。那是 Unity 的物件池上限，不是遊戲規則，本專案沒有對應概念。",
+    "GetMonsterGoldDrop 的其他項（GoldAll、GoldMonster、契約金幣等）不在本文件範圍內。"
+  ]
+}
