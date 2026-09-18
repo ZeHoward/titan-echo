@@ -3,7 +3,7 @@ import {TT2_HEROES} from './tt2-data.ts';
 import {bonusDefinitions,cap,effect,type TT2State} from './tt2-rules.ts';
 
 // Formula/timing or the actual reward event is not implemented yet.
-export const PENDING_HERO_EFFECTS=new Set(['TapDamageFromHelpers','Goldx10Chance','MultiMonstersGold','PetGoldQTEAmount']);
+export const PENDING_HERO_EFFECTS=new Set(['Goldx10Chance','MultiMonstersGold','PetGoldQTEAmount']);
 export const heroSkills=(index:number)=>HERO_SKILLS.filter(k=>k.owner===TT2_HEROES[index]?.id);
 const indices=new Map(TT2_HEROES.map((h,i)=>[h.id,i]));
 export type HeroPowerBoost={multiplicative:number;additive:number};

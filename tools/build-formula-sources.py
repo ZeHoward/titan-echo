@@ -455,6 +455,23 @@ FORMULAS = [
                             '跳過的每一關走 GetBossSplashGoldDrop 給頭目金幣。'
                             '原生七個來源中本專案有三個；寵物爆發（PetQTEStageSkip）對應的'
                             'PetBurst 傷害來源尚未實作，因此不計入寵物那一條。')]),
+    entry(id='tapFromHelpers', module='lib/engine.ts', export='tapFromHelpers',
+          expression='max(0, TapDamage 加成 × 英雄 DPS^0.5 × TapDamageFromHelpers × TapDamageFromHelpersMult)',
+          parts=[entry(part='兩項相加的結構與三次乘法', status='native',
+                       ref='tap-from-helpers-evidence.json',
+                       note='原生 PlayerModel.GetTapDamage(等級, 轉換對象) 就是 '
+                            'GetSwordMasterDamage(等級) ＋ GetTapFromHelpers(轉換對象)，只有一個加法；'
+                            '後者是 Max(0, 該轉換的係數 × GetAllHelperDPS(轉換對象) '
+                            '× TapDamageFromHelpers × TapDamageFromHelpersMult)。'
+                            '劍術大師那一支把 GetBonus(TapDamage) 直接寫進 Pow 的輸出槽並跳過 Pow，'
+                            '所以它的係數就是那個加成本身。'),
+                 entry(part='指數 0.5', status='default',
+                       ref='tap-from-helpers-evidence.json',
+                       note='指數在 HelperModel.GetAllHelperDPS 裡套到英雄 DPS 上，逐轉換對象各有欄位：'
+                            '劍術大師是 helperToTapDPSPower（位移 0x700，編譯期預設值 0.5），'
+                            '影分身是 helperToCloneTapDPSPower（0x708，0.6）。'
+                            '這兩個是 [ServerVar]，安裝包的變數表沒有帶值，線上可覆蓋，故為 default。'
+                            '少了這個指數，轉換出來的點擊傷害會高出好幾個數量級。')]),
 ]
 
 NOT_FORMULAS = {

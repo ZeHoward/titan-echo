@@ -36,8 +36,11 @@ test('multipliers combine independently and pending consumers stay inactive',()=
  const levels=Array(37).fill(0);levels[0]=1000;levels[1]=100;
  const totals=heroPassiveTotals(levels);
  assert.ok(Math.abs(totals.CritDamage-1.21)<1e-12);
- assert.equal(totals.TapDamageFromHelpers,undefined);
+ // 英雄轉點擊已於 2.14.1 接上，所以這個被動現在會累計；其餘三個仍在 PENDING_HERO_EFFECTS。
+ assert.equal(totals.TapDamageFromHelpers,0.0001);
  assert.equal(totals.Goldx10Chance,undefined);
+ assert.equal(totals.MultiMonstersGold,undefined);
+ assert.equal(totals.PetGoldQTEAmount,undefined);
 });
 
 test('passives derive on load and reset on prestige without leaking between players',()=>{

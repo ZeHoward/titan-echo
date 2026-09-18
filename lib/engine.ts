@@ -116,7 +116,20 @@ export function critMultiplier(s:State){return 11.5*stateEffect(s,'CritDamage');
 // max(1, Bonus(ShadowCloneSkillAttackRate) × Bonus(CompanionAttackRate)) — one attack a second
 // before bonuses. Recorded in reference/tt2/8.2.0/damage-text-evidence.json.
 export function cloneAttackRate(s:State){return Math.max(1,(BONUS_DEFAULTS.cloneAttackRate+stateEffect(s,'ShadowCloneSkillAttackRate'))*stateEffect(s,'CompanionAttackRate'));}
-export function tapDamage(s:State):Big{return buildDamage(s,'tap');}
+// 英雄轉點擊。原生 PlayerModel.GetTapDamage(等級, 轉換對象) 就是
+// GetSwordMasterDamage(等級) ＋ GetTapFromHelpers(轉換對象) 兩項相加，後者是
+// max(0, TapDamage 加成 × 英雄 DPS^該轉換的指數 × TapDamageFromHelpers × TapDamageFromHelpersMult)。
+// 劍術大師那一支的指數是 helperToTapDPSPower = 0.5（影分身那一支是 0.6，各自有自己的欄位），
+// 少了這個指數會大到離譜。TapDamageFromHelpers 目前唯一的來源是神器「大師之劍」，
+// 倍率來自天賦 TapDmgFromHelpers；兩者都還沒接上時這一項是 0，點擊傷害與以前完全相同。
+// 見 reference/tt2/8.2.0/tap-from-helpers-evidence.json。
+const HELPER_TO_TAP_POWER=0.5;
+export function tapFromHelpers(s:State):Big{
+ const share=stateEffect(s,'TapDamageFromHelpers');
+ if(!(share>0))return {...ZERO};
+ const factor=share*stateEffect(s,'TapDamageFromHelpersMult')*stateEffect(s,'TapDamage');
+ return atLeastZero(scale(power(bigMax({...ONE},rawHeroDps(s)),HELPER_TO_TAP_POWER),factor));}
+export function tapDamage(s:State):Big{return add(buildDamage(s,'tap'),tapFromHelpers(s));}
 export function weaponSets(s:State){return Math.min(...s.weapons,...s.tt2!.extraWeapons);}
 // Resolving a bonus walks every artifact and pet, so the six keys the roster shares are resolved
 // once per pass instead of once per hero: thirty-seven heroes used to ask a hundred and eleven times.

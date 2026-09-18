@@ -2,13 +2,13 @@
 
 每個核心公式的來源登記表：資料表、原生方法、原生預設值，或明確標記為 7.5 基準沿用、專案自訂或伺服器供給。
 
-版本 8.2.0。共 33 條公式、73 項來源條目。
+版本 8.2.0。共 34 條公式、75 項來源條目。
 
 | 狀態 | 意義 | 條目數 |
 |---|---|---|
-| `native` | 由反組譯證據確認 | 15 |
+| `native` | 由反組譯證據確認 | 16 |
 | `table` | 取自安裝包資料表 | 18 |
-| `default` | 原生靜態預設值，線上可覆蓋 | 15 |
+| `default` | 原生靜態預設值，線上可覆蓋 | 16 |
 | `baseline-75` | 沿用 7.5 基準，尚未對 8.2 核實 | 0 |
 | `table-differs` | 安裝包有值但引擎目前未照做 | 12 |
 | `invented` | 本專案自訂，安裝包未提供 | 10 |
@@ -319,6 +319,15 @@ max(1, floor(關卡^1.7 ÷ 100 × PrestigeRelic))，最高關卡到 60 後開放
 | 來源條目 | 狀態 | 依據 |
 |---|---|---|
 | 算式與逐來源分流 | `native` | `reference/tt2/8.2.0/skip-evidence.json`；原生 StageLogic.GetStageSkip(DamageType) 與跳泰坦同形，差別在倍率是逐來源的：天堂聖擊有 BurstSkillStageSkipMult、影分身有 ShadowCloneStageSkipMult，寵物那條原生就沒有倍率。跳過的每一關走 GetBossSplashGoldDrop 給頭目金幣。原生七個來源中本專案有三個；寵物爆發（PetQTEStageSkip）對應的PetBurst 傷害來源尚未實作，因此不計入寵物那一條。 |
+
+### tapFromHelpers · `lib/engine.ts` 的 `tapFromHelpers`
+
+max(0, TapDamage 加成 × 英雄 DPS^0.5 × TapDamageFromHelpers × TapDamageFromHelpersMult)
+
+| 來源條目 | 狀態 | 依據 |
+|---|---|---|
+| 兩項相加的結構與三次乘法 | `native` | `reference/tt2/8.2.0/tap-from-helpers-evidence.json`；原生 PlayerModel.GetTapDamage(等級, 轉換對象) 就是 GetSwordMasterDamage(等級) ＋ GetTapFromHelpers(轉換對象)，只有一個加法；後者是 Max(0, 該轉換的係數 × GetAllHelperDPS(轉換對象) × TapDamageFromHelpers × TapDamageFromHelpersMult)。劍術大師那一支把 GetBonus(TapDamage) 直接寫進 Pow 的輸出槽並跳過 Pow，所以它的係數就是那個加成本身。 |
+| 指數 0.5 | `default` | `reference/tt2/8.2.0/tap-from-helpers-evidence.json`；指數在 HelperModel.GetAllHelperDPS 裡套到英雄 DPS 上，逐轉換對象各有欄位：劍術大師是 helperToTapDPSPower（位移 0x700，編譯期預設值 0.5），影分身是 helperToCloneTapDPSPower（0x708，0.6）。這兩個是 [ServerVar]，安裝包的變數表沒有帶值，線上可覆蓋，故為 default。少了這個指數，轉換出來的點擊傷害會高出好幾個數量級。 |
 
 ## 界線
 

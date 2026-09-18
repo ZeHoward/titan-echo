@@ -1,7 +1,7 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {fresh,apply,hydrate,stateEffect,manaMax,critChance,tapDamage,BONUS_DEFAULTS,SKILLS,MANA_DEFAULTS,unlockedSkills} from '../lib/engine.ts';
-import {TT2_TREE} from '../lib/tt2-data.ts';
+import {TT2_TREE,TT2_BONUSES} from '../lib/tt2-data.ts';
 import {B,N} from './amounts.mjs';
 const insight=TT2_TREE.findIndex(k=>k.id==='HelperBoost');
 const commander=TT2_TREE.findIndex(k=>k.id==='AllHelperDmg');
@@ -42,7 +42,11 @@ test('loading keeps TI, prestige keeps its level but requires hero powers again'
 
 test('unimplemented effects are not activated by high-level Tactical Insight',()=>{
  const s=fresh(1000);s.heroes.fill(2000);s.tt2.extraHeroes.fill(2000);s.tt2.tree[insight]=30;
- assert.equal(stateEffect(s,'TapDamageFromHelpers'),0);
+ // 英雄轉點擊已接上，戰術洞察會放大它；剩下三個未實作的效果才是這條守衛的對象。
+ assert.ok(stateEffect(s,'TapDamageFromHelpers')>0);
+ // 未生效的中性值要看加成是加法還是乘法：加法是 0，乘法是 1。
+ for(const effect of ['Goldx10Chance','MultiMonstersGold','PetGoldQTEAmount'])
+  assert.equal(stateEffect(s,effect),TT2_BONUSES[effect].additive?0:1,effect);
  const independent=fresh(1000);assert.equal(stateEffect(independent,'CritDamage'),1);
  assert.ok(Number.isFinite(N(tapDamage(s))));
 });
