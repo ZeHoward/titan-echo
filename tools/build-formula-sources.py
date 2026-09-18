@@ -76,7 +76,16 @@ FORMULAS = [
                             '三個欄位是 [ServerVar]，安裝包的兩張變數表都沒有帶值，'
                             '但類別建構式有編譯期預設值 8／148／32000（見 servervar-defaults.json）。'
                             '因此第 1 關 8 隻、第 500 關 10 隻、第 2000 關 17 隻、第 98000 關 120 隻；'
-                            '引擎原本固定 10 隻，早期偏多、後期遠遠偏少。線上可覆蓋，故為 default 而非 native。')]),
+                            '引擎原本固定 10 隻，早期偏多、後期遠遠偏少。線上可覆蓋，故為 default 而非 native。'),
+                       entry(part='隻數減免與下限', status='native', ref='monster-count-reduction-evidence.json',
+                             note='原生 StageLogic.GetMonsterCountPerStage 在曲線值之上**減去** '
+                                  'Bonus(MonsterCountPerStage)（轉 int 是截斷），最後 Math.Max(1, …)。'
+                                  '名字讀起來像「每關幾隻」，運算卻是減法，統計面板也歸在「減免」欄——'
+                                  '寫成加法會讓拿到套裝的人每關更長。唯一來源是「剋星」傳說套裝（5 隻）。'
+                                  '同一個方法裡的契約減免與特殊泰坦堆疊倍率屬於未實作系統，不折算；'
+                                  'splashSkip 是呼叫端傳入的參數，不屬於「這一關有幾隻」。'
+                                  '**下限與截斷在現有資料下觀測不到**（來源是整數 5、最小隻數 8），'
+                                  '仍照原生實作並用測試釘住前提。')]),
     entry(id='bossHealthMod', module='lib/engine.ts', export='health',
           expression='頭目血量在小怪基礎上再乘一組倍率',
           parts=[entry(part='bossHPModBase 與 bossHPModStageMult', status='table-differs',

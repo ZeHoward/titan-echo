@@ -2,11 +2,11 @@
 
 每個核心公式的來源登記表：資料表、原生方法、原生預設值，或明確標記為 7.5 基準沿用、專案自訂或伺服器供給。
 
-版本 8.2.0。共 36 條公式、86 項來源條目。
+版本 8.2.0。共 36 條公式、87 項來源條目。
 
 | 狀態 | 意義 | 條目數 |
 |---|---|---|
-| `native` | 由反組譯證據確認 | 26 |
+| `native` | 由反組譯證據確認 | 27 |
 | `table` | 取自安裝包資料表 | 19 |
 | `default` | 原生靜態預設值，線上可覆蓋 | 16 |
 | `baseline-75` | 沿用 7.5 基準，尚未對 8.2 核實 | 0 |
@@ -44,6 +44,7 @@ round(8 + 關卡 × 148 ÷ (32000 + 關卡))
 | 來源條目 | 狀態 | 依據 |
 |---|---|---|
 | 算式與 base 8、inc 148、delta 32000 | `default` | `reference/tt2/8.2.0/monster-count-evidence.json`；原生 StageLogic.GetRawMonsterCountPerStage 依序讀 monsterCountInc、monsterCountStageDelta、monsterCountBase，算 base + 關卡 × inc ÷ (delta + 關卡) 後交給 Math.Round（平手進偶數）。三個欄位是 [ServerVar]，安裝包的兩張變數表都沒有帶值，但類別建構式有編譯期預設值 8／148／32000（見 servervar-defaults.json）。因此第 1 關 8 隻、第 500 關 10 隻、第 2000 關 17 隻、第 98000 關 120 隻；引擎原本固定 10 隻，早期偏多、後期遠遠偏少。線上可覆蓋，故為 default 而非 native。 |
+| 隻數減免與下限 | `native` | `reference/tt2/8.2.0/monster-count-reduction-evidence.json`；原生 StageLogic.GetMonsterCountPerStage 在曲線值之上**減去** Bonus(MonsterCountPerStage)（轉 int 是截斷），最後 Math.Max(1, …)。名字讀起來像「每關幾隻」，運算卻是減法，統計面板也歸在「減免」欄——寫成加法會讓拿到套裝的人每關更長。唯一來源是「剋星」傳說套裝（5 隻）。同一個方法裡的契約減免與特殊泰坦堆疊倍率屬於未實作系統，不折算；splashSkip 是呼叫端傳入的參數，不屬於「這一關有幾隻」。**下限與截斷在現有資料下觀測不到**（來源是整數 5、最小隻數 8），仍照原生實作並用測試釘住前提。 |
 
 ### bossHealthMod · `lib/engine.ts` 的 `health`
 

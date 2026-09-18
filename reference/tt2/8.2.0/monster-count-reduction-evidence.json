@@ -1,0 +1,33 @@
+{
+  "version": "8.2.0",
+  "role": "每關的泰坦隻數怎麼被扣掉：加成是減免，不是增加。",
+  "packageSha256": "8d78c9aa877e6c0b291ee2116cab855bd26c59c1d080bc654f88ecf1ff268b5f",
+  "binarySha256": "c13fc44321b1214c71ab0277a134fc3401fd7392c74a0bbb3935671c55a8713a",
+  "scriptSha256": "62c2eeb8472bb107de516e4b6ae69d3dcdf5013fb1caa87223d82a54dd203f8b",
+  "finding": "StageLogic.GetMonsterCountPerStage(stageNum, splashSkip, isInactiveGameplay) 先取 GetRawMonsterCountPerStage 的曲線值，再**減去** Bonus(MonsterCountPerStage)（編號 334，轉 int 是截斷）；接著在契約生效時減第二個加成、乘上特殊泰坦堆疊的倍率，最後 Math.Max(1, 隻數 − splashSkip)。**方向是關鍵**：名字讀起來像「每關幾隻」，但運算是減法，統計面板也把它歸在「減免」那一欄——寫成加法會讓拿到套裝的人每關反而更長。splashSkip 是呼叫端為了那一次擊殺傳進來的參數，不是狀態，所以不屬於「這一關有幾隻」。",
+  "expression": "每關隻數 = max(1, round(原始曲線) − MonsterCountPerStage − 契約減免) × 特殊泰坦倍率",
+  "methods": {
+    "StageLogic$$GetMonsterCountPerStage": "0x2546594",
+    "StageLogic$$GetRawMonsterCountPerStage": "0x25468a0",
+    "BonusModel$$GetBonus": "0x2714c88",
+    "System.Math$$Max": "0x3fcc0f4",
+    "SkillTreeSkills$$IsAnyContractActive": "0x25188ac"
+  },
+  "signature": "public virtual int GetMonsterCountPerStage(int stageNum, int splashSkip = 0, bool isInactiveGameplay = False)",
+  "bonus": {
+    "name": "MonsterCountPerStage",
+    "id": 334,
+    "direction": "subtract"
+  },
+  "notImplementedHere": [
+    "IsAnyContractActive 的契約減免",
+    "特殊泰坦堆疊的倍率"
+  ],
+  "consequence": "本專案接上了減免與下限 1，唯一來源是「剋星」傳說套裝（5 隻）：第 1 關 8→3 隻、第 500 關 10→5 隻、第 2000 關 17→12 隻、關卡上限 120→115 隻。契約減免與特殊泰坦倍率屬於未實作的系統，不在這裡折算；splashSkip 也不併進來，本專案的濺射結算在別處（見 skip-evidence.json）。",
+  "limits": [
+    "方法存在、位址、它呼叫的方法與讀的加成是事實；減法方向以指令本身判定",
+    "**下限 1 與「轉 int 是截斷」這兩段在本專案現有資料下觀測不到**：唯一來源「剋星」套裝給整數 5，而最小隻數是第 1 關的 8，所以把下限拿掉或改成四捨五入都不會改變任何結果。兩段仍照原生實作，並由 tests/monster-count-reduction.test.mjs 釘住那個前提——將來出現小數或更大的減免來源時，該測試會先轉紅。",
+    "契約與特殊泰坦那兩項在原生同一個方法裡，本專案未實作，屬於刻意省略而非原生沒有",
+    "本表只涵蓋隻數的減免，曲線本身見 monster-count-evidence.json"
+  ]
+}

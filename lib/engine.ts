@@ -181,9 +181,15 @@ const MONSTER_COUNT={base:8,inc:148,delta:32000} as const;
 /** C#'s Math.Round(double): ties go to the even integer, unlike Math.round. */
 function roundHalfEven(value:number){const floor=Math.floor(value),fraction=value-floor;
  return fraction>.5?floor+1:fraction<.5?floor:floor%2===0?floor:floor+1;}
+// Native StageLogic.GetMonsterCountPerStage takes the rounded raw count and subtracts
+// MonsterCountPerStage from it - the bonus reduces how many titans a stage holds, which is why the
+// stats panel files it under reductions. The cast to int truncates, and the whole thing is floored
+// at 1. The contract reduction and the special-titan stack multiplier in that method belong to
+// systems this project has not built, so they are left out rather than folded in.
 export function monsterCount(s:State){const stage=Math.max(1,s.stage);
  const ratio=Math.fround(Math.fround(Math.fround(stage)*Math.fround(MONSTER_COUNT.inc))/Math.fround(MONSTER_COUNT.delta+stage));
- return roundHalfEven(Math.fround(ratio+Math.fround(MONSTER_COUNT.base)));}
+ const raw=roundHalfEven(Math.fround(ratio+Math.fround(MONSTER_COUNT.base)));
+ return Math.max(1,raw-Math.trunc(stateEffect(s,'MonsterCountPerStage')));}
 export function bossDuration(s:State){return 30+stateEffect(s,'BossTimerDuration');}
 export function health(s:State):Big{return scale(pow(1.32,s.stage-1),18*(isBoss(s)?[2,3,4,5,8][(s.stage-1)%5]:1)*(1-Math.min(.9,stateEffect(s,'MonsterHP'))));}
 export function isBoss(s:State){return !s.trial&&!s.farming&&s.kills>=monsterCount(s);}

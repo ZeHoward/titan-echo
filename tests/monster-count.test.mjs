@@ -63,8 +63,11 @@ test('隻數多到畫不下時，介面改用進度條而不是畫一百二十�
 test('登記為原生靜態預設值，並寫明線上可覆蓋', () => {
   const register = loadRegister();
   const formula = register.formulas.find(f => f.id === 'monsterCount');
-  assert.equal(formula.parts.length, 1);
+  assert.equal(formula.parts.length, 2, '曲線本身，加上 2.15.3 接上的隻數減免');
   assert.equal(formula.parts[0].status, 'default');
   assert.equal(formula.parts[0].ref, 'monster-count-evidence.json');
   assert.match(formula.expression, /32000/);
+  // 減免那一段是反組譯確認的，與曲線的 default 不同。
+  assert.equal(formula.parts[1].status, 'native');
+  assert.equal(formula.parts[1].ref, 'monster-count-reduction-evidence.json');
 });

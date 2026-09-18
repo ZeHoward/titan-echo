@@ -76,8 +76,8 @@
     }
   },
   "counts": {
-    "live": 103,
-    "dead-native-uses-it": 126,
+    "live": 104,
+    "dead-native-uses-it": 125,
     "dead-native-ignores-it": 68,
     "read-without-source": 13,
     "not-in-project": 486
@@ -4124,17 +4124,17 @@
     },
     {
       "id": "MonsterCountPerStage",
-      "verdict": "dead-native-uses-it",
+      "verdict": "live",
       "sources": [
         "TT2_SETS"
       ],
-      "engineReads": false,
+      "engineReads": true,
       "nativeReaders": [
         "StageLogic",
         "StatsPanelScript"
       ],
       "indirect": null,
-      "priority": true
+      "priority": false
     },
     {
       "id": "MonsterHP",
