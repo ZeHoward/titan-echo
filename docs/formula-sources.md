@@ -2,11 +2,11 @@
 
 每個核心公式的來源登記表：資料表、原生方法、原生預設值，或明確標記為 7.5 基準沿用、專案自訂或伺服器供給。
 
-版本 8.2.0。共 34 條公式、80 項來源條目。
+版本 8.2.0。共 34 條公式、81 項來源條目。
 
 | 狀態 | 意義 | 條目數 |
 |---|---|---|
-| `native` | 由反組譯證據確認 | 21 |
+| `native` | 由反組譯證據確認 | 22 |
 | `table` | 取自安裝包資料表 | 18 |
 | `default` | 原生靜態預設值，線上可覆蓋 | 16 |
 | `baseline-75` | 沿用 7.5 基準，尚未對 8.2 核實 | 0 |
@@ -124,6 +124,7 @@ round(8 + 關卡 × 148 ÷ (32000 + 關卡))
 | 流派折減係數 | `invented` | 程式內已註明為暫用係數，公會飛船、匕首與金槍的完整戰鬥尚未還原。 |
 | 技能點的傷害乘數 | `native` | `reference/tt2/8.2.0/skill-point-damage-evidence.json`；原生 PlayerModel.RefreshSkillPointBonuses 不是直接套用加成，而是算成兩個值再 ModifyBonus 寫回 AllDamage：加法項 1 ＋ 累計技能點 × DamagePerSkillPoint，次方項 DamagePerSkillPointMult ^ 累計技能點。點數取 skillPointsReceivedServer，是**累計收到的**、不是未花費的，對應本專案的「持有中 ＋ 已投入天賦」。本專案只接加法項：次方項在 8.2 沒有任何來源會給，而查一個不在加成表裡的加成會拿到乘法中性值 1。加法項目前唯一拿得到的來源是「小丑女王」傳說套裝（每點 +10%）；「復仇者」武器是 Unique 稀有度，還沒有取得途徑。 |
 | 魔力上限的傷害乘數 | `native` | `reference/tt2/8.2.0/derived-bonus-evidence.json`；原生 PlayerModel.RefreshDamageBonusPerManaCap 把它算成 AllDamage 的乘數再寫回，**沒有加 1**：clamp(currentManaCap, 0, maximumManaCapBonusAmount 5000) × DamagePerManaCap，而且先用 GetBonusIdentity 比對，等於中性值就移除修飾不套用——這個比對是必要的，該加成是乘法型、沒有來源時讀到 1 而不是 0。唯一來源是「腐化」傳說套裝（每點魔力上限 ×0.05），六個技能全解鎖時為 10.5 倍。**刻意偏離一處**：原生在魔力上限為 0 時會讓傷害歸零，本專案改為不套用，因為本專案的存檔可能在劍術大師 100 級之前就湊齊那套套裝，而傷害歸零救不回來。 |
+| 最高關卡的傷害乘數 | `native` | `reference/tt2/8.2.0/count-bonus-evidence.json`；原生 StatsTrackedBonusModel.UpdateDamagePerMaxStageBonus 以本季最高關卡對 DamagePerMaxStage 取次方後寫進 AllDamage，只有一次 Pow。來源是「游牧」神話套裝（1.00005），第 2000 關 ×1.11、關卡上限 98000 時 ×134。 |
 | 集齊套裝數與英雄武器總等級的傷害乘數 | `native` | `reference/tt2/8.2.0/count-bonus-evidence.json`；兩條都寫回 AllDamage，但算術不同。EquipmentModel.EquipmentSetCountBonusHandler 是**次方**：DamagePerEquipmentSet ^ 集齊的套裝數（乘法型加成沒有來源時是 1，1 的任何次方仍是 1，所以不需要中性值比對）。HelperModel.RefreshDamagePerHelperWeaponBonus 是**乘法且沒有加 1**：武器總等級 × DamagePerHelperWeapon，總等級為 0 或加成等於中性值時整個不套用。**總等級低時原生就會讓傷害變低**（每級 0.1、總等級 5 時是 ×0.5）；原生沒有夾下限，而總等級只會往上累積，所以照原生保留。來源分別是「鐵匠」與「武器大師」兩套傳說套裝，都可製作。DamagePerHelperWeaponMult 在本專案沒有來源，故不接。 |
 | 主動技能倍率 | `table` | `reference/tt2/8.2.0/ActiveSkillInfo.json` |
 

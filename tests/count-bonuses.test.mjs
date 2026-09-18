@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { referenceRoot } from '../tools/reference-validation.mjs';
-import { fresh, hydrate, tapDamage, helperWeaponDamage, stateEffect } from '../lib/engine.ts';
+import { fresh, hydrate, tapDamage, helperWeaponDamage, maxStageDamage, stateEffect } from '../lib/engine.ts';
 import { buildMultiplier, TT2_SETS, bonusDefinitions } from '../lib/tt2-rules.ts';
 import { TT2_GEAR } from '../lib/tt2-data.ts';
 import { toNumber } from '../lib/big-number.ts';
@@ -24,6 +24,22 @@ function save({ sets = [], weapons = 0 } = {}) {
 test('證據取自釘住的那份安裝包，不是別的版本', () => {
   assert.equal(evidence.version, '8.2.0');
   assert.equal(evidence.packageSha256, baseline.package.sha256);
+});
+
+test('最高關卡也是次方，指數是關卡本身', () => {
+  const nomad = TT2_SETS.findIndex(s => s.id === 'Nomad');
+  assert.match(evidence.expressions.maxStage, /\^ 本季最高關卡/);
+  const shape = evidence.calls.maxStage.map(c => c.call);
+  assert.deepEqual(shape, ['GetBonus', 'ModifyBonus']);
+  for (const best of [500, 2000, 10000]) {
+    const plain = save(); plain.best = best;
+    const withSet = save({ sets: [nomad] }); withSet.best = best;
+    const per = stateEffect(withSet, 'DamagePerMaxStage');
+    const ratio = toNumber(tapDamage(withSet)) / toNumber(tapDamage(plain));
+    assert.ok(Math.abs(ratio - per ** best) < 1e-9 * per ** best,
+      `第 ${best} 關應該是 ${per}^${best}`);
+  }
+  assert.equal(maxStageDamage(save()), 1, '沒有來源時不該有影響');
 });
 
 test('兩條的算術不同：套裝取次方，武器是乘法而且沒有加 1', () => {

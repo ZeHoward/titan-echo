@@ -167,6 +167,10 @@ FORMULAS = [
                          '唯一來源是「腐化」傳說套裝（每點魔力上限 ×0.05），六個技能全解鎖時為 10.5 倍。'
                          '**刻意偏離一處**：原生在魔力上限為 0 時會讓傷害歸零，本專案改為不套用，'
                          '因為本專案的存檔可能在劍術大師 100 級之前就湊齊那套套裝，而傷害歸零救不回來。'),
+              entry(part='最高關卡的傷害乘數', status='native', ref='count-bonus-evidence.json',
+                    note='原生 StatsTrackedBonusModel.UpdateDamagePerMaxStageBonus 以本季最高關卡對 '
+                         'DamagePerMaxStage 取次方後寫進 AllDamage，只有一次 Pow。'
+                         '來源是「游牧」神話套裝（1.00005），第 2000 關 ×1.11、關卡上限 98000 時 ×134。'),
               entry(part='集齊套裝數與英雄武器總等級的傷害乘數', status='native', ref='count-bonus-evidence.json',
                     note='兩條都寫回 AllDamage，但算術不同。'
                          'EquipmentModel.EquipmentSetCountBonusHandler 是**次方**：'
@@ -524,7 +528,7 @@ NOT_FORMULAS = {
         'canDiscover', 'canBuyTalent', 'discoveryPool', 'drawArtifact', 'collectGear', 'dropGear', 'craftSet',
         'awardPet', 'heroPowerBoost', 'heroSkillValue', 'equipmentEffect', 'equipmentValue',
         'artifactCost', 'skillCost', 'skillDuration', 'skillCooldown', 'skillMana', 'critMultiplier',
-        'manaCapDamage', 'helperWeaponDamage', 'stateResolver', 'effectResolver',
+        'manaCapDamage', 'helperWeaponDamage', 'maxStageDamage', 'stateResolver', 'effectResolver',
         'monsterCount', 'unlockedSkills', 'skillStep', 'discoveryCost', 'craftPrice', 'buildMultiplier', 'manaRegen', 'achievementTier',
         'advanceEggs', 'playerUpgradeCost', 'playerBaseDamage', 'themeIndex', 'goldReward', 'health', 'heroDps',
         'cost', 'critChance', 'manaMax', 'bossDuration', 'relicGain', 'evolveCost', 'buildDamage', 'skillPower',

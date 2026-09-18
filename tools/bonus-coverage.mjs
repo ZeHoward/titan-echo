@@ -97,7 +97,23 @@ if (unresolved.size) {
 const skipped = [...assembled].filter(id => !(id in bonusDefinitions)).sort();
 for (const id of skipped) assembled.delete(id);
 
-const engineReads = id => literals.has(id) || assembled.has(id);
+/**
+ * Bonuses the engine consumes without ever naming them, so no source scan would see the read.
+ * Listed explicitly rather than inferred, and each one is checked below against the thing it
+ * claims to be - an index that shifts would otherwise turn a real read into a silent "nobody
+ * reads it", which is exactly the mistake this report exists to prevent.
+ */
+const INDIRECT_READS = {
+  AllArtifactDamageEffect: { artifact: 98, where: 'lib/tt2-rules.ts baseFrom：群組 Damage 的神器以索引 98 取用' },
+  AllArtifactGoldEffect: { artifact: 99, where: 'lib/tt2-rules.ts baseFrom：群組 Gold 的神器以索引 99 取用' },
+};
+for (const [id, claim] of Object.entries(INDIRECT_READS)) {
+  if (data.TT2_ARTIFACTS[claim.artifact]?.effect !== id) {
+    throw new Error(`間接讀取登記失效：神器索引 ${claim.artifact} 不再是 ${id}`);
+  }
+}
+
+const engineReads = id => literals.has(id) || assembled.has(id) || id in INDIRECT_READS;
 
 /** Which project tables hand each bonus out. */
 const sources = new Map();
@@ -133,6 +149,7 @@ for (const id of Object.keys(nativeTypes.values)) {
   const unbuilt = verdict === 'dead-native-uses-it'
     && (isUnbuilt(id) || native.every(isUnbuilt));
   rows.push({ id, verdict, sources: granted, engineReads: engine, nativeReaders: native,
+    indirect: INDIRECT_READS[id]?.where ?? null,
     priority: verdict === 'dead-native-uses-it' && !unbuilt });
 }
 
@@ -165,6 +182,7 @@ const report = {
     assembledSuffixes: [...suffixes].sort(),
     skippedCombinations: skipped,
     unbuiltSystems: UNBUILT,
+    indirectReads: INDIRECT_READS,
   },
   counts,
   verdicts: {
@@ -208,6 +226,10 @@ lines.push('原生有取值點，但屬於本專案尚未實作的系統（見 `
 for (const [system, list] of group(deferred)) {
   lines.push(`- **${system}**：${list.map(r => `\`${r.id}\``).join('、')}`);
 }
+lines.push('');
+lines.push('## 引擎有讀、但不是用名字查的', '');
+lines.push('這些加成引擎確實有消費，只是沒有把名字寫出來，所以原始碼掃描看不到——逐項列在這裡才不會被誤判成沒作用。', '');
+for (const [id, claim] of Object.entries(INDIRECT_READS)) lines.push(`- \`${id}\` ← ${claim.where}`);
 lines.push('');
 lines.push('## 原生也掃不到取值點的', '');
 lines.push('專案有來源會給，但原生與我們都沒有取值點。接上去沒有依據，先不要動。', '');

@@ -61,11 +61,21 @@
       "RoyalContract",
       "Lifetime",
       "AT"
-    ]
+    ],
+    "indirectReads": {
+      "AllArtifactDamageEffect": {
+        "artifact": 98,
+        "where": "lib/tt2-rules.ts baseFrom：群組 Damage 的神器以索引 98 取用"
+      },
+      "AllArtifactGoldEffect": {
+        "artifact": 99,
+        "where": "lib/tt2-rules.ts baseFrom：群組 Gold 的神器以索引 99 取用"
+      }
+    }
   },
   "counts": {
-    "live": 94,
-    "dead-native-uses-it": 134,
+    "live": 97,
+    "dead-native-uses-it": 131,
     "dead-native-ignores-it": 69,
     "read-without-source": 9,
     "not-in-project": 490
@@ -87,6 +97,7 @@
         "MilestonePage",
         "PrestigeModel"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -97,6 +108,7 @@
       "nativeReaders": [
         "ActiveSkillModel"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -107,6 +119,7 @@
       ],
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -119,6 +132,7 @@
       "nativeReaders": [
         "SkillParsedInfo"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -131,6 +145,7 @@
       "nativeReaders": [
         "SkillParsedInfo"
       ],
+      "indirect": null,
       "priority": true
     },
     {
@@ -142,6 +157,7 @@
       ],
       "engineReads": true,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -154,6 +170,7 @@
       "nativeReaders": [
         "PrestigeModel"
       ],
+      "indirect": null,
       "priority": true
     },
     {
@@ -164,6 +181,7 @@
       "nativeReaders": [
         "ActiveSkillModel"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -174,6 +192,7 @@
       "nativeReaders": [
         "ActiveSkillModel"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -189,6 +208,7 @@
         "CircleSkillFiller",
         "StatsPanelScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -203,6 +223,7 @@
         "CircleSkillFiller.<TimerReduction>d__23",
         "FairyController.<UpdateRewardTextTimer>d__99"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -215,6 +236,7 @@
       "nativeReaders": [
         "ActiveSkillModel"
       ],
+      "indirect": null,
       "priority": true
     },
     {
@@ -223,32 +245,35 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
       "id": "AllArtifactDamageEffect",
-      "verdict": "dead-native-uses-it",
+      "verdict": "live",
       "sources": [
         "TT2_ARTIFACTS"
       ],
-      "engineReads": false,
+      "engineReads": true,
       "nativeReaders": [
         "ArtifactModelBase<object>"
       ],
-      "priority": true
+      "indirect": "lib/tt2-rules.ts baseFrom：群組 Damage 的神器以索引 98 取用",
+      "priority": false
     },
     {
       "id": "AllArtifactGoldEffect",
-      "verdict": "dead-native-uses-it",
+      "verdict": "live",
       "sources": [
         "TT2_ARTIFACTS"
       ],
-      "engineReads": false,
+      "engineReads": true,
       "nativeReaders": [
         "ArtifactInfo",
         "ArtifactModelBase<object>"
       ],
-      "priority": true
+      "indirect": "lib/tt2-rules.ts baseFrom：群組 Gold 的神器以索引 99 取用",
+      "priority": false
     },
     {
       "id": "AllUpgradeCost",
@@ -263,6 +288,7 @@
         "PlayerModel",
         "StatsPanelScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -275,6 +301,7 @@
         "HelperModel",
         "PlayerModel"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -288,6 +315,7 @@
       "nativeReaders": [
         "EquipmentMetaData"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -296,6 +324,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -308,6 +337,7 @@
       "nativeReaders": [
         "PlayerModel"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -319,6 +349,7 @@
       ],
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -329,6 +360,7 @@
       "nativeReaders": [
         "ActiveSkillModel"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -341,6 +373,7 @@
       "nativeReaders": [
         "ActiveSkillModel"
       ],
+      "indirect": null,
       "priority": true
     },
     {
@@ -351,6 +384,7 @@
       "nativeReaders": [
         "PlayerController"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -362,6 +396,7 @@
       ],
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -373,6 +408,7 @@
       ],
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -402,6 +438,7 @@
         "StatsPanelScript",
         "TwilightFairyController"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -414,6 +451,7 @@
       "nativeReaders": [
         "HaystTitanScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -424,6 +462,7 @@
       "nativeReaders": [
         "HaystTitanScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -437,6 +476,7 @@
         "ClanPlayerScript",
         "SkillTreeUIModel"
       ],
+      "indirect": null,
       "priority": true
     },
     {
@@ -445,6 +485,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -457,6 +498,7 @@
       "nativeReaders": [
         "PrestigeModel"
       ],
+      "indirect": null,
       "priority": true
     },
     {
@@ -467,6 +509,7 @@
       "nativeReaders": [
         "PrestigeModel"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -475,6 +518,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -488,6 +532,7 @@
       "nativeReaders": [
         "PetInfo"
       ],
+      "indirect": null,
       "priority": true
     },
     {
@@ -502,6 +547,7 @@
         "PlayerController",
         "SkillTreeUIModel"
       ],
+      "indirect": null,
       "priority": true
     },
     {
@@ -520,6 +566,7 @@
         "PlayerModel",
         "StatsPanelScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -530,6 +577,7 @@
       "nativeReaders": [
         "StatsTrackedBonusModel"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -540,6 +588,7 @@
       "nativeReaders": [
         "MegaBombTitanScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -558,6 +607,7 @@
         "HelperInfo",
         "StatsPanelScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -566,6 +616,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -574,6 +625,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -584,6 +636,7 @@
       ],
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -596,6 +649,7 @@
       "nativeReaders": [
         "StageLogic"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -606,6 +660,7 @@
       ],
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -616,6 +671,7 @@
       ],
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -627,6 +683,7 @@
         "ForbiddenContract",
         "GameSettingsPanel"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -640,6 +697,7 @@
         "GameSettingsPanel",
         "PlayerController"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -653,6 +711,7 @@
         "GameSettingsPanel",
         "GoldGunModel"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -666,6 +725,7 @@
         "GameSettingsPanel",
         "PetController"
       ],
+      "indirect": null,
       "priority": true
     },
     {
@@ -679,6 +739,7 @@
         "GameSettingsPanel",
         "PetController"
       ],
+      "indirect": null,
       "priority": true
     },
     {
@@ -690,6 +751,7 @@
         "GameSettingsPanel",
         "RoyalContract"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -705,6 +767,7 @@
         "HelperController",
         "PlayerController"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -718,6 +781,7 @@
         "GameSettingsPanel",
         "TwilightFairyController"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -730,6 +794,7 @@
       "nativeReaders": [
         "ActivePerkInfo"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -743,6 +808,7 @@
         "ActiveSkillButton",
         "GameSettingsPanel"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -754,6 +820,7 @@
         "PlayerController",
         "PlayerController.<PerformAutoTap>d__89"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -768,6 +835,7 @@
       "nativeReaders": [
         "AchievementModel"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -782,6 +850,7 @@
       "nativeReaders": [
         "AchievementModel"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -796,6 +865,7 @@
       "nativeReaders": [
         "AchievementModel"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -810,6 +880,7 @@
       "nativeReaders": [
         "EquipmentMetaData"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -818,6 +889,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -826,6 +898,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -834,6 +907,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -846,6 +920,7 @@
       "nativeReaders": [
         "PrestigeModel"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -856,6 +931,7 @@
       "nativeReaders": [
         "PrestigeModel"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -870,6 +946,7 @@
       "nativeReaders": [
         "EquipmentMetaData"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -878,6 +955,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -889,6 +967,7 @@
         "AutoBuyHelpersButton",
         "HelperModel"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -899,6 +978,7 @@
       ],
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -909,6 +989,7 @@
       "nativeReaders": [
         "ClanDungeonScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -923,6 +1004,7 @@
       "nativeReaders": [
         "StageLogic"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -933,6 +1015,7 @@
       "nativeReaders": [
         "MegaBombTitanScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -941,6 +1024,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -949,6 +1033,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -957,6 +1042,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -968,6 +1054,7 @@
       ],
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -976,6 +1063,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -984,6 +1072,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -996,6 +1085,7 @@
       "nativeReaders": [
         "BossTimerScript"
       ],
+      "indirect": null,
       "priority": true
     },
     {
@@ -1008,6 +1098,7 @@
       "nativeReaders": [
         "BossTimerScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -1026,6 +1117,7 @@
         "PlayerController",
         "StatsPanelScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -1036,6 +1128,7 @@
       ],
       "engineReads": true,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -1046,6 +1139,7 @@
       ],
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -1056,6 +1150,7 @@
       ],
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -1066,6 +1161,7 @@
       ],
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -1074,6 +1170,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -1086,6 +1183,7 @@
       "nativeReaders": [
         "StageLogic"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -1096,6 +1194,7 @@
       "nativeReaders": [
         "StageLogic"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -1109,6 +1208,7 @@
       "nativeReaders": [
         "StageLogic"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -1117,6 +1217,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -1125,6 +1226,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -1133,6 +1235,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -1141,6 +1244,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -1153,6 +1257,7 @@
       ],
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -1163,6 +1268,7 @@
       "nativeReaders": [
         "StatsTrackedBonusModel"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -1179,6 +1285,7 @@
         "BonusModel",
         "StatsPanelScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -1187,6 +1294,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -1195,6 +1303,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -1209,6 +1318,7 @@
         "ChestersonTitanScript",
         "MonsterModel"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -1221,6 +1331,7 @@
       "nativeReaders": [
         "ChestersonTitanScript"
       ],
+      "indirect": null,
       "priority": true
     },
     {
@@ -1234,6 +1345,7 @@
       "nativeReaders": [
         "ClanScrollModel"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -1247,6 +1359,7 @@
       "nativeReaders": [
         "ClanScrollModel"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -1259,6 +1372,7 @@
       "nativeReaders": [
         "ClanPlayerScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -1269,6 +1383,7 @@
       ],
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -1279,6 +1394,7 @@
       "nativeReaders": [
         "ClanPlayerScript.<ClanPlayerLoop>d__19"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -1291,6 +1407,7 @@
       "nativeReaders": [
         "ClanShipScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -1308,6 +1425,7 @@
         "GoldGunController",
         "StatsPanelScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -1318,6 +1436,7 @@
       "nativeReaders": [
         "StatsTrackedBonusModel"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -1330,6 +1449,7 @@
       "nativeReaders": [
         "StageLogic"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -1342,6 +1462,7 @@
       "nativeReaders": [
         "MonsterController"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -1354,6 +1475,7 @@
       "nativeReaders": [
         "StageLogic"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -1366,6 +1488,7 @@
       "nativeReaders": [
         "StageLogic"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -1379,6 +1502,7 @@
       "nativeReaders": [
         "Cloaking"
       ],
+      "indirect": null,
       "priority": true
     },
     {
@@ -1391,6 +1515,7 @@
       "nativeReaders": [
         "Cloaking"
       ],
+      "indirect": null,
       "priority": true
     },
     {
@@ -1401,6 +1526,7 @@
       "nativeReaders": [
         "Cloaking"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -1411,6 +1537,7 @@
       "nativeReaders": [
         "HaystTitanScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -1424,6 +1551,7 @@
         "DualPetObject",
         "PetModel"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -1436,6 +1564,7 @@
       ],
       "engineReads": true,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -1444,6 +1573,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -1457,6 +1587,7 @@
         "QTEController",
         "StatsPanelScript"
       ],
+      "indirect": null,
       "priority": true
     },
     {
@@ -1468,6 +1599,7 @@
         "ForbiddenContract",
         "RoyalContract"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -1478,6 +1610,7 @@
       "nativeReaders": [
         "PlayerModel"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -1489,6 +1622,7 @@
       ],
       "engineReads": true,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -1497,6 +1631,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -1516,6 +1651,7 @@
         "PlayerModel",
         "StatsPanelScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -1526,6 +1662,7 @@
       ],
       "engineReads": true,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -1534,6 +1671,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -1546,6 +1684,7 @@
       "nativeReaders": [
         "PlayerController.<ShadowCloneAttackLoop>d__132"
       ],
+      "indirect": null,
       "priority": true
     },
     {
@@ -1556,6 +1695,7 @@
       ],
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -1566,6 +1706,7 @@
       ],
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -1578,6 +1719,7 @@
       "nativeReaders": [
         "PlayerModel"
       ],
+      "indirect": null,
       "priority": true
     },
     {
@@ -1592,6 +1734,7 @@
       "nativeReaders": [
         "PlayerModel"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -1608,6 +1751,7 @@
       "nativeReaders": [
         "PlayerModel"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -1618,6 +1762,7 @@
       "nativeReaders": [
         "StatsTrackedBonusModel"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -1626,6 +1771,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -1637,6 +1783,7 @@
         "AchievementDailyListItem",
         "DailyCollectibleListItem"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -1645,6 +1792,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -1653,6 +1801,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -1666,6 +1815,7 @@
       "nativeReaders": [
         "PlayerModel"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -1679,6 +1829,7 @@
       "nativeReaders": [
         "ClanScrollModel"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -1691,6 +1842,7 @@
       "nativeReaders": [
         "DailyRewardModel"
       ],
+      "indirect": null,
       "priority": true
     },
     {
@@ -1703,6 +1855,7 @@
       "nativeReaders": [
         "EquipmentModel"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -1716,6 +1869,7 @@
       "nativeReaders": [
         "PlayerModel"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -1726,6 +1880,7 @@
       ],
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -1738,6 +1893,7 @@
       "nativeReaders": [
         "TitanGachaModel"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -1748,6 +1904,7 @@
       ],
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -1760,6 +1917,7 @@
       "nativeReaders": [
         "PerkModel"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -1772,6 +1930,7 @@
       "nativeReaders": [
         "PrestigeModel"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -1780,6 +1939,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -1788,6 +1948,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -1801,6 +1962,7 @@
       "nativeReaders": [
         "HelperModel"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -1811,6 +1973,7 @@
       "nativeReaders": [
         "HelperModel"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -1825,6 +1988,7 @@
       "nativeReaders": [
         "ArtifactModelBase<object>"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -1838,6 +2002,7 @@
       "nativeReaders": [
         "ArtifactModel"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -1850,6 +2015,7 @@
       "nativeReaders": [
         "ArtifactModel"
       ],
+      "indirect": null,
       "priority": true
     },
     {
@@ -1862,6 +2028,7 @@
       "nativeReaders": [
         "SeasonalArtifactModel"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -1875,6 +2042,7 @@
       "nativeReaders": [
         "ActiveSkillModel"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -1885,6 +2053,7 @@
       "nativeReaders": [
         "ActivePerkModel"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -1895,19 +2064,21 @@
       "nativeReaders": [
         "ActivePerkModel"
       ],
+      "indirect": null,
       "priority": false
     },
     {
       "id": "DamagePerMaxStage",
-      "verdict": "dead-native-uses-it",
+      "verdict": "live",
       "sources": [
         "TT2_SETS"
       ],
-      "engineReads": false,
+      "engineReads": true,
       "nativeReaders": [
         "StatsTrackedBonusModel"
       ],
-      "priority": true
+      "indirect": null,
+      "priority": false
     },
     {
       "id": "DamagePerSoloRaidWorld",
@@ -1919,6 +2090,7 @@
       "nativeReaders": [
         "SoloRaidModel"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -1932,6 +2104,7 @@
       "nativeReaders": [
         "PlayerModel"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -1942,6 +2115,7 @@
       "nativeReaders": [
         "PlayerModel"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -1954,6 +2128,7 @@
       "nativeReaders": [
         "SpecialTitanModel"
       ],
+      "indirect": null,
       "priority": true
     },
     {
@@ -1964,6 +2139,7 @@
       ],
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -1972,6 +2148,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -1987,6 +2164,7 @@
         "PlayerController.<ShadowCloneAttackLoop>d__132",
         "PlayerModel"
       ],
+      "indirect": null,
       "priority": true
     },
     {
@@ -1995,6 +2173,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -2005,6 +2184,7 @@
       "nativeReaders": [
         "PlayerController"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -2016,6 +2196,7 @@
         "BasePetObject",
         "PetModel"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -2027,6 +2208,7 @@
         "ClanModel",
         "ClanPlayerScript.<ClanPlayerLoop>d__19"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -2037,6 +2219,7 @@
       "nativeReaders": [
         "DiseaseScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -2047,6 +2230,7 @@
       "nativeReaders": [
         "DiseaseScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -2058,6 +2242,7 @@
         "StageLogic",
         "StatsDisplayScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -2066,6 +2251,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -2076,6 +2262,7 @@
       "nativeReaders": [
         "PlayerController"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -2084,6 +2271,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -2094,6 +2282,7 @@
       "nativeReaders": [
         "PlayerController"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -2108,6 +2297,7 @@
         "PetModel",
         "StatsPanelScript"
       ],
+      "indirect": null,
       "priority": true
     },
     {
@@ -2118,6 +2308,7 @@
       "nativeReaders": [
         "DualPetObject"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -2128,6 +2319,7 @@
       "nativeReaders": [
         "DualPetObject"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -2138,6 +2330,7 @@
       ],
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -2146,6 +2339,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -2154,6 +2348,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -2162,6 +2357,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -2172,6 +2368,7 @@
       ],
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -2182,6 +2379,7 @@
       ],
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -2192,6 +2390,7 @@
       "nativeReaders": [
         "StageLogic"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -2204,6 +2403,7 @@
       "nativeReaders": [
         "StageLogic"
       ],
+      "indirect": null,
       "priority": true
     },
     {
@@ -2214,6 +2414,7 @@
       ],
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -2224,6 +2425,7 @@
       ],
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -2236,6 +2438,7 @@
       "nativeReaders": [
         "EquipmentModel"
       ],
+      "indirect": null,
       "priority": true
     },
     {
@@ -2244,6 +2447,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -2255,6 +2459,7 @@
       ],
       "engineReads": true,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -2267,6 +2472,7 @@
       "nativeReaders": [
         "PetInfo"
       ],
+      "indirect": null,
       "priority": true
     },
     {
@@ -2277,6 +2483,7 @@
       ],
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -2291,6 +2498,7 @@
       "nativeReaders": [
         "FairyController"
       ],
+      "indirect": null,
       "priority": true
     },
     {
@@ -2302,6 +2510,7 @@
       ],
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -2319,6 +2528,7 @@
         "FairyController",
         "StatsPanelScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -2331,6 +2541,7 @@
       ],
       "engineReads": true,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -2341,6 +2552,7 @@
       "nativeReaders": [
         "StageLogic"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -2353,6 +2565,7 @@
       "nativeReaders": [
         "MonsterModel"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -2365,6 +2578,7 @@
       "nativeReaders": [
         "ForbiddenContract"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -2377,6 +2591,7 @@
       "nativeReaders": [
         "ForbiddenContract"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -2385,6 +2600,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -2395,6 +2611,7 @@
       "nativeReaders": [
         "ForbiddenContract"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -2410,6 +2627,7 @@
         "PlayerController",
         "PlayerModel"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -2418,6 +2636,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -2429,6 +2648,7 @@
       ],
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -2439,6 +2659,7 @@
       "nativeReaders": [
         "GemstonesModel"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -2449,6 +2670,7 @@
       "nativeReaders": [
         "GemstonesModel"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -2457,6 +2679,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -2475,6 +2698,7 @@
         "MonsterModel",
         "StatsPanelScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -2485,6 +2709,7 @@
       "nativeReaders": [
         "StatsTrackedBonusModel"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -2495,6 +2720,7 @@
       "nativeReaders": [
         "StatsTrackedBonusModel"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -2505,6 +2731,7 @@
       "nativeReaders": [
         "StatsTrackedBonusModel"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -2515,6 +2742,7 @@
       "nativeReaders": [
         "StatsTrackedBonusModel"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -2532,6 +2760,7 @@
         "MonsterModel",
         "StatsPanelScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -2540,6 +2769,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -2548,6 +2778,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -2558,6 +2789,7 @@
       "nativeReaders": [
         "MegaBombTitanScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -2570,6 +2802,7 @@
       "nativeReaders": [
         "GoldGunController"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -2580,6 +2813,7 @@
       "nativeReaders": [
         "GoldGunModel"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -2595,6 +2829,7 @@
       "nativeReaders": [
         "PlayerModel"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -2605,6 +2840,7 @@
       "nativeReaders": [
         "GoldGunController"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -2613,6 +2849,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -2625,6 +2862,7 @@
       "nativeReaders": [
         "StageLogic"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -2637,6 +2875,7 @@
       "nativeReaders": [
         "StageLogic"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -2648,6 +2887,7 @@
         "PlayerController",
         "StatsPanelScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -2656,6 +2896,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -2664,6 +2905,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -2676,6 +2918,7 @@
       "nativeReaders": [
         "ActiveSkillModel"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -2686,6 +2929,7 @@
       "nativeReaders": [
         "ActiveSkillModel"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -2698,6 +2942,7 @@
       "nativeReaders": [
         "StageLogic"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -2708,6 +2953,7 @@
       "nativeReaders": [
         "MonsterModel"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -2721,6 +2967,7 @@
       "nativeReaders": [
         "ArtifactModelBase<object>"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -2729,6 +2976,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -2739,6 +2987,7 @@
       ],
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -2747,6 +2996,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -2755,6 +3005,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -2769,6 +3020,7 @@
         "ActiveSkillModel",
         "PlayerModel"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -2781,6 +3033,7 @@
       "nativeReaders": [
         "PlayerModel"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -2789,6 +3042,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -2799,6 +3053,7 @@
       "nativeReaders": [
         "StageLogicController"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -2807,6 +3062,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -2818,6 +3074,7 @@
       ],
       "engineReads": true,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -2826,6 +3083,7 @@
       "sources": null,
       "engineReads": true,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -2834,6 +3092,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -2846,6 +3105,7 @@
       ],
       "engineReads": true,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -2854,6 +3114,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -2864,6 +3125,7 @@
       "nativeReaders": [
         "ActiveSkillModel"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -2875,6 +3137,7 @@
       ],
       "engineReads": true,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -2885,6 +3148,7 @@
       ],
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -2905,6 +3169,7 @@
         "PlayerModel",
         "StatsPanelScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -2915,6 +3180,7 @@
       ],
       "engineReads": true,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -2923,6 +3189,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -2933,6 +3200,7 @@
       ],
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -2943,6 +3211,7 @@
       ],
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -2955,6 +3224,7 @@
       "nativeReaders": [
         "HaystTitanScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -2970,6 +3240,7 @@
       "nativeReaders": [
         "EquipmentMetaData"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -2978,6 +3249,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -2992,6 +3264,7 @@
         "HelperInfo",
         "HelperModel"
       ],
+      "indirect": null,
       "priority": true
     },
     {
@@ -3000,6 +3273,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -3011,6 +3285,7 @@
       ],
       "engineReads": true,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -3019,6 +3294,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -3036,6 +3312,7 @@
         "PetModel",
         "StatsPanelScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -3046,6 +3323,7 @@
       ],
       "engineReads": true,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -3054,6 +3332,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -3064,6 +3343,7 @@
       ],
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -3074,6 +3354,7 @@
       ],
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -3086,6 +3367,7 @@
       "nativeReaders": [
         "HelperController"
       ],
+      "indirect": null,
       "priority": true
     },
     {
@@ -3094,6 +3376,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -3107,6 +3390,7 @@
         "HelperModel",
         "StatsPanelScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -3117,6 +3401,7 @@
       ],
       "engineReads": true,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -3127,6 +3412,7 @@
       ],
       "engineReads": true,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -3135,6 +3421,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -3146,6 +3433,7 @@
         "HelperController",
         "SkillTreeUIModel"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -3159,6 +3447,7 @@
         "HelperController",
         "SkillTreeUIModel"
       ],
+      "indirect": null,
       "priority": true
     },
     {
@@ -3167,6 +3456,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -3179,6 +3469,7 @@
       "nativeReaders": [
         "HelperInfo"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -3191,6 +3482,7 @@
       "nativeReaders": [
         "HelperModel"
       ],
+      "indirect": null,
       "priority": true
     },
     {
@@ -3201,6 +3493,7 @@
       "nativeReaders": [
         "PetModel"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -3213,6 +3506,7 @@
       "nativeReaders": [
         "ArtifactModel"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -3221,6 +3515,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -3229,6 +3524,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -3239,6 +3535,7 @@
       "nativeReaders": [
         "StatsPanelScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -3251,6 +3548,7 @@
       "nativeReaders": [
         "InactiveGameplayModel"
       ],
+      "indirect": null,
       "priority": true
     },
     {
@@ -3261,6 +3559,7 @@
       "nativeReaders": [
         "InactiveGameplayModel"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -3274,6 +3573,7 @@
       "nativeReaders": [
         "InactiveGameplayModel"
       ],
+      "indirect": null,
       "priority": true
     },
     {
@@ -3282,6 +3582,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -3292,6 +3593,7 @@
       "nativeReaders": [
         "InactiveGameplayModel"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -3304,6 +3606,7 @@
       "nativeReaders": [
         "HelperModel"
       ],
+      "indirect": null,
       "priority": true
     },
     {
@@ -3320,6 +3623,7 @@
         "SpellSelectPanelScript",
         "StatsPanelScript"
       ],
+      "indirect": null,
       "priority": true
     },
     {
@@ -3330,6 +3634,7 @@
       "nativeReaders": [
         "StatsDisplayScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -3347,6 +3652,7 @@
         "BonusModel",
         "StageLogic"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -3360,6 +3666,7 @@
       "nativeReaders": [
         "BonusModel"
       ],
+      "indirect": null,
       "priority": true
     },
     {
@@ -3370,6 +3677,7 @@
       "nativeReaders": [
         "StatsTrackedBonusModel"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -3380,6 +3688,7 @@
       "nativeReaders": [
         "StatsTrackedBonusModel"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -3388,6 +3697,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -3398,6 +3708,7 @@
       "nativeReaders": [
         "ActiveSkillModel"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -3409,6 +3720,7 @@
       ],
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -3422,6 +3734,7 @@
         "KratosTitanScript",
         "KratosUIScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -3435,6 +3748,7 @@
       "nativeReaders": [
         "KratosTitanScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -3447,6 +3761,7 @@
       "nativeReaders": [
         "KratosTitanScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -3459,6 +3774,7 @@
       "nativeReaders": [
         "KratosTitanScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -3470,6 +3786,7 @@
       ],
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -3481,6 +3798,7 @@
       ],
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -3492,6 +3810,7 @@
         "PlayerController",
         "SkillTreeBookItemScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -3504,6 +3823,7 @@
       "nativeReaders": [
         "PlayerController"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -3516,6 +3836,7 @@
       "nativeReaders": [
         "PlayerController"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -3528,6 +3849,7 @@
       "nativeReaders": [
         "PlayerController"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -3538,6 +3860,7 @@
       "nativeReaders": [
         "GoldGunController"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -3551,6 +3874,7 @@
       "nativeReaders": [
         "GoldGunController"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -3563,6 +3887,7 @@
       "nativeReaders": [
         "GoldGunModel"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -3577,6 +3902,7 @@
       "nativeReaders": [
         "PlayerModel"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -3587,6 +3913,7 @@
       "nativeReaders": [
         "PlayerModel"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -3599,6 +3926,7 @@
       "nativeReaders": [
         "ActivePerkModel"
       ],
+      "indirect": null,
       "priority": true
     },
     {
@@ -3611,6 +3939,7 @@
       "nativeReaders": [
         "PlayerModel"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -3621,6 +3950,7 @@
       "nativeReaders": [
         "PlayerModel"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -3634,6 +3964,7 @@
       "nativeReaders": [
         "ActiveSkillButton"
       ],
+      "indirect": null,
       "priority": true
     },
     {
@@ -3647,6 +3978,7 @@
         "StageLogic",
         "StatsPanelScript"
       ],
+      "indirect": null,
       "priority": true
     },
     {
@@ -3660,6 +3992,7 @@
         "StageLogic",
         "StatsPanelScript"
       ],
+      "indirect": null,
       "priority": true
     },
     {
@@ -3674,6 +4007,7 @@
       "nativeReaders": [
         "StageLogic"
       ],
+      "indirect": null,
       "priority": true
     },
     {
@@ -3684,6 +4018,7 @@
       "nativeReaders": [
         "PlayerModel"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -3697,6 +4032,7 @@
         "PlayerModel",
         "StatsPanelScript"
       ],
+      "indirect": null,
       "priority": true
     },
     {
@@ -3708,6 +4044,7 @@
         "PlayerModel",
         "StatsPanelScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -3721,6 +4058,7 @@
         "PlayerModel",
         "SkillTreeBookItemScript"
       ],
+      "indirect": null,
       "priority": true
     },
     {
@@ -3731,6 +4069,7 @@
       "nativeReaders": [
         "PetModel"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -3744,6 +4083,7 @@
       "nativeReaders": [
         "MegaBombTitanScript"
       ],
+      "indirect": null,
       "priority": true
     },
     {
@@ -3757,6 +4097,7 @@
         "MegaBombTitanScript",
         "SnapUIScript"
       ],
+      "indirect": null,
       "priority": true
     },
     {
@@ -3767,6 +4108,7 @@
       "nativeReaders": [
         "PrestigeModel"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -3775,6 +4117,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -3788,6 +4131,7 @@
         "StageLogic",
         "StatsPanelScript"
       ],
+      "indirect": null,
       "priority": true
     },
     {
@@ -3801,6 +4145,7 @@
         "MonsterModel",
         "StatsPanelScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -3811,6 +4156,7 @@
       "nativeReaders": [
         "MonsterModel"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -3824,6 +4170,7 @@
         "MonsterController.<WhiteAndFade>d__63",
         "StatsPanelScript"
       ],
+      "indirect": null,
       "priority": true
     },
     {
@@ -3835,6 +4182,7 @@
         "MonsterController.<WhiteAndFade>d__63",
         "StatsPanelScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -3845,6 +4193,7 @@
       "nativeReaders": [
         "StatsPanelScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -3861,6 +4210,7 @@
         "InactiveGameplayModel",
         "MonsterController"
       ],
+      "indirect": null,
       "priority": true
     },
     {
@@ -3877,6 +4227,7 @@
       "nativeReaders": [
         "MonsterModel"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -3887,6 +4238,7 @@
       "nativeReaders": [
         "StageLogic"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -3902,6 +4254,7 @@
         "MonsterController",
         "PlayerModel"
       ],
+      "indirect": null,
       "priority": true
     },
     {
@@ -3912,6 +4265,7 @@
       ],
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -3922,6 +4276,7 @@
       ],
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -3932,6 +4287,7 @@
       "nativeReaders": [
         "PassiveSkillModel"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -3945,6 +4301,7 @@
         "ActivePerkInfo",
         "PlayerController"
       ],
+      "indirect": null,
       "priority": true
     },
     {
@@ -3956,6 +4313,7 @@
         "PerkModel",
         "StatsPanelScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -3968,6 +4326,7 @@
       "nativeReaders": [
         "PerkModel"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -3978,6 +4337,7 @@
       "nativeReaders": [
         "PetModel"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -3988,6 +4348,7 @@
       ],
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -4004,6 +4365,7 @@
         "PetModel",
         "StatsPanelScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -4014,6 +4376,7 @@
       "nativeReaders": [
         "PetModel"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -4024,6 +4387,7 @@
       "nativeReaders": [
         "StatsTrackedBonusModel"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -4035,6 +4399,7 @@
         "PetModel",
         "StatsPanelScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -4043,6 +4408,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -4053,6 +4419,7 @@
       "nativeReaders": [
         "PetController"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -4065,6 +4432,7 @@
       "nativeReaders": [
         "PetController"
       ],
+      "indirect": null,
       "priority": true
     },
     {
@@ -4077,6 +4445,7 @@
       "nativeReaders": [
         "PetModel"
       ],
+      "indirect": null,
       "priority": true
     },
     {
@@ -4085,6 +4454,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -4093,6 +4463,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -4105,6 +4476,7 @@
       "nativeReaders": [
         "StageLogic"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -4117,6 +4489,7 @@
       "nativeReaders": [
         "StageLogic"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -4127,6 +4500,7 @@
       ],
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -4137,6 +4511,7 @@
       "nativeReaders": [
         "QTEController"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -4151,6 +4526,7 @@
         "PetModel",
         "StatsPanelScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -4161,6 +4537,7 @@
       "nativeReaders": [
         "PetParadiseModel"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -4171,6 +4548,7 @@
       "nativeReaders": [
         "PetParadiseXPTextDisplay"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -4185,6 +4563,7 @@
         "QTEController",
         "StatsPanelScript"
       ],
+      "indirect": null,
       "priority": true
     },
     {
@@ -4195,6 +4574,7 @@
       ],
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -4207,6 +4587,7 @@
       "nativeReaders": [
         "StageLogic"
       ],
+      "indirect": null,
       "priority": true
     },
     {
@@ -4219,6 +4600,7 @@
       "nativeReaders": [
         "PetModel"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -4227,6 +4609,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -4239,6 +4622,7 @@
       "nativeReaders": [
         "RaidTraitModel"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -4249,6 +4633,7 @@
       "nativeReaders": [
         "StageLogic"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -4260,6 +4645,7 @@
         "MonsterModel",
         "StageLogic"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -4273,6 +4659,7 @@
       "nativeReaders": [
         "PrestigeModel"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -4285,6 +4672,7 @@
       "nativeReaders": [
         "PrestigeModel"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -4295,6 +4683,7 @@
       "nativeReaders": [
         "PrestigeModel"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -4305,6 +4694,7 @@
       "nativeReaders": [
         "ActiveSkillModel"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -4316,6 +4706,7 @@
       ],
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -4328,6 +4719,7 @@
       "nativeReaders": [
         "StageLogic"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -4338,6 +4730,7 @@
       "nativeReaders": [
         "MonsterModel"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -4350,6 +4743,7 @@
       "nativeReaders": [
         "RoyalContract"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -4362,6 +4756,7 @@
       "nativeReaders": [
         "RoyalContract"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -4370,6 +4765,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -4380,6 +4776,7 @@
       "nativeReaders": [
         "RoyalContract"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -4391,6 +4788,7 @@
       ],
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -4399,6 +4797,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -4413,6 +4812,7 @@
         "PlayerModel",
         "SkillTreeUIModel"
       ],
+      "indirect": null,
       "priority": true
     },
     {
@@ -4425,6 +4825,7 @@
       "nativeReaders": [
         "PlayerController"
       ],
+      "indirect": null,
       "priority": true
     },
     {
@@ -4443,6 +4844,7 @@
         "StatsPanelScript",
         "UltraDagger"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -4455,6 +4857,7 @@
       "nativeReaders": [
         "ActiveSkillModel"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -4465,6 +4868,7 @@
       "nativeReaders": [
         "PlayerController"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -4479,6 +4883,7 @@
       "nativeReaders": [
         "PlayerController.<ShadowCloneAttackLoop>d__132"
       ],
+      "indirect": null,
       "priority": true
     },
     {
@@ -4492,6 +4897,7 @@
         "PlayerController",
         "StatsPanelScript"
       ],
+      "indirect": null,
       "priority": true
     },
     {
@@ -4502,6 +4908,7 @@
       "nativeReaders": [
         "ActiveSkillModel"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -4513,6 +4920,7 @@
       ],
       "engineReads": true,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -4521,6 +4929,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -4531,6 +4940,7 @@
       ],
       "engineReads": true,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -4539,6 +4949,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -4551,6 +4962,7 @@
       "nativeReaders": [
         "StageLogic"
       ],
+      "indirect": null,
       "priority": true
     },
     {
@@ -4561,6 +4973,7 @@
       ],
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -4571,6 +4984,7 @@
       ],
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -4583,6 +4997,7 @@
       "nativeReaders": [
         "StageLogic"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -4595,6 +5010,7 @@
       "nativeReaders": [
         "StageLogic"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -4607,6 +5023,7 @@
       "nativeReaders": [
         "StageLogic"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -4617,6 +5034,7 @@
       "nativeReaders": [
         "RaidPartDamagedEvent"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -4625,6 +5043,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -4633,6 +5052,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -4641,6 +5061,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -4651,6 +5072,7 @@
       "nativeReaders": [
         "SkillTreeController"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -4661,6 +5083,7 @@
       ],
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -4671,6 +5094,7 @@
       ],
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -4681,6 +5105,7 @@
       ],
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -4691,6 +5116,7 @@
       ],
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -4701,6 +5127,7 @@
       ],
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -4711,6 +5138,7 @@
       ],
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -4726,6 +5154,7 @@
       "nativeReaders": [
         "EquipmentMetaData"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -4734,6 +5163,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -4746,6 +5176,7 @@
       "nativeReaders": [
         "SoloRaidFloorListItem"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -4757,6 +5188,7 @@
       ],
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -4767,6 +5199,7 @@
       "nativeReaders": [
         "PassiveSkillModel"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -4785,6 +5218,7 @@
         "StageLogic",
         "StatsPanelScript"
       ],
+      "indirect": null,
       "priority": true
     },
     {
@@ -4799,6 +5233,7 @@
         "HaystTitanScript",
         "MegaBombTitanScript"
       ],
+      "indirect": null,
       "priority": true
     },
     {
@@ -4809,6 +5244,7 @@
       "nativeReaders": [
         "MonsterModel"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -4819,6 +5255,7 @@
       "nativeReaders": [
         "ActiveSkillModel"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -4830,6 +5267,7 @@
       ],
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -4838,6 +5276,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -4850,6 +5289,7 @@
       "nativeReaders": [
         "RaidPartDamagedEvent"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -4858,6 +5298,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -4870,6 +5311,7 @@
       "nativeReaders": [
         "MonsterModel"
       ],
+      "indirect": null,
       "priority": true
     },
     {
@@ -4883,6 +5325,7 @@
       "nativeReaders": [
         "StageLogic"
       ],
+      "indirect": null,
       "priority": true
     },
     {
@@ -4895,6 +5338,7 @@
       "nativeReaders": [
         "PlayerController"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -4909,6 +5353,7 @@
         "PlayerController",
         "StatsPanelScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -4919,6 +5364,7 @@
       "nativeReaders": [
         "QTEController"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -4929,6 +5375,7 @@
       ],
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -4937,6 +5384,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -4945,6 +5393,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -4953,6 +5402,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -4963,6 +5413,7 @@
       ],
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -4973,6 +5424,7 @@
       ],
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -4986,6 +5438,7 @@
         "StageLogic",
         "StatsPanelScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -4996,6 +5449,7 @@
       "nativeReaders": [
         "ActiveSkillModel"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -5011,6 +5465,7 @@
       "nativeReaders": [
         "EquipmentMetaData"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -5019,6 +5474,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -5033,6 +5489,7 @@
         "PlayerController",
         "PlayerModel"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -5043,6 +5500,7 @@
       "nativeReaders": [
         "PlayerModel"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -5054,6 +5512,7 @@
         "PlayerModel",
         "StatsPanelScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -5065,6 +5524,7 @@
       ],
       "engineReads": true,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -5073,6 +5533,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -5089,6 +5550,7 @@
         "PlayerController",
         "StatsPanelScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -5099,6 +5561,7 @@
       ],
       "engineReads": true,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -5107,6 +5570,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -5117,6 +5581,7 @@
       ],
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -5127,6 +5592,7 @@
       ],
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -5144,6 +5610,7 @@
         "PlayerModel",
         "StatsPanelScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -5156,6 +5623,7 @@
       "nativeReaders": [
         "PlayerModel"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -5168,6 +5636,7 @@
       "nativeReaders": [
         "PlayerModel"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -5178,6 +5647,7 @@
       "nativeReaders": [
         "StatsTrackedBonusModel"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -5192,6 +5662,7 @@
         "ClanModel",
         "StatsPanelScript"
       ],
+      "indirect": null,
       "priority": true
     },
     {
@@ -5200,6 +5671,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -5208,6 +5680,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -5218,6 +5691,7 @@
       ],
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -5226,6 +5700,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -5234,6 +5709,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -5242,6 +5718,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -5254,6 +5731,7 @@
       "nativeReaders": [
         "ClanModel"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -5264,6 +5742,7 @@
       ],
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -5274,6 +5753,7 @@
       ],
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -5284,6 +5764,7 @@
       "nativeReaders": [
         "StageLogic"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -5297,6 +5778,7 @@
         "StageLogic",
         "StatsPanelScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -5309,6 +5791,7 @@
       "nativeReaders": [
         "StageLogic"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -5319,6 +5802,7 @@
       "nativeReaders": [
         "TitanSoulsModel"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -5331,6 +5815,7 @@
       "nativeReaders": [
         "TitanSoulsModel"
       ],
+      "indirect": null,
       "priority": true
     },
     {
@@ -5341,6 +5826,7 @@
       "nativeReaders": [
         "TitanSoulsModel"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -5353,6 +5839,7 @@
       "nativeReaders": [
         "TitanSoulsModel"
       ],
+      "indirect": null,
       "priority": true
     },
     {
@@ -5363,6 +5850,7 @@
       "nativeReaders": [
         "TitanSoulsModel"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -5371,6 +5859,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -5379,6 +5868,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -5387,6 +5877,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -5395,6 +5886,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -5403,6 +5895,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -5411,6 +5904,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -5419,6 +5913,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -5427,6 +5922,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -5435,6 +5931,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -5443,6 +5940,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -5451,6 +5949,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -5459,6 +5958,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -5471,6 +5971,7 @@
       ],
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -5481,6 +5982,7 @@
       "nativeReaders": [
         "StatsTrackedBonusModel"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -5495,6 +5997,7 @@
         "StatsPanelScript",
         "TwilightFairyController"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -5505,6 +6008,7 @@
       ],
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -5513,6 +6017,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -5521,6 +6026,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -5529,6 +6035,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -5539,6 +6046,7 @@
       ],
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -5549,6 +6057,7 @@
       ],
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -5562,6 +6071,7 @@
       "nativeReaders": [
         "TwilightFairyController"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -5572,6 +6082,7 @@
       "nativeReaders": [
         "TwilightFairyController"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -5582,6 +6093,7 @@
       "nativeReaders": [
         "StageLogic"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -5595,6 +6107,7 @@
         "PlayerController",
         "PlayerController.<ShadowCloneAttackLoop>d__132"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -5608,6 +6121,7 @@
         "AchievementDailyListItem",
         "RewardClass"
       ],
+      "indirect": null,
       "priority": true
     },
     {
@@ -5622,6 +6136,7 @@
       "nativeReaders": [
         "StageLogic"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -5632,6 +6147,7 @@
       ],
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -5642,6 +6158,7 @@
       ],
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -5652,6 +6169,7 @@
       "nativeReaders": [
         "QTEController"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -5667,6 +6185,7 @@
         "UltraDagger",
         "UltraDaggerComboCountScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -5682,6 +6201,7 @@
       "nativeReaders": [
         "PlayerModel"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -5690,6 +6210,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -5700,6 +6221,7 @@
       "nativeReaders": [
         "UltraDagger"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -5710,6 +6232,7 @@
       "nativeReaders": [
         "StatsTrackedBonusModel"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -5722,6 +6245,7 @@
       "nativeReaders": [
         "UltraDagger"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -5732,6 +6256,7 @@
       "nativeReaders": [
         "UltraDagger"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -5744,6 +6269,7 @@
       "nativeReaders": [
         "StageLogic"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -5756,6 +6282,7 @@
       "nativeReaders": [
         "PlayerController"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -5766,6 +6293,7 @@
       "nativeReaders": [
         "UltraDagger"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -5778,6 +6306,7 @@
       "nativeReaders": [
         "StageLogic"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -5790,6 +6319,7 @@
       "nativeReaders": [
         "StageLogic"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -5798,6 +6328,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -5808,6 +6339,7 @@
       ],
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -5818,6 +6350,7 @@
       "nativeReaders": [
         "ActiveSkillModel"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -5829,6 +6362,7 @@
       ],
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -5841,6 +6375,7 @@
       "nativeReaders": [
         "ArtifactInfo"
       ],
+      "indirect": null,
       "priority": true
     },
     {
@@ -5851,6 +6386,7 @@
       "nativeReaders": [
         "PrestigeModel"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -5861,6 +6397,7 @@
       "nativeReaders": [
         "MinigamesModel"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -5871,6 +6408,7 @@
       "nativeReaders": [
         "MinigamesModel"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -5879,6 +6417,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -5887,6 +6426,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -5895,6 +6435,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -5905,6 +6446,7 @@
       "nativeReaders": [
         "FishingDerbyMinigameModel"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -5915,6 +6457,7 @@
       "nativeReaders": [
         "FishingDerbyMinigameModel"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -5925,6 +6468,7 @@
       "nativeReaders": [
         "MinigamesModel"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -5935,6 +6479,7 @@
       "nativeReaders": [
         "MinigamesModel"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -5943,6 +6488,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -5951,6 +6497,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -5961,6 +6508,7 @@
       "nativeReaders": [
         "HuntingMinigameModel"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -5971,6 +6519,7 @@
       "nativeReaders": [
         "HuntingMinigameModel"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -5983,6 +6532,7 @@
         "HuntingMinigameCoreGame.<RunComboTimer>d__55",
         "HuntingMinigameRewardPS"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -5993,6 +6543,7 @@
       "nativeReaders": [
         "HuntingMinigameCoreGame"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -6003,6 +6554,7 @@
       "nativeReaders": [
         "MinigamesModel"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -6013,6 +6565,7 @@
       "nativeReaders": [
         "MinigamesModel"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -6021,6 +6574,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -6029,6 +6583,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -6039,6 +6594,7 @@
       "nativeReaders": [
         "BallDropMinigameModel"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -6049,6 +6605,7 @@
       "nativeReaders": [
         "BallDropMinigameModel"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -6059,6 +6616,7 @@
       "nativeReaders": [
         "AfflictedSkillScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -6069,6 +6627,7 @@
       "nativeReaders": [
         "RaidSkillScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -6079,6 +6638,7 @@
       "nativeReaders": [
         "RaidPartDamagedEvent"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -6089,6 +6649,7 @@
       "nativeReaders": [
         "RaidPartDamagedEvent"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -6099,6 +6660,7 @@
       "nativeReaders": [
         "AfflictedSkillScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -6109,6 +6671,7 @@
       "nativeReaders": [
         "AfflictedSkillScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -6119,6 +6682,7 @@
       "nativeReaders": [
         "AfflictionMarkScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -6127,6 +6691,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -6135,6 +6700,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -6143,6 +6709,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -6151,6 +6718,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -6159,6 +6727,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -6171,6 +6740,7 @@
       "nativeReaders": [
         "RaidPartDamagedEvent"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -6181,6 +6751,7 @@
       "nativeReaders": [
         "RaidPartDamagedEvent"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -6191,6 +6762,7 @@
       "nativeReaders": [
         "RaidPartDamagedEvent"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -6199,6 +6771,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -6207,6 +6780,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -6215,6 +6789,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -6225,6 +6800,7 @@
       "nativeReaders": [
         "RaidPartDamagedEvent"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -6233,6 +6809,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -6243,6 +6820,7 @@
       "nativeReaders": [
         "RaidSkillScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -6253,6 +6831,7 @@
       "nativeReaders": [
         "RaidPartDamagedEvent"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -6263,6 +6842,7 @@
       "nativeReaders": [
         "RaidPartDamagedEvent"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -6271,6 +6851,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -6279,6 +6860,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -6287,6 +6869,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -6295,6 +6878,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -6305,6 +6889,7 @@
       "nativeReaders": [
         "AstralEchoScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -6315,6 +6900,7 @@
       "nativeReaders": [
         "AstralEchoScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -6325,6 +6911,7 @@
       "nativeReaders": [
         "BarbedMorningstarScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -6335,6 +6922,7 @@
       "nativeReaders": [
         "BarbedMorningstarScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -6345,6 +6933,7 @@
       "nativeReaders": [
         "BarbedMorningstarScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -6355,6 +6944,7 @@
       "nativeReaders": [
         "BarbedMorningstarScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -6363,6 +6953,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -6371,6 +6962,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -6379,6 +6971,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -6387,6 +6980,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -6397,6 +6991,7 @@
       "nativeReaders": [
         "RaidSkillScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -6407,6 +7002,7 @@
       "nativeReaders": [
         "RaidPartDamagedEvent"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -6417,6 +7013,7 @@
       "nativeReaders": [
         "RaidPartDamagedEvent"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -6425,6 +7022,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -6433,6 +7031,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -6441,6 +7040,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -6449,6 +7049,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -6459,6 +7060,7 @@
       "nativeReaders": [
         "BurningAttackScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -6467,6 +7069,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -6475,6 +7078,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -6485,6 +7089,7 @@
       "nativeReaders": [
         "BurningAttackScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -6495,6 +7100,7 @@
       "nativeReaders": [
         "BurningAttackScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -6505,6 +7111,7 @@
       "nativeReaders": [
         "RaidSkillScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -6517,6 +7124,7 @@
       "nativeReaders": [
         "RaidPartDamagedEvent"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -6527,6 +7135,7 @@
       "nativeReaders": [
         "RaidPartDamagedEvent"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -6537,6 +7146,7 @@
       "nativeReaders": [
         "BurstChanceBonusImpl"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -6547,6 +7157,7 @@
       "nativeReaders": [
         "BurstCountScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -6557,6 +7168,7 @@
       "nativeReaders": [
         "BurstCountScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -6567,6 +7179,7 @@
       "nativeReaders": [
         "BurstMarkScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -6575,6 +7188,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -6583,6 +7197,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -6593,6 +7208,7 @@
       "nativeReaders": [
         "CelestialStaticScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -6603,6 +7219,7 @@
       "nativeReaders": [
         "CelestialStaticScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -6613,6 +7230,7 @@
       "nativeReaders": [
         "CelestialStaticScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -6623,6 +7241,7 @@
       "nativeReaders": [
         "CelestialStaticScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -6633,6 +7252,7 @@
       "nativeReaders": [
         "ChainLightningScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -6643,6 +7263,7 @@
       "nativeReaders": [
         "ChainLightningScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -6653,6 +7274,7 @@
       "nativeReaders": [
         "ChainLightningScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -6663,6 +7285,7 @@
       "nativeReaders": [
         "RaidPartDamagedEvent"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -6673,6 +7296,7 @@
       "nativeReaders": [
         "RaidPartDamagedEvent"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -6681,6 +7305,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -6689,6 +7314,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -6697,6 +7323,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -6707,6 +7334,7 @@
       "nativeReaders": [
         "CosmicBarbScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -6715,6 +7343,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -6723,6 +7352,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -6731,6 +7361,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -6741,6 +7372,7 @@
       "nativeReaders": [
         "DecayingAttackScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -6751,6 +7383,7 @@
       "nativeReaders": [
         "DecayingAttackScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -6761,6 +7394,7 @@
       "nativeReaders": [
         "DecayingAttackScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -6771,6 +7405,7 @@
       "nativeReaders": [
         "ClanDungeonScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -6779,6 +7414,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -6787,6 +7423,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -6797,6 +7434,7 @@
       "nativeReaders": [
         "RaidSkillScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -6807,6 +7445,7 @@
       "nativeReaders": [
         "RaidSkillScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -6817,6 +7456,7 @@
       "nativeReaders": [
         "RaidSkillScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -6827,6 +7467,7 @@
       "nativeReaders": [
         "RaidSkillScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -6837,6 +7478,7 @@
       "nativeReaders": [
         "RaidSkillScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -6847,6 +7489,7 @@
       "nativeReaders": [
         "RaidSkillScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -6857,6 +7500,7 @@
       "nativeReaders": [
         "RaidSkillScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -6867,6 +7511,7 @@
       "nativeReaders": [
         "RaidSkillScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -6877,6 +7522,7 @@
       "nativeReaders": [
         "RaidSkillScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -6887,6 +7533,7 @@
       "nativeReaders": [
         "RaidSkillScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -6897,6 +7544,7 @@
       "nativeReaders": [
         "RaidSkillScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -6907,6 +7555,7 @@
       "nativeReaders": [
         "RaidSkillScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -6917,6 +7566,7 @@
       "nativeReaders": [
         "RaidSkillScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -6927,6 +7577,7 @@
       "nativeReaders": [
         "RaidSkillScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -6937,6 +7588,7 @@
       "nativeReaders": [
         "RaidSkillScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -6947,6 +7599,7 @@
       "nativeReaders": [
         "RaidSkillScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -6957,6 +7610,7 @@
       "nativeReaders": [
         "RaidSkillScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -6967,6 +7621,7 @@
       "nativeReaders": [
         "RaidSkillScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -6977,6 +7632,7 @@
       "nativeReaders": [
         "RaidSkillScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -6987,6 +7643,7 @@
       "nativeReaders": [
         "RaidSkillScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -6997,6 +7654,7 @@
       "nativeReaders": [
         "RaidSkillScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -7007,6 +7665,7 @@
       "nativeReaders": [
         "RaidSkillScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -7017,6 +7676,7 @@
       "nativeReaders": [
         "RaidSkillScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -7027,6 +7687,7 @@
       "nativeReaders": [
         "RaidSkillScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -7037,6 +7698,7 @@
       "nativeReaders": [
         "ExplosiveCrateScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -7045,6 +7707,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -7053,6 +7716,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -7063,6 +7727,7 @@
       "nativeReaders": [
         "RaidPartDamagedEvent"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -7073,6 +7738,7 @@
       "nativeReaders": [
         "RaidPartDamagedEvent"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -7083,6 +7749,7 @@
       "nativeReaders": [
         "RaidPartDamagedEvent"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -7093,6 +7760,7 @@
       "nativeReaders": [
         "SpiritBombScript.<ExplodeBomb>d__9"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -7103,6 +7771,7 @@
       "nativeReaders": [
         "SpiritBombScript.<ExplodeBomb>d__9"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -7113,6 +7782,7 @@
       "nativeReaders": [
         "FairyBombScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -7123,6 +7793,7 @@
       "nativeReaders": [
         "FairyTotemScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -7133,6 +7804,7 @@
       "nativeReaders": [
         "TotemFairySkillScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -7143,6 +7815,7 @@
       "nativeReaders": [
         "FairyTotemScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -7153,6 +7826,7 @@
       "nativeReaders": [
         "TotemFairyScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -7163,6 +7837,7 @@
       "nativeReaders": [
         "FlakShotScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -7173,6 +7848,7 @@
       "nativeReaders": [
         "FlakShotScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -7183,6 +7859,7 @@
       "nativeReaders": [
         "FlashScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -7193,6 +7870,7 @@
       "nativeReaders": [
         "FlashScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -7203,6 +7881,7 @@
       "nativeReaders": [
         "FragmentizeScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -7213,6 +7892,7 @@
       "nativeReaders": [
         "FragmentizeScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -7223,6 +7903,7 @@
       "nativeReaders": [
         "FragmentizeScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -7233,6 +7914,7 @@
       "nativeReaders": [
         "FuseScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -7241,6 +7923,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -7251,6 +7934,7 @@
       "nativeReaders": [
         "FuseScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -7261,6 +7945,7 @@
       "nativeReaders": [
         "FuseScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -7271,6 +7956,7 @@
       "nativeReaders": [
         "HaymakerScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -7281,6 +7967,7 @@
       "nativeReaders": [
         "HaymakerScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -7291,6 +7978,7 @@
       "nativeReaders": [
         "RaidSkillScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -7301,6 +7989,7 @@
       "nativeReaders": [
         "RaidSkillScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -7311,6 +8000,7 @@
       "nativeReaders": [
         "RaidSkillScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -7321,6 +8011,7 @@
       "nativeReaders": [
         "RaidPartDamagedEvent"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -7331,6 +8022,7 @@
       "nativeReaders": [
         "RaidPartDamagedEvent"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -7339,6 +8031,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -7347,6 +8040,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -7355,6 +8049,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -7363,6 +8058,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -7373,6 +8069,7 @@
       "nativeReaders": [
         "RaidPartDamagedEvent"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -7383,6 +8080,7 @@
       "nativeReaders": [
         "RaidSkillScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -7393,6 +8091,7 @@
       "nativeReaders": [
         "RaidSkillScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -7403,6 +8102,7 @@
       "nativeReaders": [
         "RaidSkillScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -7413,6 +8113,7 @@
       "nativeReaders": [
         "LimbBurstScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -7423,6 +8124,7 @@
       "nativeReaders": [
         "LimbBurstScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -7433,6 +8135,7 @@
       "nativeReaders": [
         "RaidPartDamagedEvent"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -7443,6 +8146,7 @@
       "nativeReaders": [
         "RaidPartDamagedEvent"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -7455,6 +8159,7 @@
       "nativeReaders": [
         "ClanLoyaltyController"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -7465,6 +8170,7 @@
       "nativeReaders": [
         "RaidPartDamagedEvent"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -7475,6 +8181,7 @@
       "nativeReaders": [
         "MagicPotionScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -7483,6 +8190,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -7491,6 +8199,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -7499,6 +8208,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -7507,6 +8217,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -7517,6 +8228,7 @@
       "nativeReaders": [
         "MeteorShowerScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -7525,6 +8237,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -7533,6 +8246,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -7543,6 +8257,7 @@
       "nativeReaders": [
         "MirrorForceScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -7551,6 +8266,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -7561,6 +8277,7 @@
       "nativeReaders": [
         "MirrorForceScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -7569,6 +8286,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -7579,6 +8297,7 @@
       "nativeReaders": [
         "MoonBeamScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -7589,6 +8308,7 @@
       "nativeReaders": [
         "MoonBeamScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -7599,6 +8319,7 @@
       "nativeReaders": [
         "MoonBeamScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -7609,6 +8330,7 @@
       "nativeReaders": [
         "PetrifyScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -7617,6 +8339,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -7625,6 +8348,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -7635,6 +8359,7 @@
       "nativeReaders": [
         "PlagueAttackScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -7645,6 +8370,7 @@
       "nativeReaders": [
         "PlagueAttackScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -7655,6 +8381,7 @@
       "nativeReaders": [
         "PlagueAttackScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -7663,6 +8390,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -7673,6 +8401,7 @@
       "nativeReaders": [
         "PoisonAttackScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -7681,6 +8410,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -7689,6 +8419,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -7699,6 +8430,7 @@
       "nativeReaders": [
         "PowerBubbleScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -7709,6 +8441,7 @@
       "nativeReaders": [
         "PowerBubbleScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -7719,6 +8452,7 @@
       "nativeReaders": [
         "PrimalRageScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -7729,6 +8463,7 @@
       "nativeReaders": [
         "PrimalRageScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -7739,6 +8474,7 @@
       "nativeReaders": [
         "PurifyScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -7749,6 +8485,7 @@
       "nativeReaders": [
         "PurifyScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -7759,6 +8496,7 @@
       "nativeReaders": [
         "ClanDungeonScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -7771,6 +8509,7 @@
       "nativeReaders": [
         "RaidSkillScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -7779,6 +8518,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -7787,6 +8527,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -7795,6 +8536,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -7803,6 +8545,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -7811,6 +8554,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -7819,6 +8563,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -7827,6 +8572,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -7835,6 +8581,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -7845,6 +8592,7 @@
       "nativeReaders": [
         "RazorWindScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -7855,6 +8603,7 @@
       "nativeReaders": [
         "RazorWindScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -7865,6 +8614,7 @@
       "nativeReaders": [
         "RuinousRustScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -7875,6 +8625,7 @@
       "nativeReaders": [
         "RuinousRustScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -7885,6 +8636,7 @@
       "nativeReaders": [
         "RustScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -7895,6 +8647,7 @@
       "nativeReaders": [
         "RuneScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -7905,6 +8658,7 @@
       "nativeReaders": [
         "RuneScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -7915,6 +8669,7 @@
       "nativeReaders": [
         "RustScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -7925,6 +8680,7 @@
       "nativeReaders": [
         "FlakShotScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -7935,6 +8691,7 @@
       "nativeReaders": [
         "SandsOfTimeScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -7945,6 +8702,7 @@
       "nativeReaders": [
         "DebuffSkillScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -7955,6 +8713,7 @@
       "nativeReaders": [
         "ShadowScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -7965,6 +8724,7 @@
       "nativeReaders": [
         "ShadowScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -7975,6 +8735,7 @@
       "nativeReaders": [
         "RaidPartDamagedEvent"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -7985,6 +8746,7 @@
       "nativeReaders": [
         "SkullBashScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -7995,6 +8757,7 @@
       "nativeReaders": [
         "SkullBashScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -8005,6 +8768,7 @@
       "nativeReaders": [
         "SkullBashScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -8015,6 +8779,7 @@
       "nativeReaders": [
         "SolarFlareScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -8025,6 +8790,7 @@
       "nativeReaders": [
         "SolarFlareScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -8035,6 +8801,7 @@
       "nativeReaders": [
         "RaidPartDamagedEvent"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -8045,6 +8812,7 @@
       "nativeReaders": [
         "StaticRiftScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -8055,6 +8823,7 @@
       "nativeReaders": [
         "StaticRiftScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -8065,6 +8834,7 @@
       "nativeReaders": [
         "StaticRiftScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -8075,6 +8845,7 @@
       "nativeReaders": [
         "StaticRiftScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -8083,6 +8854,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -8093,6 +8865,7 @@
       "nativeReaders": [
         "LightningStormScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -8101,6 +8874,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -8111,6 +8885,7 @@
       "nativeReaders": [
         "LightningStormScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -8121,6 +8896,7 @@
       "nativeReaders": [
         "SwarmScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -8131,6 +8907,7 @@
       "nativeReaders": [
         "SupportSkillScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -8141,6 +8918,7 @@
       "nativeReaders": [
         "FairyTotemScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -8149,6 +8927,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -8160,6 +8939,7 @@
         "FairyTotemScript",
         "SupportSkillScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -8170,6 +8950,7 @@
       "nativeReaders": [
         "SupportSkillScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -8181,6 +8962,7 @@
         "ClanRaidModel",
         "RaidPartDamagedEvent"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -8191,6 +8973,7 @@
       "nativeReaders": [
         "RaidSkillScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -8201,6 +8984,7 @@
       "nativeReaders": [
         "RaidSkillScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -8211,6 +8995,7 @@
       "nativeReaders": [
         "RaidSkillScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -8221,6 +9006,7 @@
       "nativeReaders": [
         "TriangleSupportScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -8231,6 +9017,7 @@
       "nativeReaders": [
         "TriangleSupportScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -8241,6 +9028,7 @@
       "nativeReaders": [
         "WeakenScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -8251,6 +9039,7 @@
       "nativeReaders": [
         "WeakenScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -8259,6 +9048,7 @@
       "sources": null,
       "engineReads": false,
       "nativeReaders": null,
+      "indirect": null,
       "priority": false
     },
     {
@@ -8269,6 +9059,7 @@
       "nativeReaders": [
         "WhipOfLightningScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -8279,6 +9070,7 @@
       "nativeReaders": [
         "WhipOfLightningScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -8289,6 +9081,7 @@
       "nativeReaders": [
         "WhipOfLightningScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -8299,6 +9092,7 @@
       "nativeReaders": [
         "RaidPartDamagedEvent"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -8309,6 +9103,7 @@
       "nativeReaders": [
         "RaidPartDamagedEvent"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -8319,6 +9114,7 @@
       "nativeReaders": [
         "RaidPartDamagedEvent"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -8329,6 +9125,7 @@
       "nativeReaders": [
         "RaidPartDamagedEvent"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -8339,6 +9136,7 @@
       "nativeReaders": [
         "RaidPartDamagedEvent"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -8349,6 +9147,7 @@
       "nativeReaders": [
         "RaidPartDamagedEvent"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -8359,6 +9158,7 @@
       "nativeReaders": [
         "RaidPartDamagedEvent"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -8369,6 +9169,7 @@
       "nativeReaders": [
         "RaidPartDamagedEvent"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -8379,6 +9180,7 @@
       "nativeReaders": [
         "RaidPartDamagedEvent"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -8389,6 +9191,7 @@
       "nativeReaders": [
         "RaidPartDamagedEvent"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -8399,6 +9202,7 @@
       "nativeReaders": [
         "RaidPartDamagedEvent"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -8409,6 +9213,7 @@
       "nativeReaders": [
         "AfflictedSkillScript"
       ],
+      "indirect": null,
       "priority": false
     },
     {
@@ -8419,6 +9224,7 @@
       "nativeReaders": [
         "BurstChanceBonusImpl"
       ],
+      "indirect": null,
       "priority": false
     }
   ],

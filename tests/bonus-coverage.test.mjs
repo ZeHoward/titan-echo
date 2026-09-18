@@ -4,6 +4,7 @@ import { readFileSync } from 'node:fs';
 import { referenceRoot } from '../tools/reference-validation.mjs';
 import { fresh, hydrate, skillDuration, skillMana, SKILLS, SKILL_DATA } from '../lib/engine.ts';
 import { bonusDefinitions } from '../lib/tt2-rules.ts';
+import { TT2_ARTIFACTS } from '../lib/tt2-data.ts';
 
 const evidence = JSON.parse(readFileSync(new URL('bonus-readers-evidence.json', referenceRoot), 'utf8'));
 const coverage = JSON.parse(readFileSync(new URL('../docs/bonus-coverage.json', import.meta.url), 'utf8'));
@@ -61,16 +62,29 @@ test('查一個不存在的加成不會被當成秒數或魔力加進去', () =>
   }
 });
 
+test('以其他方式讀取的加成逐項登記，而且登記本身有被檢查', () => {
+  // 這些引擎有消費、但沒有把名字寫出來，原始碼掃描看不到。登記錯了會把真的讀取誤判成沒作用，
+  // 所以工具在產表時就會驗證每一筆宣稱——這裡再釘一次，確保登記沒有被悄悄清空。
+  const indirect = coverage.generatedFrom.indirectReads;
+  assert.ok(Object.keys(indirect).length > 0, '間接讀取的登記不該是空的');
+  for (const [id, claim] of Object.entries(indirect)) {
+    assert.equal(TT2_ARTIFACTS[claim.artifact].effect, id, `神器索引 ${claim.artifact} 應該是 ${id}`);
+    const row = coverage.rows.find(r => r.id === id);
+    assert.equal(row.verdict, 'live', `${id} 有讀就不該被算成沒作用`);
+    assert.equal(row.indirect, claim.where);
+  }
+});
+
 test('覆蓋率的分布記下來，加成接上或掉線都是看得見的改動', () => {
   assert.deepEqual(coverage.counts, {
-    live: 94,
-    'dead-native-uses-it': 134,
+    live: 97,
+    'dead-native-uses-it': 131,
     'dead-native-ignores-it': 69,
     'read-without-source': 9,
     'not-in-project': 490,
   });
   const priority = coverage.rows.filter(r => r.priority);
-  assert.equal(priority.length, 70, '落在已實作系統、可以接上的加成數量變了');
+  assert.equal(priority.length, 67, '落在已實作系統、可以接上的加成數量變了');
 });
 
 test('判定彼此互斥，每個加成只會落在一類', () => {

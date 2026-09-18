@@ -1,15 +1,17 @@
 {
   "version": "8.2.0",
-  "role": "兩個依「擁有幾個」放大的加成：集齊的裝備套裝數、英雄武器的總等級。",
+  "role": "三個依「有多少」放大的加成：本季最高關卡、集齊的裝備套裝數、英雄武器的總等級。",
   "packageSha256": "8d78c9aa877e6c0b291ee2116cab855bd26c59c1d080bc654f88ecf1ff268b5f",
   "binarySha256": "c13fc44321b1214c71ab0277a134fc3401fd7392c74a0bbb3935671c55a8713a",
   "scriptSha256": "62c2eeb8472bb107de516e4b6ae69d3dcdf5013fb1caa87223d82a54dd203f8b",
-  "finding": "EquipmentModel.EquipmentSetCountBonusHandler 對三個加成各做一次 Pow 再寫回，其中具名的那個是 DamagePerEquipmentSet，指數是**集齊的套裝總數**，寫進 AllDamage；另外兩個依稀有度從表裡選，以暫存器傳入。HelperModel.RefreshDamagePerHelperWeaponBonus 先取 GetTotalHelperWeaponLevels，**總等級是 0 就整個跳過**；否則在加成不等於 GetBonusIdentity 時，以「總等級 × 加成」寫進 AllDamage——**沒有加 1**，接著 DamagePerHelperWeaponMult 以總等級取次方再寫一次。",
+  "finding": "StatsTrackedBonusModel.UpdateDamagePerMaxStageBonus 讀 DamagePerMaxStage，以本季最高關卡取次方後寫進 AllDamage，只有一次 Pow、沒有其他運算。EquipmentModel.EquipmentSetCountBonusHandler 對三個加成各做一次 Pow 再寫回，其中具名的那個是 DamagePerEquipmentSet，指數是**集齊的套裝總數**，寫進 AllDamage；另外兩個依稀有度從表裡選，以暫存器傳入。HelperModel.RefreshDamagePerHelperWeaponBonus 先取 GetTotalHelperWeaponLevels，**總等級是 0 就整個跳過**；否則在加成不等於 GetBonusIdentity 時，以「總等級 × 加成」寫進 AllDamage——**沒有加 1**，接著 DamagePerHelperWeaponMult 以總等級取次方再寫一次。",
   "expressions": {
+    "maxStage": "AllDamage ×= DamagePerMaxStage ^ 本季最高關卡",
     "equipmentSets": "AllDamage ×= DamagePerEquipmentSet ^ 集齊的套裝數",
     "helperWeapons": "AllDamage ×= 武器總等級 × DamagePerHelperWeapon（總等級為 0 或加成為中性值時不套用）；AllDamage ×= DamagePerHelperWeaponMult ^ 武器總等級"
   },
   "methods": {
+    "StatsTrackedBonusModel$$UpdateDamagePerMaxStageBonus": "0x256147c",
     "EquipmentModel$$EquipmentSetCountBonusHandler": "0x218b8dc",
     "HelperModel$$RefreshDamagePerHelperWeaponBonus": "0x2255760",
     "HelperModel$$GetTotalHelperWeaponLevels": "0x2256844",
@@ -19,6 +21,18 @@
     "BonusModel$$GetBonusIdentity": "0x2715858"
   },
   "calls": {
+    "maxStage": [
+      {
+        "call": "GetBonus",
+        "at": "0x25614f0",
+        "bonus": 161
+      },
+      {
+        "call": "ModifyBonus",
+        "at": "0x256157c",
+        "bonus": 37
+      }
+    ],
     "equipmentSets": [
       {
         "call": "GetBonus",

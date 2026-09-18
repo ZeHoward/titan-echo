@@ -7,13 +7,13 @@
 
 | 判定 | 意義 | 個數 |
 |---|---|---|
-| `live` | 專案有來源、引擎有讀：正常運作。 | 94 |
-| `dead-native-uses-it` | 專案有來源、引擎沒讀，而且原生有取值點：**這些是可以接上的**。 | 134 |
+| `live` | 專案有來源、引擎有讀：正常運作。 | 97 |
+| `dead-native-uses-it` | 專案有來源、引擎沒讀，而且原生有取值點：**這些是可以接上的**。 | 131 |
 | `dead-native-ignores-it` | 專案有來源、引擎沒讀，原生也掃不到取值點：接了大概也沒有依據。 | 69 |
 | `read-without-source` | 引擎有讀，但專案沒有任何來源會給：恆為中性值，等來源出現才會生效。 | 9 |
 | `not-in-project` | 專案沒有來源，引擎也沒讀。 | 490 |
 
-## 優先：落在已實作系統的（70）
+## 優先：落在已實作系統的（67）
 
 原生有取值點、我們沒讀，而且**不屬於尚未實作的流派**——這些是可以直接接上的。
 依**原生讀取它的類別**分組，類別名就說明了它屬於哪個系統。
@@ -106,17 +106,9 @@
 
 - `ArtifactEnchantmentBoost` ← TT2_SETS
 
-### ArtifactInfo / ArtifactModelBase<object>（1）
-
-- `AllArtifactGoldEffect` ← TT2_ARTIFACTS
-
 ### ArtifactModel（1）
 
 - `DamagePerOwnedEnchantment` ← TT2_SETS
-
-### ArtifactModelBase<object>（1）
-
-- `AllArtifactDamageEffect` ← TT2_ARTIFACTS
 
 ### BasePetObject / ClanPlayerScript.<ClanPlayerLoop>d__19 / PlayerController.<ShadowCloneAttackLoop>d__132 / PlayerModel（1）
 
@@ -246,10 +238,6 @@
 
 - `DamagePerSpecialTitanActive` ← TT2_SETS
 
-### StatsTrackedBonusModel（1）
-
-- `DamagePerMaxStage` ← TT2_SETS
-
 ## 等流派實作再說的（64）
 
 原生有取值點，但屬於本專案尚未實作的系統（見 `generatedFrom.unbuiltSystems`）。
@@ -293,6 +281,13 @@
 - **TitanGachaModel**：`DamagePerNecroBearResearchLevel`
 - **TwilightFairyController**：`TwilightFairySpawnChance`
 - **UltraDagger**：`UltraDaggerPoisonBoost`
+
+## 引擎有讀、但不是用名字查的
+
+這些加成引擎確實有消費，只是沒有把名字寫出來，所以原始碼掃描看不到——逐項列在這裡才不會被誤判成沒作用。
+
+- `AllArtifactDamageEffect` ← lib/tt2-rules.ts baseFrom：群組 Damage 的神器以索引 98 取用
+- `AllArtifactGoldEffect` ← lib/tt2-rules.ts baseFrom：群組 Gold 的神器以索引 99 取用
 
 ## 原生也掃不到取值點的
 

@@ -248,6 +248,12 @@
           "note": "原生 PlayerModel.RefreshDamageBonusPerManaCap 把它算成 AllDamage 的乘數再寫回，**沒有加 1**：clamp(currentManaCap, 0, maximumManaCapBonusAmount 5000) × DamagePerManaCap，而且先用 GetBonusIdentity 比對，等於中性值就移除修飾不套用——這個比對是必要的，該加成是乘法型、沒有來源時讀到 1 而不是 0。唯一來源是「腐化」傳說套裝（每點魔力上限 ×0.05），六個技能全解鎖時為 10.5 倍。**刻意偏離一處**：原生在魔力上限為 0 時會讓傷害歸零，本專案改為不套用，因為本專案的存檔可能在劍術大師 100 級之前就湊齊那套套裝，而傷害歸零救不回來。"
         },
         {
+          "part": "最高關卡的傷害乘數",
+          "status": "native",
+          "ref": "count-bonus-evidence.json",
+          "note": "原生 StatsTrackedBonusModel.UpdateDamagePerMaxStageBonus 以本季最高關卡對 DamagePerMaxStage 取次方後寫進 AllDamage，只有一次 Pow。來源是「游牧」神話套裝（1.00005），第 2000 關 ×1.11、關卡上限 98000 時 ×134。"
+        },
+        {
           "part": "集齊套裝數與英雄武器總等級的傷害乘數",
           "status": "native",
           "ref": "count-bonus-evidence.json",
@@ -810,6 +816,7 @@
       "critMultiplier",
       "manaCapDamage",
       "helperWeaponDamage",
+      "maxStageDamage",
       "stateResolver",
       "effectResolver",
       "monsterCount",

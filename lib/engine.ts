@@ -501,6 +501,13 @@ export function helperWeaponDamage(s:State,resolve=stateResolver(s)){
  const levels=s.weapons.reduce((a,b)=>a+b,0)+s.tt2!.extraWeapons.reduce((a,b)=>a+b,0);
  return levels?levels*perWeapon:1;
 }
+// Native StatsTrackedBonusModel.UpdateDamagePerMaxStageBonus: AllDamage x= bonus ** max stage.
+// GHDouble.Pow(value, exponent) takes the bonus as the base, so the stage is the exponent. The
+// bonus is multiplicative, so with no source it reads 1 and 1 ** anything is still 1.
+export function maxStageDamage(s:State,resolve=stateResolver(s)){
+ const per=resolve('DamagePerMaxStage');
+ return per===1?1:per**Math.max(0,s.best);
+}
 export function buildDamage(s:State,build:Build):Big{const t=s.tt2!,active=s.active.filter(n=>n>s.last).length,c={tap:0,pet:.5,ship:1,clone:.5,dagger:.5,heavenly:.5,goldGun:.9}[build];
  // The intrinsic Sword Master curve is native-verified. Other build models
  // still use the existing reduction coefficients pending full reconstruction.
@@ -508,7 +515,7 @@ export function buildDamage(s:State,build:Build):Big{const t=s.tt2!,active=s.act
  let n=power(swordMasterBaseDamage(s),tapCoefficient);
  if(c)n=multiply(n,power(bigMax({...ONE},rawHeroDps(s)),c));
  const resolve=stateResolver(s);
- n=scale(n,buildMultiplier(t,build,active,isBoss(s),resolve)*gearBonus(s,0)*manaCapDamage(s,resolve)*helperWeaponDamage(s,resolve));
+ n=scale(n,buildMultiplier(t,build,active,isBoss(s),resolve)*gearBonus(s,0)*manaCapDamage(s,resolve)*helperWeaponDamage(s,resolve)*maxStageDamage(s,resolve));
  if(s.active[3]>s.last)n=scale(n,skillPower(s,3)**({tap:1,pet:1,ship:0,clone:.6,dagger:1,heavenly:1,goldGun:.45}[build]));
  if(s.active[2]>s.last)n=scale(n,skillPower(s,2)**c);
  if(build==='clone')n=scale(n,SKILL_DATA[0].amount[skillStep(0,s.skillLevels[0])]);

@@ -30,6 +30,7 @@ sys.path.insert(0, str(LOCAL/'python-libs'))
 from capstone import Cs, CS_ARCH_ARM64, CS_MODE_ARM
 from elftools.elf.elffile import ELFFile
 
+MAX_STAGE = 0x256147C
 SET_COUNT_HANDLER = 0x218B8DC
 HELPER_WEAPON = 0x2255760
 TOTAL_WEAPON_LEVELS = 0x2256844
@@ -39,6 +40,7 @@ REMOVE_BONUS = 0x27159E0
 GET_BONUS_IDENTITY = 0x2715858
 
 IDENTITIES = {
+    MAX_STAGE: 'StatsTrackedBonusModel$$UpdateDamagePerMaxStageBonus',
     SET_COUNT_HANDLER: 'EquipmentModel$$EquipmentSetCountBonusHandler',
     HELPER_WEAPON: 'HelperModel$$RefreshDamagePerHelperWeaponBonus',
     TOTAL_WEAPON_LEVELS: 'HelperModel$$GetTotalHelperWeaponLevels',
@@ -55,6 +57,7 @@ GOLD_ALL = 214
 DAMAGE_PER_EQUIPMENT_SET = 143
 DAMAGE_PER_HELPER_WEAPON = 152
 DAMAGE_PER_HELPER_WEAPON_MULT = 153
+DAMAGE_PER_MAX_STAGE = 161
 
 
 def sha(data):
@@ -85,7 +88,8 @@ def main():
     for label, number in (('AllDamage', ALL_DAMAGE), ('GoldAll', GOLD_ALL),
                           ('DamagePerEquipmentSet', DAMAGE_PER_EQUIPMENT_SET),
                           ('DamagePerHelperWeapon', DAMAGE_PER_HELPER_WEAPON),
-                          ('DamagePerHelperWeaponMult', DAMAGE_PER_HELPER_WEAPON_MULT)):
+                          ('DamagePerHelperWeaponMult', DAMAGE_PER_HELPER_WEAPON_MULT),
+                          ('DamagePerMaxStage', DAMAGE_PER_MAX_STAGE)):
         if int(types['values'][label]) != number:
             raise ValueError(f'{label} is no longer {number}')
 
@@ -131,8 +135,20 @@ def main():
                 named.append(by_address[target])
         return calls, named, text
 
+    stage_calls, stage_named, _ = study(MAX_STAGE)
     set_calls, set_named, _ = study(SET_COUNT_HANDLER)
     weapon_calls, weapon_named, weapon_text = study(HELPER_WEAPON)
+
+    # Max stage: read the bonus, raise it to the season's best stage, write into AllDamage.
+    if [(c['call'], c['bonus']) for c in stage_calls] != [
+            ('GetBonus', DAMAGE_PER_MAX_STAGE), ('ModifyBonus', ALL_DAMAGE)]:
+        raise ValueError(f'the max-stage shape changed: {stage_calls}')
+    if 'StatsTrackedBonusModel$$get_MaxStageSeason' not in stage_named:
+        raise ValueError('the max-stage term no longer reads the season best stage')
+    if stage_named.count('GHDouble$$Pow') != 1:
+        raise ValueError('the max-stage term is no longer a single power')
+    if 'GHDouble$$op_Multiply' in stage_named or 'GHDouble$$op_Addition' in stage_named:
+        raise ValueError('the max-stage term gained arithmetic beyond the power')
 
     # Sets: the per-rarity bonuses arrive in a register; the count bonus is named and raised to a power.
     named_reads = [c for c in set_calls if c['call'] == 'GetBonus' and c['bonus'] is not None]
@@ -177,11 +193,13 @@ def main():
 
     document = {
         'version': '8.2.0',
-        'role': '兩個依「擁有幾個」放大的加成：集齊的裝備套裝數、英雄武器的總等級。',
+        'role': '三個依「有多少」放大的加成：本季最高關卡、集齊的裝備套裝數、英雄武器的總等級。',
         'packageSha256': sha(package),
         'binarySha256': sha(binary),
         'scriptSha256': sha(script_bytes),
-        'finding': 'EquipmentModel.EquipmentSetCountBonusHandler 對三個加成各做一次 Pow 再寫回，'
+        'finding': 'StatsTrackedBonusModel.UpdateDamagePerMaxStageBonus 讀 DamagePerMaxStage，'
+                   '以本季最高關卡取次方後寫進 AllDamage，只有一次 Pow、沒有其他運算。'
+                   'EquipmentModel.EquipmentSetCountBonusHandler 對三個加成各做一次 Pow 再寫回，'
                    '其中具名的那個是 DamagePerEquipmentSet，指數是**集齊的套裝總數**，寫進 AllDamage；'
                    '另外兩個依稀有度從表裡選，以暫存器傳入。'
                    'HelperModel.RefreshDamagePerHelperWeaponBonus 先取 GetTotalHelperWeaponLevels，'
@@ -189,12 +207,13 @@ def main():
                    '以「總等級 × 加成」寫進 AllDamage——**沒有加 1**，'
                    '接著 DamagePerHelperWeaponMult 以總等級取次方再寫一次。',
         'expressions': {
+            'maxStage': 'AllDamage ×= DamagePerMaxStage ^ 本季最高關卡',
             'equipmentSets': 'AllDamage ×= DamagePerEquipmentSet ^ 集齊的套裝數',
             'helperWeapons': 'AllDamage ×= 武器總等級 × DamagePerHelperWeapon（總等級為 0 或加成為中性值時不套用）；'
                              'AllDamage ×= DamagePerHelperWeaponMult ^ 武器總等級',
         },
         'methods': {name: hex(address) for address, name in IDENTITIES.items()},
-        'calls': {'equipmentSets': set_calls, 'helperWeapons': weapon_calls},
+        'calls': {'maxStage': stage_calls, 'equipmentSets': set_calls, 'helperWeapons': weapon_calls},
         'sweepUndercount': {
             'note': '這裡是 bonus-readers 掃描會低估的具體實例：套裝處理器依稀有度從表裡取 BonusType '
                     '再以暫存器傳給 GetBonus，所以那些加成在 docs/bonus-coverage.md 會被歸成 '
@@ -216,8 +235,9 @@ def main():
     }
     target = ROOT/'reference/tt2/8.2.0/count-bonus-evidence.json'
     target.write_text(json.dumps(document, ensure_ascii=False, indent=2)+'\n', encoding='utf-8', newline='\n')
-    print('Verified two count-scaled bonuses: equipment sets use a power, helper weapons a bare '
-          f'multiply; {len(register_reads)} register-passed reads pinned as the sweep undercount case')
+    print('Verified three count-scaled bonuses: max stage and equipment sets use a power, helper '
+          f'weapons a bare multiply; {len(register_reads)} register-passed reads pinned as the '
+          'sweep undercount case')
 
 
 if __name__ == '__main__':
