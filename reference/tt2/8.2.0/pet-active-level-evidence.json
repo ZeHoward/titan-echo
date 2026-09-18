@@ -1,0 +1,24 @@
+{
+  "version": "8.2.0",
+  "role": "出戰中的寵物多拿幾級：等級乘上加成再無條件捨去。",
+  "packageSha256": "8d78c9aa877e6c0b291ee2116cab855bd26c59c1d080bc654f88ecf1ff268b5f",
+  "binarySha256": "c13fc44321b1214c71ab0277a134fc3401fd7392c74a0bbb3935671c55a8713a",
+  "scriptSha256": "62c2eeb8472bb107de516e4b6ae69d3dcdf5013fb1caa87223d82a54dd203f8b",
+  "finding": "PetInfo.GetActiveLevelBonus 先用 PetModel.IsEquippedPet 判斷這隻有沒有出戰，再取牠自己的等級乘上 Bonus(ActivePetLevel)，最後 Floor。回傳的是**額外的等級**（方法本身沒有加法），不是取代原本的等級；沒有出戰的寵物維持自己擁有的等級。",
+  "expression": "出戰寵物的有效等級 = 擁有等級 + floor(擁有等級 × ActivePetLevel)",
+  "methods": {
+    "PetInfo$$GetActiveLevelBonus": "0x23b0458",
+    "BonusModel$$GetBonus": "0x2714c88",
+    "PetModel$$IsEquippedPet": "0x23a3590",
+    "PetInfo$$get_Level": "0x23afdfc",
+    "GHDouble$$Floor": "0x21e004c",
+    "GHDouble$$op_Multiply": "0x21dd6ec"
+  },
+  "bonus": "ActivePetLevel",
+  "consequence": "本專案在 petBonus 裡對出戰中的寵物套用這幾級。來源是「武士」神話套裝（0.25）、「九尾」傳說套裝（0.1）與天賦「戰鬥技巧」，三者都拿得到；60 級的出戰寵物配武士套裝等於 75 級。**取值走 baseFrom 而不是 effect()**：完整快取本身就是在算寵物加成時呼叫 petBonus 的，從那裡再呼叫 effect() 會繞回自己；而且沒有任何寵物會給 ActivePetLevel，所以只讀基礎層既足夠也不會遞迴。",
+  "limits": [
+    "方法存在、位址、它呼叫的方法與讀的加成是事實",
+    "「額外等級」的判定依據是這個方法本身沒有加法運算，加總發生在呼叫端",
+    "本表不涵蓋呼叫端怎麼把這幾級併進寵物的其他數值"
+  ]
+}

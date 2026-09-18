@@ -7,13 +7,13 @@
 
 | 判定 | 意義 | 個數 |
 |---|---|---|
-| `live` | 專案有來源、引擎有讀：正常運作。 | 100 |
-| `dead-native-uses-it` | 專案有來源、引擎沒讀，而且原生有取值點：**這些是可以接上的**。 | 129 |
+| `live` | 專案有來源、引擎有讀：正常運作。 | 101 |
+| `dead-native-uses-it` | 專案有來源、引擎沒讀，而且原生有取值點：**這些是可以接上的**。 | 128 |
 | `dead-native-ignores-it` | 專案有來源、引擎沒讀，原生也掃不到取值點：接了大概也沒有依據。 | 68 |
 | `read-without-source` | 引擎有讀，但專案沒有任何來源會給：恆為中性值，等來源出現才會生效。 | 13 |
 | `not-in-project` | 專案沒有來源，引擎也沒讀。 | 486 |
 
-## 優先：落在已實作系統的（65）
+## 優先：落在已實作系統的（64）
 
 原生有取值點、我們沒讀，而且**不屬於尚未實作的流派**——這些是可以直接接上的。
 依**原生讀取它的類別**分組，類別名就說明了它屬於哪個系統。
@@ -51,11 +51,6 @@
 
 - `InactiveSneakCount` ← TT2_SETS
 - `InactiveSneakCountMult` ← TT2_PETS、TT2_SETS
-
-### PetInfo（2）
-
-- `ActivePetLevel` ← TT2_SETS、TT2_TREE
-- `ExoticPetDamageEffect` ← TT2_ARTIFACTS
 
 ### PlayerController.<ShadowCloneAttackLoop>d__132（2）
 
@@ -192,6 +187,10 @@
 ### PetController（1）
 
 - `PetBossQTEDamage` ← TT2_TREE
+
+### PetInfo（1）
+
+- `ExoticPetDamageEffect` ← TT2_ARTIFACTS
 
 ### PetModel（1）
 

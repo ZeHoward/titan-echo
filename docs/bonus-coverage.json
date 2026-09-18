@@ -76,8 +76,8 @@
     }
   },
   "counts": {
-    "live": 100,
-    "dead-native-uses-it": 129,
+    "live": 101,
+    "dead-native-uses-it": 128,
     "dead-native-ignores-it": 68,
     "read-without-source": 13,
     "not-in-project": 486
@@ -525,17 +525,17 @@
     },
     {
       "id": "ActivePetLevel",
-      "verdict": "dead-native-uses-it",
+      "verdict": "live",
       "sources": [
         "TT2_SETS",
         "TT2_TREE"
       ],
-      "engineReads": false,
+      "engineReads": true,
       "nativeReaders": [
         "PetInfo"
       ],
       "indirect": null,
-      "priority": true
+      "priority": false
     },
     {
       "id": "ActiveTapDamage",

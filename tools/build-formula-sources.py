@@ -139,6 +139,16 @@ FORMULAS = [
     entry(id='artifactCost', module='lib/tt2-rules.ts', export='upgradeArtifactCost',
           expression='費用係數 × (等級+1)^費用指數，四捨五入且至少 1',
           parts=[entry(part='費用係數與指數', status='table', ref='ArtifactInfo.json')]),
+    entry(id='petActiveLevel', module='lib/tt2-rules.ts', export='petBonus',
+          expression='出戰寵物的有效等級 = 擁有等級 + floor(擁有等級 × ActivePetLevel)',
+          parts=[entry(part='出戰寵物的額外等級', status='native', ref='pet-active-level-evidence.json',
+                       note='原生 PetInfo.GetActiveLevelBonus 先用 PetModel.IsEquippedPet 判斷有沒有出戰，'
+                            '再把該寵物自己的等級乘上 ActivePetLevel 並 Floor，回傳的是**額外等級**'
+                            '（方法本身沒有加法，加總在呼叫端）。沒出戰的寵物維持擁有的等級。'
+                            '來源是「武士」神話套裝（0.25）、「九尾」傳說套裝（0.1）與天賦「戰鬥技巧」。'
+                            '取值走 baseFrom 而非 effect()，因為完整快取本身就是在算寵物加成時呼叫 '
+                            'petBonus 的，從那裡再呼叫 effect() 會繞回自己；沒有寵物會給 ActivePetLevel，'
+                            '所以只讀基礎層既足夠也不遞迴。')]),
     entry(id='heroPassive', module='lib/tt2-hero-passives.ts', export='heroPassiveTotals',
           expression='達到解鎖等級的英雄被動逐項相加或相乘，並套用戰術洞察增幅',
           parts=[

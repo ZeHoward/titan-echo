@@ -2,11 +2,11 @@
 
 每個核心公式的來源登記表：資料表、原生方法、原生預設值，或明確標記為 7.5 基準沿用、專案自訂或伺服器供給。
 
-版本 8.2.0。共 34 條公式、83 項來源條目。
+版本 8.2.0。共 35 條公式、84 項來源條目。
 
 | 狀態 | 意義 | 條目數 |
 |---|---|---|
-| `native` | 由反組譯證據確認 | 24 |
+| `native` | 由反組譯證據確認 | 25 |
 | `table` | 取自安裝包資料表 | 18 |
 | `default` | 原生靜態預設值，線上可覆蓋 | 16 |
 | `baseline-75` | 沿用 7.5 基準，尚未對 8.2 核實 | 0 |
@@ -105,6 +105,14 @@ round(8 + 關卡 × 148 ÷ (32000 + 關卡))
 | 來源條目 | 狀態 | 依據 |
 |---|---|---|
 | 費用係數與指數 | `table` | `reference/tt2/8.2.0/ArtifactInfo.json` |
+
+### petActiveLevel · `lib/tt2-rules.ts` 的 `petBonus`
+
+出戰寵物的有效等級 = 擁有等級 + floor(擁有等級 × ActivePetLevel)
+
+| 來源條目 | 狀態 | 依據 |
+|---|---|---|
+| 出戰寵物的額外等級 | `native` | `reference/tt2/8.2.0/pet-active-level-evidence.json`；原生 PetInfo.GetActiveLevelBonus 先用 PetModel.IsEquippedPet 判斷有沒有出戰，再把該寵物自己的等級乘上 ActivePetLevel 並 Floor，回傳的是**額外等級**（方法本身沒有加法，加總在呼叫端）。沒出戰的寵物維持擁有的等級。來源是「武士」神話套裝（0.25）、「九尾」傳說套裝（0.1）與天賦「戰鬥技巧」。取值走 baseFrom 而非 effect()，因為完整快取本身就是在算寵物加成時呼叫 petBonus 的，從那裡再呼叫 effect() 會繞回自己；沒有寵物會給 ActivePetLevel，所以只讀基礎層既足夠也不遞迴。 |
 
 ### heroPassive · `lib/tt2-hero-passives.ts` 的 `heroPassiveTotals`
 

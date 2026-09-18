@@ -64,9 +64,14 @@ function baseFrom(cached:Cache,t:TT2State,target:string){
 }
 export function artifactAllDamage(t:TT2State){return cap((1+TT2_ARTIFACTS.reduce((n,a,i)=>n+a.damage*(t.artifacts[i]||0),0))*effect(t,'HSArtifactDamage'));}
 export function petBonus(t:TT2State,i:number,base=baseEntry(t)){
- const p=TT2_PETS[i],level=t.petLevels[i]||0,additive=bonusDefinitions[p.effect]?.additive;
- if(!level)return additive?0:1;
- const selected=t.activePets.includes(i),fraction=selected?1:Math.min(1,Math.floor(level/5)*.05);
+ const p=TT2_PETS[i],owned=t.petLevels[i]||0,additive=bonusDefinitions[p.effect]?.additive;
+ if(!owned)return additive?0:1;
+ const selected=t.activePets.includes(i),fraction=selected?1:Math.min(1,Math.floor(owned/5)*.05);
+ // Native PetInfo.GetActiveLevelBonus: a pet that is out gets floor(level x ActivePetLevel) extra
+ // levels on top of the ones it owns. Read through baseFrom rather than effect() - the full cache
+ // is what asks for pet bonuses in the first place, and nothing grants ActivePetLevel from a pet,
+ // so the base layer is both sufficient and non-recursive.
+ const level=selected?owned+Math.floor(owned*baseFrom(base,t,'ActivePetLevel')):owned;
  const steps=Math.max(0,Math.floor((Math.min(level,p.improvementMax)-100)/50));
  let full=(p.base+level*p.inc)*p.improvement**steps;
  const group=bonusDefinitions[p.effect]?.group;
