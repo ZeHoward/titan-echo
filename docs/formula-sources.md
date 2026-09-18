@@ -2,11 +2,11 @@
 
 每個核心公式的來源登記表：資料表、原生方法、原生預設值，或明確標記為 7.5 基準沿用、專案自訂或伺服器供給。
 
-版本 8.2.0。共 34 條公式、76 項來源條目。
+版本 8.2.0。共 34 條公式、77 項來源條目。
 
 | 狀態 | 意義 | 條目數 |
 |---|---|---|
-| `native` | 由反組譯證據確認 | 17 |
+| `native` | 由反組譯證據確認 | 18 |
 | `table` | 取自安裝包資料表 | 18 |
 | `default` | 原生靜態預設值，線上可覆蓋 | 16 |
 | `baseline-75` | 沿用 7.5 基準，尚未對 8.2 核實 | 0 |
@@ -121,6 +121,7 @@ round(8 + 關卡 × 148 ÷ (32000 + 關卡))
 | 來源條目 | 狀態 | 依據 |
 |---|---|---|
 | 流派折減係數 | `invented` | 程式內已註明為暫用係數，公會飛船、匕首與金槍的完整戰鬥尚未還原。 |
+| 技能點的傷害乘數 | `native` | `reference/tt2/8.2.0/skill-point-damage-evidence.json`；原生 PlayerModel.RefreshSkillPointBonuses 不是直接套用加成，而是算成兩個值再 ModifyBonus 寫回 AllDamage：加法項 1 ＋ 累計技能點 × DamagePerSkillPoint，次方項 DamagePerSkillPointMult ^ 累計技能點。點數取 skillPointsReceivedServer，是**累計收到的**、不是未花費的，對應本專案的「持有中 ＋ 已投入天賦」。本專案只接加法項：次方項在 8.2 沒有任何來源會給，而查一個不在加成表裡的加成會拿到乘法中性值 1。加法項目前唯一拿得到的來源是「小丑女王」傳說套裝（每點 +10%）；「復仇者」武器是 Unique 稀有度，還沒有取得途徑。 |
 | 主動技能倍率 | `table` | `reference/tt2/8.2.0/ActiveSkillInfo.json` |
 
 ### skillValues · `lib/engine.ts` 的 `skillPower`

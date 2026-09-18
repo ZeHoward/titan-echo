@@ -40,12 +40,9 @@
       "bonusType": 37,
       "readers": [
         "AchievementModel$$TEST_GetStatsString",
-        "ArtifactModelBase<object>$$RefreshBonusPerOwnedCardLevel",
         "HelperInfo$$UpdateHelperBonusMult",
-        "MegaBombTitanScript$$UpdateBonuses",
         "PlayerModel$$GetSwordMasterDamage",
         "PlayerModel$$PrintCurrentDamgage",
-        "PlayerModel$$RefreshSkillPointBonuses",
         "StatsPanelScript$$InitDamageStats"
       ]
     }

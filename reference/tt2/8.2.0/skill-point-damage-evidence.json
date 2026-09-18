@@ -1,0 +1,47 @@
+{
+  "version": "8.2.0",
+  "role": "技能點怎麼變成傷害：原生把它算成 AllDamage 的兩個乘數，不是直接拿來用。",
+  "packageSha256": "8d78c9aa877e6c0b291ee2116cab855bd26c59c1d080bc654f88ecf1ff268b5f",
+  "binarySha256": "c13fc44321b1214c71ab0277a134fc3401fd7392c74a0bbb3935671c55a8713a",
+  "scriptSha256": "62c2eeb8472bb107de516e4b6ae69d3dcdf5013fb1caa87223d82a54dd203f8b",
+  "finding": "PlayerModel.RefreshSkillPointBonuses 讀 DamagePerSkillPoint 與 DamagePerSkillPointMult，算出兩個值之後各呼叫一次 BonusModel.ModifyBonus，**兩次的目標都是 AllDamage**。加法項是 1 ＋ 技能點 × Bonus(DamagePerSkillPoint)（一次乘法、一次加法，起點是常數 1）；次方項是 Bonus(DamagePerSkillPointMult) ^ 技能點。技能點取的是 skillPointsReceivedServer（PlayerModel 的 ObscuredInt，位移 0x300），也就是**累計收到的**點數，不是還沒花掉的那些。",
+  "expression": "AllDamage ×= 1 + 累計技能點 × DamagePerSkillPoint；AllDamage ×= DamagePerSkillPointMult ^ 累計技能點",
+  "methods": {
+    "PlayerModel$$RefreshSkillPointBonuses": "0x23dbbec",
+    "BonusModel$$GetBonus": "0x2714c88",
+    "BonusModel$$ModifyBonus": "0x27152ac"
+  },
+  "calls": [
+    {
+      "call": "BonusModel$$GetBonus",
+      "at": "0x23dbd14",
+      "bonus": 163
+    },
+    {
+      "call": "BonusModel$$ModifyBonus",
+      "at": "0x23dbe20",
+      "bonus": 37
+    },
+    {
+      "call": "BonusModel$$GetBonus",
+      "at": "0x23dbe40",
+      "bonus": 164
+    },
+    {
+      "call": "BonusModel$$ModifyBonus",
+      "at": "0x23dbeec",
+      "bonus": 37
+    }
+  ],
+  "pointSource": {
+    "field": "skillPointsReceivedServer",
+    "offset": "0x300",
+    "type": "ObscuredInt",
+    "meaning": "累計收到的技能點（持有中的加上已投入天賦的）"
+  },
+  "consequence": "本專案只接了加法項：DamagePerSkillPointMult 沒有任何來源會給，而查一個不在加成表裡的加成會拿到乘法中性值 1，所以不接比接了安全。加法項目前唯一拿得到的來源是「小丑女王」傳說套裝（每點 +10%）——另一個來源「復仇者」武器是 Unique 稀有度，不在掉落池（只掉 rarity 1）、craftSet 也只接受 Mythic／Legendary／Rare，所以本專案還沒有取得途徑。",
+  "limits": [
+    "方法存在、位址、它的呼叫與參數是事實；ModifyBonus 的目標以「從呼叫往回找 w1 的立即數」判定",
+    "本表只涵蓋技能點這一條，AllDamage 還有其他來源會改寫"
+  ]
+}

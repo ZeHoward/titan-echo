@@ -127,22 +127,35 @@ def main():
         return address + offset*4
 
     def bonus_readers(bonus_id):
-        """Every method that passes bonus_id to GetBonus, by name, with its call sites."""
+        """Every method that passes bonus_id to GetBonus, by name, with its call sites.
+
+        Walks back from each call rather than forward from each immediate. Forward matching
+        credits any immediate that happens to sit within the window before an unrelated call, and
+        BonusModel.ModifyBonus takes its target the same way GetBonus does - RefreshSkillPointBonuses
+        sets up AllDamage for a ModifyBonus a dozen instructions before a GetBonus for a different
+        bonus, and a forward scan reads that as AllDamage being consumed there.
+        """
         pattern = MOVZ_W1 | (bonus_id << 5) | 1
         found = {}
         for segment in segments:
             base, data = segment['p_vaddr'], segment.data()
             words = struct.unpack_from(f'<{len(data)//4}I', data, 0)
             for index, word in enumerate(words):
-                if word != pattern:
+                if bl_target(word, base + index*4) != GET_BONUS:
                     continue
-                address = base + index*4
-                for step in range(1, CALL_WINDOW):
-                    if index + step >= len(words):
+                call = base + index*4
+                for step in range(1, CALL_WINDOW + 1):
+                    if index - step < 0:
                         break
-                    if bl_target(words[index+step], address + step*4) == GET_BONUS:
-                        found.setdefault(owner(address), []).append(hex(address))
+                    previous = words[index-step]
+                    at = call - step*4
+                    if bl_target(previous, at) is not None:
+                        break          # an intervening call owns w1 from here back
+                    if previous == pattern:
+                        found.setdefault(owner(at), []).append(hex(at))
                         break
+                    if previous >> 24 == 0x52 and (previous & 0x1F) == 1:
+                        break          # w1 was written with some other immediate
         return found
 
     # The control group first: if these come back empty the sweep is broken, not the game.

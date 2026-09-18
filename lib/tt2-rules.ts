@@ -118,6 +118,14 @@ export function buildMultiplier(t:TT2State,build:Build,active:number,boss=false,
  n*=resolve('DamagePerRunningActiveSkill')**Math.min(4,active);
  n*=1+(resolve('DamagePerOwnedCardLevel')-1)*t.cards;
  n*=1+(resolve('DamagePerOwnedArtifact')-1)*t.artifacts.filter(n=>n>0).length;
+ // Native RefreshSkillPointBonuses folds this into AllDamage as 1 + points x bonus, where points is
+ // skillPointsReceivedServer - every point collected, not the unspent ones - so it is what is held
+ // now plus what is already in the tree. Natively there is a second, exponential term over
+ // DamagePerSkillPointMult; nothing in this project grants it, and asking for a bonus that is not
+ // in the table returns the multiplicative 1, so that term is left out rather than faked.
+ // Counting the points means walking the tree, so only pay for it when something grants the bonus.
+ const perSkillPoint=resolve('DamagePerSkillPoint');
+ if(perSkillPoint)n*=1+perSkillPoint*(t.points+spentPoints(t));
  if(['pet','ship','clone'].includes(build))n*=resolve('CompanionDamage');
  if(['heavenly','clone','dagger','goldGun'].includes(build))n*=resolve('SwordAttackDamage');
  n*=resolve(boss?'BossDamage':'TitanDamage');

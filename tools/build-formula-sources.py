@@ -147,6 +147,14 @@ FORMULAS = [
           parts=[
               entry(part='流派折減係數', status='invented',
                     note='程式內已註明為暫用係數，公會飛船、匕首與金槍的完整戰鬥尚未還原。'),
+              entry(part='技能點的傷害乘數', status='native', ref='skill-point-damage-evidence.json',
+                    note='原生 PlayerModel.RefreshSkillPointBonuses 不是直接套用加成，而是算成兩個值再 '
+                         'ModifyBonus 寫回 AllDamage：加法項 1 ＋ 累計技能點 × DamagePerSkillPoint，'
+                         '次方項 DamagePerSkillPointMult ^ 累計技能點。點數取 skillPointsReceivedServer，'
+                         '是**累計收到的**、不是未花費的，對應本專案的「持有中 ＋ 已投入天賦」。'
+                         '本專案只接加法項：次方項在 8.2 沒有任何來源會給，而查一個不在加成表裡的加成'
+                         '會拿到乘法中性值 1。加法項目前唯一拿得到的來源是「小丑女王」傳說套裝（每點 +10%）；'
+                         '「復仇者」武器是 Unique 稀有度，還沒有取得途徑。'),
               entry(part='主動技能倍率', status='table', ref='ActiveSkillInfo.json')]),
     entry(id='skillValues', module='lib/engine.ts', export='skillPower',
           expression='技能等級對應的倍率 × 對應加成 × 全主動技能加成',
