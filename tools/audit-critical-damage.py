@@ -43,6 +43,8 @@ IDENTITIES = {
 CRIT_CHANCE = 133
 ALL_PROBABILITY_BOOST = 27
 CRIT_DAMAGE = 134
+CRIT_BOOST_SKILL_CRIT_DAMAGE = 132
+CRIT_BOOST_SKILL_ID = 3        # ActiveSkillID.CritBoost
 ALL_DAMAGE = 37
 SWORD_MASTER_DAMAGE = 448
 TAP_DAMAGE = 457
@@ -183,8 +185,37 @@ def main():
     for offset, label in ((CRIT_MULT, 'playerCritMult'), (MAX_CRIT_CHANCE, 'maxCritChance')):
         if not any(re.fullmatch(rf'ldr s\d+, \[x\d+, #{offset:#x}\]', line) for line in critical):
             raise ValueError(f'RefreshCriticalValues no longer reads {label}')
-    if calls(REFRESH_CRITICAL).count('GHDouble$$op_Multiply') < 2:
-        raise ValueError('RefreshCriticalValues no longer has both products')
+    if calls(REFRESH_CRITICAL).count('GHDouble$$op_Multiply') < 3:
+        raise ValueError('RefreshCriticalValues no longer has all three products')
+    # The third step, missed on the first pass: while the crit boost skill runs, the multiplier is
+    # multiplied again. The skill id is an immediate handed to IsSkillActive, so it is read the same
+    # way a bonus id is - getting it wrong would attach the boost to the wrong skill.
+    # Checking only that the immediate appears is too weak: this method reads several ids, so a
+    # wrong constant can still be "found" among them. The whole sequence is pinned instead.
+    data = body(REFRESH_CRITICAL)
+    words = struct.unpack_from(f'<{len(data)//4}I', data, 0)
+    read_here = []
+    for index, word in enumerate(words):
+        if bl_target(word, REFRESH_CRITICAL + index*4) != GET_BONUS:
+            continue
+        for step in range(1, 17):
+            if index - step < 0:
+                break
+            previous, at = words[index-step], REFRESH_CRITICAL + (index-step)*4
+            if bl_target(previous, at) is not None:
+                break
+            if previous >> 24 == 0x52 and (previous & 0x1F) == 1:
+                read_here.append((previous >> 5) & 0xFFFF)
+                break
+    expected = [CRIT_CHANCE, ALL_PROBABILITY_BOOST, CRIT_DAMAGE, CRIT_BOOST_SKILL_CRIT_DAMAGE]
+    if read_here != expected:
+        raise ValueError(f'RefreshCriticalValues reads {read_here}, expected {expected}')
+    if 'ActiveSkillModel$$IsSkillActive' not in calls(REFRESH_CRITICAL):
+        raise ValueError('the crit boost step no longer checks whether the skill is running')
+    skill_ids = [int(line.split('#')[1], 16) for line in critical
+                 if re.fullmatch(r'mov w1, #\d+', line) or re.fullmatch(r'mov w1, #0x[0-9a-f]+', line)]
+    if CRIT_BOOST_SKILL_ID not in skill_ids:
+        raise ValueError(f'the skill checked is no longer ActiveSkillID {CRIT_BOOST_SKILL_ID}')
 
     # GetSwordMasterDamage: five multiplies over three bonuses, one static factor, one floor.
     sword = text(GET_SWORD_MASTER)
@@ -238,12 +269,19 @@ def main():
                    '五次乘法、一次 Max 取下限，沒有暴擊項。'
                    'TitanDamage 與 BossDamage 則留在 StageLogic.PerformAttackMonster，'
                    '也就是每個傷害來源結算時都會付的那一段。',
-        'expression': '暴擊倍率 = playerCritMult × Bonus(CritDamage)；'
+        'expression': '暴擊倍率 = playerCritMult × Bonus(CritDamage)'
+                      '（暴擊增幅技能執行中再 × Bonus(CritBoostSkillCritDamage)）；'
                       '暴擊機率 = min(maxCritChance, Bonus(CritChance) × Bonus(AllProbabilityBoost))；'
                       '劍術大師傷害 = max(下限, 等級 × 改良加成 × playerDamageMult × SwordMasterDamage × '
                       'TapDamage × AllDamage)',
         'methods': {name: hex(address) for address, name in IDENTITIES.items()},
         'critDamageReaders': sorted(filter(None, crit_readers)),
+        'critBoostStep': {'bonus': 'CritBoostSkillCritDamage',
+                          'bonusType': CRIT_BOOST_SKILL_CRIT_DAMAGE,
+                          'skill': 'ActiveSkillID.CritBoost',
+                          'skillId': CRIT_BOOST_SKILL_ID,
+                          'note': 'RefreshCriticalValues 的第三段：只有在暴擊增幅技能執行中才乘上去。'
+                                  '2.14.2 第一次解這個方法時只讀了前兩段，這一項是 2.15.4 補上的。'},
         'critDamageCallSites': {name: sites for name, sites in crit_readers.items() if name},
         'controls': controls,
         'serverVars': statics,

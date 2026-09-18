@@ -5,7 +5,7 @@
   "binarySha256": "c13fc44321b1214c71ab0277a134fc3401fd7392c74a0bbb3935671c55a8713a",
   "scriptSha256": "62c2eeb8472bb107de516e4b6ae69d3dcdf5013fb1caa87223d82a54dd203f8b",
   "finding": "BonusType.CritDamage（134）在整個映像只有 PlayerModel.RefreshCriticalValues 一個 GetBonus 呼叫點，而且只用來算暴擊倍率＝playerCritMult × Bonus(CritDamage)。同一趟掃描的三個對照加成（SwordMasterDamage、TapDamage、AllDamage）都掃得到既知讀取點，所以「只有一處」不是掃描失效。PlayerModel.GetSwordMasterDamage 的乘數依序是 等級 × GetImprovementBonus(等級) × playerDamageMult × Bonus(SwordMasterDamage) × Bonus(TapDamage) × Bonus(AllDamage)，五次乘法、一次 Max 取下限，沒有暴擊項。TitanDamage 與 BossDamage 則留在 StageLogic.PerformAttackMonster，也就是每個傷害來源結算時都會付的那一段。",
-  "expression": "暴擊倍率 = playerCritMult × Bonus(CritDamage)；暴擊機率 = min(maxCritChance, Bonus(CritChance) × Bonus(AllProbabilityBoost))；劍術大師傷害 = max(下限, 等級 × 改良加成 × playerDamageMult × SwordMasterDamage × TapDamage × AllDamage)",
+  "expression": "暴擊倍率 = playerCritMult × Bonus(CritDamage)（暴擊增幅技能執行中再 × Bonus(CritBoostSkillCritDamage)）；暴擊機率 = min(maxCritChance, Bonus(CritChance) × Bonus(AllProbabilityBoost))；劍術大師傷害 = max(下限, 等級 × 改良加成 × playerDamageMult × SwordMasterDamage × TapDamage × AllDamage)",
   "methods": {
     "BonusModel$$GetBonus": "0x2714c88",
     "PlayerModel$$RefreshCriticalValues": "0x23da120",
@@ -15,6 +15,13 @@
   "critDamageReaders": [
     "PlayerModel$$RefreshCriticalValues"
   ],
+  "critBoostStep": {
+    "bonus": "CritBoostSkillCritDamage",
+    "bonusType": 132,
+    "skill": "ActiveSkillID.CritBoost",
+    "skillId": 3,
+    "note": "RefreshCriticalValues 的第三段：只有在暴擊增幅技能執行中才乘上去。2.14.2 第一次解這個方法時只讀了前兩段，這一項是 2.15.4 補上的。"
+  },
   "critDamageCallSites": {
     "PlayerModel$$RefreshCriticalValues": [
       "0x23da29c"

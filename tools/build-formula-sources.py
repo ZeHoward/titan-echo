@@ -243,6 +243,11 @@ FORMULAS = [
                             '以 playerCritMult（11.5）× Bonus(CritDamage) 算倍率，maxCritChance 為 1。'
                             '引擎原本是 0.02 與固定 10 倍，而且點擊那一行寫死 10、沒有用 critMultiplier；'
                             '2.13.0 起改用原生值並接上機率加成與暴擊傷害加成。線上可覆蓋，故為 default。'),
+                 entry(part='暴擊增幅技能執行中的第三段', status='native', ref='critical-damage-evidence.json',
+                       note='原生 RefreshCriticalValues 除了 playerCritMult × CritDamage，還有第三段：'
+                            '在暴擊增幅技能（ActiveSkillID 3）執行中時，暴擊倍率再乘 CritBoostSkillCritDamage。'
+                            '2.14.2 第一次解這個方法時只讀了前兩段，2.15.4 補上。'
+                            '唯一來源是天賦「背刺」；沒點的人這一項是乘法中性值 1，技能開著也不受影響。'),
                  entry(part='CritDamage 只進暴擊倍率，一般傷害不吃', status='native',
                        ref='critical-damage-evidence.json',
                        note='BonusType.CritDamage（134）在整個映像只有一個 GetBonus 呼叫點，'

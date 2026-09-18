@@ -76,8 +76,8 @@
     }
   },
   "counts": {
-    "live": 104,
-    "dead-native-uses-it": 125,
+    "live": 105,
+    "dead-native-uses-it": 124,
     "dead-native-ignores-it": 68,
     "read-without-source": 13,
     "not-in-project": 486
@@ -1713,16 +1713,16 @@
     },
     {
       "id": "CritBoostSkillCritDamage",
-      "verdict": "dead-native-uses-it",
+      "verdict": "live",
       "sources": [
         "TT2_TREE"
       ],
-      "engineReads": false,
+      "engineReads": true,
       "nativeReaders": [
         "PlayerModel"
       ],
       "indirect": null,
-      "priority": true
+      "priority": false
     },
     {
       "id": "CritChance",

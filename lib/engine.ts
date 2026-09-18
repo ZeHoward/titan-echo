@@ -124,8 +124,16 @@ export function skillCooldown(s:State,i:number){return SKILLS[i].cooldown*(1-Mat
 // reference/tt2/8.2.0/bonus-defaults-evidence.json.
 export const BONUS_DEFAULTS={critChance:Math.fround(.01),chestChance:Math.fround(.01),
  cloneAttackRate:4} as const;
+/** The crit boost skill's slot in this project's arrays; natively ActiveSkillID 3. */
+const CRIT_BOOST_SKILL=SKILL_DATA.findIndex(k=>k.id==='CritBoost');
 // Native PlayerModel.RefreshCriticalValues: the multiplier is playerCritMult x Bonus(CritDamage).
-export function critMultiplier(s:State){return 11.5*stateEffect(s,'CritDamage');}
+// Native RefreshCriticalValues has a third step this project had not read: while the crit boost
+// skill (ActiveSkillID 3) is running, the crit multiplier is multiplied again by
+// CritBoostSkillCritDamage. The first two steps - playerCritMult x CritDamage - were already here.
+export function critMultiplier(s:State,resolve=stateResolver(s)){
+ const boosted=s.active[CRIT_BOOST_SKILL]>s.last?resolve('CritBoostSkillCritDamage'):1;
+ return 11.5*resolve('CritDamage')*boosted;
+}
 // The shadow clone swings on its own rhythm rather than riding the damage tick: native
 // ShadowCloneAttackLoop waits 1 ÷ GetCloneAttackRate() seconds between swings, and that rate is
 // max(1, Bonus(ShadowCloneSkillAttackRate) × Bonus(CompanionAttackRate)) — one attack a second

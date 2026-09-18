@@ -2,8 +2,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { referenceRoot } from '../tools/reference-validation.mjs';
-import { fresh, hydrate, critMultiplier, tapDamage, buildDamage, stateEffect } from '../lib/engine.ts';
-import { buildMultiplier, effect, artifactAllDamage, BUILD_COEFFICIENTS } from '../lib/tt2-rules.ts';
+import { fresh, hydrate, critMultiplier, tapDamage, buildDamage, stateEffect, SKILL_DATA } from '../lib/engine.ts';
+import { buildMultiplier, effect, artifactAllDamage, BUILD_COEFFICIENTS, TT2_TREE } from '../lib/tt2-rules.ts';
 import { TT2_ARTIFACTS } from '../lib/tt2-data.ts';
 import { toNumber } from '../lib/big-number.ts';
 
@@ -71,6 +71,46 @@ test('升級暴擊傷害神器，一般傷害只吃它的通用傷害項，不�
   const applied = critMultiplier(after) / critMultiplier(before);
   assert.ok(Math.abs(applied - critRatio) < 1e-9 * critRatio,
     `暴擊倍率才是那件神器該影響的地方：${applied} 應該是 ${critRatio}`);
+});
+
+test('暴擊增幅技能執行中，暴擊倍率再乘一次——這是 2.14.2 當時漏掉的第三段', () => {
+  const step = evidence.critBoostStep;
+  assert.equal(step.bonus, 'CritBoostSkillCritDamage');
+  assert.equal(step.skillId, 3, '原生檢查的是 ActiveSkillID.CritBoost');
+  const backstab = TT2_TREE.findIndex(k => k.id === 'Backstab');
+  const slot = SKILL_DATA.findIndex(k => k.id === 'CritBoost');
+
+  const s = hydrate(fresh(1000));
+  s.tt2.tree[backstab] = 40;
+  const boost = stateEffect(s, 'CritBoostSkillCritDamage');
+  assert.ok(boost > 1, '滿級背刺應該真的給這個加成');
+
+  // 技能沒開的時候與上一版相同。
+  assert.equal(critMultiplier(s), 11.5 * stateEffect(s, 'CritDamage'));
+  // 開著的時候才乘上去。
+  s.active[slot] = s.last + 10000;
+  assert.equal(critMultiplier(s), 11.5 * stateEffect(s, 'CritDamage') * boost);
+});
+
+test('沒點背刺的人，技能開著也不受影響', () => {
+  const slot = SKILL_DATA.findIndex(k => k.id === 'CritBoost');
+  const s = hydrate(fresh(1000));
+  assert.equal(stateEffect(s, 'CritBoostSkillCritDamage'), 1, '乘法型加成沒有來源時是 1');
+  s.active[slot] = s.last + 10000;
+  assert.equal(critMultiplier(s), 11.5);
+});
+
+test('乘的是暴擊增幅那個技能，不是別的', () => {
+  const backstab = TT2_TREE.findIndex(k => k.id === 'Backstab');
+  const critSlot = SKILL_DATA.findIndex(k => k.id === 'CritBoost');
+  for (let i = 0; i < SKILL_DATA.length; i++) {
+    if (i === critSlot) continue;
+    const s = hydrate(fresh(1000));
+    s.tt2.tree[backstab] = 40;
+    s.active[i] = s.last + 10000;
+    assert.equal(critMultiplier(s), 11.5 * stateEffect(s, 'CritDamage'),
+      `${SKILL_DATA[i].id} 開著不該影響暴擊倍率`);
+  }
 });
 
 test('buildMultiplier 這一行不得再把暴擊傷害乘回去', () => {
