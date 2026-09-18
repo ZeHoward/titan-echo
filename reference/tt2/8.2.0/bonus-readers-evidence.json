@@ -1,0 +1,5258 @@
+{
+  "version": "8.2.0",
+  "role": "每個 BonusType 在原生有沒有取值點，以及是哪些方法在取。",
+  "packageSha256": "8d78c9aa877e6c0b291ee2116cab855bd26c59c1d080bc654f88ecf1ff268b5f",
+  "binarySha256": "c13fc44321b1214c71ab0277a134fc3401fd7392c74a0bbb3935671c55a8713a",
+  "scriptSha256": "62c2eeb8472bb107de516e4b6ae69d3dcdf5013fb1caa87223d82a54dd203f8b",
+  "finding": "掃描 BonusModel.GetBonus 與 HasBonus 的全部 852 個呼叫點，其中 795 個的加成編號是以立即數寫進 w1、可以歸因，57 個是以暫存器傳入、本方法看不到。797 個 BonusType 裡有 527 個掃得到取值點，269 個掃不到。",
+  "method": {
+    "entryPoints": {
+      "BonusModel$$GetBonus": "0x2714c88",
+      "BonusModel$$HasBonus": "0x2714e04"
+    },
+    "lookbackInstructions": 16
+  },
+  "callSites": {
+    "total": 852,
+    "attributed": 795,
+    "unattributed": 57,
+    "unattributedReasons": {
+      "stoppedAtCall": 2,
+      "writtenByRegister": 55,
+      "noWriteInWindow": 0
+    },
+    "unattributedSites": [
+      "0x20a0100",
+      "0x20a01b4",
+      "0x20a01f8",
+      "0x20a0248",
+      "0x20c217c",
+      "0x21845b4",
+      "0x218465c",
+      "0x218bbd8",
+      "0x218bcc4",
+      "0x2198a88",
+      "0x22313a8",
+      "0x223371c",
+      "0x223bf0c",
+      "0x223c154",
+      "0x223c21c",
+      "0x223d15c",
+      "0x223d21c",
+      "0x223eb98",
+      "0x223ec88",
+      "0x2240544",
+      "0x2240594",
+      "0x2247ee8",
+      "0x2247f10",
+      "0x224f4b4",
+      "0x2289450",
+      "0x2328094",
+      "0x2329738",
+      "0x23cca44",
+      "0x23df51c",
+      "0x24107ac",
+      "0x241871c",
+      "0x253db94",
+      "0x253dbc0",
+      "0x254317c",
+      "0x2543e98",
+      "0x255d79c",
+      "0x255d8d8",
+      "0x255dab0",
+      "0x255dbd4",
+      "0x255ddac"
+    ]
+  },
+  "controls": {
+    "CritDamage": "PlayerModel$$RefreshCriticalValues",
+    "SwordMasterDamage": "PlayerModel$$GetSwordMasterDamage",
+    "TapDamageFromHelpers": "PlayerModel$$GetTapFromHelpers",
+    "TitanDamage": "StageLogic$$PerformAttackMonster",
+    "SwordAttackDamage": "PlayerController$$GetHeavenlyStrikeDamage"
+  },
+  "read": {
+    "AllActiveSkillDurationRate": {
+      "bonusType": 11,
+      "methods": {
+        "ActiveSkillInfo$$GetDuration": [
+          "0x223d460"
+        ],
+        "ActiveSkillModel$$RunSkillTimer": [
+          "0x2239c34"
+        ],
+        "CircleSkillFiller$$OnActive": [
+          "0x20468c0"
+        ],
+        "CircleSkillFiller.<TimerReduction>d__23$$MoveNext": [
+          "0x2048054"
+        ],
+        "FairyController.<UpdateRewardTextTimer>d__99$$MoveNext": [
+          "0x21c5a5c"
+        ]
+      }
+    },
+    "AllActiveSkillCooldownRate": {
+      "bonusType": 10,
+      "methods": {
+        "ActiveSkillInfo$$GetLocalizedCooldownString": [
+          "0x223f3d4"
+        ],
+        "ActiveSkillModel$$DefaultSkillCooldownUpdate": [
+          "0x223b3ec"
+        ],
+        "CircleSkillFiller$$OnCooldown": [
+          "0x2046b60"
+        ],
+        "StatsPanelScript$$InitReductionStats": [
+          "0x255ccc0"
+        ]
+      }
+    },
+    "LoyaltyLevel": {
+      "bonusType": 695,
+      "methods": {
+        "ClanLoyaltyController$$get_BaseLoyaltyLevel": [
+          "0x207173c"
+        ],
+        "ClanLoyaltyController$$get_MaxLevel": [
+          "0x2071834"
+        ]
+      }
+    },
+    "ClanShipDamage": {
+      "bonusType": 108,
+      "methods": {
+        "ClanModel$$GetClanShipAttackDamage": [
+          "0x2082c00"
+        ],
+        "GoldGunController$$OnBonusUpdatedChanged": [
+          "0x220e768"
+        ],
+        "StatsPanelScript$$InitDamageStats": [
+          "0x255abe8"
+        ]
+      }
+    },
+    "DeadlyDamageShip": {
+      "bonusType": 172,
+      "methods": {
+        "ClanModel$$GetClanShipAttackDamage": [
+          "0x2082cc0"
+        ],
+        "ClanPlayerScript.<ClanPlayerLoop>d__19$$MoveNext": [
+          "0x20f4e3c"
+        ]
+      }
+    },
+    "ThunderVolleySkillAmount": {
+      "bonusType": 461,
+      "methods": {
+        "ClanModel$$GetClanShipAttackDamage": [
+          "0x2082d90"
+        ],
+        "StatsPanelScript$$InitSpellStats": [
+          "0x2559d8c"
+        ]
+      }
+    },
+    "ThunderVolleySkillSpecialDamage": {
+      "bonusType": 468,
+      "methods": {
+        "ClanModel$$GetClanShipThunderVolleyDamage": [
+          "0x2082e88"
+        ]
+      }
+    },
+    "RaidAttackDuration": {
+      "bonusType": 728,
+      "methods": {
+        "ClanDungeonScript$$get_PlayTime": [
+          "0x208e674"
+        ]
+      }
+    },
+    "DirectDamage": {
+      "bonusType": 625,
+      "methods": {
+        "ClanDungeonScript$$PerformPlayerTappedMonsterPart": [
+          "0x2093c68"
+        ]
+      }
+    },
+    "BonusTapsPerSecond": {
+      "bonusType": 71,
+      "methods": {
+        "ClanDungeonScript$$CleanUpPowerOfSwiping": [
+          "0x2096500"
+        ]
+      }
+    },
+    "TeamTacticsClanMoraleBoost": {
+      "bonusType": 772,
+      "methods": {
+        "ClanRaidModel$$HasActiveTeamTacticsBonus": [
+          "0x20a048c",
+          "0x20a04ac"
+        ],
+        "RaidPartDamagedEvent$$ApplyBonuses": [
+          "0x20c2bac"
+        ]
+      }
+    },
+    "AfflictedChance": {
+      "bonusType": 548,
+      "methods": {
+        "AfflictedSkillScript$$Init": [
+          "0x20a4910"
+        ]
+      }
+    },
+    "AfflictedChanceSupport": {
+      "bonusType": 795,
+      "methods": {
+        "AfflictedSkillScript$$Init": [
+          "0x20a495c"
+        ]
+      }
+    },
+    "AfflictedDuration": {
+      "bonusType": 552,
+      "methods": {
+        "AfflictedSkillScript$$Init": [
+          "0x20a4998"
+        ]
+      }
+    },
+    "AfflictedStackCount": {
+      "bonusType": 553,
+      "methods": {
+        "AfflictedSkillScript$$Init": [
+          "0x20a49d4"
+        ]
+      }
+    },
+    "AfflictionMarkPercent": {
+      "bonusType": 554,
+      "methods": {
+        "AfflictionMarkScript$$Init": [
+          "0x20a5128"
+        ]
+      }
+    },
+    "AstralEchoMaxCharges": {
+      "bonusType": 575,
+      "methods": {
+        "AstralEchoScript$$get_ChargesNeeded": [
+          "0x20a55a0"
+        ]
+      }
+    },
+    "AstralEchoReducedChance": {
+      "bonusType": 576,
+      "methods": {
+        "AstralEchoScript$$CheckAndRun": [
+          "0x20a6318"
+        ]
+      }
+    },
+    "BarbedMorningstarBurst": {
+      "bonusType": 577,
+      "methods": {
+        "BarbedMorningstarScript$$Init": [
+          "0x20a6864"
+        ]
+      }
+    },
+    "BarbedMorningstarBodyDamageBoost": {
+      "bonusType": 579,
+      "methods": {
+        "BarbedMorningstarScript$$Init": [
+          "0x20a68b0"
+        ]
+      }
+    },
+    "BarbedMorningstarArmorDamageBoost": {
+      "bonusType": 578,
+      "methods": {
+        "BarbedMorningstarScript$$Init": [
+          "0x20a68ec"
+        ]
+      }
+    },
+    "BarbedMorningstarDamageBoostMaxParts": {
+      "bonusType": 580,
+      "methods": {
+        "BarbedMorningstarScript$$Init": [
+          "0x20a6928"
+        ]
+      }
+    },
+    "BurningDamageRate": {
+      "bonusType": 592,
+      "methods": {
+        "BurningAttackScript$$Init": [
+          "0x20a6c08"
+        ]
+      }
+    },
+    "BurningPartChance": {
+      "bonusType": 595,
+      "methods": {
+        "BurningAttackScript$$Init": [
+          "0x20a6c6c"
+        ]
+      }
+    },
+    "BurningPartChanceMaxParts": {
+      "bonusType": 596,
+      "methods": {
+        "BurningAttackScript$$Init": [
+          "0x20a6ca8"
+        ]
+      }
+    },
+    "BurstChance": {
+      "bonusType": 600,
+      "methods": {
+        "BurstChanceBonusImpl$$Init": [
+          "0x20a6ed4"
+        ]
+      }
+    },
+    "BurstChanceSupport": {
+      "bonusType": 796,
+      "methods": {
+        "BurstChanceBonusImpl$$Init": [
+          "0x20a6f20"
+        ]
+      }
+    },
+    "BurstCountDamage": {
+      "bonusType": 601,
+      "methods": {
+        "BurstCountScript$$Init": [
+          "0x20a733c"
+        ]
+      }
+    },
+    "BurstCountBonus": {
+      "bonusType": 602,
+      "methods": {
+        "BurstCountScript$$Init": [
+          "0x20a7388"
+        ]
+      }
+    },
+    "BurstMarkPercent": {
+      "bonusType": 603,
+      "methods": {
+        "BurstMarkScript$$Init": [
+          "0x20a7bc0"
+        ]
+      }
+    },
+    "CelestialStaticBurst": {
+      "bonusType": 606,
+      "methods": {
+        "CelestialStaticScript$$Init": [
+          "0x20a83a0"
+        ]
+      }
+    },
+    "CelestialStaticChargePerTap": {
+      "bonusType": 608,
+      "methods": {
+        "CelestialStaticScript$$ActivateSkill": [
+          "0x20a84a8"
+        ]
+      }
+    },
+    "CelestialStaticMaxCharges": {
+      "bonusType": 609,
+      "methods": {
+        "CelestialStaticScript$$ActivateSkill": [
+          "0x20a8500"
+        ]
+      }
+    },
+    "CelestialStaticChargePerBurst": {
+      "bonusType": 607,
+      "methods": {
+        "CelestialStaticScript$$ActivateSkill": [
+          "0x20a8568"
+        ]
+      }
+    },
+    "ChainLightningBurst": {
+      "bonusType": 610,
+      "methods": {
+        "ChainLightningScript$$Init": [
+          "0x20a8b04"
+        ]
+      }
+    },
+    "ChainLightningPartBoost": {
+      "bonusType": 612,
+      "methods": {
+        "ChainLightningScript$$GetCardDamage": [
+          "0x20a8f24"
+        ]
+      }
+    },
+    "ChainLightningMaxTargets": {
+      "bonusType": 611,
+      "methods": {
+        "ChainLightningScript$$ActivateSkill": [
+          "0x20a9130"
+        ],
+        "ChainLightningScript$$GetCardDamage": [
+          "0x20a8f54"
+        ]
+      }
+    },
+    "CosmicBarbDamageRate": {
+      "bonusType": 618,
+      "methods": {
+        "CosmicBarbScript$$Init": [
+          "0x20aab54"
+        ]
+      }
+    },
+    "SandsOfTimeAfflictionDurationBoost": {
+      "bonusType": 748,
+      "methods": {
+        "DebuffSkillScript$$GetDebuffDurationOnPart": [
+          "0x20abb04"
+        ]
+      }
+    },
+    "DecayPercentRate": {
+      "bonusType": 622,
+      "methods": {
+        "DecayingAttackScript$$Init": [
+          "0x20ac4e4"
+        ]
+      }
+    },
+    "DecayDamageExpo": {
+      "bonusType": 623,
+      "methods": {
+        "DecayingAttackScript$$Init": [
+          "0x20ac530"
+        ]
+      }
+    },
+    "DecayHealthCap": {
+      "bonusType": 624,
+      "methods": {
+        "DecayingAttackScript$$Init": [
+          "0x20ac56c"
+        ]
+      }
+    },
+    "DiseaseDamageRate": {
+      "bonusType": 173,
+      "methods": {
+        "DiseaseScript$$Init": [
+          "0x20aca1c"
+        ]
+      }
+    },
+    "DiseaseBonusRate": {
+      "bonusType": 174,
+      "methods": {
+        "DiseaseScript$$Init": [
+          "0x20aca80"
+        ]
+      }
+    },
+    "ExplosiveCrateDamage": {
+      "bonusType": 652,
+      "methods": {
+        "ExplosiveCrateScript$$Init": [
+          "0x20acf88"
+        ]
+      }
+    },
+    "FairyBombRate": {
+      "bonusType": 660,
+      "methods": {
+        "FairyBombScript$$Init": [
+          "0x20adaac"
+        ]
+      }
+    },
+    "SupportEffect": {
+      "bonusType": 770,
+      "methods": {
+        "FairyTotemScript$$GetDamageMultiplier": [
+          "0x20adc24"
+        ],
+        "SupportSkillScript$$Init": [
+          "0x20bba64"
+        ]
+      }
+    },
+    "FairyTotemDamage": {
+      "bonusType": 661,
+      "methods": {
+        "FairyTotemScript$$GetDamageMultiplier": [
+          "0x20adcec"
+        ]
+      }
+    },
+    "FairyTotemDuration": {
+      "bonusType": 663,
+      "methods": {
+        "FairyTotemScript$$Init": [
+          "0x20ade94"
+        ]
+      }
+    },
+    "SupportDuration": {
+      "bonusType": 768,
+      "methods": {
+        "FairyTotemScript$$Init": [
+          "0x20adedc"
+        ]
+      }
+    },
+    "FlakBurst": {
+      "bonusType": 666,
+      "methods": {
+        "FlakShotScript$$Init": [
+          "0x20ae350"
+        ]
+      }
+    },
+    "FlakArmorMult": {
+      "bonusType": 665,
+      "methods": {
+        "FlakShotScript$$Init": [
+          "0x20ae39c"
+        ]
+      }
+    },
+    "RicochetDamageMult": {
+      "bonusType": 746,
+      "methods": {
+        "FlakShotScript$$Init": [
+          "0x20ae3d8"
+        ]
+      }
+    },
+    "FlashBurst": {
+      "bonusType": 667,
+      "methods": {
+        "FlashScript$$Init": [
+          "0x20aea04"
+        ]
+      }
+    },
+    "FlashRadius": {
+      "bonusType": 668,
+      "methods": {
+        "FlashScript$$Init": [
+          "0x20aea58"
+        ]
+      }
+    },
+    "FragmentizeBurst": {
+      "bonusType": 669,
+      "methods": {
+        "FragmentizeScript$$Init": [
+          "0x20aef00"
+        ]
+      }
+    },
+    "FragmentizeArmorMult": {
+      "bonusType": 670,
+      "methods": {
+        "FragmentizeScript$$Init": [
+          "0x20aef4c"
+        ]
+      }
+    },
+    "FragmentizeEnchantedArmorMult": {
+      "bonusType": 671,
+      "methods": {
+        "FragmentizeScript$$Init": [
+          "0x20aef88"
+        ]
+      }
+    },
+    "FuseExplosionMult": {
+      "bonusType": 674,
+      "methods": {
+        "FuseScript$$Init": [
+          "0x20af3cc"
+        ]
+      }
+    },
+    "FuseRepeatChance": {
+      "bonusType": 675,
+      "methods": {
+        "FuseScript$$Init": [
+          "0x20af418"
+        ]
+      }
+    },
+    "FuseDamageBoostPerSecond": {
+      "bonusType": 672,
+      "methods": {
+        "FuseScript$$Init": [
+          "0x20af454"
+        ]
+      }
+    },
+    "HaymakerBurst": {
+      "bonusType": 676,
+      "methods": {
+        "HaymakerScript$$Init": [
+          "0x20af780"
+        ]
+      }
+    },
+    "HaymakerTapsNeeded": {
+      "bonusType": 677,
+      "methods": {
+        "HaymakerScript$$Init": [
+          "0x20af7d4"
+        ]
+      }
+    },
+    "StormFlightTime": {
+      "bonusType": 765,
+      "methods": {
+        "LightningStormScript$$Init": [
+          "0x20b0750"
+        ]
+      }
+    },
+    "StormDamage": {
+      "bonusType": 763,
+      "methods": {
+        "LightningStormScript$$Init": [
+          "0x20b07b4"
+        ]
+      }
+    },
+    "LimbBurstDamage": {
+      "bonusType": 691,
+      "methods": {
+        "LimbBurstScript$$Init": [
+          "0x20b1de8"
+        ]
+      }
+    },
+    "LimbBurstMult": {
+      "bonusType": 692,
+      "methods": {
+        "LimbBurstScript$$Init": [
+          "0x20b1e34"
+        ]
+      }
+    },
+    "MagicPotionDamageRate": {
+      "bonusType": 697,
+      "methods": {
+        "MagicPotionScript$$Init": [
+          "0x20b1fb0"
+        ]
+      }
+    },
+    "MeteorDamage": {
+      "bonusType": 702,
+      "methods": {
+        "MeteorShowerScript$$Init": [
+          "0x20b2150"
+        ]
+      }
+    },
+    "MirrorForceBurst": {
+      "bonusType": 705,
+      "methods": {
+        "MirrorForceScript$$Init": [
+          "0x20b3340"
+        ]
+      }
+    },
+    "MirrorForceBoost": {
+      "bonusType": 707,
+      "methods": {
+        "MirrorForceScript$$Init": [
+          "0x20b338c"
+        ]
+      }
+    },
+    "MoonBeamBurst": {
+      "bonusType": 710,
+      "methods": {
+        "MoonBeamScript$$Init": [
+          "0x20b3a60"
+        ]
+      }
+    },
+    "MoonBeamChestMult": {
+      "bonusType": 711,
+      "methods": {
+        "MoonBeamScript$$Init": [
+          "0x20b3aac"
+        ]
+      }
+    },
+    "MoonBeamArmMult": {
+      "bonusType": 709,
+      "methods": {
+        "MoonBeamScript$$Init": [
+          "0x20b3ae8"
+        ]
+      }
+    },
+    "PetrifyPercentRate": {
+      "bonusType": 712,
+      "methods": {
+        "PetrifyScript$$Init": [
+          "0x20b41d0"
+        ]
+      }
+    },
+    "PlagueAttackDamageRate": {
+      "bonusType": 716,
+      "methods": {
+        "PlagueAttackScript$$Init": [
+          "0x20b4348"
+        ]
+      }
+    },
+    "PlagueAttackDamageMult": {
+      "bonusType": 717,
+      "methods": {
+        "PlagueAttackScript$$Init": [
+          "0x20b43ac"
+        ]
+      }
+    },
+    "PlagueAttackDamageMultMaxParts": {
+      "bonusType": 715,
+      "methods": {
+        "PlagueAttackScript$$Init": [
+          "0x20b43e8"
+        ]
+      }
+    },
+    "PoisonDamageRate": {
+      "bonusType": 719,
+      "methods": {
+        "PoisonAttackScript$$Init": [
+          "0x20b4730"
+        ]
+      }
+    },
+    "PowerBubbleDamageRate": {
+      "bonusType": 723,
+      "methods": {
+        "PowerBubbleScript$$Init": [
+          "0x20b4ae0"
+        ]
+      }
+    },
+    "PowerBubbleBurst": {
+      "bonusType": 722,
+      "methods": {
+        "PowerBubbleScript$$ActivateSkill": [
+          "0x20b539c"
+        ]
+      }
+    },
+    "PrimalRageDamage": {
+      "bonusType": 724,
+      "methods": {
+        "PrimalRageScript$$Init": [
+          "0x20b5cb8"
+        ]
+      }
+    },
+    "PrimalRageBonus": {
+      "bonusType": 725,
+      "methods": {
+        "PrimalRageScript$$Init": [
+          "0x20b5d04"
+        ]
+      }
+    },
+    "PurifyDamage": {
+      "bonusType": 726,
+      "methods": {
+        "PurifyScript$$Init": [
+          "0x20b5e2c"
+        ]
+      }
+    },
+    "PurifyBonus": {
+      "bonusType": 727,
+      "methods": {
+        "PurifyScript$$Init": [
+          "0x20b5e78"
+        ]
+      }
+    },
+    "RaidBaseDamage": {
+      "bonusType": 729,
+      "methods": {
+        "RaidSkillScript$$GetExtraBaseBonuses": [
+          "0x20b7b04"
+        ]
+      }
+    },
+    "BurstBaseDamage": {
+      "bonusType": 597,
+      "methods": {
+        "RaidSkillScript$$GetExtraBaseBonuses": [
+          "0x20b7b58"
+        ]
+      }
+    },
+    "AfflictionBaseDamage": {
+      "bonusType": 549,
+      "methods": {
+        "RaidSkillScript$$GetExtraBaseBonuses": [
+          "0x20b7ba4"
+        ]
+      }
+    },
+    "ArmorBaseDamage": {
+      "bonusType": 568,
+      "methods": {
+        "RaidSkillScript$$GetExtraBaseBonuses": [
+          "0x20b7c0c"
+        ]
+      }
+    },
+    "BodyBaseDamage": {
+      "bonusType": 585,
+      "methods": {
+        "RaidSkillScript$$GetExtraBaseBonuses": [
+          "0x20b7c68"
+        ]
+      }
+    },
+    "HeadBaseDamage": {
+      "bonusType": 679,
+      "methods": {
+        "RaidSkillScript$$GetExtraBaseBonuses": [
+          "0x20b7ccc"
+        ]
+      }
+    },
+    "LimbBaseDamage": {
+      "bonusType": 690,
+      "methods": {
+        "RaidSkillScript$$GetExtraBaseBonuses": [
+          "0x20b7d28"
+        ]
+      }
+    },
+    "TorsoBaseDamage": {
+      "bonusType": 775,
+      "methods": {
+        "RaidSkillScript$$GetExtraBaseBonuses": [
+          "0x20b7d8c"
+        ]
+      }
+    },
+    "HeadArmorBaseDamage": {
+      "bonusType": 678,
+      "methods": {
+        "RaidSkillScript$$GetExtraBaseBonuses": [
+          "0x20b7df8"
+        ]
+      }
+    },
+    "HeadBodyBaseDamage": {
+      "bonusType": 680,
+      "methods": {
+        "RaidSkillScript$$GetExtraBaseBonuses": [
+          "0x20b7e70"
+        ]
+      }
+    },
+    "LimbArmorBaseDamage": {
+      "bonusType": 688,
+      "methods": {
+        "RaidSkillScript$$GetExtraBaseBonuses": [
+          "0x20b7edc"
+        ]
+      }
+    },
+    "LimbBodyBaseDamage": {
+      "bonusType": 689,
+      "methods": {
+        "RaidSkillScript$$GetExtraBaseBonuses": [
+          "0x20b7f54"
+        ]
+      }
+    },
+    "TorsoArmorBaseDamage": {
+      "bonusType": 773,
+      "methods": {
+        "RaidSkillScript$$GetExtraBaseBonuses": [
+          "0x20b7fc0"
+        ]
+      }
+    },
+    "TorsoBodyBaseDamage": {
+      "bonusType": 774,
+      "methods": {
+        "RaidSkillScript$$GetExtraBaseBonuses": [
+          "0x20b8044"
+        ]
+      }
+    },
+    "Enemy2BaseDamage": {
+      "bonusType": 632,
+      "methods": {
+        "RaidSkillScript$$GetExtraBaseBonuses": [
+          "0x20b80f4"
+        ]
+      }
+    },
+    "Enemy2AfflictionBaseDamage": {
+      "bonusType": 631,
+      "methods": {
+        "RaidSkillScript$$GetExtraBaseBonuses": [
+          "0x20b8148"
+        ]
+      }
+    },
+    "Enemy6BaseDamage": {
+      "bonusType": 644,
+      "methods": {
+        "RaidSkillScript$$GetExtraBaseBonuses": [
+          "0x20b81a4"
+        ]
+      }
+    },
+    "Enemy6AfflictionBaseDamage": {
+      "bonusType": 643,
+      "methods": {
+        "RaidSkillScript$$GetExtraBaseBonuses": [
+          "0x20b81f8"
+        ]
+      }
+    },
+    "Enemy4BaseDamage": {
+      "bonusType": 638,
+      "methods": {
+        "RaidSkillScript$$GetExtraBaseBonuses": [
+          "0x20b824c"
+        ]
+      }
+    },
+    "Enemy4AfflictionBaseDamage": {
+      "bonusType": 637,
+      "methods": {
+        "RaidSkillScript$$GetExtraBaseBonuses": [
+          "0x20b82a0"
+        ]
+      }
+    },
+    "Enemy8BaseDamage": {
+      "bonusType": 650,
+      "methods": {
+        "RaidSkillScript$$GetExtraBaseBonuses": [
+          "0x20b82f4"
+        ]
+      }
+    },
+    "Enemy8AfflictionBaseDamage": {
+      "bonusType": 649,
+      "methods": {
+        "RaidSkillScript$$GetExtraBaseBonuses": [
+          "0x20b8348"
+        ]
+      }
+    },
+    "Enemy1BaseDamage": {
+      "bonusType": 629,
+      "methods": {
+        "RaidSkillScript$$GetExtraBaseBonuses": [
+          "0x20b838c"
+        ]
+      }
+    },
+    "Enemy1AfflictionBaseDamage": {
+      "bonusType": 628,
+      "methods": {
+        "RaidSkillScript$$GetExtraBaseBonuses": [
+          "0x20b83e0"
+        ]
+      }
+    },
+    "Enemy5BaseDamage": {
+      "bonusType": 641,
+      "methods": {
+        "RaidSkillScript$$GetExtraBaseBonuses": [
+          "0x20b8424"
+        ]
+      }
+    },
+    "Enemy5AfflictionBaseDamage": {
+      "bonusType": 640,
+      "methods": {
+        "RaidSkillScript$$GetExtraBaseBonuses": [
+          "0x20b8478"
+        ]
+      }
+    },
+    "Enemy3BaseDamage": {
+      "bonusType": 635,
+      "methods": {
+        "RaidSkillScript$$GetExtraBaseBonuses": [
+          "0x20b84bc"
+        ]
+      }
+    },
+    "Enemy3AfflictionBaseDamage": {
+      "bonusType": 634,
+      "methods": {
+        "RaidSkillScript$$GetExtraBaseBonuses": [
+          "0x20b8510"
+        ]
+      }
+    },
+    "Enemy7BaseDamage": {
+      "bonusType": 647,
+      "methods": {
+        "RaidSkillScript$$GetExtraBaseBonuses": [
+          "0x20b8554"
+        ]
+      }
+    },
+    "Enemy7AfflictionBaseDamage": {
+      "bonusType": 646,
+      "methods": {
+        "RaidSkillScript$$GetExtraBaseBonuses": [
+          "0x20b85a8"
+        ]
+      }
+    },
+    "Enemy1BurstBaseDamage": {
+      "bonusType": 630,
+      "methods": {
+        "RaidSkillScript$$GetExtraBaseBonuses": [
+          "0x20b8610"
+        ]
+      }
+    },
+    "Enemy5BurstBaseDamage": {
+      "bonusType": 642,
+      "methods": {
+        "RaidSkillScript$$GetExtraBaseBonuses": [
+          "0x20b8664"
+        ]
+      }
+    },
+    "Enemy3BurstBaseDamage": {
+      "bonusType": 636,
+      "methods": {
+        "RaidSkillScript$$GetExtraBaseBonuses": [
+          "0x20b86b8"
+        ]
+      }
+    },
+    "Enemy7BurstBaseDamage": {
+      "bonusType": 648,
+      "methods": {
+        "RaidSkillScript$$GetExtraBaseBonuses": [
+          "0x20b870c"
+        ]
+      }
+    },
+    "Enemy2BurstBaseDamage": {
+      "bonusType": 633,
+      "methods": {
+        "RaidSkillScript$$GetExtraBaseBonuses": [
+          "0x20b8760"
+        ]
+      }
+    },
+    "Enemy6BurstBaseDamage": {
+      "bonusType": 645,
+      "methods": {
+        "RaidSkillScript$$GetExtraBaseBonuses": [
+          "0x20b87b4"
+        ]
+      }
+    },
+    "Enemy4BurstBaseDamage": {
+      "bonusType": 639,
+      "methods": {
+        "RaidSkillScript$$GetExtraBaseBonuses": [
+          "0x20b8808"
+        ]
+      }
+    },
+    "Enemy8BurstBaseDamage": {
+      "bonusType": 651,
+      "methods": {
+        "RaidSkillScript$$GetExtraBaseBonuses": [
+          "0x20b885c"
+        ]
+      }
+    },
+    "RazorWindBurst": {
+      "bonusType": 738,
+      "methods": {
+        "RazorWindScript$$Init": [
+          "0x20b8944"
+        ]
+      }
+    },
+    "RazorWindBodyMult": {
+      "bonusType": 739,
+      "methods": {
+        "RazorWindScript$$Init": [
+          "0x20b8990"
+        ]
+      }
+    },
+    "RuinousRustDamageRate": {
+      "bonusType": 740,
+      "methods": {
+        "RuinousRustScript$$Init": [
+          "0x20b8aac"
+        ]
+      }
+    },
+    "RuinousRustEnchantedArmorMult": {
+      "bonusType": 741,
+      "methods": {
+        "RuinousRustScript$$Init": [
+          "0x20b8b10"
+        ]
+      }
+    },
+    "RuneDamageRate": {
+      "bonusType": 744,
+      "methods": {
+        "RuneScript$$Init": [
+          "0x20b8ffc"
+        ]
+      }
+    },
+    "RuneDamageBoost": {
+      "bonusType": 743,
+      "methods": {
+        "RuneScript$$ApplyDeltaStacksMultiplier": [
+          "0x20b9104"
+        ]
+      }
+    },
+    "RustDamageRate": {
+      "bonusType": 745,
+      "methods": {
+        "RustScript$$Init": [
+          "0x20b92bc"
+        ]
+      }
+    },
+    "RustArmorBonus": {
+      "bonusType": 742,
+      "methods": {
+        "RustScript$$Init": [
+          "0x20b9320"
+        ]
+      }
+    },
+    "SandsOfTimeDamageRate": {
+      "bonusType": 747,
+      "methods": {
+        "SandsOfTimeScript$$Init": [
+          "0x20b9444"
+        ]
+      }
+    },
+    "ShadowDamageRate": {
+      "bonusType": 749,
+      "methods": {
+        "ShadowScript$$Init": [
+          "0x20b9ba0"
+        ]
+      }
+    },
+    "ShadowDamageMult": {
+      "bonusType": 750,
+      "methods": {
+        "ShadowScript$$Init": [
+          "0x20b9c04"
+        ]
+      }
+    },
+    "SkullBashBurst": {
+      "bonusType": 752,
+      "methods": {
+        "SkullBashScript$$Init": [
+          "0x20b9d80"
+        ]
+      }
+    },
+    "SkullBashHeadMult": {
+      "bonusType": 753,
+      "methods": {
+        "SkullBashScript$$Init": [
+          "0x20b9dcc"
+        ]
+      }
+    },
+    "SkullBashLegMult": {
+      "bonusType": 754,
+      "methods": {
+        "SkullBashScript$$Init": [
+          "0x20b9e08"
+        ]
+      }
+    },
+    "SolarFlareDamageRate": {
+      "bonusType": 756,
+      "methods": {
+        "SolarFlareScript$$Init": [
+          "0x20b9f48"
+        ]
+      }
+    },
+    "SolarFlareDamageBonus": {
+      "bonusType": 755,
+      "methods": {
+        "SolarFlareScript$$Init": [
+          "0x20b9fac"
+        ]
+      }
+    },
+    "FairyBombBurst": {
+      "bonusType": 658,
+      "methods": {
+        "SpiritBombScript.<ExplodeBomb>d__9$$MoveNext": [
+          "0x20ba648"
+        ]
+      }
+    },
+    "FairyBombRadius": {
+      "bonusType": 659,
+      "methods": {
+        "SpiritBombScript.<ExplodeBomb>d__9$$MoveNext": [
+          "0x20ba6a0"
+        ]
+      }
+    },
+    "StaticRiftBurst": {
+      "bonusType": 758,
+      "methods": {
+        "StaticRiftScript$$Init": [
+          "0x20ba8ac"
+        ]
+      }
+    },
+    "StaticRiftChainMult": {
+      "bonusType": 759,
+      "methods": {
+        "StaticRiftScript$$Init": [
+          "0x20ba8f8"
+        ]
+      }
+    },
+    "StaticRiftSparkDuration": {
+      "bonusType": 761,
+      "methods": {
+        "StaticRiftScript$$Init": [
+          "0x20ba934"
+        ]
+      }
+    },
+    "StaticRiftMaxSparkCount": {
+      "bonusType": 760,
+      "methods": {
+        "StaticRiftScript$$Init": [
+          "0x20ba970"
+        ]
+      }
+    },
+    "SupportChance": {
+      "bonusType": 767,
+      "methods": {
+        "SupportSkillScript$$Init": [
+          "0x20bba18"
+        ]
+      }
+    },
+    "SupportEffectPerEnchant": {
+      "bonusType": 771,
+      "methods": {
+        "SupportSkillScript$$GetBonus": [
+          "0x20bbf14"
+        ]
+      }
+    },
+    "SwarmDamageRate": {
+      "bonusType": 766,
+      "methods": {
+        "SwarmScript$$Init": [
+          "0x20bc594"
+        ]
+      }
+    },
+    "FairyTotemRandomChance": {
+      "bonusType": 664,
+      "methods": {
+        "TotemFairyScript$$Awake": [
+          "0x20bd39c"
+        ]
+      }
+    },
+    "FairyTotemRate": {
+      "bonusType": 662,
+      "methods": {
+        "TotemFairySkillScript$$Init": [
+          "0x20be550"
+        ]
+      }
+    },
+    "TriangleSupportBurstBoost": {
+      "bonusType": 777,
+      "methods": {
+        "TriangleSupportScript$$ModifyBonuses": [
+          "0x20bee9c"
+        ]
+      }
+    },
+    "TriangleSupportAfflictionBoost": {
+      "bonusType": 776,
+      "methods": {
+        "TriangleSupportScript$$ModifyBonuses": [
+          "0x20bef40"
+        ]
+      }
+    },
+    "WeakenBurst": {
+      "bonusType": 778,
+      "methods": {
+        "WeakenScript$$Init": [
+          "0x20bf178"
+        ]
+      }
+    },
+    "WeakenDamageBoost": {
+      "bonusType": 779,
+      "methods": {
+        "WeakenScript$$ApplyDeltaStacksMultiplier": [
+          "0x20bf30c"
+        ]
+      }
+    },
+    "WhipOfLightningBurst": {
+      "bonusType": 781,
+      "methods": {
+        "WhipOfLightningScript$$Init": [
+          "0x20bf770"
+        ]
+      }
+    },
+    "WhipOfLightningChance": {
+      "bonusType": 782,
+      "methods": {
+        "WhipOfLightningScript$$Init": [
+          "0x20bf7bc"
+        ]
+      }
+    },
+    "WhipOfLightningChanceCap": {
+      "bonusType": 783,
+      "methods": {
+        "WhipOfLightningScript$$Init": [
+          "0x20bf7f8"
+        ]
+      }
+    },
+    "BurstDamage": {
+      "bonusType": 598,
+      "methods": {
+        "RaidPartDamagedEvent$$ApplyBonuses": [
+          "0x20c1eb8"
+        ]
+      }
+    },
+    "BurstDamagePerEnchant": {
+      "bonusType": 599,
+      "methods": {
+        "RaidPartDamagedEvent$$ApplyBonuses": [
+          "0x20c1f10"
+        ]
+      }
+    },
+    "BurstDamageSupport": {
+      "bonusType": 793,
+      "methods": {
+        "RaidPartDamagedEvent$$ApplyBonuses": [
+          "0x20c1f60"
+        ]
+      }
+    },
+    "SpatialDamage": {
+      "bonusType": 757,
+      "methods": {
+        "RaidPartDamagedEvent$$ApplyBonuses": [
+          "0x20c1f98"
+        ]
+      }
+    },
+    "AfflictedDamage": {
+      "bonusType": 550,
+      "methods": {
+        "RaidPartDamagedEvent$$ApplyBonuses": [
+          "0x20c1ff8"
+        ]
+      }
+    },
+    "AfflictedDamagePerEnchant": {
+      "bonusType": 551,
+      "methods": {
+        "RaidPartDamagedEvent$$ApplyBonuses": [
+          "0x20c2050"
+        ]
+      }
+    },
+    "AfflictedDamageSupport": {
+      "bonusType": 787,
+      "methods": {
+        "RaidPartDamagedEvent$$ApplyBonuses": [
+          "0x20c20a0"
+        ]
+      }
+    },
+    "ChestDamage": {
+      "bonusType": 613,
+      "methods": {
+        "RaidPartDamagedEvent$$ApplyBonuses": [
+          "0x20c2210"
+        ]
+      }
+    },
+    "ChestDamagePerEnchant": {
+      "bonusType": 614,
+      "methods": {
+        "RaidPartDamagedEvent$$ApplyBonuses": [
+          "0x20c2268"
+        ]
+      }
+    },
+    "ChestDamageSupport": {
+      "bonusType": 789,
+      "methods": {
+        "RaidPartDamagedEvent$$ApplyBonuses": [
+          "0x20c22b8"
+        ]
+      }
+    },
+    "LegDamage": {
+      "bonusType": 687,
+      "methods": {
+        "RaidPartDamagedEvent$$ApplyBonuses": [
+          "0x20c2300"
+        ]
+      }
+    },
+    "LimbDamage": {
+      "bonusType": 693,
+      "methods": {
+        "RaidPartDamagedEvent$$ApplyBonuses": [
+          "0x20c2358",
+          "0x20c2560"
+        ]
+      }
+    },
+    "LimbDamagePerEnchant": {
+      "bonusType": 694,
+      "methods": {
+        "RaidPartDamagedEvent$$ApplyBonuses": [
+          "0x20c239c",
+          "0x20c25a4"
+        ]
+      }
+    },
+    "LimbDamageSupport": {
+      "bonusType": 794,
+      "methods": {
+        "RaidPartDamagedEvent$$ApplyBonuses": [
+          "0x20c23f0",
+          "0x20c25f8"
+        ]
+      }
+    },
+    "HeadDamage": {
+      "bonusType": 681,
+      "methods": {
+        "RaidPartDamagedEvent$$ApplyBonuses": [
+          "0x20c2428"
+        ]
+      }
+    },
+    "HeadDamagePerEnchant": {
+      "bonusType": 682,
+      "methods": {
+        "RaidPartDamagedEvent$$ApplyBonuses": [
+          "0x20c2480"
+        ]
+      }
+    },
+    "HeadDamageSupport": {
+      "bonusType": 784,
+      "methods": {
+        "RaidPartDamagedEvent$$ApplyBonuses": [
+          "0x20c24d0"
+        ]
+      }
+    },
+    "ArmDamage": {
+      "bonusType": 566,
+      "methods": {
+        "RaidPartDamagedEvent$$ApplyBonuses": [
+          "0x20c2508"
+        ]
+      }
+    },
+    "ArmorDamage": {
+      "bonusType": 569,
+      "methods": {
+        "RaidPartDamagedEvent$$ApplyBonuses": [
+          "0x20c2654"
+        ]
+      }
+    },
+    "ArmorDamagePerEnchant": {
+      "bonusType": 570,
+      "methods": {
+        "RaidPartDamagedEvent$$ApplyBonuses": [
+          "0x20c26ac"
+        ]
+      }
+    },
+    "ArmorDamageSupport": {
+      "bonusType": 792,
+      "methods": {
+        "RaidPartDamagedEvent$$ApplyBonuses": [
+          "0x20c26fc"
+        ]
+      }
+    },
+    "SkeletonExposedArmorDamageSupport": {
+      "bonusType": 408,
+      "methods": {
+        "RaidPartDamagedEvent$$ApplyBonuses": [
+          "0x20c2740"
+        ]
+      }
+    },
+    "BodyDamage": {
+      "bonusType": 586,
+      "methods": {
+        "RaidPartDamagedEvent$$ApplyBonuses": [
+          "0x20c2790"
+        ]
+      }
+    },
+    "BodyDamagePerEnchant": {
+      "bonusType": 587,
+      "methods": {
+        "RaidPartDamagedEvent$$ApplyBonuses": [
+          "0x20c27e8"
+        ]
+      }
+    },
+    "BodyDamageSupport": {
+      "bonusType": 788,
+      "methods": {
+        "RaidPartDamagedEvent$$ApplyBonuses": [
+          "0x20c2838"
+        ]
+      }
+    },
+    "SkeletonDamage": {
+      "bonusType": 751,
+      "methods": {
+        "RaidPartDamagedEvent$$ApplyBonuses": [
+          "0x20c287c"
+        ]
+      }
+    },
+    "ExposedSkeletonBoost": {
+      "bonusType": 657,
+      "methods": {
+        "RaidPartDamagedEvent$$ApplyBonuses": [
+          "0x20c28e8"
+        ]
+      }
+    },
+    "ExposedSkeletonBoostSupportMaxParts": {
+      "bonusType": 791,
+      "methods": {
+        "RaidPartDamagedEvent$$ApplyBonuses": [
+          "0x20c2948"
+        ]
+      }
+    },
+    "ExposedSkeletonBoostSupport": {
+      "bonusType": 790,
+      "methods": {
+        "RaidPartDamagedEvent$$ApplyBonuses": [
+          "0x20c2988"
+        ]
+      }
+    },
+    "ExposedBodyBoost": {
+      "bonusType": 656,
+      "methods": {
+        "RaidPartDamagedEvent$$ApplyBonuses": [
+          "0x20c29d0"
+        ]
+      }
+    },
+    "ExposedBodyBoostSupportMaxParts": {
+      "bonusType": 786,
+      "methods": {
+        "RaidPartDamagedEvent$$ApplyBonuses": [
+          "0x20c2a20"
+        ]
+      }
+    },
+    "ExposedBodyBoostSupport": {
+      "bonusType": 785,
+      "methods": {
+        "RaidPartDamagedEvent$$ApplyBonuses": [
+          "0x20c2a60"
+        ]
+      }
+    },
+    "ExposedArmorBoost": {
+      "bonusType": 655,
+      "methods": {
+        "RaidPartDamagedEvent$$ApplyBonuses": [
+          "0x20c2aa8"
+        ]
+      }
+    },
+    "AllRaidDamageSupport": {
+      "bonusType": 562,
+      "methods": {
+        "RaidPartDamagedEvent$$ApplyBonuses": [
+          "0x20c2b14"
+        ]
+      }
+    },
+    "SoloRaidAllDamage": {
+      "bonusType": 430,
+      "methods": {
+        "RaidPartDamagedEvent$$ApplyBonuses": [
+          "0x20c2b90"
+        ]
+      }
+    },
+    "AllRaidDamage": {
+      "bonusType": 560,
+      "methods": {
+        "RaidPartDamagedEvent$$ApplyBonuses": [
+          "0x20c2bf8"
+        ]
+      }
+    },
+    "AllRaidDamagePerEnchant": {
+      "bonusType": 561,
+      "methods": {
+        "RaidPartDamagedEvent$$ApplyBonuses": [
+          "0x20c2c34"
+        ]
+      }
+    },
+    "LoyaltyRaidDamage": {
+      "bonusType": 696,
+      "methods": {
+        "RaidPartDamagedEvent$$ApplyBonuses": [
+          "0x20c2c7c"
+        ]
+      }
+    },
+    "PlayerRaidLevelCostReduction": {
+      "bonusType": 374,
+      "methods": {
+        "RaidTraitModel$$GetModifiedRaidPlayerExperienceCostWithBonus": [
+          "0x20e0a7c"
+        ]
+      }
+    },
+    "ClanQTEAttackRate": {
+      "bonusType": 104,
+      "methods": {
+        "ClanPlayerScript$$RefreshBonuses": [
+          "0x20f3da8"
+        ]
+      }
+    },
+    "ActiveAllHelperDamage": {
+      "bonusType": 30,
+      "methods": {
+        "ClanPlayerScript$$RefreshBonuses": [
+          "0x20f3e44"
+        ],
+        "SkillTreeUIModel$$PreviewBonusUpgrades": [
+          "0x250b5c0"
+        ]
+      }
+    },
+    "ClanQTEDamage": {
+      "bonusType": 106,
+      "methods": {
+        "ClanPlayerScript.<ClanPlayerLoop>d__19$$MoveNext": [
+          "0x20f4c04"
+        ]
+      }
+    },
+    "DeadlyChance": {
+      "bonusType": 168,
+      "methods": {
+        "BasePetObject$$DoNormalAttack": [
+          "0x2390264"
+        ],
+        "ClanPlayerScript.<ClanPlayerLoop>d__19$$MoveNext": [
+          "0x20f4d9c"
+        ],
+        "PlayerController.<ShadowCloneAttackLoop>d__132$$MoveNext": [
+          "0x23d2108"
+        ],
+        "PlayerModel$$GetAverageDeadlyStrike": [
+          "0x23cee8c"
+        ],
+        "PlayerModel$$GetTapDamageType": [
+          "0x23ca0ac"
+        ]
+      }
+    },
+    "AllProbabilityBoost": {
+      "bonusType": 27,
+      "methods": {
+        "BasePetObject$$DoNormalAttack": [
+          "0x2390294"
+        ],
+        "BonusModel$$GetAverageMultiMonsterSpawn": [
+          "0x27186f0"
+        ],
+        "ChestersonTitanScript$$GetSpawnChance": [
+          "0x2537bb0"
+        ],
+        "ClanPlayerScript.<ClanPlayerLoop>d__19$$MoveNext": [
+          "0x20f4db8"
+        ],
+        "FairyController$$MultiFairySpawn": [
+          "0x21be08c"
+        ],
+        "HaystTitanScript$$GetSpawnChance": [
+          "0x2538ff4"
+        ],
+        "InactiveGameplayModel$$GetReducedMonsterCount": [
+          "0x22856f8"
+        ],
+        "KratosTitanScript$$GetSpawnChance": [
+          "0x2539bf8"
+        ],
+        "MegaBombTitanScript$$GetSpawnChance": [
+          "0x253aa4c"
+        ],
+        "MonsterController$$SpawnMonster": [
+          "0x231e494"
+        ],
+        "MonsterModel$$GetAverageMonsterGoldDrop": [
+          "0x232699c"
+        ],
+        "PlayerController$$RollShadowCloneCrit": [
+          "0x23ca774"
+        ],
+        "PlayerController$$TryLightningAttack": [
+          "0x23cad54"
+        ],
+        "PlayerController.<ShadowCloneAttackLoop>d__132$$MoveNext": [
+          "0x23d2050"
+        ],
+        "PlayerModel$$GetAverageDeadlyStrike": [
+          "0x23ceeb4"
+        ],
+        "PlayerModel$$GetTapDamageType": [
+          "0x23ca0c8"
+        ],
+        "PlayerModel$$RefreshCriticalValues": [
+          "0x23da1d8"
+        ],
+        "PlayerModel$$TryManaSteal": [
+          "0x23ca97c"
+        ],
+        "SkillTreeBookItemScript$$LanguageChanged": [
+          "0x24f805c",
+          "0x24f8128"
+        ],
+        "StageLogic$$PerformStageSkipProbabilityCheck": [
+          "0x25457bc"
+        ],
+        "StageLogic$$SpawnBoss": [
+          "0x2541f58"
+        ],
+        "StageLogic$$SpawnMonster": [
+          "0x2541ae8"
+        ],
+        "StatsPanelScript$$CreateChanceStatsItem": [
+          "0x255dee8"
+        ],
+        "TwilightFairyController$$SpawnTwilightFairyIfSkillIsActive": [
+          "0x2519a7c"
+        ]
+      }
+    },
+    "CritBoostSkillAmount": {
+      "bonusType": 126,
+      "methods": {
+        "BasePetObject$$DoNormalAttack": [
+          "0x239035c"
+        ],
+        "ClanPlayerScript.<ClanPlayerLoop>d__19$$MoveNext": [
+          "0x20f4e58"
+        ],
+        "PlayerController$$get_shadowCloneDSMultiplier": [
+          "0x23c584c"
+        ],
+        "PlayerModel$$GetAverageDeadlyStrike": [
+          "0x23cef68"
+        ],
+        "PlayerModel$$GetCriticalDamage": [
+          "0x23ca36c"
+        ],
+        "StatsPanelScript$$InitSpellStats": [
+          "0x255940c"
+        ]
+      }
+    },
+    "DamagePerClanScroll": {
+      "bonusType": 141,
+      "methods": {
+        "ClanScrollModel$$RefreshDamagePerClanScrollBonus": [
+          "0x20fda1c"
+        ]
+      }
+    },
+    "ClanScrollBoost": {
+      "bonusType": 102,
+      "methods": {
+        "ClanScrollModel$$GetBonusValue": [
+          "0x20fee9c"
+        ]
+      }
+    },
+    "ClanScrollSetBoost": {
+      "bonusType": 103,
+      "methods": {
+        "ClanScrollModel$$GetScrollSetBonus": [
+          "0x20ff100"
+        ]
+      }
+    },
+    "CompanionAttackRate": {
+      "bonusType": 118,
+      "methods": {
+        "ActiveSkillModel$$GetCloneAttackRate": [
+          "0x223b6cc"
+        ],
+        "ClanShipController$$SetAttackDuration": [
+          "0x210157c"
+        ],
+        "DualPetObject$$GetAttackCooldown": [
+          "0x2391a18"
+        ],
+        "PetModel$$GetPetAttackCooldown": [
+          "0x2397990"
+        ],
+        "PetModel$$SetTapCountToAttack": [
+          "0x239f2f0"
+        ]
+      }
+    },
+    "AutoActivateWarlordQTE": {
+      "bonusType": 53,
+      "methods": {
+        "ClanShipScript$$get_IsAutoActivateThunderVolley": [
+          "0x2103448"
+        ],
+        "GameSettingsPanel$$Start": [
+          "0x23530a0"
+        ],
+        "HelperController$$get_IsAutoTapEnabled": [
+          "0x2229b18"
+        ],
+        "PlayerController$$get_IsAutoCoordActivateEnabled": [
+          "0x23c56b8"
+        ]
+      }
+    },
+    "ClanShipBatteryCoefficient": {
+      "bonusType": 107,
+      "methods": {
+        "ClanShipScript$$ChargeShip": [
+          "0x2104404"
+        ]
+      }
+    },
+    "DailyGemstoneCurrencyBoost": {
+      "bonusType": 137,
+      "methods": {
+        "AchievementDailyListItem$$InitRewards": [
+          "0x210de6c"
+        ],
+        "DailyCollectibleListItem$$UpdateCollectButtonVisibility": [
+          "0x21339c8"
+        ]
+      }
+    },
+    "DailyTicketBoost": {
+      "bonusType": 504,
+      "methods": {
+        "AchievementDailyListItem$$InitRewards": [
+          "0x210df1c"
+        ],
+        "RewardClass$$CreateRewardText": [
+          "0x24341e4"
+        ]
+      }
+    },
+    "AllDamage": {
+      "bonusType": 37,
+      "methods": {
+        "AchievementModel$$TEST_GetStatsString": [
+          "0x21163ac"
+        ],
+        "HelperInfo$$UpdateHelperBonusMult": [
+          "0x2247f70"
+        ],
+        "PlayerModel$$GetSwordMasterDamage": [
+          "0x23e290c"
+        ],
+        "PlayerModel$$PrintCurrentDamgage": [
+          "0x23e4250"
+        ],
+        "StatsPanelScript$$InitDamageStats": [
+          "0x255a4ec"
+        ]
+      }
+    },
+    "AllHelperDamage": {
+      "bonusType": 40,
+      "methods": {
+        "AchievementModel$$TEST_GetStatsString": [
+          "0x21164a4"
+        ],
+        "HelperInfo$$UpdateHelperBonusMult": [
+          "0x2247fc0"
+        ],
+        "StatsPanelScript$$InitDamageStats": [
+          "0x255a9fc"
+        ]
+      }
+    },
+    "MeleeHelperDamage": {
+      "bonusType": 58,
+      "methods": {
+        "AchievementModel$$TEST_GetStatsString": [
+          "0x211658c"
+        ]
+      }
+    },
+    "RangedHelperDamage": {
+      "bonusType": 59,
+      "methods": {
+        "AchievementModel$$TEST_GetStatsString": [
+          "0x2116674"
+        ]
+      }
+    },
+    "SpellHelperDamage": {
+      "bonusType": 60,
+      "methods": {
+        "AchievementModel$$TEST_GetStatsString": [
+          "0x211675c"
+        ]
+      }
+    },
+    "GoldAll": {
+      "bonusType": 214,
+      "methods": {
+        "AchievementModel$$TEST_GetStatsString": [
+          "0x211683c",
+          "0x211689c"
+        ],
+        "MonsterModel$$GetMonsterGoldDrop": [
+          "0x2327218"
+        ],
+        "StatsPanelScript$$InitGoldStats": [
+          "0x255b1c4",
+          "0x255b448"
+        ]
+      }
+    },
+    "DamagePerRunningPerk": {
+      "bonusType": 159,
+      "methods": {
+        "ActivePerkModel$$UpdateDamagePerRunningPerkBonus": [
+          "0x211d0fc"
+        ]
+      }
+    },
+    "DamagePerRunningPerkBoost": {
+      "bonusType": 160,
+      "methods": {
+        "ActivePerkModel$$UpdateDamagePerRunningPerkBonus": [
+          "0x211d230"
+        ]
+      }
+    },
+    "ManaPotionSpellBoost": {
+      "bonusType": 318,
+      "methods": {
+        "ActivePerkModel$$UpdateManaPotionSpellBoost": [
+          "0x211eae0"
+        ]
+      }
+    },
+    "AutoBuyHeroesMultDuringMakeItRain": {
+      "bonusType": 55,
+      "methods": {
+        "ActivePerkInfo$$GetBonusAmountA": [
+          "0x211efa8"
+        ]
+      }
+    },
+    "PerkDoomAmount": {
+      "bonusType": 347,
+      "methods": {
+        "ActivePerkInfo$$GetFormattedBonusA": [
+          "0x211f290"
+        ],
+        "PlayerController$$DoomBonusDamageLoop": [
+          "0x23cdbdc"
+        ]
+      }
+    },
+    "AutoActivateGoldenMissileSkill": {
+      "bonusType": 56,
+      "methods": {
+        "ActiveSkillButton$$IsAutoActivateSkillEnabled": [
+          "0x21225e4"
+        ],
+        "GameSettingsPanel$$Start": [
+          "0x2353ba4"
+        ]
+      }
+    },
+    "ManaRefundPercent": {
+      "bonusType": 321,
+      "methods": {
+        "ActiveSkillButton$$TryBufferMultiCastSkillActivation": [
+          "0x2123bd8"
+        ],
+        "ActiveSkillButton$$TryMultiCastSkillActivation": [
+          "0x2123dcc"
+        ]
+      }
+    },
+    "DamagePerConsecutiveLoginDay": {
+      "bonusType": 142,
+      "methods": {
+        "DailyRewardModel$$UpdateBonusPerConsecutiveLoginDay": [
+          "0x2137870"
+        ]
+      }
+    },
+    "EquipmentSecondaryDamageEffect": {
+      "bonusType": 193,
+      "methods": {
+        "EquipmentModel$$GetEnhancementAmount": [
+          "0x2185f6c"
+        ],
+        "EquipmentModel$$ParseEquipmentInfo": [
+          "0x217eb9c"
+        ],
+        "EquipmentModel$$RefreshSecondaryEnhancementBonuses": [
+          "0x218b60c"
+        ]
+      }
+    },
+    "AllEquipmentEffect": {
+      "bonusType": 18,
+      "methods": {
+        "EquipmentMetaData$$GetEquipmentCategoryBonus": [
+          "0x2184c44"
+        ]
+      }
+    },
+    "AuraBoost": {
+      "bonusType": 67,
+      "methods": {
+        "EquipmentMetaData$$GetEquipmentCategoryBonus": [
+          "0x2184c90"
+        ]
+      }
+    },
+    "HelmetBoost": {
+      "bonusType": 261,
+      "methods": {
+        "EquipmentMetaData$$GetEquipmentCategoryBonus": [
+          "0x2184d10"
+        ]
+      }
+    },
+    "ArmorBoost": {
+      "bonusType": 61,
+      "methods": {
+        "EquipmentMetaData$$GetEquipmentCategoryBonus": [
+          "0x2184d84"
+        ]
+      }
+    },
+    "SlashBoost": {
+      "bonusType": 419,
+      "methods": {
+        "EquipmentMetaData$$GetEquipmentCategoryBonus": [
+          "0x2184df8"
+        ]
+      }
+    },
+    "SwordBoost": {
+      "bonusType": 445,
+      "methods": {
+        "EquipmentMetaData$$GetEquipmentCategoryBonus": [
+          "0x2184e6c"
+        ]
+      }
+    },
+    "DamagePerEquipmentSet": {
+      "bonusType": 143,
+      "methods": {
+        "EquipmentModel$$EquipmentSetCountBonusHandler": [
+          "0x218bdf4"
+        ]
+      }
+    },
+    "FairySpawnChance": {
+      "bonusType": 198,
+      "methods": {
+        "FairyController$$MultiFairySpawn": [
+          "0x21be064"
+        ]
+      }
+    },
+    "FairyGold": {
+      "bonusType": 200,
+      "methods": {
+        "FairyController$$GetFairyGoldAmount": [
+          "0x21c14b0"
+        ],
+        "StatsPanelScript$$InitGoldStats": [
+          "0x255b2ec"
+        ]
+      }
+    },
+    "HandOfMidasSkillAmount": {
+      "bonusType": 255,
+      "methods": {
+        "FairyController$$GetFairyGoldAmount": [
+          "0x21c15b0"
+        ],
+        "MonsterModel$$GetBossSplashGoldDrop": [
+          "0x2327950"
+        ],
+        "MonsterModel$$GetNonBossSplashGoldDrop": [
+          "0x232676c"
+        ],
+        "PetModel$$GetPetHomGold": [
+          "0x239f0a4"
+        ],
+        "PlayerController$$GetHomTapGold": [
+          "0x23ce864"
+        ],
+        "PlayerController$$MonsterDeathMomentHandler": [
+          "0x23c8950"
+        ],
+        "PlayerModel$$GetLargestGoldSourceAmount": [
+          "0x23dcc5c"
+        ],
+        "PlayerModel$$GetMaxHandOfMidasBonus": [
+          "0x23dc940"
+        ],
+        "StatsPanelScript$$InitSpellStats": [
+          "0x2559594"
+        ]
+      }
+    },
+    "GemstoneLevel": {
+      "bonusType": 211,
+      "methods": {
+        "GemstonesModel$$GetTotalGemstoneLevel": [
+          "0x21eafa0"
+        ]
+      }
+    },
+    "GemstoneLevelMult": {
+      "bonusType": 212,
+      "methods": {
+        "GemstonesModel$$GetTotalGemstoneLevel": [
+          "0x21eaff0"
+        ]
+      }
+    },
+    "MagnumOpusDuration": {
+      "bonusType": 313,
+      "methods": {
+        "GoldGunController$$get_MagnumOpusTotalTime": [
+          "0x220caa8"
+        ]
+      }
+    },
+    "MagnumOpusDurationMult": {
+      "bonusType": 314,
+      "methods": {
+        "GoldGunController$$get_MagnumOpusTotalTime": [
+          "0x220cafc"
+        ]
+      }
+    },
+    "GoldGunAttackRate": {
+      "bonusType": 223,
+      "methods": {
+        "GoldGunController$$StartRegularShooting": [
+          "0x220d56c"
+        ]
+      }
+    },
+    "GoldGunDamageFromClanShipDamage": {
+      "bonusType": 226,
+      "methods": {
+        "GoldGunController$$OnBonusUpdatedChanged": [
+          "0x220e788"
+        ]
+      }
+    },
+    "GoldGunChargeBoost": {
+      "bonusType": 224,
+      "methods": {
+        "GoldGunModel$$get_GoldChargeNeeded": [
+          "0x220e9c4"
+        ]
+      }
+    },
+    "MagnumOpusRemoveGoldDrain": {
+      "bonusType": 315,
+      "methods": {
+        "GoldGunModel$$get_HasMagnumOpusRemoveGoldDrainBonus": [
+          "0x220fa1c"
+        ]
+      }
+    },
+    "AutoActivateGoldGunQTE": {
+      "bonusType": 49,
+      "methods": {
+        "GameSettingsPanel$$Start": [
+          "0x2353a50"
+        ],
+        "GoldGunModel$$IsAutoActivateGoldGunEnabled": [
+          "0x2210ed8"
+        ]
+      }
+    },
+    "HelperBoostSkillAmount": {
+      "bonusType": 267,
+      "methods": {
+        "HelperController$$OnActiveSkillStatusChanged": [
+          "0x222bbd8"
+        ],
+        "PetModel$$OnActiveSkillStatusChanged": [
+          "0x23a011c"
+        ],
+        "StatsPanelScript$$InitSpellStats": [
+          "0x25598a4"
+        ]
+      }
+    },
+    "HelperBoostCompanionAttackRate": {
+      "bonusType": 272,
+      "methods": {
+        "HelperController$$OnActiveSkillStatusChanged": [
+          "0x222bc38"
+        ]
+      }
+    },
+    "HelperAttackRate": {
+      "bonusType": 263,
+      "methods": {
+        "HelperController$$OnActiveSkillStatusChanged": [
+          "0x222bd28"
+        ],
+        "HelperInfo$$RefreshInfo": [
+          "0x22494e0"
+        ],
+        "HelperModel$$GetAllHelperDPS": [
+          "0x2248c3c"
+        ]
+      }
+    },
+    "HelperQTECount": {
+      "bonusType": 278,
+      "methods": {
+        "HelperController$$HelperQTEAnim": [
+          "0x222d014"
+        ],
+        "HelperController$$HelperQTEModifyDamage": [
+          "0x222d3f4"
+        ],
+        "SkillTreeUIModel$$PreviewBonusUpgrades": [
+          "0x250b6a0"
+        ]
+      }
+    },
+    "HelperQTEDamage": {
+      "bonusType": 279,
+      "methods": {
+        "HelperController$$HelperQTEDamageMonster": [
+          "0x222d694"
+        ],
+        "HelperController$$HelperQTEModifyDamage": [
+          "0x222d3a8"
+        ],
+        "SkillTreeUIModel$$PreviewBonusUpgrades": [
+          "0x250b664"
+        ]
+      }
+    },
+    "ShadowCloneSkillCooldown": {
+      "bonusType": 397,
+      "methods": {
+        "ActiveSkillModel$$GetSkillCooldown": [
+          "0x222f194"
+        ]
+      }
+    },
+    "HandOfMidasSkillCooldownMult": {
+      "bonusType": 252,
+      "methods": {
+        "ActiveSkillModel$$GetSkillCooldown": [
+          "0x222f1fc",
+          "0x222f280"
+        ]
+      }
+    },
+    "GoldenMissileSkillCooldown": {
+      "bonusType": 233,
+      "methods": {
+        "ActiveSkillModel$$GetSkillCooldown": [
+          "0x222f2e0"
+        ]
+      }
+    },
+    "GoldenMissileSkillCooldownMult": {
+      "bonusType": 234,
+      "methods": {
+        "ActiveSkillModel$$GetSkillCooldown": [
+          "0x222f334",
+          "0x222f3a4"
+        ]
+      }
+    },
+    "InspiredHelperDamage": {
+      "bonusType": 294,
+      "methods": {
+        "ActiveSkillListItemScript$$SetStatTexts": [
+          "0x2231180"
+        ],
+        "ActiveSkillPanelScript$$Initialize": [
+          "0x2240a78",
+          "0x2240aec"
+        ],
+        "SpellSelectPanelScript$$UpdateSkillInfo": [
+          "0x253ddd8"
+        ],
+        "StatsPanelScript$$InitSpellStats": [
+          "0x25598c0"
+        ]
+      }
+    },
+    "AllMultiCastStacks": {
+      "bonusType": 23,
+      "methods": {
+        "ActiveSkillModel$$GetSkillStackMax": [
+          "0x22337a4"
+        ]
+      }
+    },
+    "GoldPerRunningActiveSkill": {
+      "bonusType": 242,
+      "methods": {
+        "ActiveSkillModel$$UpdateRunningActiveSpellsBonuses": [
+          "0x2238704"
+        ],
+        "PlayerModel$$GetLargestGoldSourceAmount": [
+          "0x23dcff8"
+        ]
+      }
+    },
+    "DamagePerRunningActiveSkill": {
+      "bonusType": 158,
+      "methods": {
+        "ActiveSkillModel$$UpdateRunningActiveSpellsBonuses": [
+          "0x2238768"
+        ]
+      }
+    },
+    "ShadowCloneSkillAttackRate": {
+      "bonusType": 393,
+      "methods": {
+        "ActiveSkillModel$$GetCloneAttackRate": [
+          "0x223b6ac"
+        ]
+      }
+    },
+    "AllMultiCastManaCosts": {
+      "bonusType": 22,
+      "methods": {
+        "ActiveSkillModel$$GetMultiStackManaCost": [
+          "0x223be50"
+        ]
+      }
+    },
+    "AllActiveSkillManaReductionMult": {
+      "bonusType": 9,
+      "methods": {
+        "ActiveSkillModel$$GetManaCost": [
+          "0x223d268"
+        ],
+        "ActiveSkillModel$$GetMultiStackManaCost": [
+          "0x223be84"
+        ]
+      }
+    },
+    "AllUpgradeCost": {
+      "bonusType": 16,
+      "methods": {
+        "ActiveSkillModel$$CalculateSkillCost": [
+          "0x223c62c"
+        ],
+        "HelperModel$$RefreshHelperCostReduction": [
+          "0x2254638"
+        ],
+        "PlayerModel$$GetMaxNumUpgrades": [
+          "0x23e2ecc"
+        ],
+        "PlayerModel$$GetUpgradeCost": [
+          "0x23e2aec"
+        ],
+        "StatsPanelScript$$InitReductionStats": [
+          "0x255cd98"
+        ]
+      }
+    },
+    "AllUpgradeCostFairy": {
+      "bonusType": 17,
+      "methods": {
+        "ActiveSkillModel$$CalculateSkillCost": [
+          "0x223c69c"
+        ],
+        "HelperModel$$RefreshHelperCostReduction": [
+          "0x22546cc"
+        ],
+        "PlayerModel$$GetMaxNumUpgrades": [
+          "0x23e2f60"
+        ],
+        "PlayerModel$$GetUpgradeCost": [
+          "0x23e2b80"
+        ]
+      }
+    },
+    "AllActiveSkillCap": {
+      "bonusType": 12,
+      "methods": {
+        "ActiveSkillModel$$GetActiveSkillMaxLevel": [
+          "0x223cb74"
+        ]
+      }
+    },
+    "KnightActiveSkillCap": {
+      "bonusType": 301,
+      "methods": {
+        "ActiveSkillModel$$GetActiveSkillMaxLevel": [
+          "0x223cc28"
+        ]
+      }
+    },
+    "WarlordActiveSkillCap": {
+      "bonusType": 523,
+      "methods": {
+        "ActiveSkillModel$$GetActiveSkillMaxLevel": [
+          "0x223cc7c"
+        ]
+      }
+    },
+    "SummonerActiveSkillCap": {
+      "bonusType": 444,
+      "methods": {
+        "ActiveSkillModel$$GetActiveSkillMaxLevel": [
+          "0x223ccc0"
+        ]
+      }
+    },
+    "AlchemistActiveSkillCap": {
+      "bonusType": 2,
+      "methods": {
+        "ActiveSkillModel$$GetActiveSkillMaxLevel": [
+          "0x223cd04"
+        ]
+      }
+    },
+    "RogueActiveSkillCap": {
+      "bonusType": 380,
+      "methods": {
+        "ActiveSkillModel$$GetActiveSkillMaxLevel": [
+          "0x223cd48"
+        ]
+      }
+    },
+    "SorcererActiveSkillCap": {
+      "bonusType": 427,
+      "methods": {
+        "ActiveSkillModel$$GetActiveSkillMaxLevel": [
+          "0x223cd8c"
+        ]
+      }
+    },
+    "AllActiveSkillManaReduction": {
+      "bonusType": 8,
+      "methods": {
+        "ActiveSkillModel$$GetManaCost": [
+          "0x223d1b8"
+        ]
+      }
+    },
+    "AllActiveSkillDuration": {
+      "bonusType": 4,
+      "methods": {
+        "SkillParsedInfo$$GetDuration": [
+          "0x223ec10"
+        ]
+      }
+    },
+    "AllActiveSkillDurationMult": {
+      "bonusType": 5,
+      "methods": {
+        "SkillParsedInfo$$GetDuration": [
+          "0x223ed00"
+        ]
+      }
+    },
+    "HelperWeaponBoost": {
+      "bonusType": 281,
+      "methods": {
+        "HelperInfo$$GetWeaponIndividualDamage": [
+          "0x224a668"
+        ]
+      }
+    },
+    "HelperWeaponSetBoost": {
+      "bonusType": 282,
+      "methods": {
+        "HelperModel$$GetWeaponSetDamage": [
+          "0x224a770"
+        ]
+      }
+    },
+    "AutoBuyHeroes": {
+      "bonusType": 69,
+      "methods": {
+        "AutoBuyHelpersButton$$UpdateCircleMask": [
+          "0x269035c"
+        ],
+        "HelperModel$$DoAutoUpgradeLoop": [
+          "0x225817c"
+        ],
+        "HelperModel$$get_HasAutoBuyBonus": [
+          "0x224f5d4"
+        ]
+      }
+    },
+    "HelperUpgradeCost": {
+      "bonusType": 274,
+      "methods": {
+        "HelperModel$$RefreshHelperCostReduction": [
+          "0x22545d8"
+        ],
+        "StatsPanelScript$$InitReductionStats": [
+          "0x255cde8"
+        ]
+      }
+    },
+    "DamagePerHelperWeapon": {
+      "bonusType": 152,
+      "methods": {
+        "HelperModel$$RefreshDamagePerHelperWeaponBonus": [
+          "0x2255804"
+        ]
+      }
+    },
+    "DamagePerHelperWeaponMult": {
+      "bonusType": 153,
+      "methods": {
+        "HelperModel$$RefreshDamagePerHelperWeaponBonus": [
+          "0x22559b8"
+        ]
+      }
+    },
+    "InspiredHelperCount": {
+      "bonusType": 293,
+      "methods": {
+        "HelperModel$$GetEnhancedCount": [
+          "0x2256ef8"
+        ]
+      }
+    },
+    "MultiMonstersMaxCount": {
+      "bonusType": 343,
+      "methods": {
+        "BonusModel$$GetAverageMultiMonsterSpawn": [
+          "0x2718698"
+        ],
+        "InactiveGameplayModel$$GetReducedMonsterCount": [
+          "0x228568c"
+        ],
+        "MonsterController$$SpawnMonster": [
+          "0x231e53c"
+        ],
+        "PlayerModel$$GetLargestGoldSourceAmount": [
+          "0x23dcc98"
+        ]
+      }
+    },
+    "MultiMonsters": {
+      "bonusType": 340,
+      "methods": {
+        "BonusModel$$GetAverageMultiMonsterSpawn": [
+          "0x27186e0"
+        ],
+        "InactiveGameplayModel$$GetReducedMonsterCount": [
+          "0x22856dc"
+        ],
+        "MonsterController$$SpawnMonster": [
+          "0x231e46c"
+        ]
+      }
+    },
+    "InactiveMaxStageOverride": {
+      "bonusType": 292,
+      "methods": {
+        "InactiveGameplayModel$$GetInactiveMaxStagePercent": [
+          "0x2285a40"
+        ]
+      }
+    },
+    "InactiveSneakCount": {
+      "bonusType": 288,
+      "methods": {
+        "InactiveGameplayModel$$GetTotalSneakCountBonus": [
+          "0x2285c48"
+        ]
+      }
+    },
+    "InactiveSneakCountMult": {
+      "bonusType": 290,
+      "methods": {
+        "InactiveGameplayModel$$GetTotalSneakCountBonus": [
+          "0x2285c70"
+        ]
+      }
+    },
+    "InactiveSneakCountAdditive": {
+      "bonusType": 289,
+      "methods": {
+        "InactiveGameplayModel$$GetTotalSneakCountBonus": [
+          "0x2285cd8"
+        ]
+      }
+    },
+    "KratosMonsterBonusAmount": {
+      "bonusType": 303,
+      "methods": {
+        "KratosTitanScript$$UpdateDamageBonus": [
+          "0x2539f8c"
+        ],
+        "KratosUIScript$$UpdateToolTip": [
+          "0x228a328"
+        ]
+      }
+    },
+    "AdvancedStart": {
+      "bonusType": 1,
+      "methods": {
+        "MilestonePage$$CreateRewardListItems": [
+          "0x22af2b4"
+        ],
+        "PrestigeModel$$GetAdvancedStartNextStage": [
+          "0x23feb4c"
+        ]
+      }
+    },
+    "BallDropBallGenerationSpeed": {
+      "bonusType": 546,
+      "methods": {
+        "BallDropMinigameModel$$get_PrestigeCurrencyPerXSeconds": [
+          "0x22be20c"
+        ]
+      }
+    },
+    "BallDropBallContainerCap": {
+      "bonusType": 547,
+      "methods": {
+        "BallDropMinigameModel$$get_ContainerCapacity": [
+          "0x22be2e8"
+        ]
+      }
+    },
+    "TackleBoxSpeedLevel": {
+      "bonusType": 532,
+      "methods": {
+        "FishingDerbyMinigameModel$$get_LurePerXSeconds": [
+          "0x22d9060"
+        ]
+      }
+    },
+    "TackleBoxSizeLevel": {
+      "bonusType": 533,
+      "methods": {
+        "FishingDerbyMinigameModel$$get_TackleBoxSize": [
+          "0x22d913c"
+        ]
+      }
+    },
+    "ExtraTargetCountLevel": {
+      "bonusType": 541,
+      "methods": {
+        "HuntingMinigameCoreGame$$GetNumTargets": [
+          "0x22ebe1c"
+        ]
+      }
+    },
+    "TargetBonusCurrencyMultLevel": {
+      "bonusType": 540,
+      "methods": {
+        "HuntingMinigameCoreGame$$UpdateCrit": [
+          "0x22ebfe0"
+        ],
+        "HuntingMinigameCoreGame.<RunComboTimer>d__55$$MoveNext": [
+          "0x22ec9c4"
+        ],
+        "HuntingMinigameRewardPS$$Start": [
+          "0x22f6dac"
+        ]
+      }
+    },
+    "QuiverSpeedLevel": {
+      "bonusType": 538,
+      "methods": {
+        "HuntingMinigameModel$$get_ArrowPerXSeconds": [
+          "0x22ee42c"
+        ]
+      }
+    },
+    "QuiverSizeLevel": {
+      "bonusType": 539,
+      "methods": {
+        "HuntingMinigameModel$$get_QuiverCapacity": [
+          "0x22ee508"
+        ]
+      }
+    },
+    "ArrowsPerDay": {
+      "bonusType": 535,
+      "methods": {
+        "MinigamesModel$$GetDailyPrestigeLimit": [
+          "0x230cac8"
+        ]
+      }
+    },
+    "LuresPerDay": {
+      "bonusType": 528,
+      "methods": {
+        "MinigamesModel$$GetDailyPrestigeLimit": [
+          "0x230cb68"
+        ]
+      }
+    },
+    "BallDropCurrencyPerDay": {
+      "bonusType": 543,
+      "methods": {
+        "MinigamesModel$$GetDailyPrestigeLimit": [
+          "0x230cbe0"
+        ]
+      }
+    },
+    "ArrowsPerPrestige": {
+      "bonusType": 534,
+      "methods": {
+        "MinigamesModel$$GetPrestigeCurrencyAmount": [
+          "0x230d760"
+        ]
+      }
+    },
+    "LuresPerPrestige": {
+      "bonusType": 527,
+      "methods": {
+        "MinigamesModel$$GetPrestigeCurrencyAmount": [
+          "0x230d800"
+        ]
+      }
+    },
+    "BallDropCurrencyPerPrestige": {
+      "bonusType": 542,
+      "methods": {
+        "MinigamesModel$$GetPrestigeCurrencyAmount": [
+          "0x230d878"
+        ]
+      }
+    },
+    "ClanShipStunDuration": {
+      "bonusType": 111,
+      "methods": {
+        "MonsterController$$StunMonster": [
+          "0x2320164"
+        ]
+      }
+    },
+    "MonsterAllSpawnDuration": {
+      "bonusType": 338,
+      "methods": {
+        "MonsterController.<WhiteAndFade>d__63$$MoveNext": [
+          "0x2322e3c"
+        ],
+        "StatsPanelScript$$InitReductionStats": [
+          "0x255ce88"
+        ]
+      }
+    },
+    "MonsterActiveSpawnDuration": {
+      "bonusType": 337,
+      "methods": {
+        "MonsterController.<WhiteAndFade>d__63$$MoveNext": [
+          "0x2322e90"
+        ],
+        "StatsPanelScript$$InitReductionStats": [
+          "0x255ced8"
+        ]
+      }
+    },
+    "MonsterHP": {
+      "bonusType": 335,
+      "methods": {
+        "MonsterModel$$GetMonsterBaseHP": [
+          "0x2325af4"
+        ],
+        "StatsPanelScript$$InitReductionStats": [
+          "0x255cce8"
+        ]
+      }
+    },
+    "MonsterHPScaling": {
+      "bonusType": 336,
+      "methods": {
+        "MonsterModel$$GetMonsterBaseHP": [
+          "0x2325bd8"
+        ]
+      }
+    },
+    "SplashGold": {
+      "bonusType": 426,
+      "methods": {
+        "MonsterModel$$GetBossSplashGoldDrop": [
+          "0x23278d4"
+        ],
+        "MonsterModel$$GetNonBossSplashGoldDrop": [
+          "0x23266f0"
+        ]
+      }
+    },
+    "GoldMonster": {
+      "bonusType": 236,
+      "methods": {
+        "MonsterModel$$GetAverageMonsterGoldDrop": [
+          "0x2326910"
+        ],
+        "MonsterModel$$GetMonsterGoldDrop": [
+          "0x2326efc"
+        ]
+      }
+    },
+    "ChestChance": {
+      "bonusType": 100,
+      "methods": {
+        "ChestersonTitanScript$$GetSpawnChance": [
+          "0x2537c10"
+        ],
+        "MonsterModel$$GetAverageMonsterGoldDrop": [
+          "0x2326980"
+        ]
+      }
+    },
+    "MultiMonstersGold": {
+      "bonusType": 341,
+      "methods": {
+        "MonsterModel$$GetAverageMonsterGoldDrop": [
+          "0x2326c08"
+        ],
+        "MonsterModel$$GetMonsterGoldDrop": [
+          "0x23270ec"
+        ]
+      }
+    },
+    "GoldBoss": {
+      "bonusType": 219,
+      "methods": {
+        "MonsterModel$$GetMonsterGoldDrop": [
+          "0x2326ea0"
+        ],
+        "StatsPanelScript$$InitGoldStats": [
+          "0x255b1ec"
+        ]
+      }
+    },
+    "RoyalContractBonusGold": {
+      "bonusType": 383,
+      "methods": {
+        "MonsterModel$$GetMonsterGoldDrop": [
+          "0x2327270"
+        ]
+      }
+    },
+    "ForbiddenContractBonusGold": {
+      "bonusType": 203,
+      "methods": {
+        "MonsterModel$$GetMonsterGoldDrop": [
+          "0x23272e8"
+        ]
+      }
+    },
+    "StageSkipMonsterAmountMult": {
+      "bonusType": 432,
+      "methods": {
+        "MonsterModel$$GetStageSkipMonsterStagesSkipped": [
+          "0x2327e08"
+        ]
+      }
+    },
+    "PortarAboveMSOverride": {
+      "bonusType": 376,
+      "methods": {
+        "MonsterModel$$GetStageSkipMonsterStagesSkipped": [
+          "0x2327e8c"
+        ],
+        "StageLogic$$SpawnBoss": [
+          "0x2542208"
+        ]
+      }
+    },
+    "AutoActivatePetBossQTE": {
+      "bonusType": 50,
+      "methods": {
+        "GameSettingsPanel$$Start": [
+          "0x23533ac"
+        ],
+        "PetController$$get_IsAutoActivatePetEnabled": [
+          "0x2393264"
+        ]
+      }
+    },
+    "AutoActivatePetGoldQTE": {
+      "bonusType": 51,
+      "methods": {
+        "GameSettingsPanel$$Start": [
+          "0x2353500"
+        ],
+        "PetController$$get_IsAutoActivatePetGoldEnabled": [
+          "0x2393370"
+        ]
+      }
+    },
+    "AutoActivateTwilightFairyQTE": {
+      "bonusType": 54,
+      "methods": {
+        "GameSettingsPanel$$Start": [
+          "0x2353654"
+        ],
+        "TwilightFairyController$$get_IsAutoTapTwilightFairyEnabled": [
+          "0x2518fe8"
+        ]
+      }
+    },
+    "AutoActivateForbiddenContractQTE": {
+      "bonusType": 47,
+      "methods": {
+        "ForbiddenContract$$IsAutoActivateForbiddenContractEnabled": [
+          "0x2512be8"
+        ],
+        "GameSettingsPanel$$Start": [
+          "0x23537a8"
+        ]
+      }
+    },
+    "AutoActivateRoyalContractQTE": {
+      "bonusType": 52,
+      "methods": {
+        "GameSettingsPanel$$Start": [
+          "0x23538fc"
+        ],
+        "RoyalContract$$IsAutoActivateRoyalContractEnabled": [
+          "0x2516508"
+        ]
+      }
+    },
+    "AutoActivateFrenzy": {
+      "bonusType": 48,
+      "methods": {
+        "GameSettingsPanel$$Start": [
+          "0x2353df0"
+        ],
+        "PlayerController$$get_IsAutoFrenzyActivateEnabled": [
+          "0x23c559c"
+        ]
+      }
+    },
+    "PassiveSkillCostReduction": {
+      "bonusType": 346,
+      "methods": {
+        "PassiveSkillModel$$GetPassiveSkillUpgradeCost": [
+          "0x237db74"
+        ]
+      }
+    },
+    "SorcererPassiveSkillCostReduction": {
+      "bonusType": 423,
+      "methods": {
+        "PassiveSkillModel$$GetPassiveSkillUpgradeCost": [
+          "0x237dbcc"
+        ]
+      }
+    },
+    "PerkMaxLevel": {
+      "bonusType": 349,
+      "methods": {
+        "PerkModel$$get_ExtraPerkUnlocked": [
+          "0x2382350"
+        ]
+      }
+    },
+    "DamagePerLifetimePerks": {
+      "bonusType": 148,
+      "methods": {
+        "PerkModel$$UpdateBonusPerLifetimePerksUsed": [
+          "0x2385388"
+        ]
+      }
+    },
+    "PerkGold": {
+      "bonusType": 348,
+      "methods": {
+        "PerkModel$$GetPerkGold": [
+          "0x2387410"
+        ],
+        "StatsPanelScript$$InitGoldStats": [
+          "0x255b38c"
+        ]
+      }
+    },
+    "DeadlyDamagePet": {
+      "bonusType": 171,
+      "methods": {
+        "BasePetObject$$DoNormalAttack": [
+          "0x2390340"
+        ],
+        "PetModel$$GetNormalAttack": [
+          "0x2390614"
+        ]
+      }
+    },
+    "DualPetAttackPerSecond": {
+      "bonusType": 182,
+      "methods": {
+        "DualPetObject$$GetAttackCooldown": [
+          "0x23919cc"
+        ]
+      }
+    },
+    "DualPetAttackCountToBurst": {
+      "bonusType": 181,
+      "methods": {
+        "DualPetObject$$GetCountToBurstAttack": [
+          "0x2391c40"
+        ]
+      }
+    },
+    "PetAttackQTEDamage": {
+      "bonusType": 359,
+      "methods": {
+        "PetModel$$GetQTEBigAttack": [
+          "0x2391ebc"
+        ]
+      }
+    },
+    "PetBossQTEDuration": {
+      "bonusType": 357,
+      "methods": {
+        "PetController$$ApplyChargedBonus": [
+          "0x239500c",
+          "0x2395134"
+        ]
+      }
+    },
+    "PetBossQTEDamage": {
+      "bonusType": 358,
+      "methods": {
+        "PetController$$ApplyChargedBonus": [
+          "0x239507c"
+        ]
+      }
+    },
+    "PetAutoAttackEnabledOverride": {
+      "bonusType": 350,
+      "methods": {
+        "PetModel$$IsAutoAttackOn": [
+          "0x2395fec"
+        ]
+      }
+    },
+    "HoursToCollectPetEggsAdditive": {
+      "bonusType": 283,
+      "methods": {
+        "PetModel$$get_HoursToCollectEgg": [
+          "0x2399b58"
+        ]
+      }
+    },
+    "MaxPetEggsAdditive": {
+      "bonusType": 329,
+      "methods": {
+        "PetModel$$GetMaxPetEggs": [
+          "0x239e07c"
+        ]
+      }
+    },
+    "FrenzyCount": {
+      "bonusType": 208,
+      "methods": {
+        "PetModel$$GetActiveDPS": [
+          "0x239e334"
+        ],
+        "PlayerController$$TryFrenzyAttackLoop": [
+          "0x23c9f58"
+        ],
+        "PlayerModel$$GetAverageTapDPS": [
+          "0x23e3730"
+        ],
+        "PlayerModel$$GetBaseTapDPS": [
+          "0x23e35cc"
+        ]
+      }
+    },
+    "PetIndividualDamage": {
+      "bonusType": 355,
+      "methods": {
+        "PetModel$$GetPetDamage": [
+          "0x239eb8c"
+        ],
+        "StatsPanelScript$$InitDamageStats": [
+          "0x255ad70"
+        ]
+      }
+    },
+    "PetDamage": {
+      "bonusType": 352,
+      "methods": {
+        "PetModel$$GetPetDamage": [
+          "0x239ebe4"
+        ],
+        "StatsPanelScript$$InitDamageStats": [
+          "0x255ad8c"
+        ]
+      }
+    },
+    "DualPetAmount": {
+      "bonusType": 180,
+      "methods": {
+        "PetModel$$GetPetDamage": [
+          "0x239ecac"
+        ],
+        "StatsPanelScript$$InitSpellStats": [
+          "0x2559c04"
+        ]
+      }
+    },
+    "PetGoldQTEAmount": {
+      "bonusType": 366,
+      "methods": {
+        "PetModel$$GetPetHomGold": [
+          "0x239eed8"
+        ],
+        "StatsPanelScript$$InitGoldStats": [
+          "0x255b33c"
+        ]
+      }
+    },
+    "PetTapCountToAttack": {
+      "bonusType": 372,
+      "methods": {
+        "PetModel$$SetTapCountToAttack": [
+          "0x239f2b4"
+        ]
+      }
+    },
+    "BurstDamageSkillAmount": {
+      "bonusType": 82,
+      "methods": {
+        "PetModel$$RefreshBonusFromOtherBuild": [
+          "0x239f4d4"
+        ],
+        "PlayerController$$GetHeavenlyStrikeDamage": [
+          "0x23cf318"
+        ],
+        "StatsPanelScript$$InitSpellStats": [
+          "0x2559284"
+        ]
+      }
+    },
+    "PetDamageFromBurstSkillAmount": {
+      "bonusType": 353,
+      "methods": {
+        "PetModel$$RefreshBonusFromOtherBuild": [
+          "0x239f504"
+        ]
+      }
+    },
+    "PetParadiseCurrencyCount": {
+      "bonusType": 367,
+      "methods": {
+        "PetParadiseModel$$get_MaxShovels": [
+          "0x23a6df0"
+        ]
+      }
+    },
+    "PetParadiseRewardMult": {
+      "bonusType": 368,
+      "methods": {
+        "PetParadiseXPTextDisplay$$Init": [
+          "0x23ad1b8"
+        ]
+      }
+    },
+    "ActivePetLevel": {
+      "bonusType": 35,
+      "methods": {
+        "PetInfo$$GetActiveLevelBonus": [
+          "0x23b0528"
+        ]
+      }
+    },
+    "ExoticPetDamageEffect": {
+      "bonusType": 196,
+      "methods": {
+        "PetInfo$$GetActiveBonus": [
+          "0x23b11b8"
+        ]
+      }
+    },
+    "DeadlyDamageClone": {
+      "bonusType": 170,
+      "methods": {
+        "PlayerController$$get_shadowCloneDSMultiplier": [
+          "0x23c5820"
+        ]
+      }
+    },
+    "ActiveTapDamage": {
+      "bonusType": 36,
+      "methods": {
+        "PlayerController$$BonusUpdatedHandler": [
+          "0x23c842c"
+        ],
+        "PlayerController$$OnAutoActivateFrenzyOptionChangedHandler": [
+          "0x23c9210"
+        ],
+        "PlayerController$$Start": [
+          "0x23c693c"
+        ],
+        "PlayerController$$TryFrenzyAttackLoop": [
+          "0x23c9ea8"
+        ],
+        "SkillTreeUIModel$$PreviewBonusUpgrades": [
+          "0x250b518"
+        ]
+      }
+    },
+    "SwordAttackDamage": {
+      "bonusType": 447,
+      "methods": {
+        "PlayerController$$GetHeavenlyStrikeDamage": [
+          "0x23cf344"
+        ],
+        "PlayerController$$GetShadowCloneDPS": [
+          "0x23ceaf8"
+        ],
+        "PlayerModel$$GetDaggerBaseDamage": [
+          "0x23cfcdc"
+        ],
+        "PlayerModel$$GetGoldGunBaseDamage": [
+          "0x23d01b0"
+        ],
+        "PlayerModel$$RefreshCurrentDamage": [
+          "0x23c6f08"
+        ],
+        "PlayerModel$$RefreshUpgradeUIAmounts": [
+          "0x23d9f68"
+        ]
+      }
+    },
+    "TapBoostSkillAmount": {
+      "bonusType": 452,
+      "methods": {
+        "PlayerController$$ApplyFireSwordBonus": [
+          "0x23c8d4c"
+        ],
+        "StatsPanelScript$$InitSpellStats": [
+          "0x255971c"
+        ]
+      }
+    },
+    "AutoTapCount": {
+      "bonusType": 57,
+      "methods": {
+        "PlayerController$$RunAutoTap": [
+          "0x23c960c"
+        ],
+        "PlayerController.<PerformAutoTap>d__89$$MoveNext": [
+          "0x23d1430"
+        ]
+      }
+    },
+    "ShadowCloneSkillSpecialChance": {
+      "bonusType": 394,
+      "methods": {
+        "PlayerController$$RollShadowCloneCrit": [
+          "0x23ca74c"
+        ]
+      }
+    },
+    "ShadowCloneSkillSpecialDamage": {
+      "bonusType": 396,
+      "methods": {
+        "PlayerController$$RollShadowCloneCrit": [
+          "0x23ca85c"
+        ],
+        "StatsPanelScript$$InitDamageStats": [
+          "0x255af48"
+        ]
+      }
+    },
+    "ManaStealChance": {
+      "bonusType": 328,
+      "methods": {
+        "PlayerModel$$TryManaSteal": [
+          "0x23ca954"
+        ],
+        "SkillTreeBookItemScript$$LanguageChanged": [
+          "0x24f7b34",
+          "0x24f7ba4"
+        ]
+      }
+    },
+    "ManaTapRegen": {
+      "bonusType": 325,
+      "methods": {
+        "PlayerModel$$TryManaSteal": [
+          "0x23ca9fc",
+          "0x23caa6c"
+        ]
+      }
+    },
+    "ManaTapRegenAmount": {
+      "bonusType": 326,
+      "methods": {
+        "PlayerModel$$TryManaSteal": [
+          "0x23cab40"
+        ],
+        "StatsPanelScript$$InitManaStats": [
+          "0x2557bf8"
+        ]
+      }
+    },
+    "ManaTapRegenAmountMult": {
+      "bonusType": 327,
+      "methods": {
+        "PlayerModel$$TryManaSteal": [
+          "0x23cab8c"
+        ],
+        "StatsPanelScript$$InitManaStats": [
+          "0x2557c14"
+        ]
+      }
+    },
+    "LightningStrikeChance": {
+      "bonusType": 309,
+      "methods": {
+        "PlayerController$$TryLightningAttack": [
+          "0x23cad34"
+        ],
+        "SkillTreeBookItemScript$$LanguageChanged": [
+          "0x24f78b0",
+          "0x24f7920"
+        ]
+      }
+    },
+    "LightningStrikeDamage": {
+      "bonusType": 310,
+      "methods": {
+        "PlayerController$$TryLightningAttack": [
+          "0x23cade4"
+        ]
+      }
+    },
+    "LightningStrikeEfficiency": {
+      "bonusType": 311,
+      "methods": {
+        "PlayerController$$TryLightningAttack": [
+          "0x23cae68"
+        ]
+      }
+    },
+    "ShadowCloneAllSkillBoost": {
+      "bonusType": 390,
+      "methods": {
+        "PlayerController$$OnActiveSkillStatusChanged": [
+          "0x23cb40c"
+        ],
+        "PlayerModel$$GetMaxHandOfMidasBonus": [
+          "0x23dca00"
+        ],
+        "SkillTreeUIModel$$PreviewBonusUpgrades": [
+          "0x250b7d0"
+        ]
+      }
+    },
+    "ShadowCloneAllSkillDurationRate": {
+      "bonusType": 391,
+      "methods": {
+        "PlayerController$$OnActiveSkillStatusChanged": [
+          "0x23cb478"
+        ]
+      }
+    },
+    "AllMultiCastPrimaryEffect": {
+      "bonusType": 24,
+      "methods": {
+        "PlayerController$$CalculateStackBonusA": [
+          "0x23ccad0"
+        ]
+      }
+    },
+    "DoomBonusTimeUntilMaxDamage": {
+      "bonusType": 179,
+      "methods": {
+        "PlayerController$$DoomBonusDamageLoop": [
+          "0x23cdb00",
+          "0x23cdb5c"
+        ]
+      }
+    },
+    "DoomBonusDamageMax": {
+      "bonusType": 177,
+      "methods": {
+        "PlayerController$$DoomBonusDamageLoop": [
+          "0x23cdbb4"
+        ]
+      }
+    },
+    "ShadowCloneSkillAmount": {
+      "bonusType": 392,
+      "methods": {
+        "PlayerController$$GetShadowCloneDPS": [
+          "0x23ceabc"
+        ],
+        "StatsPanelScript$$InitSpellStats": [
+          "0x2559a7c"
+        ],
+        "UltraDagger$$RefreshBonusFromOtherBuilds": [
+          "0x251c4f4"
+        ]
+      }
+    },
+    "TwilightFairyGloomBonusDamage": {
+      "bonusType": 503,
+      "methods": {
+        "PlayerController$$GetHeavenlyStrikeDamage": [
+          "0x23cf560"
+        ],
+        "PlayerController.<ShadowCloneAttackLoop>d__132$$MoveNext": [
+          "0x23d2258"
+        ]
+      }
+    },
+    "StreamOfBladesSkillAmount": {
+      "bonusType": 435,
+      "methods": {
+        "PlayerController$$GetDaggerDamage": [
+          "0x23cf8f0"
+        ],
+        "StatsPanelScript$$InitSpellStats": [
+          "0x2559f14"
+        ]
+      }
+    },
+    "StreamOfBladesSuperDamage": {
+      "bonusType": 434,
+      "methods": {
+        "PlayerController$$GetDaggerDamage": [
+          "0x23cf970"
+        ]
+      }
+    },
+    "UltraDaggerTargetDamage": {
+      "bonusType": 517,
+      "methods": {
+        "PlayerController$$GetDaggerDamage": [
+          "0x23cfa18"
+        ]
+      }
+    },
+    "UltraDaggerDamage": {
+      "bonusType": 510,
+      "methods": {
+        "PlayerModel$$GetDaggerBaseDamage": [
+          "0x23cfba4"
+        ]
+      }
+    },
+    "MagnumOpusDamage": {
+      "bonusType": 312,
+      "methods": {
+        "PlayerController$$GetGoldGunDamage": [
+          "0x23cff20"
+        ]
+      }
+    },
+    "GoldGunDamage": {
+      "bonusType": 225,
+      "methods": {
+        "PlayerModel$$GetGoldGunBaseDamage": [
+          "0x23d0078"
+        ]
+      }
+    },
+    "GoldenMissileSkillAmount": {
+      "bonusType": 230,
+      "methods": {
+        "PlayerController$$GetGoldenMissileDamage": [
+          "0x23d0390"
+        ],
+        "StatsPanelScript$$InitSpellStats": [
+          "0x255a224"
+        ]
+      }
+    },
+    "ShadowCloneSkillSpecialRate": {
+      "bonusType": 395,
+      "methods": {
+        "PlayerController.<ShadowCloneAttackLoop>d__132$$MoveNext": [
+          "0x23d1f50"
+        ]
+      }
+    },
+    "CritBoostSkillShadowCloneDamage": {
+      "bonusType": 129,
+      "methods": {
+        "PlayerController.<ShadowCloneAttackLoop>d__132$$MoveNext": [
+          "0x23d2084"
+        ]
+      }
+    },
+    "CritChance": {
+      "bonusType": 133,
+      "methods": {
+        "PlayerModel$$RefreshCriticalValues": [
+          "0x23da1a8"
+        ]
+      }
+    },
+    "CritDamage": {
+      "bonusType": 134,
+      "methods": {
+        "PlayerModel$$RefreshCriticalValues": [
+          "0x23da2a8"
+        ]
+      }
+    },
+    "CritBoostSkillCritDamage": {
+      "bonusType": 132,
+      "methods": {
+        "PlayerModel$$RefreshCriticalValues": [
+          "0x23da338"
+        ]
+      }
+    },
+    "ManaPoolCap": {
+      "bonusType": 316,
+      "methods": {
+        "PlayerModel$$RefreshManaCap": [
+          "0x23da470"
+        ]
+      }
+    },
+    "ManaPoolCapPercent": {
+      "bonusType": 317,
+      "methods": {
+        "PlayerModel$$RefreshManaCap": [
+          "0x23da4bc"
+        ]
+      }
+    },
+    "ManaRegen": {
+      "bonusType": 319,
+      "methods": {
+        "PlayerModel$$RefreshManaRegen": [
+          "0x23da5f8"
+        ]
+      }
+    },
+    "ManaRegenMult": {
+      "bonusType": 320,
+      "methods": {
+        "PlayerModel$$RefreshManaRegen": [
+          "0x23da658"
+        ]
+      }
+    },
+    "AllManaGained": {
+      "bonusType": 20,
+      "methods": {
+        "PlayerModel$$AddMana": [
+          "0x23dba3c"
+        ],
+        "PlayerModel$$RefreshManaRegen": [
+          "0x23da6c8"
+        ]
+      }
+    },
+    "DamagePerSkillPoint": {
+      "bonusType": 163,
+      "methods": {
+        "PlayerModel$$RefreshSkillPointBonuses": [
+          "0x23dbd14"
+        ]
+      }
+    },
+    "DamagePerSkillPointMult": {
+      "bonusType": 164,
+      "methods": {
+        "PlayerModel$$RefreshSkillPointBonuses": [
+          "0x23dbe40"
+        ]
+      }
+    },
+    "CraftingPowerMult": {
+      "bonusType": 123,
+      "methods": {
+        "PlayerModel$$GetModifiedCraftingPowerDelta": [
+          "0x23de360"
+        ]
+      }
+    },
+    "GoldPerSwordMasterLevel": {
+      "bonusType": 243,
+      "methods": {
+        "PlayerModel$$RefreshGoldPerPlayerLevelBonus": [
+          "0x23de554"
+        ]
+      }
+    },
+    "DamagePerManaCap": {
+      "bonusType": 144,
+      "methods": {
+        "PlayerModel$$RefreshDamageBonusPerManaCap": [
+          "0x23de78c"
+        ]
+      }
+    },
+    "DamagePerATParticipation": {
+      "bonusType": 140,
+      "methods": {
+        "PlayerModel$$RefreshDamageBonusPerCTParticipation": [
+          "0x23de9e4",
+          "0x23dea54"
+        ]
+      }
+    },
+    "SwordMasterDamage": {
+      "bonusType": 448,
+      "methods": {
+        "PlayerModel$$GetSwordMasterDamage": [
+          "0x23e286c"
+        ]
+      }
+    },
+    "TapDamage": {
+      "bonusType": 457,
+      "methods": {
+        "PlayerModel$$GetSwordMasterDamage": [
+          "0x23e28bc"
+        ],
+        "PlayerModel$$GetTapFromHelpers": [
+          "0x23e3b0c",
+          "0x23e3b88",
+          "0x23e3bf8",
+          "0x23e3c18"
+        ],
+        "PlayerModel$$PrintCurrentDamgage": [
+          "0x23e41d4"
+        ],
+        "StatsPanelScript$$InitDamageStats": [
+          "0x255a674"
+        ]
+      }
+    },
+    "SwordMasterUpgradeCost": {
+      "bonusType": 449,
+      "methods": {
+        "PlayerModel$$GetMaxNumUpgrades": [
+          "0x23e2e6c"
+        ],
+        "PlayerModel$$GetUpgradeCost": [
+          "0x23e2a8c"
+        ],
+        "StatsPanelScript$$InitReductionStats": [
+          "0x255ce38"
+        ]
+      }
+    },
+    "TapDamageFromHelpers": {
+      "bonusType": 458,
+      "methods": {
+        "PlayerModel$$GetTapFromHelpers": [
+          "0x23e3ccc"
+        ],
+        "PlayerModel$$PrintCurrentDamgage": [
+          "0x23e4358"
+        ]
+      }
+    },
+    "TapDamageFromHelpersMult": {
+      "bonusType": 459,
+      "methods": {
+        "PlayerModel$$GetTapFromHelpers": [
+          "0x23e3ce8"
+        ]
+      }
+    },
+    "SeasonalRelicsFromPrestige": {
+      "bonusType": 66,
+      "methods": {
+        "PrestigeModel$$GetSeasonalRelicMultiplier": [
+          "0x23f65bc"
+        ],
+        "PrestigeModel$$HasBonusPrestigeSeasonalRelics": [
+          "0x2400038"
+        ]
+      }
+    },
+    "SeasonalRelicAdditive": {
+      "bonusType": 65,
+      "methods": {
+        "PrestigeModel$$GetSeasonalRelicMultiplier": [
+          "0x23f6728"
+        ],
+        "PrestigeModel$$HasBonusPrestigeSeasonalRelics": [
+          "0x24000ac"
+        ]
+      }
+    },
+    "AdditiveRelicMultiplierBoost": {
+      "bonusType": 33,
+      "methods": {
+        "PrestigeModel$$GetAdditiveRelicMultiplierBonusMultiplier": [
+          "0x23fa03c"
+        ]
+      }
+    },
+    "NewPlayerAdditiveAdvancedStartBonusMult": {
+      "bonusType": 526,
+      "methods": {
+        "PrestigeModel$$GetAdditiveRelicMultiplierBonusMultiplier": [
+          "0x23fa09c"
+        ]
+      }
+    },
+    "DamagePerLifetimePrestige": {
+      "bonusType": 149,
+      "methods": {
+        "PrestigeModel$$UpdateBonusPerLifetimePrestige": [
+          "0x23fdb74"
+        ]
+      }
+    },
+    "AllActiveSkillAmountPerAdditiveRelicMultiplier": {
+      "bonusType": 7,
+      "methods": {
+        "PrestigeModel$$UpdateBonusPerLifetimeRelicBooster": [
+          "0x23fdcfc"
+        ]
+      }
+    },
+    "MemoryClan": {
+      "bonusType": 332,
+      "methods": {
+        "PrestigeModel$$GetAdvancedStartNextStage": [
+          "0x23fea4c"
+        ]
+      }
+    },
+    "PrestigeRelic": {
+      "bonusType": 377,
+      "methods": {
+        "PrestigeModel$$GetTotalRelicsFromStageCount": [
+          "0x23ff438"
+        ]
+      }
+    },
+    "PrestigeRelicAdditive": {
+      "bonusType": 378,
+      "methods": {
+        "PrestigeModel$$GetTotalRelicsFromStageCount": [
+          "0x23ff4b4"
+        ]
+      }
+    },
+    "OnlyPrestigeRelic": {
+      "bonusType": 379,
+      "methods": {
+        "PrestigeModel$$GetTotalRelicsFromStageCount": [
+          "0x23ff580"
+        ]
+      }
+    },
+    "AdditiveRelicMultiplierEarned": {
+      "bonusType": 32,
+      "methods": {
+        "PrestigeModel$$GetAdditiveRelicMultiplierBaseAmount": [
+          "0x24001e0"
+        ]
+      }
+    },
+    "PetQTECooldownMult": {
+      "bonusType": 369,
+      "methods": {
+        "QTEController$$GetCooldownDuration": [
+          "0x2410850",
+          "0x2410a9c"
+        ],
+        "StatsPanelScript$$InitReductionStats": [
+          "0x255cfc0"
+        ]
+      }
+    },
+    "CompanionQTECooldownMult": {
+      "bonusType": 121,
+      "methods": {
+        "QTEController$$GetCooldownDuration": [
+          "0x24108a0",
+          "0x24108e0",
+          "0x2410ae8"
+        ],
+        "StatsPanelScript$$InitReductionStats": [
+          "0x255d024"
+        ]
+      }
+    },
+    "StreamOfBladesCooldownReduction": {
+      "bonusType": 436,
+      "methods": {
+        "QTEController$$GetCooldownDuration": [
+          "0x2410964"
+        ]
+      }
+    },
+    "UltraDaggerCount": {
+      "bonusType": 509,
+      "methods": {
+        "QTEController$$GetCooldownDuration": [
+          "0x24109b0"
+        ],
+        "StageLogic$$GetStageSkip": [
+          "0x25454ec"
+        ],
+        "UltraDagger$$OnDaggerImpact": [
+          "0x251cdd4"
+        ],
+        "UltraDagger$$PerformEndOfSpawnAutoThrow": [
+          "0x251efe0"
+        ],
+        "UltraDaggerComboCountScript$$Init": [
+          "0x251e0d4"
+        ]
+      }
+    },
+    "UltraDaggerCooldownMult": {
+      "bonusType": 508,
+      "methods": {
+        "QTEController$$GetCooldownDuration": [
+          "0x2410a24"
+        ]
+      }
+    },
+    "PetGoldQTECooldownMult": {
+      "bonusType": 365,
+      "methods": {
+        "QTEController$$GetCooldownDuration": [
+          "0x2410b2c"
+        ]
+      }
+    },
+    "DamagePerOwnedMonument": {
+      "bonusType": 157,
+      "methods": {
+        "SeasonalArtifactModel$$RefreshDamagePerOwnedMonument": [
+          "0x245cfb4"
+        ],
+        "SeasonalArtifactModel$$SaveFileLoadedHandler": [
+          "0x245d164"
+        ]
+      }
+    },
+    "SkillTreeLoadoutSlots": {
+      "bonusType": 412,
+      "methods": {
+        "SkillTreeController$$GetMaxNumberOfLoadoutSlots": [
+          "0x24fbc74"
+        ]
+      }
+    },
+    "CloakedStageDuration": {
+      "bonusType": 116,
+      "methods": {
+        "Cloaking$$GetCloakingEndStage": [
+          "0x2510f94"
+        ]
+      }
+    },
+    "CloakedSkipChance": {
+      "bonusType": 115,
+      "methods": {
+        "Cloaking$$RollCloaking": [
+          "0x2511510"
+        ]
+      }
+    },
+    "CloakedSkipAmount": {
+      "bonusType": 114,
+      "methods": {
+        "Cloaking$$GetCloakingStagesSkipped": [
+          "0x2511714"
+        ]
+      }
+    },
+    "ContractActivationBonusTime": {
+      "bonusType": 122,
+      "methods": {
+        "ForbiddenContract$$StartForbiddenContract": [
+          "0x251210c"
+        ],
+        "RoyalContract$$StartRoyalContract": [
+          "0x2515a28"
+        ]
+      }
+    },
+    "ForbiddenContractManaCostBase": {
+      "bonusType": 204,
+      "methods": {
+        "ForbiddenContract$$ManaBurnBonusEffectLoop": [
+          "0x2512898"
+        ],
+        "ForbiddenContract$$Reset": [
+          "0x2512260"
+        ]
+      }
+    },
+    "ForbiddenContractTimeUntilMaxDamage": {
+      "bonusType": 207,
+      "methods": {
+        "ForbiddenContract$$ManaBurnBonusEffectLoop": [
+          "0x251292c"
+        ]
+      }
+    },
+    "ForbiddenContractMaxDamage": {
+      "bonusType": 205,
+      "methods": {
+        "ForbiddenContract$$ManaBurnBonusEffectLoop": [
+          "0x2512994"
+        ]
+      }
+    },
+    "RoyalContractManaCostBase": {
+      "bonusType": 384,
+      "methods": {
+        "RoyalContract$$ManaBurnGoldLoop": [
+          "0x25161b4"
+        ],
+        "RoyalContract$$Reset": [
+          "0x2515b7c"
+        ]
+      }
+    },
+    "RoyalContractTimeUntilMaxGold": {
+      "bonusType": 387,
+      "methods": {
+        "RoyalContract$$ManaBurnGoldLoop": [
+          "0x2516248"
+        ]
+      }
+    },
+    "RoyalContractMaxGold": {
+      "bonusType": 385,
+      "methods": {
+        "RoyalContract$$ManaBurnGoldLoop": [
+          "0x25162b0"
+        ]
+      }
+    },
+    "TwilightFairySkillAmount": {
+      "bonusType": 493,
+      "methods": {
+        "StatsPanelScript$$InitSpellStats": [
+          "0x255a09c"
+        ],
+        "TwilightFairyController$$UpdateBonusInfo": [
+          "0x25194f8"
+        ]
+      }
+    },
+    "TwilightFairySpawnChance": {
+      "bonusType": 500,
+      "methods": {
+        "TwilightFairyController$$SpawnTwilightFairyIfSkillIsActive": [
+          "0x2519a5c"
+        ]
+      }
+    },
+    "TwilightFairySpawnChanceOnBurstDamage": {
+      "bonusType": 501,
+      "methods": {
+        "TwilightFairyController$$PreDamageHandler": [
+          "0x251a174"
+        ]
+      }
+    },
+    "UltraDaggerDamageFromShadowCloneSkillAmount": {
+      "bonusType": 512,
+      "methods": {
+        "UltraDagger$$RefreshBonusFromOtherBuilds": [
+          "0x251c524"
+        ]
+      }
+    },
+    "UltraDaggerPoisonMaxCount": {
+      "bonusType": 515,
+      "methods": {
+        "UltraDagger$$ApplyDamage": [
+          "0x251cf60"
+        ]
+      }
+    },
+    "UltraDaggerPoisonBoost": {
+      "bonusType": 514,
+      "methods": {
+        "UltraDagger$$UpdatePoison": [
+          "0x251e664"
+        ]
+      }
+    },
+    "UltraDaggerTargetDuration": {
+      "bonusType": 518,
+      "methods": {
+        "UltraDagger$$ResetTimer": [
+          "0x251e974"
+        ]
+      }
+    },
+    "MegaBombMaxStacks": {
+      "bonusType": 331,
+      "methods": {
+        "MegaBombTitanScript$$get_MaxStackCount": [
+          "0x253a3c0"
+        ],
+        "SnapUIScript$$UpdateToolTip": [
+          "0x25246f8"
+        ]
+      }
+    },
+    "SoloRaidRaidCardMult": {
+      "bonusType": 421,
+      "methods": {
+        "SoloRaidFloorListItem$$InitRewardList": [
+          "0x2528648"
+        ]
+      }
+    },
+    "DamagePerSoloRaidWorld": {
+      "bonusType": 162,
+      "methods": {
+        "SoloRaidModel$$UpdateWorldDamageBonus": [
+          "0x252d1ec"
+        ]
+      }
+    },
+    "ChestersonGoldStageAmount": {
+      "bonusType": 101,
+      "methods": {
+        "ChestersonTitanScript$$get_StageEffectLength": [
+          "0x25379b0"
+        ]
+      }
+    },
+    "SpecialTitanStackDurationMult": {
+      "bonusType": 425,
+      "methods": {
+        "ChestersonTitanScript$$get_StageEffectLength": [
+          "0x2537a04"
+        ],
+        "HaystTitanScript$$get_StageEffectLength": [
+          "0x25385b0"
+        ],
+        "MegaBombTitanScript$$get_StageEffectLength": [
+          "0x253a47c"
+        ]
+      }
+    },
+    "SpecialTitanSpawnChance": {
+      "bonusType": 424,
+      "methods": {
+        "ChestersonTitanScript$$GetSpawnChance": [
+          "0x2537bdc"
+        ],
+        "HaystTitanScript$$GetSpawnChance": [
+          "0x2539030"
+        ],
+        "KratosTitanScript$$GetSpawnChance": [
+          "0x2539c34"
+        ],
+        "MegaBombTitanScript$$GetSpawnChance": [
+          "0x253aa78"
+        ],
+        "StageLogic$$SpawnBoss": [
+          "0x2541f88"
+        ],
+        "StageLogic$$SpawnMonster": [
+          "0x2541b14"
+        ],
+        "StatsPanelScript$$CreateChanceStatsItem": [
+          "0x255df84"
+        ]
+      }
+    },
+    "AllProbabilityBoostDuringHayst": {
+      "bonusType": 28,
+      "methods": {
+        "HaystTitanScript$$UpdateEffect": [
+          "0x2538cf4"
+        ]
+      }
+    },
+    "AllGoldDuringHayst": {
+      "bonusType": 29,
+      "methods": {
+        "HaystTitanScript$$UpdateEffect": [
+          "0x2538d8c"
+        ]
+      }
+    },
+    "CloakedSkipChanceBoostDuringHayst": {
+      "bonusType": 117,
+      "methods": {
+        "HaystTitanScript$$UpdateEffect": [
+          "0x2538e24"
+        ]
+      }
+    },
+    "HaystMonsterSpawnChance": {
+      "bonusType": 260,
+      "methods": {
+        "HaystTitanScript$$GetSpawnChance": [
+          "0x253909c"
+        ]
+      }
+    },
+    "KratosMonsterStacks": {
+      "bonusType": 305,
+      "methods": {
+        "KratosTitanScript$$get_MaxStackCount": [
+          "0x2539480"
+        ]
+      }
+    },
+    "KratosMonsterSpawnChance": {
+      "bonusType": 304,
+      "methods": {
+        "KratosTitanScript$$GetSpawnChance": [
+          "0x2539ca0"
+        ]
+      }
+    },
+    "KratosSpellDurationEffect": {
+      "bonusType": 306,
+      "methods": {
+        "KratosTitanScript$$PerformDefeatAction": [
+          "0x2539e2c"
+        ]
+      }
+    },
+    "MegaBombSpawnChance": {
+      "bonusType": 330,
+      "methods": {
+        "MegaBombTitanScript$$GetSpawnChance": [
+          "0x253aaac"
+        ]
+      }
+    },
+    "GoldCooldownMultDuringSnap": {
+      "bonusType": 222,
+      "methods": {
+        "MegaBombTitanScript$$UpdateBonuses": [
+          "0x253ac10"
+        ]
+      }
+    },
+    "AllDamageDuringSnap": {
+      "bonusType": 39,
+      "methods": {
+        "MegaBombTitanScript$$UpdateBonuses": [
+          "0x253adb8"
+        ]
+      }
+    },
+    "BossDamageDuringSnap": {
+      "bonusType": 73,
+      "methods": {
+        "MegaBombTitanScript$$UpdateBonuses": [
+          "0x253ae50"
+        ]
+      }
+    },
+    "DamagePerSpecialTitanActive": {
+      "bonusType": 165,
+      "methods": {
+        "SpecialTitanModel$$SpecialTitanStackChangedDelegate": [
+          "0x253bc90",
+          "0x253bcb0"
+        ]
+      }
+    },
+    "ManaMonsterSpawnChance": {
+      "bonusType": 324,
+      "methods": {
+        "StageLogic$$SpawnMonster": [
+          "0x2541bb8"
+        ]
+      }
+    },
+    "StageSkipMonsterSpawnChance": {
+      "bonusType": 433,
+      "methods": {
+        "StageLogic$$SpawnBoss": [
+          "0x2541fb4"
+        ]
+      }
+    },
+    "ClanShipStunDamage": {
+      "bonusType": 112,
+      "methods": {
+        "StageLogic$$PerformAttackMonster": [
+          "0x2542bd0"
+        ]
+      }
+    },
+    "BossDamage": {
+      "bonusType": 72,
+      "methods": {
+        "StageLogic$$PerformAttackMonster": [
+          "0x2542c68"
+        ]
+      }
+    },
+    "TitanDamage": {
+      "bonusType": 505,
+      "methods": {
+        "StageLogic$$PerformAttackMonster": [
+          "0x2542cdc"
+        ]
+      }
+    },
+    "DoomBonusDamage": {
+      "bonusType": 175,
+      "methods": {
+        "StageLogic$$PerformAttackMonster": [
+          "0x2542d88"
+        ],
+        "StatsDisplayScript$$RefreshPlayerStats": [
+          "0x2551c64"
+        ],
+        "StatsDisplayScript$$Update": [
+          "0x255157c"
+        ]
+      }
+    },
+    "ForbiddenContractBonusDamage": {
+      "bonusType": 202,
+      "methods": {
+        "StageLogic$$PerformAttackMonster": [
+          "0x2542e00"
+        ]
+      }
+    },
+    "RoyalContractBonusDamage": {
+      "bonusType": 382,
+      "methods": {
+        "StageLogic$$PerformAttackMonster": [
+          "0x2542f10"
+        ]
+      }
+    },
+    "PoisonBonusDamage": {
+      "bonusType": 375,
+      "methods": {
+        "StageLogic$$PerformAttackMonster": [
+          "0x25430a0"
+        ]
+      }
+    },
+    "MultiMonstersMana": {
+      "bonusType": 342,
+      "methods": {
+        "StageLogic$$OnMonsterDeath": [
+          "0x2543614"
+        ]
+      }
+    },
+    "ManaMonsterAmount": {
+      "bonusType": 322,
+      "methods": {
+        "StageLogic$$OnMonsterDeath": [
+          "0x2543678"
+        ],
+        "StatsPanelScript$$InitManaStats": [
+          "0x2557dd8"
+        ]
+      }
+    },
+    "ManaMonsterAmountMult": {
+      "bonusType": 323,
+      "methods": {
+        "StageLogic$$OnMonsterDeath": [
+          "0x25436c4"
+        ],
+        "StatsPanelScript$$InitManaStats": [
+          "0x2557e2c"
+        ]
+      }
+    },
+    "JackpotGold": {
+      "bonusType": 296,
+      "methods": {
+        "BonusModel$$GetAverageJackpotGold": [
+          "0x27183ec"
+        ],
+        "StageLogic$$CalculateMonsterGoldDrop": [
+          "0x2543bd0"
+        ]
+      }
+    },
+    "TitanSkip": {
+      "bonusType": 472,
+      "methods": {
+        "StageLogic$$GetTitanSkip": [
+          "0x2544250",
+          "0x2544284",
+          "0x2544314",
+          "0x25443b4",
+          "0x254442c",
+          "0x25444a4",
+          "0x2544524"
+        ],
+        "StatsPanelScript$$InitTitanAndStageSkipStats": [
+          "0x255be24"
+        ]
+      }
+    },
+    "ClanShipTitanSkip": {
+      "bonusType": 113,
+      "methods": {
+        "StageLogic$$GetTitanSkip": [
+          "0x25442a0"
+        ]
+      }
+    },
+    "GoldGunTitanSkip": {
+      "bonusType": 229,
+      "methods": {
+        "StageLogic$$GetTitanSkip": [
+          "0x2544330"
+        ]
+      }
+    },
+    "ShadowCloneTitanSkip": {
+      "bonusType": 407,
+      "methods": {
+        "StageLogic$$GetTitanSkip": [
+          "0x25443d0"
+        ]
+      }
+    },
+    "UltraDaggerTitanSkip": {
+      "bonusType": 520,
+      "methods": {
+        "StageLogic$$GetTitanSkip": [
+          "0x2544448"
+        ]
+      }
+    },
+    "PetAttackTitanSkip": {
+      "bonusType": 363,
+      "methods": {
+        "StageLogic$$GetTitanSkip": [
+          "0x25444c0"
+        ]
+      }
+    },
+    "BurstSkillTitanSkip": {
+      "bonusType": 90,
+      "methods": {
+        "StageLogic$$GetTitanSkip": [
+          "0x2544540"
+        ]
+      }
+    },
+    "TitanSkipMult": {
+      "bonusType": 473,
+      "methods": {
+        "StageLogic$$GetTitanSkip": [
+          "0x25445b0"
+        ]
+      }
+    },
+    "StageSkip": {
+      "bonusType": 443,
+      "methods": {
+        "StageLogic$$GetStageSkip": [
+          "0x25449c8",
+          "0x2544a48",
+          "0x2544b18",
+          "0x2544be8",
+          "0x2544cb8",
+          "0x2544d38",
+          "0x2544e08",
+          "0x2544e88",
+          "0x2544f08",
+          "0x2545048",
+          "0x2545168",
+          "0x25451e8",
+          "0x2545348",
+          "0x2545470",
+          "0x2545650"
+        ],
+        "StatsPanelScript$$InitTitanAndStageSkipStats": [
+          "0x255bf20"
+        ]
+      }
+    },
+    "ClanShipStageSkip": {
+      "bonusType": 110,
+      "methods": {
+        "StageLogic$$GetStageSkip": [
+          "0x25449e4",
+          "0x2544b34"
+        ]
+      }
+    },
+    "PetAttackStageSkip": {
+      "bonusType": 362,
+      "methods": {
+        "StageLogic$$GetStageSkip": [
+          "0x2544a64",
+          "0x2544cd4",
+          "0x2544f24",
+          "0x2545064",
+          "0x2545364"
+        ]
+      }
+    },
+    "PetQTEStageSkip": {
+      "bonusType": 371,
+      "methods": {
+        "StageLogic$$GetStageSkip": [
+          "0x2544ac4",
+          "0x2544f84",
+          "0x25450c4",
+          "0x25453c4"
+        ]
+      }
+    },
+    "ThunderVolleyStageSkip": {
+      "bonusType": 471,
+      "methods": {
+        "StageLogic$$GetStageSkip": [
+          "0x2544b94"
+        ]
+      }
+    },
+    "BurstSkillStageSkip": {
+      "bonusType": 88,
+      "methods": {
+        "StageLogic$$GetStageSkip": [
+          "0x2544c04"
+        ]
+      }
+    },
+    "BurstSkillStageSkipMult": {
+      "bonusType": 89,
+      "methods": {
+        "StageLogic$$GetStageSkip": [
+          "0x2544c64"
+        ]
+      }
+    },
+    "ShadowCloneStageSkip": {
+      "bonusType": 405,
+      "methods": {
+        "StageLogic$$GetStageSkip": [
+          "0x2544d54"
+        ]
+      }
+    },
+    "ShadowCloneStageSkipMult": {
+      "bonusType": 406,
+      "methods": {
+        "StageLogic$$GetStageSkip": [
+          "0x2544db4"
+        ]
+      }
+    },
+    "GoldenMissileStageSkip": {
+      "bonusType": 235,
+      "methods": {
+        "StageLogic$$GetStageSkip": [
+          "0x2544e24"
+        ]
+      }
+    },
+    "TwilightFairyStageSkip": {
+      "bonusType": 502,
+      "methods": {
+        "StageLogic$$GetStageSkip": [
+          "0x2544ea4"
+        ]
+      }
+    },
+    "DualPetStageSkipMult": {
+      "bonusType": 190,
+      "methods": {
+        "StageLogic$$GetStageSkip": [
+          "0x2544fd4",
+          "0x2545414"
+        ]
+      }
+    },
+    "DualPetStageSkip": {
+      "bonusType": 189,
+      "methods": {
+        "StageLogic$$GetStageSkip": [
+          "0x2545114"
+        ]
+      }
+    },
+    "UltraDaggerStageSkip": {
+      "bonusType": 516,
+      "methods": {
+        "StageLogic$$GetStageSkip": [
+          "0x2545184",
+          "0x2545204",
+          "0x254548c"
+        ]
+      }
+    },
+    "UltraDaggerTargetComboStageSkip": {
+      "bonusType": 519,
+      "methods": {
+        "StageLogic$$GetStageSkip": [
+          "0x25452c0",
+          "0x25455c8"
+        ]
+      }
+    },
+    "GoldGunStageSkip": {
+      "bonusType": 228,
+      "methods": {
+        "StageLogic$$GetStageSkip": [
+          "0x254566c"
+        ]
+      }
+    },
+    "ShadowCloneBossSplash": {
+      "bonusType": 402,
+      "methods": {
+        "StageLogic$$PerformStageSkipProbabilityCheck": [
+          "0x25457a0"
+        ]
+      }
+    },
+    "MonsterCountPerStage": {
+      "bonusType": 334,
+      "methods": {
+        "StageLogic$$GetMonsterCountPerStage": [
+          "0x254671c"
+        ],
+        "StatsPanelScript$$InitReductionStats": [
+          "0x255cd48"
+        ]
+      }
+    },
+    "AnyContractMonsterCount": {
+      "bonusType": 44,
+      "methods": {
+        "StageLogic$$GetMonsterCountPerStage": [
+          "0x254678c"
+        ]
+      }
+    },
+    "GoldPrestige": {
+      "bonusType": 245,
+      "methods": {
+        "StageLogicController$$AddStartingStageGold": [
+          "0x254820c"
+        ]
+      }
+    },
+    "InspiredHelperWeaken": {
+      "bonusType": 295,
+      "methods": {
+        "StatsDisplayScript$$Update": [
+          "0x2551634"
+        ]
+      }
+    },
+    "ChestAmount": {
+      "bonusType": 97,
+      "methods": {
+        "BonusModel$$GetChestersonMultiplier": [
+          "0x27185d0"
+        ],
+        "StatsPanelScript$$InitGoldStats": [
+          "0x255b24c"
+        ]
+      }
+    },
+    "InactiveGold": {
+      "bonusType": 287,
+      "methods": {
+        "StatsPanelScript$$InitGoldStats": [
+          "0x255b29c",
+          "0x255b5f0"
+        ]
+      }
+    },
+    "MonsterInactiveSpawnDuration": {
+      "bonusType": 339,
+      "methods": {
+        "StatsPanelScript$$InitReductionStats": [
+          "0x255cf28"
+        ]
+      }
+    },
+    "PetDamagePerPrestigeTap": {
+      "bonusType": 354,
+      "methods": {
+        "StatsTrackedBonusModel$$OnPlayerTapped": [
+          "0x2561bb0"
+        ],
+        "StatsTrackedBonusModel$$UpdatePetDamagePerPrestigeTapBonus": [
+          "0x25604e4"
+        ]
+      }
+    },
+    "GoldAllPerPrestigeChesterson": {
+      "bonusType": 215,
+      "methods": {
+        "StatsTrackedBonusModel$$UpdateGoldAllPerPrestigeChestersonBonus": [
+          "0x2560644"
+        ]
+      }
+    },
+    "JackpotGoldPerPrestigeFairy": {
+      "bonusType": 298,
+      "methods": {
+        "StatsTrackedBonusModel$$UpdateJackpotGoldPerPrestigeFairyBonus": [
+          "0x2560818"
+        ]
+      }
+    },
+    "GoldAllPerPrestigeSecond": {
+      "bonusType": 216,
+      "methods": {
+        "StatsTrackedBonusModel$$ManagePrestigeTimeBonus": [
+          "0x2560a08"
+        ],
+        "StatsTrackedBonusModel$$UpdateGoldAllPerPrestigeSecondBonus": [
+          "0x2562700"
+        ]
+      }
+    },
+    "ClanShipDamagePerSeasonTitan": {
+      "bonusType": 109,
+      "methods": {
+        "StatsTrackedBonusModel$$UpdateClanshipDamagePerSeasonTitanBonus": [
+          "0x2560bb8"
+        ]
+      }
+    },
+    "CannonDamagePerSeasonTitan": {
+      "bonusType": 96,
+      "methods": {
+        "StatsTrackedBonusModel$$UpdateCannonDamagePerSeasonTitanBonus": [
+          "0x2560d4c"
+        ]
+      }
+    },
+    "GoldAllPerSeasonChesterson": {
+      "bonusType": 217,
+      "methods": {
+        "StatsTrackedBonusModel$$UpdateGoldAllPerSeasonChesterson": [
+          "0x2560ee0"
+        ]
+      }
+    },
+    "TapDamagePerSeasonPrestige": {
+      "bonusType": 460,
+      "methods": {
+        "StatsTrackedBonusModel$$UpdateTapDamagePerSeasonPrestigeBonus": [
+          "0x2561074"
+        ]
+      }
+    },
+    "TwilightBoostPerSeasonFairy": {
+      "bonusType": 492,
+      "methods": {
+        "StatsTrackedBonusModel$$UpdateTwilightBoostPerSeasonFairyBonus": [
+          "0x2561208"
+        ]
+      }
+    },
+    "GoldAllPerSeasonPrestige": {
+      "bonusType": 218,
+      "methods": {
+        "StatsTrackedBonusModel$$UpdateGoldAllPerSeasonPrestige": [
+          "0x256139c"
+        ]
+      }
+    },
+    "DamagePerMaxStage": {
+      "bonusType": 161,
+      "methods": {
+        "StatsTrackedBonusModel$$UpdateDamagePerMaxStageBonus": [
+          "0x25614f0"
+        ]
+      }
+    },
+    "UltraDaggerDamagePerSeasonDay": {
+      "bonusType": 513,
+      "methods": {
+        "StatsTrackedBonusModel$$ManageSeasonTimeBonus": [
+          "0x2561658"
+        ],
+        "StatsTrackedBonusModel$$UpdateUltraDaggerDamagePerSeasonDayBonus": [
+          "0x2561f58"
+        ]
+      }
+    },
+    "AllDamagePerSeasonDay": {
+      "bonusType": 38,
+      "methods": {
+        "StatsTrackedBonusModel$$ManageSeasonTimeBonus": [
+          "0x2561730"
+        ],
+        "StatsTrackedBonusModel$$UpdateAllDamagePerSeasonDayBonus": [
+          "0x2562124"
+        ]
+      }
+    },
+    "JackpotGoldPerSeasonDay": {
+      "bonusType": 299,
+      "methods": {
+        "StatsTrackedBonusModel$$ManageSeasonTimeBonus": [
+          "0x25617f8"
+        ],
+        "StatsTrackedBonusModel$$UpdateJackpotGoldPerSeasonDayBonus": [
+          "0x25622f0"
+        ]
+      }
+    },
+    "CritDamagePerSeasonDay": {
+      "bonusType": 135,
+      "methods": {
+        "StatsTrackedBonusModel$$ManageSeasonTimeBonus": [
+          "0x25618c0"
+        ],
+        "StatsTrackedBonusModel$$UpdateCritDamagePerSeasonDayBonus": [
+          "0x25624bc"
+        ]
+      }
+    },
+    "DamagePerOwnedArtifact": {
+      "bonusType": 155,
+      "methods": {
+        "ArtifactModel$$RefreshDamagePerOwnedArtifact": [
+          "0x2583738"
+        ],
+        "ArtifactModel$$SaveFileLoadedHandler": [
+          "0x2583a54"
+        ]
+      }
+    },
+    "DamagePerOwnedEnchantment": {
+      "bonusType": 156,
+      "methods": {
+        "ArtifactModel$$RefreshDamagePerOwnedEnchantment": [
+          "0x2583928"
+        ],
+        "ArtifactModel$$SaveFileLoadedHandler": [
+          "0x2583acc"
+        ]
+      }
+    },
+    "HSArtifactDamage": {
+      "bonusType": 284,
+      "methods": {
+        "ArtifactModel$$ModifyAllDamageBonus": [
+          "0x258616c"
+        ]
+      }
+    },
+    "AllArtifactGoldEffect": {
+      "bonusType": 15,
+      "methods": {
+        "ArtifactInfo$$GetArtifactBonusMultipier": [
+          "0x2587638"
+        ],
+        "ArtifactModelBase<object>$$SaveFileLoadedHandler": [
+          "0x306f118"
+        ]
+      }
+    },
+    "ArtifactEnchantmentBoost": {
+      "bonusType": 525,
+      "methods": {
+        "ArtifactInfo$$GetEffectBonus": [
+          "0x2587710"
+        ]
+      }
+    },
+    "DamagePerNecroBearResearchLevel": {
+      "bonusType": 146,
+      "methods": {
+        "TitanGachaModel$$RefreshBonusPerSummonLevel": [
+          "0x259baa0"
+        ],
+        "TitanGachaModel$$SaveFileLoadedHandler": [
+          "0x259bba8"
+        ]
+      }
+    },
+    "TitanSoulsChance": {
+      "bonusType": 474,
+      "methods": {
+        "TitanSoulsModel$$GetTitanSoulsChance": [
+          "0x259f81c"
+        ]
+      }
+    },
+    "TitanSoulsChanceMult": {
+      "bonusType": 475,
+      "methods": {
+        "TitanSoulsModel$$GetTitanSoulsChance": [
+          "0x259f868"
+        ]
+      }
+    },
+    "TitanSoulsPerDay": {
+      "bonusType": 476,
+      "methods": {
+        "TitanSoulsModel$$GetMaxTitanSoulsPerDay": [
+          "0x259fadc"
+        ]
+      }
+    },
+    "TitanSoulsPerDayMult": {
+      "bonusType": 477,
+      "methods": {
+        "TitanSoulsModel$$GetMaxTitanSoulsPerDay": [
+          "0x259fb2c"
+        ]
+      }
+    },
+    "TitanSoulsPerPrestige": {
+      "bonusType": 478,
+      "methods": {
+        "TitanSoulsModel$$GetMaxTitanSoulsPerPrestige": [
+          "0x259fcd0"
+        ]
+      }
+    },
+    "JackpotGoldChance": {
+      "bonusType": 297,
+      "methods": {
+        "BonusModel$$GetAverageJackpotGold": [
+          "0x27183fc"
+        ]
+      }
+    },
+    "BossTimerDuration": {
+      "bonusType": 81,
+      "methods": {
+        "BossTimerScript$$StartTimer": [
+          "0x271cca4",
+          "0x271ccf4"
+        ]
+      }
+    },
+    "BossTimer": {
+      "bonusType": 80,
+      "methods": {
+        "BossTimerScript$$StartTimer": [
+          "0x271cdf8"
+        ]
+      }
+    },
+    "DamagePerOwnedCardLevel": {
+      "bonusType": 154,
+      "methods": {
+        "ArtifactModelBase<object>$$RefreshBonusPerOwnedCardLevel": [
+          "0x306e948"
+        ],
+        "ArtifactModelBase<object>$$SaveFileLoadedHandler": [
+          "0x306f1a0"
+        ]
+      }
+    },
+    "GoldPerOwnedCardLevel": {
+      "bonusType": 237,
+      "methods": {
+        "ArtifactModelBase<object>$$RefreshBonusPerOwnedCardLevel": [
+          "0x306eab0"
+        ],
+        "ArtifactModelBase<object>$$SaveFileLoadedHandler": [
+          "0x306f210"
+        ]
+      }
+    },
+    "AllArtifactDamageEffect": {
+      "bonusType": 14,
+      "methods": {
+        "ArtifactModelBase<object>$$SaveFileLoadedHandler": [
+          "0x306f090"
+        ]
+      }
+    }
+  },
+  "unread": [
+    "ActiveClanShipDamage",
+    "AlchemistBonusBoost",
+    "AllActiveSkillAmount",
+    "AllArmorHPMult",
+    "AllArmsHPMult",
+    "AllArtifactMultEffect",
+    "AllGoldx1000Chance",
+    "AllHeadHPMult",
+    "AllLegsHPMult",
+    "AllLimbsHPMult",
+    "AllManaSourceMult",
+    "AllPassiveSkillBoost",
+    "AllPetDamageEffect",
+    "AllPetGoldEffect",
+    "AllTorsoHPMult",
+    "AnyContractBonusBoost",
+    "AnyContractQTECooldown",
+    "ArcaneDamage",
+    "ArcanePrimaryDamage",
+    "ArmorArmsHPMult",
+    "ArmorHeadHPMult",
+    "ArmorLegsHPMult",
+    "ArmorLevel",
+    "ArmorLimbsHPMult",
+    "ArmorTorsoHPMult",
+    "ArtifactDamage",
+    "AuraLevel",
+    "AutoActivateContractsQTE",
+    "BallDropBucketCoinBonus",
+    "BallDropPegCoinBonus",
+    "BeastBladeDamage",
+    "BleedingChance",
+    "BleedingDamageRate",
+    "BleedingDuration",
+    "BodyArmsHPMult",
+    "BodyHeadHPMult",
+    "BodyLegsHPMult",
+    "BodyTorsoHPMult",
+    "BoostedAfflictionSlots",
+    "BoostedBurstSlots",
+    "BoostedSupportSlots",
+    "BoostedSwordAttackDamage",
+    "BossGoldx1000Chance",
+    "BossGoldx10Chance",
+    "BuildBoostCSHSSC",
+    "BuildBoostDGPetCS",
+    "BuildBoostHSDGGG",
+    "BuildBoostSCPetGG",
+    "BurningChance",
+    "BurningDuration",
+    "BurningMaxStacks",
+    "BurstDamageSkillMana",
+    "BurstDamageSkillManaMult",
+    "BurstDamageSkillStacks",
+    "BurstDamageSkillStacksBonus",
+    "BurstSkillAmountDuringCritSkill",
+    "BurstSupportStacksBonus",
+    "BurstSupportStacksDamage",
+    "CSKnightBonusBoost",
+    "CannonDamage",
+    "ChestGoldx1000Chance",
+    "ChestGoldx10Chance",
+    "ClanQTECooldown",
+    "ColdChance",
+    "ColdDamageBoost",
+    "ColdDuration",
+    "CompanionDamage",
+    "CompanionDoubleAttackChance",
+    "CritBoostSkillDuration",
+    "CritBoostSkillDurationMult",
+    "CritBoostSkillMana",
+    "CritBoostSkillManaMult",
+    "CritBoostSkillStacks",
+    "CritBoostSkillStacksBonus",
+    "DDPetBonusBoost",
+    "DamageOverTimeMaxAttacks",
+    "DamageOverTimePercent",
+    "DamagePerEventSet",
+    "DamagePerLegendarySet",
+    "DamagePerMythicSet",
+    "DamagePerRareSet",
+    "DamagePerUniqueSet",
+    "DeadlyDamageCompanion",
+    "DebuffChance",
+    "DebuffDuration",
+    "DebuffStackCount",
+    "DoomBonusDamageBase",
+    "DoomBonusDamageMaxCount",
+    "DualPetDuration",
+    "DualPetDurationMult",
+    "DualPetSkillMana",
+    "DualPetSkillManaMult",
+    "DualPetSkillStacks",
+    "DualPetSkillStacksBonus",
+    "ElementalDamage",
+    "ElementalPrimaryDamage",
+    "EquipmentPetEffect",
+    "EquipmentRarityChance",
+    "EquipmentUniqueChance",
+    "EquippedEquipmentLevel",
+    "ExoticPetGoldEffect",
+    "ExplosiveCrateRadius",
+    "ExplosiveCrateTapCount",
+    "FairyCooldown",
+    "FishSizeMult",
+    "FishingBaitLevel",
+    "FishingSkillLevel",
+    "FlyingHelperDamage",
+    "ForbiddenContractQTECooldown",
+    "FrenzyDamage",
+    "FundamentalDamage",
+    "FuseDamageRate",
+    "GGSorcererBonusBoost",
+    "GoldComboGoldAllFairyGold",
+    "GoldComboGoldAllMultiMonstersGold",
+    "GoldComboJackpotGoldPetGoldQTEAmount",
+    "GoldPerEventSet",
+    "GoldPerLegendarySet",
+    "GoldPerMythicSet",
+    "GoldPerRareSet",
+    "GoldPerUniqueSet",
+    "GoldPrizeFighter",
+    "GoldSpecialty",
+    "GoldenMissileSkillMana",
+    "GoldenMissileSkillManaMult",
+    "Goldx1000Chance",
+    "Goldx10Chance",
+    "GroundHelperDamage",
+    "HSRogueBonusBoost",
+    "HandOfMidasSkillCooldown",
+    "HandOfMidasSkillDuration",
+    "HandOfMidasSkillDurationMult",
+    "HandOfMidasSkillMana",
+    "HandOfMidasSkillManaMult",
+    "HandOfMidasSkillStacks",
+    "HandOfMidasSkillStacksBonus",
+    "HelmetLevel",
+    "HelperAdditiveSkillBoost",
+    "HelperBoostSkillAmountDuringTapBoostSkill",
+    "HelperBoostSkillDuration",
+    "HelperBoostSkillDurationMult",
+    "HelperBoostSkillMana",
+    "HelperBoostSkillManaMult",
+    "HelperBoostSkillStacks",
+    "HelperBoostSkillStacksBonus",
+    "HelperCritDamage",
+    "HelperMultiplicativeSkillBoost",
+    "HelperQTECooldown",
+    "HelperQTEDuration",
+    "HuntingBaitLevel",
+    "HuntingSkillLevel",
+    "ImpairedBoost",
+    "ImpairedChance",
+    "ImpairedDuration",
+    "ImpairedStackCount",
+    "InactiveAdvance",
+    "InactiveSpeed",
+    "KillAnimationTimeReduction",
+    "KnightBonusBoost",
+    "KronusComboBoost",
+    "LanceComboBoost",
+    "LegacyPetDamageEffect",
+    "LegacyPetGoldEffect",
+    "MagicPotionLevelSharing",
+    "MarkedDamage",
+    "MarkedDamageBoost",
+    "MemoryEquipmentSet",
+    "MeteorCooldown",
+    "MeteorScorchedAmount",
+    "MeteorSplashRadius",
+    "MirrorForceBoostMax",
+    "MirrorForceBoostMaxStacks",
+    "NohniComboBoost",
+    "PaladinBonusBoost",
+    "PetAttackQTECooldown",
+    "PetAttackQTESplashCount",
+    "PetBonusBoost",
+    "PetBossQTECooldown",
+    "PetGoldQTECooldown",
+    "PetQTEDamage",
+    "PetWarlordBonusBoost",
+    "PhysicalDamage",
+    "PhysicalPrimaryDamage",
+    "PoisonChance",
+    "PoisonDuration",
+    "PoisonMaxStacks",
+    "RaidEnemy1Damage",
+    "RaidEnemy2Damage",
+    "RaidEnemy3Damage",
+    "RaidEnemy4Damage",
+    "RaidEnemy5Damage",
+    "RaidEnemy6Damage",
+    "RaidEnemy7Damage",
+    "RaidEnemy8Damage",
+    "RogueBonusBoost",
+    "RoyalContractQTECooldown",
+    "SCAlchemistBonusBoost",
+    "SajeComboBoost",
+    "SeasonalArtifactDamage",
+    "ShadowCloneSkillDuration",
+    "ShadowCloneSkillDurationMult",
+    "ShadowCloneSkillMana",
+    "ShadowCloneSkillManaMult",
+    "ShadowCloneSkillStacks",
+    "ShadowCloneSkillStacksBonus",
+    "SkillTreeAlchemistAllDamage",
+    "SkillTreeChestAmount",
+    "SkillTreeGoldAll",
+    "SkillTreeGoldBoss",
+    "SkillTreeKnightAllDamage",
+    "SkillTreePetAllDamage",
+    "SkillTreeRogueAllDamage",
+    "SkillTreeSorcererAllDamage",
+    "SkillTreeWarlordAllDamage",
+    "SlashLevel",
+    "SophiaComboBoost",
+    "SorcererBonusBoost",
+    "SorcererStageSkipMult",
+    "StageSkipMonsterAmount",
+    "StormCooldown",
+    "StormNeighborCount",
+    "StreamOfBladesDuration",
+    "StreamOfBladesDurationMult",
+    "StreamOfBladesSkillMana",
+    "StreamOfBladesSkillManaMult",
+    "StreamOfBladesSkillStacks",
+    "StreamOfBladesSkillStacksBonus",
+    "SupportStackCount",
+    "TapBoostSkillDuration",
+    "TapBoostSkillDurationMult",
+    "TapBoostSkillMana",
+    "TapBoostSkillManaMult",
+    "TapBoostSkillStacks",
+    "TapBoostSkillStacksBonus",
+    "ThunderVolleySkillCooldown",
+    "ThunderVolleySkillCooldownMult",
+    "ThunderVolleySkillDuration",
+    "ThunderVolleySkillDurationMult",
+    "ThunderVolleySkillMana",
+    "ThunderVolleySkillManaMult",
+    "ThunderVolleySkillStacks",
+    "ThunderVolleySkillStacksBonus",
+    "TitanSlayer",
+    "TitanSubtype1Damage",
+    "TitanSubtype1Gold",
+    "TitanSubtype2Damage",
+    "TitanSubtype2Gold",
+    "TitanSubtype3Damage",
+    "TitanSubtype3Gold",
+    "TitanSubtype4Damage",
+    "TitanSubtype4Gold",
+    "TitanSubtype5Damage",
+    "TitanSubtype5Gold",
+    "TitanSubtype6Damage",
+    "TitanSubtype6Gold",
+    "TwilightBoost",
+    "TwilightFairySkillDuration",
+    "TwilightFairySkillDurationMult",
+    "TwilightFairySkillMana",
+    "TwilightFairySkillManaMult",
+    "TwilightFairySkillStacks",
+    "TwilightFairySkillStacksBonus",
+    "UltraDaggerCooldown",
+    "UltraDaggerDamageCrit",
+    "UnskilledDamage",
+    "UnskilledGold",
+    "WarlordBonusBoost",
+    "WeakenDuration",
+    "WeaponLevel"
+  ],
+  "limits": [
+    "「掃不到取值點」不等於「原生不使用」：以暫存器傳入編號的呼叫點列在 unattributed，目前有 57 個；另外加成值可能先被算進某個欄位、之後從該欄位讀，例如 RefreshCriticalValues 把暴擊倍率存進 PlayerModel 的欄位再由攻擊流程讀。",
+    "本表只涵蓋 GetBonus 與 HasBonus 兩個入口，不含 UI 顯示用的 GetBonusInfo 等後設方法。",
+    "要據此宣稱某個加成沒有作用，必須另外確認它沒有被快取到欄位、也不在 unattributed 的呼叫點裡。"
+  ]
+}

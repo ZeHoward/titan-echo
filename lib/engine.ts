@@ -102,7 +102,12 @@ export function passive(_s:State,_kind:number){return 0;}
 // number downstream, so every lookup is clamped to the table it is reading.
 export function skillStep(i:number,level:number){return Math.min(Math.max(0,level-1),SKILL_DATA[i].amount.length-1);}
 export function skillPower(s:State,i:number){return SKILL_DATA[i].amount[skillStep(i,s.skillLevels[i])]*stateEffect(s,SKILL_DATA[i].effect)*stateEffect(s,'AllActiveSkillAmount');}
-export function skillDuration(s:State,i:number){return SKILLS[i].duration+stateEffect(s,SKILL_DATA[i].id+'SkillDuration')+stateEffect(s,'AllActiveSkillDuration');}
+// A bonus id that is not in the table falls through to the multiplicative neutral value 1, which
+// is silently wrong when the caller is adding seconds or mana rather than scaling. Not every skill
+// has every bonus - natively there is no BurstDamageSkillDuration, because the heavenly strike is
+// instant - so these two add only the bonuses that exist. Without this the strike lasted 3+1 = 4s.
+const skillBonus=(s:State,id:string)=>id in bonusDefinitions?stateEffect(s,id):0;
+export function skillDuration(s:State,i:number){return SKILLS[i].duration+skillBonus(s,SKILL_DATA[i].id+'SkillDuration')+stateEffect(s,'AllActiveSkillDuration');}
 export function skillCooldown(s:State,i:number){return SKILLS[i].cooldown*(1-Math.min(.9,stateEffect(s,'AllActiveSkillCooldownRate')));}
 // APK 8.2.0 bases from BonusModel.SetDefaultBonuses, which reads each one out of a ServerVarsModel
 // static; live server overrides are unknown. Recorded in
@@ -458,7 +463,7 @@ export function manaMax(s:State){
 function baseManaRegen(s:State){return limit((MANA_DEFAULTS.regenPerMinute+stateEffect(s,'ManaRegen'))/60
  *stateEffect(s,'ManaRegenMult')*stateEffect(s,'AllManaGained'));}
 export function manaRegen(s:State){return limit(baseManaRegen(s)*perkValue(s.tt2!,0,s.last));}
-export function skillMana(s:State,i:number){return Math.max(0,SKILL_DATA[i].mana[skillStep(i,s.skillLevels[i])]-stateEffect(s,SKILL_DATA[i].id+'SkillMana'));}
+export function skillMana(s:State,i:number){return Math.max(0,SKILL_DATA[i].mana[skillStep(i,s.skillLevels[i])]-skillBonus(s,SKILL_DATA[i].id+'SkillMana'));}
 // Native: min(Bonus(CritChance) x Bonus(AllProbabilityBoost), maxCritChance), and maxCritChance
 // is 1. The chance bonus is additive on top of the base, the probability boost is a multiplier.
 export function critChance(s:State){

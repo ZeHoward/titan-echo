@@ -1,0 +1,8430 @@
+{
+  "version": "8.2.0",
+  "role": "每個加成的三方對照：專案有沒有來源會給、引擎有沒有讀、原生有沒有取值點。",
+  "generatedFrom": {
+    "nativeEvidence": "reference/tt2/8.2.0/bonus-readers-evidence.json",
+    "engineFiles": [
+      "lib/engine.ts",
+      "lib/tt2-rules.ts",
+      "lib/tt2-pet-combat.ts",
+      "lib/tt2-hero-passives.ts",
+      "lib/tt2-player.ts",
+      "lib/tt2-limits.ts",
+      "lib/tt2-perks.ts",
+      "lib/tt2-collection.ts",
+      "lib/tt2-stages.ts"
+    ],
+    "assembledSuffixes": [
+      "SkillDuration",
+      "SkillMana"
+    ],
+    "skippedCombinations": [
+      "BurstDamageSkillDuration"
+    ],
+    "unbuiltSystems": [
+      "ClanShip",
+      "Clan",
+      "Dagger",
+      "StreamOfBlades",
+      "GoldGun",
+      "GoldenMissile",
+      "Raid",
+      "Contract",
+      "Fishing",
+      "Minigame",
+      "BallDrop",
+      "Tournament",
+      "Gemstone",
+      "Endgame",
+      "Season",
+      "Card",
+      "Cannon",
+      "Portal",
+      "Monument",
+      "Research",
+      "Summon",
+      "Holiday",
+      "Anniversary",
+      "GlobalEvent",
+      "Inbox",
+      "Frenzy",
+      "Warlord",
+      "Twilight",
+      "Hayst",
+      "Snap",
+      "Abyss",
+      "Alchemist",
+      "Kratos",
+      "LightningStrike",
+      "MagnumOpus",
+      "ForbiddenContract",
+      "RoyalContract",
+      "Lifetime",
+      "AT"
+    ]
+  },
+  "counts": {
+    "live": 89,
+    "dead-native-uses-it": 139,
+    "dead-native-ignores-it": 69,
+    "read-without-source": 9,
+    "not-in-project": 490
+  },
+  "verdicts": {
+    "live": "專案有來源、引擎有讀：正常運作。",
+    "dead-native-uses-it": "專案有來源、引擎沒讀，而且原生有取值點：**這些是可以接上的**。",
+    "dead-native-ignores-it": "專案有來源、引擎沒讀，原生也掃不到取值點：接了大概也沒有依據。",
+    "read-without-source": "引擎有讀，但專案沒有任何來源會給：恆為中性值，等來源出現才會生效。",
+    "not-in-project": "專案沒有來源，引擎也沒讀。"
+  },
+  "rows": [
+    {
+      "id": "AdvancedStart",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "MilestonePage",
+        "PrestigeModel"
+      ],
+      "priority": false
+    },
+    {
+      "id": "AlchemistActiveSkillCap",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "ActiveSkillModel"
+      ],
+      "priority": false
+    },
+    {
+      "id": "AlchemistBonusBoost",
+      "verdict": "dead-native-ignores-it",
+      "sources": [
+        "TT2_SETS"
+      ],
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "AllActiveSkillDuration",
+      "verdict": "live",
+      "sources": [
+        "TT2_ARTIFACTS"
+      ],
+      "engineReads": true,
+      "nativeReaders": [
+        "SkillParsedInfo"
+      ],
+      "priority": false
+    },
+    {
+      "id": "AllActiveSkillDurationMult",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_SETS"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "SkillParsedInfo"
+      ],
+      "priority": true
+    },
+    {
+      "id": "AllActiveSkillAmount",
+      "verdict": "live",
+      "sources": [
+        "TT2_ARTIFACTS",
+        "TT2_SETS"
+      ],
+      "engineReads": true,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "AllActiveSkillAmountPerAdditiveRelicMultiplier",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_SETS"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "PrestigeModel"
+      ],
+      "priority": true
+    },
+    {
+      "id": "AllActiveSkillManaReduction",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "ActiveSkillModel"
+      ],
+      "priority": false
+    },
+    {
+      "id": "AllActiveSkillManaReductionMult",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "ActiveSkillModel"
+      ],
+      "priority": false
+    },
+    {
+      "id": "AllActiveSkillCooldownRate",
+      "verdict": "live",
+      "sources": [
+        "TT2_ARTIFACTS"
+      ],
+      "engineReads": true,
+      "nativeReaders": [
+        "ActiveSkillInfo",
+        "ActiveSkillModel",
+        "CircleSkillFiller",
+        "StatsPanelScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "AllActiveSkillDurationRate",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "ActiveSkillInfo",
+        "ActiveSkillModel",
+        "CircleSkillFiller",
+        "CircleSkillFiller.<TimerReduction>d__23",
+        "FairyController.<UpdateRewardTextTimer>d__99"
+      ],
+      "priority": false
+    },
+    {
+      "id": "AllActiveSkillCap",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_SETS"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "ActiveSkillModel"
+      ],
+      "priority": true
+    },
+    {
+      "id": "AllArtifactMultEffect",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "AllArtifactDamageEffect",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_ARTIFACTS"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "ArtifactModelBase<object>"
+      ],
+      "priority": true
+    },
+    {
+      "id": "AllArtifactGoldEffect",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_ARTIFACTS"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "ArtifactInfo",
+        "ArtifactModelBase<object>"
+      ],
+      "priority": true
+    },
+    {
+      "id": "AllUpgradeCost",
+      "verdict": "live",
+      "sources": [
+        "TT2_ARTIFACTS"
+      ],
+      "engineReads": true,
+      "nativeReaders": [
+        "ActiveSkillModel",
+        "HelperModel",
+        "PlayerModel",
+        "StatsPanelScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "AllUpgradeCostFairy",
+      "verdict": "read-without-source",
+      "sources": null,
+      "engineReads": true,
+      "nativeReaders": [
+        "ActiveSkillModel",
+        "HelperModel",
+        "PlayerModel"
+      ],
+      "priority": false
+    },
+    {
+      "id": "AllEquipmentEffect",
+      "verdict": "live",
+      "sources": [
+        "TT2_ARTIFACTS",
+        "TT2_SETS"
+      ],
+      "engineReads": true,
+      "nativeReaders": [
+        "EquipmentMetaData"
+      ],
+      "priority": false
+    },
+    {
+      "id": "AllGoldx1000Chance",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "AllManaGained",
+      "verdict": "live",
+      "sources": [
+        "TT2_SETS"
+      ],
+      "engineReads": true,
+      "nativeReaders": [
+        "PlayerModel"
+      ],
+      "priority": false
+    },
+    {
+      "id": "AllManaSourceMult",
+      "verdict": "dead-native-ignores-it",
+      "sources": [
+        "TT2_ARTIFACTS",
+        "TT2_TREE"
+      ],
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "AllMultiCastManaCosts",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "ActiveSkillModel"
+      ],
+      "priority": false
+    },
+    {
+      "id": "AllMultiCastStacks",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_SETS"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "ActiveSkillModel"
+      ],
+      "priority": true
+    },
+    {
+      "id": "AllMultiCastPrimaryEffect",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "PlayerController"
+      ],
+      "priority": false
+    },
+    {
+      "id": "LegacyPetDamageEffect",
+      "verdict": "dead-native-ignores-it",
+      "sources": [
+        "TT2_ARTIFACTS",
+        "TT2_SETS"
+      ],
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "LegacyPetGoldEffect",
+      "verdict": "dead-native-ignores-it",
+      "sources": [
+        "TT2_ARTIFACTS",
+        "TT2_SETS"
+      ],
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "AllProbabilityBoost",
+      "verdict": "live",
+      "sources": [
+        "TT2_ARTIFACTS"
+      ],
+      "engineReads": true,
+      "nativeReaders": [
+        "BasePetObject",
+        "BonusModel",
+        "ChestersonTitanScript",
+        "ClanPlayerScript.<ClanPlayerLoop>d__19",
+        "FairyController",
+        "HaystTitanScript",
+        "InactiveGameplayModel",
+        "KratosTitanScript",
+        "MegaBombTitanScript",
+        "MonsterController",
+        "MonsterModel",
+        "PlayerController",
+        "PlayerController.<ShadowCloneAttackLoop>d__132",
+        "PlayerModel",
+        "SkillTreeBookItemScript",
+        "StageLogic",
+        "StatsPanelScript",
+        "TwilightFairyController"
+      ],
+      "priority": false
+    },
+    {
+      "id": "AllProbabilityBoostDuringHayst",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_TREE"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "HaystTitanScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "AllGoldDuringHayst",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "HaystTitanScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "ActiveAllHelperDamage",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_TREE"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "ClanPlayerScript",
+        "SkillTreeUIModel"
+      ],
+      "priority": true
+    },
+    {
+      "id": "ActiveClanShipDamage",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "AdditiveRelicMultiplierEarned",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_SETS"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "PrestigeModel"
+      ],
+      "priority": true
+    },
+    {
+      "id": "AdditiveRelicMultiplierBoost",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "PrestigeModel"
+      ],
+      "priority": false
+    },
+    {
+      "id": "AllPassiveSkillBoost",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "ActivePetLevel",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_SETS",
+        "TT2_TREE"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "PetInfo"
+      ],
+      "priority": true
+    },
+    {
+      "id": "ActiveTapDamage",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_SETS",
+        "TT2_TREE"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "PlayerController",
+        "SkillTreeUIModel"
+      ],
+      "priority": true
+    },
+    {
+      "id": "AllDamage",
+      "verdict": "live",
+      "sources": [
+        "TT2_ARTIFACTS",
+        "TT2_GEAR",
+        "TT2_PETS",
+        "TT2_SETS"
+      ],
+      "engineReads": true,
+      "nativeReaders": [
+        "AchievementModel",
+        "HelperInfo",
+        "PlayerModel",
+        "StatsPanelScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "AllDamagePerSeasonDay",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "StatsTrackedBonusModel"
+      ],
+      "priority": false
+    },
+    {
+      "id": "AllDamageDuringSnap",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "MegaBombTitanScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "AllHelperDamage",
+      "verdict": "live",
+      "sources": [
+        "TT2_ARTIFACTS",
+        "TT2_GEAR",
+        "TT2_PETS",
+        "TT2_SETS",
+        "TT2_TREE"
+      ],
+      "engineReads": true,
+      "nativeReaders": [
+        "AchievementModel",
+        "HelperInfo",
+        "StatsPanelScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "AllPetDamageEffect",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "AllPetGoldEffect",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "AnyContractBonusBoost",
+      "verdict": "dead-native-ignores-it",
+      "sources": [
+        "TT2_SETS"
+      ],
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "AnyContractMonsterCount",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_TREE"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "StageLogic"
+      ],
+      "priority": false
+    },
+    {
+      "id": "AnyContractQTECooldown",
+      "verdict": "dead-native-ignores-it",
+      "sources": [
+        "TT2_SETS"
+      ],
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "AutoActivateContractsQTE",
+      "verdict": "dead-native-ignores-it",
+      "sources": [
+        "TT2_SETS"
+      ],
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "AutoActivateForbiddenContractQTE",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "ForbiddenContract",
+        "GameSettingsPanel"
+      ],
+      "priority": false
+    },
+    {
+      "id": "AutoActivateFrenzy",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_SETS"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "GameSettingsPanel",
+        "PlayerController"
+      ],
+      "priority": false
+    },
+    {
+      "id": "AutoActivateGoldGunQTE",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_SETS"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "GameSettingsPanel",
+        "GoldGunModel"
+      ],
+      "priority": false
+    },
+    {
+      "id": "AutoActivatePetBossQTE",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_SETS"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "GameSettingsPanel",
+        "PetController"
+      ],
+      "priority": true
+    },
+    {
+      "id": "AutoActivatePetGoldQTE",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_SETS"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "GameSettingsPanel",
+        "PetController"
+      ],
+      "priority": true
+    },
+    {
+      "id": "AutoActivateRoyalContractQTE",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "GameSettingsPanel",
+        "RoyalContract"
+      ],
+      "priority": false
+    },
+    {
+      "id": "AutoActivateWarlordQTE",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_SETS"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "ClanShipScript",
+        "GameSettingsPanel",
+        "HelperController",
+        "PlayerController"
+      ],
+      "priority": false
+    },
+    {
+      "id": "AutoActivateTwilightFairyQTE",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_SETS"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "GameSettingsPanel",
+        "TwilightFairyController"
+      ],
+      "priority": false
+    },
+    {
+      "id": "AutoBuyHeroesMultDuringMakeItRain",
+      "verdict": "live",
+      "sources": [
+        "TT2_SETS"
+      ],
+      "engineReads": true,
+      "nativeReaders": [
+        "ActivePerkInfo"
+      ],
+      "priority": false
+    },
+    {
+      "id": "AutoActivateGoldenMissileSkill",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_SETS"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "ActiveSkillButton",
+        "GameSettingsPanel"
+      ],
+      "priority": false
+    },
+    {
+      "id": "AutoTapCount",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "PlayerController",
+        "PlayerController.<PerformAutoTap>d__89"
+      ],
+      "priority": false
+    },
+    {
+      "id": "MeleeHelperDamage",
+      "verdict": "live",
+      "sources": [
+        "TT2_ARTIFACTS",
+        "TT2_GEAR",
+        "TT2_PETS"
+      ],
+      "engineReads": true,
+      "nativeReaders": [
+        "AchievementModel"
+      ],
+      "priority": false
+    },
+    {
+      "id": "RangedHelperDamage",
+      "verdict": "live",
+      "sources": [
+        "TT2_ARTIFACTS",
+        "TT2_GEAR",
+        "TT2_PETS"
+      ],
+      "engineReads": true,
+      "nativeReaders": [
+        "AchievementModel"
+      ],
+      "priority": false
+    },
+    {
+      "id": "SpellHelperDamage",
+      "verdict": "live",
+      "sources": [
+        "TT2_ARTIFACTS",
+        "TT2_GEAR",
+        "TT2_PETS"
+      ],
+      "engineReads": true,
+      "nativeReaders": [
+        "AchievementModel"
+      ],
+      "priority": false
+    },
+    {
+      "id": "ArmorBoost",
+      "verdict": "live",
+      "sources": [
+        "TT2_ARTIFACTS",
+        "TT2_PETS",
+        "TT2_SETS"
+      ],
+      "engineReads": true,
+      "nativeReaders": [
+        "EquipmentMetaData"
+      ],
+      "priority": false
+    },
+    {
+      "id": "ArmorLevel",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "ArtifactDamage",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "SeasonalArtifactDamage",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "SeasonalRelicAdditive",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_SETS"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "PrestigeModel"
+      ],
+      "priority": false
+    },
+    {
+      "id": "SeasonalRelicsFromPrestige",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "PrestigeModel"
+      ],
+      "priority": false
+    },
+    {
+      "id": "AuraBoost",
+      "verdict": "live",
+      "sources": [
+        "TT2_ARTIFACTS",
+        "TT2_PETS",
+        "TT2_SETS"
+      ],
+      "engineReads": true,
+      "nativeReaders": [
+        "EquipmentMetaData"
+      ],
+      "priority": false
+    },
+    {
+      "id": "AuraLevel",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "AutoBuyHeroes",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "AutoBuyHelpersButton",
+        "HelperModel"
+      ],
+      "priority": false
+    },
+    {
+      "id": "BeastBladeDamage",
+      "verdict": "dead-native-ignores-it",
+      "sources": [
+        "TT2_GEAR"
+      ],
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "BonusTapsPerSecond",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "ClanDungeonScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "BossDamage",
+      "verdict": "live",
+      "sources": [
+        "TT2_ARTIFACTS",
+        "TT2_PETS",
+        "TT2_SETS"
+      ],
+      "engineReads": true,
+      "nativeReaders": [
+        "StageLogic"
+      ],
+      "priority": false
+    },
+    {
+      "id": "BossDamageDuringSnap",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "MegaBombTitanScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "BoostedAfflictionSlots",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "BoostedBurstSlots",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "BoostedSupportSlots",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "BoostedSwordAttackDamage",
+      "verdict": "dead-native-ignores-it",
+      "sources": [
+        "TT2_ARTIFACTS",
+        "TT2_SETS"
+      ],
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "BossGoldx10Chance",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "BossGoldx1000Chance",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "BossTimer",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_TREE"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "BossTimerScript"
+      ],
+      "priority": true
+    },
+    {
+      "id": "BossTimerDuration",
+      "verdict": "live",
+      "sources": [
+        "TT2_ARTIFACTS"
+      ],
+      "engineReads": true,
+      "nativeReaders": [
+        "BossTimerScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "BurstDamageSkillAmount",
+      "verdict": "live",
+      "sources": [
+        "TT2_ACTIVE",
+        "TT2_ARTIFACTS",
+        "TT2_GEAR",
+        "TT2_SETS",
+        "TT2_TREE"
+      ],
+      "engineReads": true,
+      "nativeReaders": [
+        "PetModel",
+        "PlayerController",
+        "StatsPanelScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "BurstDamageSkillMana",
+      "verdict": "live",
+      "sources": [
+        "TT2_ARTIFACTS"
+      ],
+      "engineReads": true,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "BurstDamageSkillManaMult",
+      "verdict": "dead-native-ignores-it",
+      "sources": [
+        "TT2_TREE"
+      ],
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "BurstDamageSkillStacks",
+      "verdict": "dead-native-ignores-it",
+      "sources": [
+        "TT2_TREE"
+      ],
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "BurstDamageSkillStacksBonus",
+      "verdict": "dead-native-ignores-it",
+      "sources": [
+        "TT2_TREE"
+      ],
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "BurstSkillAmountDuringCritSkill",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "BurstSkillStageSkip",
+      "verdict": "live",
+      "sources": [
+        "TT2_TREE"
+      ],
+      "engineReads": true,
+      "nativeReaders": [
+        "StageLogic"
+      ],
+      "priority": false
+    },
+    {
+      "id": "BurstSkillStageSkipMult",
+      "verdict": "read-without-source",
+      "sources": null,
+      "engineReads": true,
+      "nativeReaders": [
+        "StageLogic"
+      ],
+      "priority": false
+    },
+    {
+      "id": "BurstSkillTitanSkip",
+      "verdict": "live",
+      "sources": [
+        "TT2_ACTIVE",
+        "TT2_TREE"
+      ],
+      "engineReads": true,
+      "nativeReaders": [
+        "StageLogic"
+      ],
+      "priority": false
+    },
+    {
+      "id": "BuildBoostCSHSSC",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "BuildBoostDGPetCS",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "BuildBoostHSDGGG",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "BuildBoostSCPetGG",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "CannonDamage",
+      "verdict": "dead-native-ignores-it",
+      "sources": [
+        "TT2_ARTIFACTS",
+        "TT2_GEAR",
+        "TT2_SETS"
+      ],
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "CannonDamagePerSeasonTitan",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "StatsTrackedBonusModel"
+      ],
+      "priority": false
+    },
+    {
+      "id": "ChestAmount",
+      "verdict": "live",
+      "sources": [
+        "TT2_ARTIFACTS",
+        "TT2_GEAR",
+        "TT2_SETS",
+        "TT2_TREE"
+      ],
+      "engineReads": true,
+      "nativeReaders": [
+        "BonusModel",
+        "StatsPanelScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "ChestGoldx10Chance",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "ChestGoldx1000Chance",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "ChestChance",
+      "verdict": "live",
+      "sources": [
+        "TT2_ARTIFACTS",
+        "TT2_SETS"
+      ],
+      "engineReads": true,
+      "nativeReaders": [
+        "ChestersonTitanScript",
+        "MonsterModel"
+      ],
+      "priority": false
+    },
+    {
+      "id": "ChestersonGoldStageAmount",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_TREE"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "ChestersonTitanScript"
+      ],
+      "priority": true
+    },
+    {
+      "id": "ClanScrollBoost",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_ARTIFACTS",
+        "TT2_SETS"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "ClanScrollModel"
+      ],
+      "priority": false
+    },
+    {
+      "id": "ClanScrollSetBoost",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_ARTIFACTS",
+        "TT2_SETS"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "ClanScrollModel"
+      ],
+      "priority": false
+    },
+    {
+      "id": "ClanQTEAttackRate",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_SETS"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "ClanPlayerScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "ClanQTECooldown",
+      "verdict": "dead-native-ignores-it",
+      "sources": [
+        "TT2_TREE"
+      ],
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "ClanQTEDamage",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "ClanPlayerScript.<ClanPlayerLoop>d__19"
+      ],
+      "priority": false
+    },
+    {
+      "id": "ClanShipBatteryCoefficient",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_SETS"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "ClanShipScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "ClanShipDamage",
+      "verdict": "live",
+      "sources": [
+        "TT2_ARTIFACTS",
+        "TT2_GEAR",
+        "TT2_SETS",
+        "TT2_TREE"
+      ],
+      "engineReads": true,
+      "nativeReaders": [
+        "ClanModel",
+        "GoldGunController",
+        "StatsPanelScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "ClanShipDamagePerSeasonTitan",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "StatsTrackedBonusModel"
+      ],
+      "priority": false
+    },
+    {
+      "id": "ClanShipStageSkip",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_TREE"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "StageLogic"
+      ],
+      "priority": false
+    },
+    {
+      "id": "ClanShipStunDuration",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_TREE"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "MonsterController"
+      ],
+      "priority": false
+    },
+    {
+      "id": "ClanShipStunDamage",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_TREE"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "StageLogic"
+      ],
+      "priority": false
+    },
+    {
+      "id": "ClanShipTitanSkip",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_TREE"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "StageLogic"
+      ],
+      "priority": false
+    },
+    {
+      "id": "CloakedSkipAmount",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_SETS",
+        "TT2_TREE"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "Cloaking"
+      ],
+      "priority": true
+    },
+    {
+      "id": "CloakedSkipChance",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_TREE"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "Cloaking"
+      ],
+      "priority": true
+    },
+    {
+      "id": "CloakedStageDuration",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "Cloaking"
+      ],
+      "priority": false
+    },
+    {
+      "id": "CloakedSkipChanceBoostDuringHayst",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "HaystTitanScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "CompanionAttackRate",
+      "verdict": "read-without-source",
+      "sources": null,
+      "engineReads": true,
+      "nativeReaders": [
+        "ActiveSkillModel",
+        "ClanShipController",
+        "DualPetObject",
+        "PetModel"
+      ],
+      "priority": false
+    },
+    {
+      "id": "CompanionDamage",
+      "verdict": "live",
+      "sources": [
+        "TT2_ARTIFACTS",
+        "TT2_SETS",
+        "TT2_TREE"
+      ],
+      "engineReads": true,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "CompanionDoubleAttackChance",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "CompanionQTECooldownMult",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_SETS"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "QTEController",
+        "StatsPanelScript"
+      ],
+      "priority": true
+    },
+    {
+      "id": "ContractActivationBonusTime",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "ForbiddenContract",
+        "RoyalContract"
+      ],
+      "priority": false
+    },
+    {
+      "id": "CraftingPowerMult",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "PlayerModel"
+      ],
+      "priority": false
+    },
+    {
+      "id": "CritBoostSkillDuration",
+      "verdict": "live",
+      "sources": [
+        "TT2_ARTIFACTS",
+        "TT2_TREE"
+      ],
+      "engineReads": true,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "CritBoostSkillDurationMult",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "CritBoostSkillAmount",
+      "verdict": "live",
+      "sources": [
+        "TT2_ACTIVE",
+        "TT2_ARTIFACTS",
+        "TT2_SETS",
+        "TT2_TREE"
+      ],
+      "engineReads": true,
+      "nativeReaders": [
+        "BasePetObject",
+        "ClanPlayerScript.<ClanPlayerLoop>d__19",
+        "PlayerController",
+        "PlayerModel",
+        "StatsPanelScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "CritBoostSkillMana",
+      "verdict": "live",
+      "sources": [
+        "TT2_ARTIFACTS"
+      ],
+      "engineReads": true,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "CritBoostSkillManaMult",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "CritBoostSkillShadowCloneDamage",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_SETS"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "PlayerController.<ShadowCloneAttackLoop>d__132"
+      ],
+      "priority": true
+    },
+    {
+      "id": "CritBoostSkillStacks",
+      "verdict": "dead-native-ignores-it",
+      "sources": [
+        "TT2_TREE"
+      ],
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "CritBoostSkillStacksBonus",
+      "verdict": "dead-native-ignores-it",
+      "sources": [
+        "TT2_TREE"
+      ],
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "CritBoostSkillCritDamage",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_TREE"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "PlayerModel"
+      ],
+      "priority": true
+    },
+    {
+      "id": "CritChance",
+      "verdict": "live",
+      "sources": [
+        "TT2_ARTIFACTS",
+        "TT2_SETS",
+        "TT2_TREE"
+      ],
+      "engineReads": true,
+      "nativeReaders": [
+        "PlayerModel"
+      ],
+      "priority": false
+    },
+    {
+      "id": "CritDamage",
+      "verdict": "live",
+      "sources": [
+        "TT2_ARTIFACTS",
+        "TT2_GEAR",
+        "TT2_PETS",
+        "TT2_SETS",
+        "TT2_TREE"
+      ],
+      "engineReads": true,
+      "nativeReaders": [
+        "PlayerModel"
+      ],
+      "priority": false
+    },
+    {
+      "id": "CritDamagePerSeasonDay",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "StatsTrackedBonusModel"
+      ],
+      "priority": false
+    },
+    {
+      "id": "CSKnightBonusBoost",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "DailyGemstoneCurrencyBoost",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "AchievementDailyListItem",
+        "DailyCollectibleListItem"
+      ],
+      "priority": false
+    },
+    {
+      "id": "DamageOverTimeMaxAttacks",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "DamageOverTimePercent",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "DamagePerATParticipation",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_GEAR",
+        "TT2_SETS"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "PlayerModel"
+      ],
+      "priority": false
+    },
+    {
+      "id": "DamagePerClanScroll",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_GEAR",
+        "TT2_SETS"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "ClanScrollModel"
+      ],
+      "priority": false
+    },
+    {
+      "id": "DamagePerConsecutiveLoginDay",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_SETS"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "DailyRewardModel"
+      ],
+      "priority": true
+    },
+    {
+      "id": "DamagePerEquipmentSet",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_SETS"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "EquipmentModel"
+      ],
+      "priority": true
+    },
+    {
+      "id": "DamagePerManaCap",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_GEAR",
+        "TT2_SETS"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "PlayerModel"
+      ],
+      "priority": true
+    },
+    {
+      "id": "DamagePerMythicSet",
+      "verdict": "dead-native-ignores-it",
+      "sources": [
+        "TT2_SETS"
+      ],
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "DamagePerNecroBearResearchLevel",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_SETS"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "TitanGachaModel"
+      ],
+      "priority": false
+    },
+    {
+      "id": "DamagePerLegendarySet",
+      "verdict": "dead-native-ignores-it",
+      "sources": [
+        "TT2_SETS"
+      ],
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "DamagePerLifetimePerks",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_SETS"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "PerkModel"
+      ],
+      "priority": false
+    },
+    {
+      "id": "DamagePerLifetimePrestige",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_SETS"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "PrestigeModel"
+      ],
+      "priority": false
+    },
+    {
+      "id": "DamagePerRareSet",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "DamagePerEventSet",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "DamagePerHelperWeapon",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_GEAR",
+        "TT2_SETS"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "HelperModel"
+      ],
+      "priority": true
+    },
+    {
+      "id": "DamagePerHelperWeaponMult",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "HelperModel"
+      ],
+      "priority": false
+    },
+    {
+      "id": "DamagePerOwnedCardLevel",
+      "verdict": "live",
+      "sources": [
+        "TT2_ARTIFACTS",
+        "TT2_GEAR",
+        "TT2_SETS"
+      ],
+      "engineReads": true,
+      "nativeReaders": [
+        "ArtifactModelBase<object>"
+      ],
+      "priority": false
+    },
+    {
+      "id": "DamagePerOwnedArtifact",
+      "verdict": "live",
+      "sources": [
+        "TT2_ARTIFACTS",
+        "TT2_SETS"
+      ],
+      "engineReads": true,
+      "nativeReaders": [
+        "ArtifactModel"
+      ],
+      "priority": false
+    },
+    {
+      "id": "DamagePerOwnedEnchantment",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_SETS"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "ArtifactModel"
+      ],
+      "priority": true
+    },
+    {
+      "id": "DamagePerOwnedMonument",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_SETS"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "SeasonalArtifactModel"
+      ],
+      "priority": false
+    },
+    {
+      "id": "DamagePerRunningActiveSkill",
+      "verdict": "live",
+      "sources": [
+        "TT2_ARTIFACTS",
+        "TT2_SETS"
+      ],
+      "engineReads": true,
+      "nativeReaders": [
+        "ActiveSkillModel"
+      ],
+      "priority": false
+    },
+    {
+      "id": "DamagePerRunningPerk",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "ActivePerkModel"
+      ],
+      "priority": false
+    },
+    {
+      "id": "DamagePerRunningPerkBoost",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "ActivePerkModel"
+      ],
+      "priority": false
+    },
+    {
+      "id": "DamagePerMaxStage",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_SETS"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "StatsTrackedBonusModel"
+      ],
+      "priority": true
+    },
+    {
+      "id": "DamagePerSoloRaidWorld",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_SETS"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "SoloRaidModel"
+      ],
+      "priority": false
+    },
+    {
+      "id": "DamagePerSkillPoint",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_GEAR",
+        "TT2_SETS"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "PlayerModel"
+      ],
+      "priority": true
+    },
+    {
+      "id": "DamagePerSkillPointMult",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "PlayerModel"
+      ],
+      "priority": false
+    },
+    {
+      "id": "DamagePerSpecialTitanActive",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_SETS"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "SpecialTitanModel"
+      ],
+      "priority": true
+    },
+    {
+      "id": "DamagePerUniqueSet",
+      "verdict": "dead-native-ignores-it",
+      "sources": [
+        "TT2_SETS"
+      ],
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "DDPetBonusBoost",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "DeadlyChance",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_ACTIVE"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "BasePetObject",
+        "ClanPlayerScript.<ClanPlayerLoop>d__19",
+        "PlayerController.<ShadowCloneAttackLoop>d__132",
+        "PlayerModel"
+      ],
+      "priority": true
+    },
+    {
+      "id": "DeadlyDamageCompanion",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "DeadlyDamageClone",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "PlayerController"
+      ],
+      "priority": false
+    },
+    {
+      "id": "DeadlyDamagePet",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "BasePetObject",
+        "PetModel"
+      ],
+      "priority": false
+    },
+    {
+      "id": "DeadlyDamageShip",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "ClanModel",
+        "ClanPlayerScript.<ClanPlayerLoop>d__19"
+      ],
+      "priority": false
+    },
+    {
+      "id": "DiseaseDamageRate",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "DiseaseScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "DiseaseBonusRate",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "DiseaseScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "DoomBonusDamage",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "StageLogic",
+        "StatsDisplayScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "DoomBonusDamageBase",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "DoomBonusDamageMax",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "PlayerController"
+      ],
+      "priority": false
+    },
+    {
+      "id": "DoomBonusDamageMaxCount",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "DoomBonusTimeUntilMaxDamage",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "PlayerController"
+      ],
+      "priority": false
+    },
+    {
+      "id": "DualPetAmount",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_ARTIFACTS",
+        "TT2_TREE"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "PetModel",
+        "StatsPanelScript"
+      ],
+      "priority": true
+    },
+    {
+      "id": "DualPetAttackCountToBurst",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "DualPetObject"
+      ],
+      "priority": false
+    },
+    {
+      "id": "DualPetAttackPerSecond",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "DualPetObject"
+      ],
+      "priority": false
+    },
+    {
+      "id": "DualPetDuration",
+      "verdict": "dead-native-ignores-it",
+      "sources": [
+        "TT2_TREE"
+      ],
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "DualPetDurationMult",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "DualPetSkillMana",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "DualPetSkillManaMult",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "DualPetSkillStacks",
+      "verdict": "dead-native-ignores-it",
+      "sources": [
+        "TT2_TREE"
+      ],
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "DualPetSkillStacksBonus",
+      "verdict": "dead-native-ignores-it",
+      "sources": [
+        "TT2_TREE"
+      ],
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "DualPetStageSkip",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "StageLogic"
+      ],
+      "priority": false
+    },
+    {
+      "id": "DualPetStageSkipMult",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_SETS"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "StageLogic"
+      ],
+      "priority": true
+    },
+    {
+      "id": "EquipmentRarityChance",
+      "verdict": "dead-native-ignores-it",
+      "sources": [
+        "TT2_SETS"
+      ],
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "EquipmentUniqueChance",
+      "verdict": "dead-native-ignores-it",
+      "sources": [
+        "TT2_SETS"
+      ],
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "EquipmentSecondaryDamageEffect",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_SETS"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "EquipmentModel"
+      ],
+      "priority": true
+    },
+    {
+      "id": "EquippedEquipmentLevel",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "EquipmentPetEffect",
+      "verdict": "live",
+      "sources": [
+        "TT2_ARTIFACTS",
+        "TT2_TREE"
+      ],
+      "engineReads": true,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "ExoticPetDamageEffect",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_ARTIFACTS"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "PetInfo"
+      ],
+      "priority": true
+    },
+    {
+      "id": "ExoticPetGoldEffect",
+      "verdict": "dead-native-ignores-it",
+      "sources": [
+        "TT2_ARTIFACTS"
+      ],
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "FairySpawnChance",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_ARTIFACTS",
+        "TT2_SETS",
+        "TT2_TREE"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "FairyController"
+      ],
+      "priority": true
+    },
+    {
+      "id": "FairyCooldown",
+      "verdict": "dead-native-ignores-it",
+      "sources": [
+        "TT2_SETS",
+        "TT2_TREE"
+      ],
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "FairyGold",
+      "verdict": "live",
+      "sources": [
+        "TT2_ARTIFACTS",
+        "TT2_GEAR",
+        "TT2_PETS",
+        "TT2_SETS",
+        "TT2_TREE"
+      ],
+      "engineReads": true,
+      "nativeReaders": [
+        "FairyController",
+        "StatsPanelScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "FlyingHelperDamage",
+      "verdict": "live",
+      "sources": [
+        "TT2_ARTIFACTS",
+        "TT2_HEROES",
+        "TT2_PETS"
+      ],
+      "engineReads": true,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "ForbiddenContractBonusDamage",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "StageLogic"
+      ],
+      "priority": false
+    },
+    {
+      "id": "ForbiddenContractBonusGold",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_TREE"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "MonsterModel"
+      ],
+      "priority": false
+    },
+    {
+      "id": "ForbiddenContractManaCostBase",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_TREE"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "ForbiddenContract"
+      ],
+      "priority": false
+    },
+    {
+      "id": "ForbiddenContractMaxDamage",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_TREE"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "ForbiddenContract"
+      ],
+      "priority": false
+    },
+    {
+      "id": "ForbiddenContractQTECooldown",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "ForbiddenContractTimeUntilMaxDamage",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "ForbiddenContract"
+      ],
+      "priority": false
+    },
+    {
+      "id": "FrenzyCount",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_SETS",
+        "TT2_TREE"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "PetModel",
+        "PlayerController",
+        "PlayerModel"
+      ],
+      "priority": false
+    },
+    {
+      "id": "FrenzyDamage",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "FundamentalDamage",
+      "verdict": "dead-native-ignores-it",
+      "sources": [
+        "TT2_ARTIFACTS",
+        "TT2_SETS"
+      ],
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "GemstoneLevel",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "GemstonesModel"
+      ],
+      "priority": false
+    },
+    {
+      "id": "GemstoneLevelMult",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "GemstonesModel"
+      ],
+      "priority": false
+    },
+    {
+      "id": "GGSorcererBonusBoost",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "GoldAll",
+      "verdict": "live",
+      "sources": [
+        "TT2_ARTIFACTS",
+        "TT2_GEAR",
+        "TT2_PETS",
+        "TT2_SETS",
+        "TT2_TREE"
+      ],
+      "engineReads": true,
+      "nativeReaders": [
+        "AchievementModel",
+        "MonsterModel",
+        "StatsPanelScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "GoldAllPerPrestigeChesterson",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "StatsTrackedBonusModel"
+      ],
+      "priority": false
+    },
+    {
+      "id": "GoldAllPerPrestigeSecond",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "StatsTrackedBonusModel"
+      ],
+      "priority": false
+    },
+    {
+      "id": "GoldAllPerSeasonChesterson",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "StatsTrackedBonusModel"
+      ],
+      "priority": false
+    },
+    {
+      "id": "GoldAllPerSeasonPrestige",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "StatsTrackedBonusModel"
+      ],
+      "priority": false
+    },
+    {
+      "id": "GoldBoss",
+      "verdict": "live",
+      "sources": [
+        "TT2_ARTIFACTS",
+        "TT2_GEAR",
+        "TT2_PETS",
+        "TT2_SETS",
+        "TT2_TREE"
+      ],
+      "engineReads": true,
+      "nativeReaders": [
+        "MonsterModel",
+        "StatsPanelScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "GoldComboGoldAllFairyGold",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "GoldComboGoldAllMultiMonstersGold",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "GoldCooldownMultDuringSnap",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "MegaBombTitanScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "GoldGunAttackRate",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_SETS"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "GoldGunController"
+      ],
+      "priority": false
+    },
+    {
+      "id": "GoldGunChargeBoost",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "GoldGunModel"
+      ],
+      "priority": false
+    },
+    {
+      "id": "GoldGunDamage",
+      "verdict": "live",
+      "sources": [
+        "TT2_ARTIFACTS",
+        "TT2_GEAR",
+        "TT2_SETS",
+        "TT2_TREE"
+      ],
+      "engineReads": true,
+      "nativeReaders": [
+        "PlayerModel"
+      ],
+      "priority": false
+    },
+    {
+      "id": "GoldGunDamageFromClanShipDamage",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "GoldGunController"
+      ],
+      "priority": false
+    },
+    {
+      "id": "GoldComboJackpotGoldPetGoldQTEAmount",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "GoldGunStageSkip",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_TREE"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "StageLogic"
+      ],
+      "priority": false
+    },
+    {
+      "id": "GoldGunTitanSkip",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_TREE"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "StageLogic"
+      ],
+      "priority": false
+    },
+    {
+      "id": "GoldenMissileSkillAmount",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "PlayerController",
+        "StatsPanelScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "GoldenMissileSkillMana",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "GoldenMissileSkillManaMult",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "GoldenMissileSkillCooldown",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_TREE"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "ActiveSkillModel"
+      ],
+      "priority": false
+    },
+    {
+      "id": "GoldenMissileSkillCooldownMult",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "ActiveSkillModel"
+      ],
+      "priority": false
+    },
+    {
+      "id": "GoldenMissileStageSkip",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_TREE"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "StageLogic"
+      ],
+      "priority": false
+    },
+    {
+      "id": "GoldMonster",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "MonsterModel"
+      ],
+      "priority": false
+    },
+    {
+      "id": "GoldPerOwnedCardLevel",
+      "verdict": "live",
+      "sources": [
+        "TT2_ARTIFACTS",
+        "TT2_SETS"
+      ],
+      "engineReads": true,
+      "nativeReaders": [
+        "ArtifactModelBase<object>"
+      ],
+      "priority": false
+    },
+    {
+      "id": "GoldPerMythicSet",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "GoldPerLegendarySet",
+      "verdict": "dead-native-ignores-it",
+      "sources": [
+        "TT2_SETS"
+      ],
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "GoldPerRareSet",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "GoldPerEventSet",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "GoldPerRunningActiveSkill",
+      "verdict": "live",
+      "sources": [
+        "TT2_ARTIFACTS",
+        "TT2_SETS"
+      ],
+      "engineReads": true,
+      "nativeReaders": [
+        "ActiveSkillModel",
+        "PlayerModel"
+      ],
+      "priority": false
+    },
+    {
+      "id": "GoldPerSwordMasterLevel",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_SETS"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "PlayerModel"
+      ],
+      "priority": true
+    },
+    {
+      "id": "GoldPerUniqueSet",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "GoldPrestige",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "StageLogicController"
+      ],
+      "priority": false
+    },
+    {
+      "id": "GoldPrizeFighter",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "GoldSpecialty",
+      "verdict": "live",
+      "sources": [
+        "TT2_ARTIFACTS",
+        "TT2_SETS"
+      ],
+      "engineReads": true,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "Goldx10Chance",
+      "verdict": "read-without-source",
+      "sources": null,
+      "engineReads": true,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "Goldx1000Chance",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "GroundHelperDamage",
+      "verdict": "live",
+      "sources": [
+        "TT2_ARTIFACTS",
+        "TT2_HEROES",
+        "TT2_PETS"
+      ],
+      "engineReads": true,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "HandOfMidasSkillCooldown",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "HandOfMidasSkillCooldownMult",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "ActiveSkillModel"
+      ],
+      "priority": false
+    },
+    {
+      "id": "HandOfMidasSkillDuration",
+      "verdict": "live",
+      "sources": [
+        "TT2_ARTIFACTS",
+        "TT2_TREE"
+      ],
+      "engineReads": true,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "HandOfMidasSkillDurationMult",
+      "verdict": "dead-native-ignores-it",
+      "sources": [
+        "TT2_SETS"
+      ],
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "HandOfMidasSkillAmount",
+      "verdict": "live",
+      "sources": [
+        "TT2_ACTIVE",
+        "TT2_ARTIFACTS",
+        "TT2_SETS",
+        "TT2_TREE"
+      ],
+      "engineReads": true,
+      "nativeReaders": [
+        "FairyController",
+        "MonsterModel",
+        "PetModel",
+        "PlayerController",
+        "PlayerModel",
+        "StatsPanelScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "HandOfMidasSkillMana",
+      "verdict": "live",
+      "sources": [
+        "TT2_ARTIFACTS"
+      ],
+      "engineReads": true,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "HandOfMidasSkillManaMult",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "HandOfMidasSkillStacks",
+      "verdict": "dead-native-ignores-it",
+      "sources": [
+        "TT2_TREE"
+      ],
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "HandOfMidasSkillStacksBonus",
+      "verdict": "dead-native-ignores-it",
+      "sources": [
+        "TT2_TREE"
+      ],
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "HaystMonsterSpawnChance",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_TREE"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "HaystTitanScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "HelmetBoost",
+      "verdict": "live",
+      "sources": [
+        "TT2_ARTIFACTS",
+        "TT2_GEAR",
+        "TT2_PETS",
+        "TT2_SETS"
+      ],
+      "engineReads": true,
+      "nativeReaders": [
+        "EquipmentMetaData"
+      ],
+      "priority": false
+    },
+    {
+      "id": "HelmetLevel",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "HelperAttackRate",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_ACTIVE"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "HelperController",
+        "HelperInfo",
+        "HelperModel"
+      ],
+      "priority": true
+    },
+    {
+      "id": "HelperBoostSkillAmountDuringTapBoostSkill",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "HelperBoostSkillDuration",
+      "verdict": "live",
+      "sources": [
+        "TT2_ARTIFACTS",
+        "TT2_TREE"
+      ],
+      "engineReads": true,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "HelperBoostSkillDurationMult",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "HelperBoostSkillAmount",
+      "verdict": "live",
+      "sources": [
+        "TT2_ACTIVE",
+        "TT2_ARTIFACTS",
+        "TT2_SETS",
+        "TT2_TREE"
+      ],
+      "engineReads": true,
+      "nativeReaders": [
+        "HelperController",
+        "PetModel",
+        "StatsPanelScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "HelperBoostSkillMana",
+      "verdict": "live",
+      "sources": [
+        "TT2_ARTIFACTS"
+      ],
+      "engineReads": true,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "HelperBoostSkillManaMult",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "HelperBoostSkillStacks",
+      "verdict": "dead-native-ignores-it",
+      "sources": [
+        "TT2_TREE"
+      ],
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "HelperBoostSkillStacksBonus",
+      "verdict": "dead-native-ignores-it",
+      "sources": [
+        "TT2_TREE"
+      ],
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "HelperBoostCompanionAttackRate",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_SETS"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "HelperController"
+      ],
+      "priority": true
+    },
+    {
+      "id": "HelperCritDamage",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "HelperUpgradeCost",
+      "verdict": "live",
+      "sources": [
+        "TT2_ARTIFACTS"
+      ],
+      "engineReads": true,
+      "nativeReaders": [
+        "HelperModel",
+        "StatsPanelScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "HelperMultiplicativeSkillBoost",
+      "verdict": "live",
+      "sources": [
+        "TT2_TREE"
+      ],
+      "engineReads": true,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "HelperAdditiveSkillBoost",
+      "verdict": "live",
+      "sources": [
+        "TT2_TREE"
+      ],
+      "engineReads": true,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "HelperQTECooldown",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "HelperQTECount",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "HelperController",
+        "SkillTreeUIModel"
+      ],
+      "priority": false
+    },
+    {
+      "id": "HelperQTEDamage",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_TREE"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "HelperController",
+        "SkillTreeUIModel"
+      ],
+      "priority": true
+    },
+    {
+      "id": "HelperQTEDuration",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "HelperWeaponBoost",
+      "verdict": "live",
+      "sources": [
+        "TT2_ARTIFACTS"
+      ],
+      "engineReads": true,
+      "nativeReaders": [
+        "HelperInfo"
+      ],
+      "priority": false
+    },
+    {
+      "id": "HelperWeaponSetBoost",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_ARTIFACTS"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "HelperModel"
+      ],
+      "priority": true
+    },
+    {
+      "id": "HoursToCollectPetEggsAdditive",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "PetModel"
+      ],
+      "priority": false
+    },
+    {
+      "id": "HSArtifactDamage",
+      "verdict": "live",
+      "sources": [
+        "TT2_ARTIFACTS"
+      ],
+      "engineReads": true,
+      "nativeReaders": [
+        "ArtifactModel"
+      ],
+      "priority": false
+    },
+    {
+      "id": "HSRogueBonusBoost",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "InactiveAdvance",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "InactiveGold",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "StatsPanelScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "InactiveSneakCount",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_SETS"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "InactiveGameplayModel"
+      ],
+      "priority": true
+    },
+    {
+      "id": "InactiveSneakCountAdditive",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "InactiveGameplayModel"
+      ],
+      "priority": false
+    },
+    {
+      "id": "InactiveSneakCountMult",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_PETS",
+        "TT2_SETS"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "InactiveGameplayModel"
+      ],
+      "priority": true
+    },
+    {
+      "id": "InactiveSpeed",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "InactiveMaxStageOverride",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "InactiveGameplayModel"
+      ],
+      "priority": false
+    },
+    {
+      "id": "InspiredHelperCount",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_TREE"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "HelperModel"
+      ],
+      "priority": true
+    },
+    {
+      "id": "InspiredHelperDamage",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_SETS",
+        "TT2_TREE"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "ActiveSkillListItemScript",
+        "ActiveSkillPanelScript",
+        "SpellSelectPanelScript",
+        "StatsPanelScript"
+      ],
+      "priority": true
+    },
+    {
+      "id": "InspiredHelperWeaken",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "StatsDisplayScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "JackpotGold",
+      "verdict": "live",
+      "sources": [
+        "TT2_ARTIFACTS",
+        "TT2_GEAR",
+        "TT2_PETS",
+        "TT2_SETS",
+        "TT2_TREE"
+      ],
+      "engineReads": true,
+      "nativeReaders": [
+        "BonusModel",
+        "StageLogic"
+      ],
+      "priority": false
+    },
+    {
+      "id": "JackpotGoldChance",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_ARTIFACTS",
+        "TT2_TREE"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "BonusModel"
+      ],
+      "priority": true
+    },
+    {
+      "id": "JackpotGoldPerPrestigeFairy",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "StatsTrackedBonusModel"
+      ],
+      "priority": false
+    },
+    {
+      "id": "JackpotGoldPerSeasonDay",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "StatsTrackedBonusModel"
+      ],
+      "priority": false
+    },
+    {
+      "id": "KillAnimationTimeReduction",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "KnightActiveSkillCap",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "ActiveSkillModel"
+      ],
+      "priority": false
+    },
+    {
+      "id": "KnightBonusBoost",
+      "verdict": "dead-native-ignores-it",
+      "sources": [
+        "TT2_ARTIFACTS",
+        "TT2_SETS"
+      ],
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "KratosMonsterBonusAmount",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_TREE"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "KratosTitanScript",
+        "KratosUIScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "KratosMonsterSpawnChance",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_SETS",
+        "TT2_TREE"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "KratosTitanScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "KratosMonsterStacks",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_TREE"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "KratosTitanScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "KratosSpellDurationEffect",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_SETS"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "KratosTitanScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "KronusComboBoost",
+      "verdict": "dead-native-ignores-it",
+      "sources": [
+        "TT2_ARTIFACTS",
+        "TT2_SETS"
+      ],
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "LanceComboBoost",
+      "verdict": "dead-native-ignores-it",
+      "sources": [
+        "TT2_ARTIFACTS",
+        "TT2_SETS"
+      ],
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "LightningStrikeChance",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "PlayerController",
+        "SkillTreeBookItemScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "LightningStrikeDamage",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_TREE"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "PlayerController"
+      ],
+      "priority": false
+    },
+    {
+      "id": "LightningStrikeEfficiency",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_TREE"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "PlayerController"
+      ],
+      "priority": false
+    },
+    {
+      "id": "MagnumOpusDamage",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_TREE"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "PlayerController"
+      ],
+      "priority": false
+    },
+    {
+      "id": "MagnumOpusDuration",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "GoldGunController"
+      ],
+      "priority": false
+    },
+    {
+      "id": "MagnumOpusDurationMult",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_SETS",
+        "TT2_TREE"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "GoldGunController"
+      ],
+      "priority": false
+    },
+    {
+      "id": "MagnumOpusRemoveGoldDrain",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_SETS"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "GoldGunModel"
+      ],
+      "priority": false
+    },
+    {
+      "id": "ManaPoolCap",
+      "verdict": "live",
+      "sources": [
+        "TT2_ARTIFACTS",
+        "TT2_SETS",
+        "TT2_TREE"
+      ],
+      "engineReads": true,
+      "nativeReaders": [
+        "PlayerModel"
+      ],
+      "priority": false
+    },
+    {
+      "id": "ManaPoolCapPercent",
+      "verdict": "read-without-source",
+      "sources": null,
+      "engineReads": true,
+      "nativeReaders": [
+        "PlayerModel"
+      ],
+      "priority": false
+    },
+    {
+      "id": "ManaPotionSpellBoost",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_SETS"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "ActivePerkModel"
+      ],
+      "priority": true
+    },
+    {
+      "id": "ManaRegen",
+      "verdict": "live",
+      "sources": [
+        "TT2_PETS"
+      ],
+      "engineReads": true,
+      "nativeReaders": [
+        "PlayerModel"
+      ],
+      "priority": false
+    },
+    {
+      "id": "ManaRegenMult",
+      "verdict": "read-without-source",
+      "sources": null,
+      "engineReads": true,
+      "nativeReaders": [
+        "PlayerModel"
+      ],
+      "priority": false
+    },
+    {
+      "id": "ManaRefundPercent",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_ARTIFACTS",
+        "TT2_SETS"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "ActiveSkillButton"
+      ],
+      "priority": true
+    },
+    {
+      "id": "ManaMonsterAmount",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_TREE"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "StageLogic",
+        "StatsPanelScript"
+      ],
+      "priority": true
+    },
+    {
+      "id": "ManaMonsterAmountMult",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_SETS"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "StageLogic",
+        "StatsPanelScript"
+      ],
+      "priority": true
+    },
+    {
+      "id": "ManaMonsterSpawnChance",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_ARTIFACTS",
+        "TT2_SETS",
+        "TT2_TREE"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "StageLogic"
+      ],
+      "priority": true
+    },
+    {
+      "id": "ManaTapRegen",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "PlayerModel"
+      ],
+      "priority": false
+    },
+    {
+      "id": "ManaTapRegenAmount",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_TREE"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "PlayerModel",
+        "StatsPanelScript"
+      ],
+      "priority": true
+    },
+    {
+      "id": "ManaTapRegenAmountMult",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "PlayerModel",
+        "StatsPanelScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "ManaStealChance",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_TREE"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "PlayerModel",
+        "SkillTreeBookItemScript"
+      ],
+      "priority": true
+    },
+    {
+      "id": "MaxPetEggsAdditive",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "PetModel"
+      ],
+      "priority": false
+    },
+    {
+      "id": "MegaBombSpawnChance",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_ARTIFACTS",
+        "TT2_SETS"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "MegaBombTitanScript"
+      ],
+      "priority": true
+    },
+    {
+      "id": "MegaBombMaxStacks",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_SETS"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "MegaBombTitanScript",
+        "SnapUIScript"
+      ],
+      "priority": true
+    },
+    {
+      "id": "MemoryClan",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "PrestigeModel"
+      ],
+      "priority": false
+    },
+    {
+      "id": "MemoryEquipmentSet",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "MonsterCountPerStage",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_SETS"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "StageLogic",
+        "StatsPanelScript"
+      ],
+      "priority": true
+    },
+    {
+      "id": "MonsterHP",
+      "verdict": "live",
+      "sources": [
+        "TT2_ARTIFACTS"
+      ],
+      "engineReads": true,
+      "nativeReaders": [
+        "MonsterModel",
+        "StatsPanelScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "MonsterHPScaling",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "MonsterModel"
+      ],
+      "priority": false
+    },
+    {
+      "id": "MonsterActiveSpawnDuration",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_SETS"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "MonsterController.<WhiteAndFade>d__63",
+        "StatsPanelScript"
+      ],
+      "priority": true
+    },
+    {
+      "id": "MonsterAllSpawnDuration",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "MonsterController.<WhiteAndFade>d__63",
+        "StatsPanelScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "MonsterInactiveSpawnDuration",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "StatsPanelScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "MultiMonsters",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_ARTIFACTS",
+        "TT2_SETS",
+        "TT2_TREE"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "BonusModel",
+        "InactiveGameplayModel",
+        "MonsterController"
+      ],
+      "priority": true
+    },
+    {
+      "id": "MultiMonstersGold",
+      "verdict": "live",
+      "sources": [
+        "TT2_ARTIFACTS",
+        "TT2_GEAR",
+        "TT2_PETS",
+        "TT2_SETS",
+        "TT2_TREE"
+      ],
+      "engineReads": true,
+      "nativeReaders": [
+        "MonsterModel"
+      ],
+      "priority": false
+    },
+    {
+      "id": "MultiMonstersMana",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "StageLogic"
+      ],
+      "priority": false
+    },
+    {
+      "id": "MultiMonstersMaxCount",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_TREE"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "BonusModel",
+        "InactiveGameplayModel",
+        "MonsterController",
+        "PlayerModel"
+      ],
+      "priority": true
+    },
+    {
+      "id": "NohniComboBoost",
+      "verdict": "dead-native-ignores-it",
+      "sources": [
+        "TT2_ARTIFACTS"
+      ],
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "PaladinBonusBoost",
+      "verdict": "dead-native-ignores-it",
+      "sources": [
+        "TT2_SETS"
+      ],
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "PassiveSkillCostReduction",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "PassiveSkillModel"
+      ],
+      "priority": false
+    },
+    {
+      "id": "PerkDoomAmount",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_SETS"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "ActivePerkInfo",
+        "PlayerController"
+      ],
+      "priority": true
+    },
+    {
+      "id": "PerkGold",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "PerkModel",
+        "StatsPanelScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "PerkMaxLevel",
+      "verdict": "live",
+      "sources": [
+        "TT2_SETS"
+      ],
+      "engineReads": true,
+      "nativeReaders": [
+        "PerkModel"
+      ],
+      "priority": false
+    },
+    {
+      "id": "PetAutoAttackEnabledOverride",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "PetModel"
+      ],
+      "priority": false
+    },
+    {
+      "id": "PetBonusBoost",
+      "verdict": "dead-native-ignores-it",
+      "sources": [
+        "TT2_TREE"
+      ],
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "PetDamage",
+      "verdict": "live",
+      "sources": [
+        "TT2_ARTIFACTS",
+        "TT2_GEAR",
+        "TT2_SETS",
+        "TT2_TREE"
+      ],
+      "engineReads": true,
+      "nativeReaders": [
+        "PetModel",
+        "StatsPanelScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "PetDamageFromBurstSkillAmount",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "PetModel"
+      ],
+      "priority": false
+    },
+    {
+      "id": "PetDamagePerPrestigeTap",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "StatsTrackedBonusModel"
+      ],
+      "priority": false
+    },
+    {
+      "id": "PetIndividualDamage",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "PetModel",
+        "StatsPanelScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "PetBossQTECooldown",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "PetBossQTEDuration",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "PetController"
+      ],
+      "priority": false
+    },
+    {
+      "id": "PetBossQTEDamage",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_TREE"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "PetController"
+      ],
+      "priority": true
+    },
+    {
+      "id": "PetAttackQTEDamage",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_TREE"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "PetModel"
+      ],
+      "priority": true
+    },
+    {
+      "id": "PetAttackQTECooldown",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "PetAttackQTESplashCount",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "PetAttackStageSkip",
+      "verdict": "live",
+      "sources": [
+        "TT2_TREE"
+      ],
+      "engineReads": true,
+      "nativeReaders": [
+        "StageLogic"
+      ],
+      "priority": false
+    },
+    {
+      "id": "PetAttackTitanSkip",
+      "verdict": "live",
+      "sources": [
+        "TT2_TREE"
+      ],
+      "engineReads": true,
+      "nativeReaders": [
+        "StageLogic"
+      ],
+      "priority": false
+    },
+    {
+      "id": "PetGoldQTECooldown",
+      "verdict": "dead-native-ignores-it",
+      "sources": [
+        "TT2_TREE"
+      ],
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "PetGoldQTECooldownMult",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "QTEController"
+      ],
+      "priority": false
+    },
+    {
+      "id": "PetGoldQTEAmount",
+      "verdict": "live",
+      "sources": [
+        "TT2_ARTIFACTS",
+        "TT2_SETS"
+      ],
+      "engineReads": true,
+      "nativeReaders": [
+        "PetModel",
+        "StatsPanelScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "PetParadiseCurrencyCount",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "PetParadiseModel"
+      ],
+      "priority": false
+    },
+    {
+      "id": "PetParadiseRewardMult",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "PetParadiseXPTextDisplay"
+      ],
+      "priority": false
+    },
+    {
+      "id": "PetQTECooldownMult",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_SETS",
+        "TT2_TREE"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "QTEController",
+        "StatsPanelScript"
+      ],
+      "priority": true
+    },
+    {
+      "id": "PetQTEDamage",
+      "verdict": "dead-native-ignores-it",
+      "sources": [
+        "TT2_SETS"
+      ],
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "PetQTEStageSkip",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_TREE"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "StageLogic"
+      ],
+      "priority": true
+    },
+    {
+      "id": "PetTapCountToAttack",
+      "verdict": "live",
+      "sources": [
+        "TT2_TREE"
+      ],
+      "engineReads": true,
+      "nativeReaders": [
+        "PetModel"
+      ],
+      "priority": false
+    },
+    {
+      "id": "PetWarlordBonusBoost",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "PlayerRaidLevelCostReduction",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_SETS"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "RaidTraitModel"
+      ],
+      "priority": false
+    },
+    {
+      "id": "PoisonBonusDamage",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "StageLogic"
+      ],
+      "priority": false
+    },
+    {
+      "id": "PortarAboveMSOverride",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "MonsterModel",
+        "StageLogic"
+      ],
+      "priority": false
+    },
+    {
+      "id": "PrestigeRelic",
+      "verdict": "live",
+      "sources": [
+        "TT2_ARTIFACTS",
+        "TT2_SETS"
+      ],
+      "engineReads": true,
+      "nativeReaders": [
+        "PrestigeModel"
+      ],
+      "priority": false
+    },
+    {
+      "id": "PrestigeRelicAdditive",
+      "verdict": "live",
+      "sources": [
+        "TT2_SETS"
+      ],
+      "engineReads": true,
+      "nativeReaders": [
+        "PrestigeModel"
+      ],
+      "priority": false
+    },
+    {
+      "id": "OnlyPrestigeRelic",
+      "verdict": "read-without-source",
+      "sources": null,
+      "engineReads": true,
+      "nativeReaders": [
+        "PrestigeModel"
+      ],
+      "priority": false
+    },
+    {
+      "id": "RogueActiveSkillCap",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "ActiveSkillModel"
+      ],
+      "priority": false
+    },
+    {
+      "id": "RogueBonusBoost",
+      "verdict": "dead-native-ignores-it",
+      "sources": [
+        "TT2_ARTIFACTS",
+        "TT2_SETS"
+      ],
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "RoyalContractBonusDamage",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_TREE"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "StageLogic"
+      ],
+      "priority": false
+    },
+    {
+      "id": "RoyalContractBonusGold",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "MonsterModel"
+      ],
+      "priority": false
+    },
+    {
+      "id": "RoyalContractManaCostBase",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_TREE"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "RoyalContract"
+      ],
+      "priority": false
+    },
+    {
+      "id": "RoyalContractMaxGold",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_TREE"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "RoyalContract"
+      ],
+      "priority": false
+    },
+    {
+      "id": "RoyalContractQTECooldown",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "RoyalContractTimeUntilMaxGold",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "RoyalContract"
+      ],
+      "priority": false
+    },
+    {
+      "id": "SajeComboBoost",
+      "verdict": "dead-native-ignores-it",
+      "sources": [
+        "TT2_ARTIFACTS",
+        "TT2_SETS"
+      ],
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "SCAlchemistBonusBoost",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "ShadowCloneAllSkillBoost",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_TREE"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "PlayerController",
+        "PlayerModel",
+        "SkillTreeUIModel"
+      ],
+      "priority": true
+    },
+    {
+      "id": "ShadowCloneAllSkillDurationRate",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_TREE"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "PlayerController"
+      ],
+      "priority": true
+    },
+    {
+      "id": "ShadowCloneSkillAmount",
+      "verdict": "live",
+      "sources": [
+        "TT2_ACTIVE",
+        "TT2_ARTIFACTS",
+        "TT2_GEAR",
+        "TT2_SETS",
+        "TT2_TREE"
+      ],
+      "engineReads": true,
+      "nativeReaders": [
+        "PlayerController",
+        "StatsPanelScript",
+        "UltraDagger"
+      ],
+      "priority": false
+    },
+    {
+      "id": "ShadowCloneSkillAttackRate",
+      "verdict": "live",
+      "sources": [
+        "TT2_TREE"
+      ],
+      "engineReads": true,
+      "nativeReaders": [
+        "ActiveSkillModel"
+      ],
+      "priority": false
+    },
+    {
+      "id": "ShadowCloneSkillSpecialChance",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "PlayerController"
+      ],
+      "priority": false
+    },
+    {
+      "id": "ShadowCloneSkillSpecialRate",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_ACTIVE",
+        "TT2_SETS",
+        "TT2_TREE"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "PlayerController.<ShadowCloneAttackLoop>d__132"
+      ],
+      "priority": true
+    },
+    {
+      "id": "ShadowCloneSkillSpecialDamage",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_TREE"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "PlayerController",
+        "StatsPanelScript"
+      ],
+      "priority": true
+    },
+    {
+      "id": "ShadowCloneSkillCooldown",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "ActiveSkillModel"
+      ],
+      "priority": false
+    },
+    {
+      "id": "ShadowCloneSkillDuration",
+      "verdict": "live",
+      "sources": [
+        "TT2_ARTIFACTS",
+        "TT2_TREE"
+      ],
+      "engineReads": true,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "ShadowCloneSkillDurationMult",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "ShadowCloneSkillMana",
+      "verdict": "live",
+      "sources": [
+        "TT2_ARTIFACTS"
+      ],
+      "engineReads": true,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "ShadowCloneSkillManaMult",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "ShadowCloneBossSplash",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_SETS"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "StageLogic"
+      ],
+      "priority": true
+    },
+    {
+      "id": "ShadowCloneSkillStacks",
+      "verdict": "dead-native-ignores-it",
+      "sources": [
+        "TT2_TREE"
+      ],
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "ShadowCloneSkillStacksBonus",
+      "verdict": "dead-native-ignores-it",
+      "sources": [
+        "TT2_TREE"
+      ],
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "ShadowCloneStageSkip",
+      "verdict": "live",
+      "sources": [
+        "TT2_TREE"
+      ],
+      "engineReads": true,
+      "nativeReaders": [
+        "StageLogic"
+      ],
+      "priority": false
+    },
+    {
+      "id": "ShadowCloneStageSkipMult",
+      "verdict": "live",
+      "sources": [
+        "TT2_SETS"
+      ],
+      "engineReads": true,
+      "nativeReaders": [
+        "StageLogic"
+      ],
+      "priority": false
+    },
+    {
+      "id": "ShadowCloneTitanSkip",
+      "verdict": "live",
+      "sources": [
+        "TT2_TREE"
+      ],
+      "engineReads": true,
+      "nativeReaders": [
+        "StageLogic"
+      ],
+      "priority": false
+    },
+    {
+      "id": "SkeletonExposedArmorDamageSupport",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "RaidPartDamagedEvent"
+      ],
+      "priority": false
+    },
+    {
+      "id": "SkillTreeChestAmount",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "SkillTreeGoldAll",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "SkillTreeGoldBoss",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "SkillTreeLoadoutSlots",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "SkillTreeController"
+      ],
+      "priority": false
+    },
+    {
+      "id": "SkillTreeAlchemistAllDamage",
+      "verdict": "dead-native-ignores-it",
+      "sources": [
+        "TT2_SETS"
+      ],
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "SkillTreeRogueAllDamage",
+      "verdict": "dead-native-ignores-it",
+      "sources": [
+        "TT2_SETS"
+      ],
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "SkillTreeKnightAllDamage",
+      "verdict": "dead-native-ignores-it",
+      "sources": [
+        "TT2_SETS"
+      ],
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "SkillTreePetAllDamage",
+      "verdict": "dead-native-ignores-it",
+      "sources": [
+        "TT2_SETS"
+      ],
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "SkillTreeSorcererAllDamage",
+      "verdict": "dead-native-ignores-it",
+      "sources": [
+        "TT2_SETS"
+      ],
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "SkillTreeWarlordAllDamage",
+      "verdict": "dead-native-ignores-it",
+      "sources": [
+        "TT2_SETS"
+      ],
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "SlashBoost",
+      "verdict": "live",
+      "sources": [
+        "TT2_ARTIFACTS",
+        "TT2_GEAR",
+        "TT2_PETS",
+        "TT2_SETS"
+      ],
+      "engineReads": true,
+      "nativeReaders": [
+        "EquipmentMetaData"
+      ],
+      "priority": false
+    },
+    {
+      "id": "SlashLevel",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "SoloRaidRaidCardMult",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_SETS"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "SoloRaidFloorListItem"
+      ],
+      "priority": false
+    },
+    {
+      "id": "SophiaComboBoost",
+      "verdict": "dead-native-ignores-it",
+      "sources": [
+        "TT2_ARTIFACTS",
+        "TT2_SETS"
+      ],
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "SorcererPassiveSkillCostReduction",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "PassiveSkillModel"
+      ],
+      "priority": false
+    },
+    {
+      "id": "SpecialTitanSpawnChance",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_SETS",
+        "TT2_TREE"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "ChestersonTitanScript",
+        "HaystTitanScript",
+        "KratosTitanScript",
+        "MegaBombTitanScript",
+        "StageLogic",
+        "StatsPanelScript"
+      ],
+      "priority": true
+    },
+    {
+      "id": "SpecialTitanStackDurationMult",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_SETS"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "ChestersonTitanScript",
+        "HaystTitanScript",
+        "MegaBombTitanScript"
+      ],
+      "priority": true
+    },
+    {
+      "id": "SplashGold",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "MonsterModel"
+      ],
+      "priority": false
+    },
+    {
+      "id": "SorcererActiveSkillCap",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "ActiveSkillModel"
+      ],
+      "priority": false
+    },
+    {
+      "id": "SorcererBonusBoost",
+      "verdict": "dead-native-ignores-it",
+      "sources": [
+        "TT2_ARTIFACTS",
+        "TT2_SETS"
+      ],
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "SorcererStageSkipMult",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "SoloRaidAllDamage",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_SETS"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "RaidPartDamagedEvent"
+      ],
+      "priority": false
+    },
+    {
+      "id": "StageSkipMonsterAmount",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "StageSkipMonsterAmountMult",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_SETS"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "MonsterModel"
+      ],
+      "priority": true
+    },
+    {
+      "id": "StageSkipMonsterSpawnChance",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_ARTIFACTS",
+        "TT2_SETS"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "StageLogic"
+      ],
+      "priority": true
+    },
+    {
+      "id": "StreamOfBladesSuperDamage",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_SETS"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "PlayerController"
+      ],
+      "priority": false
+    },
+    {
+      "id": "StreamOfBladesSkillAmount",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_ARTIFACTS",
+        "TT2_TREE"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "PlayerController",
+        "StatsPanelScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "StreamOfBladesCooldownReduction",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "QTEController"
+      ],
+      "priority": false
+    },
+    {
+      "id": "StreamOfBladesDuration",
+      "verdict": "dead-native-ignores-it",
+      "sources": [
+        "TT2_TREE"
+      ],
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "StreamOfBladesDurationMult",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "StreamOfBladesSkillMana",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "StreamOfBladesSkillManaMult",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "StreamOfBladesSkillStacks",
+      "verdict": "dead-native-ignores-it",
+      "sources": [
+        "TT2_TREE"
+      ],
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "StreamOfBladesSkillStacksBonus",
+      "verdict": "dead-native-ignores-it",
+      "sources": [
+        "TT2_TREE"
+      ],
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "StageSkip",
+      "verdict": "live",
+      "sources": [
+        "TT2_SETS"
+      ],
+      "engineReads": true,
+      "nativeReaders": [
+        "StageLogic",
+        "StatsPanelScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "SummonerActiveSkillCap",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "ActiveSkillModel"
+      ],
+      "priority": false
+    },
+    {
+      "id": "SwordBoost",
+      "verdict": "live",
+      "sources": [
+        "TT2_ARTIFACTS",
+        "TT2_GEAR",
+        "TT2_PETS",
+        "TT2_SETS"
+      ],
+      "engineReads": true,
+      "nativeReaders": [
+        "EquipmentMetaData"
+      ],
+      "priority": false
+    },
+    {
+      "id": "WeaponLevel",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "SwordAttackDamage",
+      "verdict": "live",
+      "sources": [
+        "TT2_ARTIFACTS",
+        "TT2_GEAR"
+      ],
+      "engineReads": true,
+      "nativeReaders": [
+        "PlayerController",
+        "PlayerModel"
+      ],
+      "priority": false
+    },
+    {
+      "id": "SwordMasterDamage",
+      "verdict": "read-without-source",
+      "sources": null,
+      "engineReads": true,
+      "nativeReaders": [
+        "PlayerModel"
+      ],
+      "priority": false
+    },
+    {
+      "id": "SwordMasterUpgradeCost",
+      "verdict": "read-without-source",
+      "sources": null,
+      "engineReads": true,
+      "nativeReaders": [
+        "PlayerModel",
+        "StatsPanelScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "TapBoostSkillDuration",
+      "verdict": "live",
+      "sources": [
+        "TT2_ARTIFACTS",
+        "TT2_TREE"
+      ],
+      "engineReads": true,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "TapBoostSkillDurationMult",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "TapBoostSkillAmount",
+      "verdict": "live",
+      "sources": [
+        "TT2_ACTIVE",
+        "TT2_ARTIFACTS",
+        "TT2_SETS",
+        "TT2_TREE"
+      ],
+      "engineReads": true,
+      "nativeReaders": [
+        "PlayerController",
+        "StatsPanelScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "TapBoostSkillMana",
+      "verdict": "live",
+      "sources": [
+        "TT2_ARTIFACTS"
+      ],
+      "engineReads": true,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "TapBoostSkillManaMult",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "TapBoostSkillStacks",
+      "verdict": "dead-native-ignores-it",
+      "sources": [
+        "TT2_TREE"
+      ],
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "TapBoostSkillStacksBonus",
+      "verdict": "dead-native-ignores-it",
+      "sources": [
+        "TT2_TREE"
+      ],
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "TapDamage",
+      "verdict": "live",
+      "sources": [
+        "TT2_ARTIFACTS",
+        "TT2_GEAR",
+        "TT2_PETS",
+        "TT2_SETS",
+        "TT2_TREE"
+      ],
+      "engineReads": true,
+      "nativeReaders": [
+        "PlayerModel",
+        "StatsPanelScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "TapDamageFromHelpers",
+      "verdict": "live",
+      "sources": [
+        "TT2_ARTIFACTS"
+      ],
+      "engineReads": true,
+      "nativeReaders": [
+        "PlayerModel"
+      ],
+      "priority": false
+    },
+    {
+      "id": "TapDamageFromHelpersMult",
+      "verdict": "live",
+      "sources": [
+        "TT2_TREE"
+      ],
+      "engineReads": true,
+      "nativeReaders": [
+        "PlayerModel"
+      ],
+      "priority": false
+    },
+    {
+      "id": "TapDamagePerSeasonPrestige",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "StatsTrackedBonusModel"
+      ],
+      "priority": false
+    },
+    {
+      "id": "ThunderVolleySkillAmount",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_SETS",
+        "TT2_TREE"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "ClanModel",
+        "StatsPanelScript"
+      ],
+      "priority": true
+    },
+    {
+      "id": "ThunderVolleySkillCooldown",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "ThunderVolleySkillCooldownMult",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "ThunderVolleySkillDuration",
+      "verdict": "dead-native-ignores-it",
+      "sources": [
+        "TT2_TREE"
+      ],
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "ThunderVolleySkillDurationMult",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "ThunderVolleySkillMana",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "ThunderVolleySkillManaMult",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "ThunderVolleySkillSpecialDamage",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_TREE"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "ClanModel"
+      ],
+      "priority": false
+    },
+    {
+      "id": "ThunderVolleySkillStacks",
+      "verdict": "dead-native-ignores-it",
+      "sources": [
+        "TT2_TREE"
+      ],
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "ThunderVolleySkillStacksBonus",
+      "verdict": "dead-native-ignores-it",
+      "sources": [
+        "TT2_TREE"
+      ],
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "ThunderVolleyStageSkip",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "StageLogic"
+      ],
+      "priority": false
+    },
+    {
+      "id": "TitanSkip",
+      "verdict": "live",
+      "sources": [
+        "TT2_SETS"
+      ],
+      "engineReads": true,
+      "nativeReaders": [
+        "StageLogic",
+        "StatsPanelScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "TitanSkipMult",
+      "verdict": "live",
+      "sources": [
+        "TT2_SETS"
+      ],
+      "engineReads": true,
+      "nativeReaders": [
+        "StageLogic"
+      ],
+      "priority": false
+    },
+    {
+      "id": "TitanSoulsChance",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "TitanSoulsModel"
+      ],
+      "priority": false
+    },
+    {
+      "id": "TitanSoulsChanceMult",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_SETS"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "TitanSoulsModel"
+      ],
+      "priority": true
+    },
+    {
+      "id": "TitanSoulsPerDay",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "TitanSoulsModel"
+      ],
+      "priority": false
+    },
+    {
+      "id": "TitanSoulsPerDayMult",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_SETS"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "TitanSoulsModel"
+      ],
+      "priority": true
+    },
+    {
+      "id": "TitanSoulsPerPrestige",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "TitanSoulsModel"
+      ],
+      "priority": false
+    },
+    {
+      "id": "TitanSubtype1Damage",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "TitanSubtype2Damage",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "TitanSubtype3Damage",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "TitanSubtype4Damage",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "TitanSubtype5Damage",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "TitanSubtype6Damage",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "TitanSubtype1Gold",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "TitanSubtype2Gold",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "TitanSubtype3Gold",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "TitanSubtype4Gold",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "TitanSubtype5Gold",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "TitanSubtype6Gold",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "TwilightBoost",
+      "verdict": "dead-native-ignores-it",
+      "sources": [
+        "TT2_ARTIFACTS",
+        "TT2_GEAR",
+        "TT2_SETS"
+      ],
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "TwilightBoostPerSeasonFairy",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "StatsTrackedBonusModel"
+      ],
+      "priority": false
+    },
+    {
+      "id": "TwilightFairySkillAmount",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_SETS",
+        "TT2_TREE"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "StatsPanelScript",
+        "TwilightFairyController"
+      ],
+      "priority": false
+    },
+    {
+      "id": "TwilightFairySkillDuration",
+      "verdict": "dead-native-ignores-it",
+      "sources": [
+        "TT2_TREE"
+      ],
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "TwilightFairySkillDurationMult",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "TwilightFairySkillMana",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "TwilightFairySkillManaMult",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "TwilightFairySkillStacks",
+      "verdict": "dead-native-ignores-it",
+      "sources": [
+        "TT2_TREE"
+      ],
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "TwilightFairySkillStacksBonus",
+      "verdict": "dead-native-ignores-it",
+      "sources": [
+        "TT2_TREE"
+      ],
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "TwilightFairySpawnChance",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_SETS",
+        "TT2_TREE"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "TwilightFairyController"
+      ],
+      "priority": false
+    },
+    {
+      "id": "TwilightFairySpawnChanceOnBurstDamage",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "TwilightFairyController"
+      ],
+      "priority": false
+    },
+    {
+      "id": "TwilightFairyStageSkip",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "StageLogic"
+      ],
+      "priority": false
+    },
+    {
+      "id": "TwilightFairyGloomBonusDamage",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_TREE"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "PlayerController",
+        "PlayerController.<ShadowCloneAttackLoop>d__132"
+      ],
+      "priority": false
+    },
+    {
+      "id": "DailyTicketBoost",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_SETS"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "AchievementDailyListItem",
+        "RewardClass"
+      ],
+      "priority": true
+    },
+    {
+      "id": "TitanDamage",
+      "verdict": "live",
+      "sources": [
+        "TT2_ARTIFACTS",
+        "TT2_PETS",
+        "TT2_SETS"
+      ],
+      "engineReads": true,
+      "nativeReaders": [
+        "StageLogic"
+      ],
+      "priority": false
+    },
+    {
+      "id": "TitanSlayer",
+      "verdict": "dead-native-ignores-it",
+      "sources": [
+        "TT2_ARTIFACTS"
+      ],
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "UltraDaggerCooldown",
+      "verdict": "dead-native-ignores-it",
+      "sources": [
+        "TT2_TREE"
+      ],
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "UltraDaggerCooldownMult",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "QTEController"
+      ],
+      "priority": false
+    },
+    {
+      "id": "UltraDaggerCount",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_TREE"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "QTEController",
+        "StageLogic",
+        "UltraDagger",
+        "UltraDaggerComboCountScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "UltraDaggerDamage",
+      "verdict": "live",
+      "sources": [
+        "TT2_ARTIFACTS",
+        "TT2_GEAR",
+        "TT2_SETS",
+        "TT2_TREE"
+      ],
+      "engineReads": true,
+      "nativeReaders": [
+        "PlayerModel"
+      ],
+      "priority": false
+    },
+    {
+      "id": "UltraDaggerDamageCrit",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "UltraDaggerDamageFromShadowCloneSkillAmount",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "UltraDagger"
+      ],
+      "priority": false
+    },
+    {
+      "id": "UltraDaggerDamagePerSeasonDay",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "StatsTrackedBonusModel"
+      ],
+      "priority": false
+    },
+    {
+      "id": "UltraDaggerPoisonBoost",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_TREE"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "UltraDagger"
+      ],
+      "priority": false
+    },
+    {
+      "id": "UltraDaggerPoisonMaxCount",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "UltraDagger"
+      ],
+      "priority": false
+    },
+    {
+      "id": "UltraDaggerStageSkip",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_TREE"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "StageLogic"
+      ],
+      "priority": false
+    },
+    {
+      "id": "UltraDaggerTargetDamage",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_TREE"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "PlayerController"
+      ],
+      "priority": false
+    },
+    {
+      "id": "UltraDaggerTargetDuration",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "UltraDagger"
+      ],
+      "priority": false
+    },
+    {
+      "id": "UltraDaggerTargetComboStageSkip",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_SETS"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "StageLogic"
+      ],
+      "priority": false
+    },
+    {
+      "id": "UltraDaggerTitanSkip",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_TREE"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "StageLogic"
+      ],
+      "priority": false
+    },
+    {
+      "id": "UnskilledDamage",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "UnskilledGold",
+      "verdict": "dead-native-ignores-it",
+      "sources": [
+        "TT2_ARTIFACTS"
+      ],
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "WarlordActiveSkillCap",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "ActiveSkillModel"
+      ],
+      "priority": false
+    },
+    {
+      "id": "WarlordBonusBoost",
+      "verdict": "dead-native-ignores-it",
+      "sources": [
+        "TT2_ARTIFACTS",
+        "TT2_SETS"
+      ],
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "ArtifactEnchantmentBoost",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_SETS"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "ArtifactInfo"
+      ],
+      "priority": true
+    },
+    {
+      "id": "NewPlayerAdditiveAdvancedStartBonusMult",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "PrestigeModel"
+      ],
+      "priority": false
+    },
+    {
+      "id": "LuresPerPrestige",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "MinigamesModel"
+      ],
+      "priority": false
+    },
+    {
+      "id": "LuresPerDay",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "MinigamesModel"
+      ],
+      "priority": false
+    },
+    {
+      "id": "FishSizeMult",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "FishingSkillLevel",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "FishingBaitLevel",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "TackleBoxSpeedLevel",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "FishingDerbyMinigameModel"
+      ],
+      "priority": false
+    },
+    {
+      "id": "TackleBoxSizeLevel",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "FishingDerbyMinigameModel"
+      ],
+      "priority": false
+    },
+    {
+      "id": "ArrowsPerPrestige",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "MinigamesModel"
+      ],
+      "priority": false
+    },
+    {
+      "id": "ArrowsPerDay",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "MinigamesModel"
+      ],
+      "priority": false
+    },
+    {
+      "id": "HuntingSkillLevel",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "HuntingBaitLevel",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "QuiverSpeedLevel",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "HuntingMinigameModel"
+      ],
+      "priority": false
+    },
+    {
+      "id": "QuiverSizeLevel",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "HuntingMinigameModel"
+      ],
+      "priority": false
+    },
+    {
+      "id": "TargetBonusCurrencyMultLevel",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "HuntingMinigameCoreGame",
+        "HuntingMinigameCoreGame.<RunComboTimer>d__55",
+        "HuntingMinigameRewardPS"
+      ],
+      "priority": false
+    },
+    {
+      "id": "ExtraTargetCountLevel",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "HuntingMinigameCoreGame"
+      ],
+      "priority": false
+    },
+    {
+      "id": "BallDropCurrencyPerPrestige",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "MinigamesModel"
+      ],
+      "priority": false
+    },
+    {
+      "id": "BallDropCurrencyPerDay",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "MinigamesModel"
+      ],
+      "priority": false
+    },
+    {
+      "id": "BallDropPegCoinBonus",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "BallDropBucketCoinBonus",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "BallDropBallGenerationSpeed",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "BallDropMinigameModel"
+      ],
+      "priority": false
+    },
+    {
+      "id": "BallDropBallContainerCap",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "BallDropMinigameModel"
+      ],
+      "priority": false
+    },
+    {
+      "id": "AfflictedChance",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "AfflictedSkillScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "AfflictionBaseDamage",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "RaidSkillScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "AfflictedDamage",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "RaidPartDamagedEvent"
+      ],
+      "priority": false
+    },
+    {
+      "id": "AfflictedDamagePerEnchant",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "RaidPartDamagedEvent"
+      ],
+      "priority": false
+    },
+    {
+      "id": "AfflictedDuration",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "AfflictedSkillScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "AfflictedStackCount",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "AfflictedSkillScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "AfflictionMarkPercent",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "AfflictionMarkScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "AllArmsHPMult",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "AllHeadHPMult",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "AllLegsHPMult",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "AllLimbsHPMult",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "AllArmorHPMult",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "AllRaidDamage",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_SETS"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "RaidPartDamagedEvent"
+      ],
+      "priority": false
+    },
+    {
+      "id": "AllRaidDamagePerEnchant",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "RaidPartDamagedEvent"
+      ],
+      "priority": false
+    },
+    {
+      "id": "AllRaidDamageSupport",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "RaidPartDamagedEvent"
+      ],
+      "priority": false
+    },
+    {
+      "id": "AllTorsoHPMult",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "ArcaneDamage",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "ArcanePrimaryDamage",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "ArmDamage",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "RaidPartDamagedEvent"
+      ],
+      "priority": false
+    },
+    {
+      "id": "ArmorArmsHPMult",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "ArmorBaseDamage",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "RaidSkillScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "ArmorDamage",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "RaidPartDamagedEvent"
+      ],
+      "priority": false
+    },
+    {
+      "id": "ArmorDamagePerEnchant",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "RaidPartDamagedEvent"
+      ],
+      "priority": false
+    },
+    {
+      "id": "ArmorHeadHPMult",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "ArmorLegsHPMult",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "ArmorTorsoHPMult",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "ArmorLimbsHPMult",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "AstralEchoMaxCharges",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "AstralEchoScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "AstralEchoReducedChance",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "AstralEchoScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "BarbedMorningstarBurst",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "BarbedMorningstarScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "BarbedMorningstarArmorDamageBoost",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "BarbedMorningstarScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "BarbedMorningstarBodyDamageBoost",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "BarbedMorningstarScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "BarbedMorningstarDamageBoostMaxParts",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "BarbedMorningstarScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "BleedingChance",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "BleedingDamageRate",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "BleedingDuration",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "BodyArmsHPMult",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "BodyBaseDamage",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "RaidSkillScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "BodyDamage",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "RaidPartDamagedEvent"
+      ],
+      "priority": false
+    },
+    {
+      "id": "BodyDamagePerEnchant",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "RaidPartDamagedEvent"
+      ],
+      "priority": false
+    },
+    {
+      "id": "BodyHeadHPMult",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "BodyLegsHPMult",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "BodyTorsoHPMult",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "BurningChance",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "BurningDamageRate",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "BurningAttackScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "BurningDuration",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "BurningMaxStacks",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "BurningPartChance",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "BurningAttackScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "BurningPartChanceMaxParts",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "BurningAttackScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "BurstBaseDamage",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "RaidSkillScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "BurstDamage",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_ACTIVE"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "RaidPartDamagedEvent"
+      ],
+      "priority": false
+    },
+    {
+      "id": "BurstDamagePerEnchant",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "RaidPartDamagedEvent"
+      ],
+      "priority": false
+    },
+    {
+      "id": "BurstChance",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "BurstChanceBonusImpl"
+      ],
+      "priority": false
+    },
+    {
+      "id": "BurstCountDamage",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "BurstCountScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "BurstCountBonus",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "BurstCountScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "BurstMarkPercent",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "BurstMarkScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "BurstSupportStacksDamage",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "BurstSupportStacksBonus",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "CelestialStaticBurst",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "CelestialStaticScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "CelestialStaticChargePerBurst",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "CelestialStaticScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "CelestialStaticChargePerTap",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "CelestialStaticScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "CelestialStaticMaxCharges",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "CelestialStaticScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "ChainLightningBurst",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "ChainLightningScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "ChainLightningMaxTargets",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "ChainLightningScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "ChainLightningPartBoost",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "ChainLightningScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "ChestDamage",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "RaidPartDamagedEvent"
+      ],
+      "priority": false
+    },
+    {
+      "id": "ChestDamagePerEnchant",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "RaidPartDamagedEvent"
+      ],
+      "priority": false
+    },
+    {
+      "id": "ColdChance",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "ColdDamageBoost",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "ColdDuration",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "CosmicBarbDamageRate",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "CosmicBarbScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "DebuffDuration",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "DebuffChance",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "DebuffStackCount",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "DecayPercentRate",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "DecayingAttackScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "DecayDamageExpo",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "DecayingAttackScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "DecayHealthCap",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "DecayingAttackScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "DirectDamage",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "ClanDungeonScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "ElementalDamage",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "ElementalPrimaryDamage",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "Enemy1AfflictionBaseDamage",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "RaidSkillScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "Enemy1BaseDamage",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "RaidSkillScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "Enemy1BurstBaseDamage",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "RaidSkillScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "Enemy2AfflictionBaseDamage",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "RaidSkillScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "Enemy2BaseDamage",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "RaidSkillScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "Enemy2BurstBaseDamage",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "RaidSkillScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "Enemy3AfflictionBaseDamage",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "RaidSkillScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "Enemy3BaseDamage",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "RaidSkillScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "Enemy3BurstBaseDamage",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "RaidSkillScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "Enemy4AfflictionBaseDamage",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "RaidSkillScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "Enemy4BaseDamage",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "RaidSkillScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "Enemy4BurstBaseDamage",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "RaidSkillScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "Enemy5AfflictionBaseDamage",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "RaidSkillScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "Enemy5BaseDamage",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "RaidSkillScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "Enemy5BurstBaseDamage",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "RaidSkillScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "Enemy6AfflictionBaseDamage",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "RaidSkillScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "Enemy6BaseDamage",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "RaidSkillScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "Enemy6BurstBaseDamage",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "RaidSkillScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "Enemy7AfflictionBaseDamage",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "RaidSkillScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "Enemy7BaseDamage",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "RaidSkillScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "Enemy7BurstBaseDamage",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "RaidSkillScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "Enemy8AfflictionBaseDamage",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "RaidSkillScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "Enemy8BaseDamage",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "RaidSkillScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "Enemy8BurstBaseDamage",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "RaidSkillScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "ExplosiveCrateDamage",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "ExplosiveCrateScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "ExplosiveCrateRadius",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "ExplosiveCrateTapCount",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "ExposedArmorBoost",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "RaidPartDamagedEvent"
+      ],
+      "priority": false
+    },
+    {
+      "id": "ExposedBodyBoost",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "RaidPartDamagedEvent"
+      ],
+      "priority": false
+    },
+    {
+      "id": "ExposedSkeletonBoost",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "RaidPartDamagedEvent"
+      ],
+      "priority": false
+    },
+    {
+      "id": "FairyBombBurst",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "SpiritBombScript.<ExplodeBomb>d__9"
+      ],
+      "priority": false
+    },
+    {
+      "id": "FairyBombRadius",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "SpiritBombScript.<ExplodeBomb>d__9"
+      ],
+      "priority": false
+    },
+    {
+      "id": "FairyBombRate",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "FairyBombScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "FairyTotemDamage",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "FairyTotemScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "FairyTotemRate",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "TotemFairySkillScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "FairyTotemDuration",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "FairyTotemScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "FairyTotemRandomChance",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "TotemFairyScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "FlakArmorMult",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "FlakShotScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "FlakBurst",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "FlakShotScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "FlashBurst",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "FlashScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "FlashRadius",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "FlashScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "FragmentizeBurst",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "FragmentizeScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "FragmentizeArmorMult",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "FragmentizeScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "FragmentizeEnchantedArmorMult",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "FragmentizeScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "FuseDamageBoostPerSecond",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "FuseScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "FuseDamageRate",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "FuseExplosionMult",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "FuseScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "FuseRepeatChance",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "FuseScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "HaymakerBurst",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "HaymakerScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "HaymakerTapsNeeded",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "HaymakerScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "HeadArmorBaseDamage",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "RaidSkillScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "HeadBaseDamage",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "RaidSkillScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "HeadBodyBaseDamage",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "RaidSkillScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "HeadDamage",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "RaidPartDamagedEvent"
+      ],
+      "priority": false
+    },
+    {
+      "id": "HeadDamagePerEnchant",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "RaidPartDamagedEvent"
+      ],
+      "priority": false
+    },
+    {
+      "id": "ImpairedBoost",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "ImpairedChance",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "ImpairedDuration",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "ImpairedStackCount",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "LegDamage",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "RaidPartDamagedEvent"
+      ],
+      "priority": false
+    },
+    {
+      "id": "LimbArmorBaseDamage",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "RaidSkillScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "LimbBodyBaseDamage",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "RaidSkillScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "LimbBaseDamage",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "RaidSkillScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "LimbBurstDamage",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "LimbBurstScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "LimbBurstMult",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "LimbBurstScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "LimbDamage",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "RaidPartDamagedEvent"
+      ],
+      "priority": false
+    },
+    {
+      "id": "LimbDamagePerEnchant",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "RaidPartDamagedEvent"
+      ],
+      "priority": false
+    },
+    {
+      "id": "LoyaltyLevel",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_SETS"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "ClanLoyaltyController"
+      ],
+      "priority": false
+    },
+    {
+      "id": "LoyaltyRaidDamage",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "RaidPartDamagedEvent"
+      ],
+      "priority": false
+    },
+    {
+      "id": "MagicPotionDamageRate",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "MagicPotionScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "MagicPotionLevelSharing",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "MarkedDamage",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "MarkedDamageBoost",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "MeteorCooldown",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "MeteorDamage",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "MeteorShowerScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "MeteorScorchedAmount",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "MeteorSplashRadius",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "MirrorForceBurst",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "MirrorForceScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "MirrorForceBoostMax",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "MirrorForceBoost",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "MirrorForceScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "MirrorForceBoostMaxStacks",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "MoonBeamArmMult",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "MoonBeamScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "MoonBeamBurst",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "MoonBeamScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "MoonBeamChestMult",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "MoonBeamScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "PetrifyPercentRate",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "PetrifyScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "PhysicalDamage",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "PhysicalPrimaryDamage",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "PlagueAttackDamageMultMaxParts",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "PlagueAttackScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "PlagueAttackDamageRate",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "PlagueAttackScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "PlagueAttackDamageMult",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "PlagueAttackScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "PoisonChance",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "PoisonDamageRate",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "PoisonAttackScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "PoisonDuration",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "PoisonMaxStacks",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "PowerBubbleBurst",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "PowerBubbleScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "PowerBubbleDamageRate",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "PowerBubbleScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "PrimalRageDamage",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "PrimalRageScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "PrimalRageBonus",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "PrimalRageScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "PurifyDamage",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "PurifyScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "PurifyBonus",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "PurifyScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "RaidAttackDuration",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "ClanDungeonScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "RaidBaseDamage",
+      "verdict": "dead-native-uses-it",
+      "sources": [
+        "TT2_SETS"
+      ],
+      "engineReads": false,
+      "nativeReaders": [
+        "RaidSkillScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "RaidEnemy1Damage",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "RaidEnemy2Damage",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "RaidEnemy3Damage",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "RaidEnemy4Damage",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "RaidEnemy5Damage",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "RaidEnemy6Damage",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "RaidEnemy7Damage",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "RaidEnemy8Damage",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "RazorWindBurst",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "RazorWindScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "RazorWindBodyMult",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "RazorWindScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "RuinousRustDamageRate",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "RuinousRustScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "RuinousRustEnchantedArmorMult",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "RuinousRustScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "RustArmorBonus",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "RustScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "RuneDamageBoost",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "RuneScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "RuneDamageRate",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "RuneScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "RustDamageRate",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "RustScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "RicochetDamageMult",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "FlakShotScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "SandsOfTimeDamageRate",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "SandsOfTimeScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "SandsOfTimeAfflictionDurationBoost",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "DebuffSkillScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "ShadowDamageRate",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "ShadowScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "ShadowDamageMult",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "ShadowScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "SkeletonDamage",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "RaidPartDamagedEvent"
+      ],
+      "priority": false
+    },
+    {
+      "id": "SkullBashBurst",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "SkullBashScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "SkullBashHeadMult",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "SkullBashScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "SkullBashLegMult",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "SkullBashScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "SolarFlareDamageBonus",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "SolarFlareScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "SolarFlareDamageRate",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "SolarFlareScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "SpatialDamage",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "RaidPartDamagedEvent"
+      ],
+      "priority": false
+    },
+    {
+      "id": "StaticRiftBurst",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "StaticRiftScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "StaticRiftChainMult",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "StaticRiftScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "StaticRiftMaxSparkCount",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "StaticRiftScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "StaticRiftSparkDuration",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "StaticRiftScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "StormCooldown",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "StormDamage",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "LightningStormScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "StormNeighborCount",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "StormFlightTime",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "LightningStormScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "SwarmDamageRate",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "SwarmScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "SupportChance",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "SupportSkillScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "SupportDuration",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "FairyTotemScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "SupportStackCount",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "SupportEffect",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "FairyTotemScript",
+        "SupportSkillScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "SupportEffectPerEnchant",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "SupportSkillScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "TeamTacticsClanMoraleBoost",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "ClanRaidModel",
+        "RaidPartDamagedEvent"
+      ],
+      "priority": false
+    },
+    {
+      "id": "TorsoArmorBaseDamage",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "RaidSkillScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "TorsoBodyBaseDamage",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "RaidSkillScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "TorsoBaseDamage",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "RaidSkillScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "TriangleSupportAfflictionBoost",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "TriangleSupportScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "TriangleSupportBurstBoost",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "TriangleSupportScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "WeakenBurst",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "WeakenScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "WeakenDamageBoost",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "WeakenScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "WeakenDuration",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": null,
+      "priority": false
+    },
+    {
+      "id": "WhipOfLightningBurst",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "WhipOfLightningScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "WhipOfLightningChance",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "WhipOfLightningScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "WhipOfLightningChanceCap",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "WhipOfLightningScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "HeadDamageSupport",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "RaidPartDamagedEvent"
+      ],
+      "priority": false
+    },
+    {
+      "id": "ExposedBodyBoostSupport",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "RaidPartDamagedEvent"
+      ],
+      "priority": false
+    },
+    {
+      "id": "ExposedBodyBoostSupportMaxParts",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "RaidPartDamagedEvent"
+      ],
+      "priority": false
+    },
+    {
+      "id": "AfflictedDamageSupport",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "RaidPartDamagedEvent"
+      ],
+      "priority": false
+    },
+    {
+      "id": "BodyDamageSupport",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "RaidPartDamagedEvent"
+      ],
+      "priority": false
+    },
+    {
+      "id": "ChestDamageSupport",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "RaidPartDamagedEvent"
+      ],
+      "priority": false
+    },
+    {
+      "id": "ExposedSkeletonBoostSupport",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "RaidPartDamagedEvent"
+      ],
+      "priority": false
+    },
+    {
+      "id": "ExposedSkeletonBoostSupportMaxParts",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "RaidPartDamagedEvent"
+      ],
+      "priority": false
+    },
+    {
+      "id": "ArmorDamageSupport",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "RaidPartDamagedEvent"
+      ],
+      "priority": false
+    },
+    {
+      "id": "BurstDamageSupport",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "RaidPartDamagedEvent"
+      ],
+      "priority": false
+    },
+    {
+      "id": "LimbDamageSupport",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "RaidPartDamagedEvent"
+      ],
+      "priority": false
+    },
+    {
+      "id": "AfflictedChanceSupport",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "AfflictedSkillScript"
+      ],
+      "priority": false
+    },
+    {
+      "id": "BurstChanceSupport",
+      "verdict": "not-in-project",
+      "sources": null,
+      "engineReads": false,
+      "nativeReaders": [
+        "BurstChanceBonusImpl"
+      ],
+      "priority": false
+    }
+  ],
+  "limits": [
+    "「掃不到取值點」不等於「原生不使用」：以暫存器傳入編號的呼叫點列在 unattributed，目前有 57 個；另外加成值可能先被算進某個欄位、之後從該欄位讀，例如 RefreshCriticalValues 把暴擊倍率存進 PlayerModel 的欄位再由攻擊流程讀。",
+    "本表只涵蓋 GetBonus 與 HasBonus 兩個入口，不含 UI 顯示用的 GetBonusInfo 等後設方法。",
+    "要據此宣稱某個加成沒有作用，必須另外確認它沒有被快取到欄位、也不在 unattributed 的呼叫點裡。"
+  ]
+}
