@@ -7,13 +7,13 @@
 
 | 判定 | 意義 | 個數 |
 |---|---|---|
-| `live` | 專案有來源、引擎有讀：正常運作。 | 107 |
-| `dead-native-uses-it` | 專案有來源、引擎沒讀，而且原生有取值點：**這些是可以接上的**。 | 122 |
+| `live` | 專案有來源、引擎有讀：正常運作。 | 111 |
+| `dead-native-uses-it` | 專案有來源、引擎沒讀，而且原生有取值點：**這些是可以接上的**。 | 118 |
 | `dead-native-ignores-it` | 專案有來源、引擎沒讀，原生也掃不到取值點：接了大概也沒有依據。 | 68 |
 | `read-without-source` | 引擎有讀，但專案沒有任何來源會給：恆為中性值，等來源出現才會生效。 | 13 |
 | `not-in-project` | 專案沒有來源，引擎也沒讀。 | 486 |
 
-## 優先：落在已實作系統的（58）
+## 優先：落在已實作系統的（54）
 
 原生有取值點、我們沒讀，而且**不屬於尚未實作的流派**——這些是可以直接接上的。
 依**原生讀取它的類別**分組，類別名就說明了它屬於哪個系統。
@@ -114,14 +114,6 @@
 
 - `ChestersonGoldStageAmount` ← TT2_TREE
 
-### ChestersonTitanScript / HaystTitanScript / KratosTitanScript / MegaBombTitanScript / StageLogic / StatsPanelScript（1）
-
-- `SpecialTitanSpawnChance` ← TT2_SETS、TT2_TREE
-
-### ChestersonTitanScript / HaystTitanScript / MegaBombTitanScript（1）
-
-- `SpecialTitanStackDurationMult` ← TT2_SETS
-
 ### ClanModel / StatsPanelScript（1）
 
 - `ThunderVolleySkillAmount` ← TT2_SETS、TT2_TREE
@@ -153,14 +145,6 @@
 ### HelperController / SkillTreeUIModel（1）
 
 - `HelperQTEDamage` ← TT2_TREE
-
-### MegaBombTitanScript（1）
-
-- `MegaBombSpawnChance` ← TT2_ARTIFACTS、TT2_SETS
-
-### MegaBombTitanScript / SnapUIScript（1）
-
-- `MegaBombMaxStacks` ← TT2_SETS
 
 ### MonsterController.<WhiteAndFade>d__63 / StatsPanelScript（1）
 

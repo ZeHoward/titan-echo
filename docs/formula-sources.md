@@ -2,17 +2,17 @@
 
 每個核心公式的來源登記表：資料表、原生方法、原生預設值，或明確標記為 7.5 基準沿用、專案自訂或伺服器供給。
 
-版本 8.2.0。共 37 條公式、93 項來源條目。
+版本 8.2.0。共 38 條公式、98 項來源條目。
 
 | 狀態 | 意義 | 條目數 |
 |---|---|---|
-| `native` | 由反組譯證據確認 | 29 |
+| `native` | 由反組譯證據確認 | 31 |
 | `table` | 取自安裝包資料表 | 19 |
-| `default` | 原生靜態預設值，線上可覆蓋 | 17 |
+| `default` | 原生靜態預設值，線上可覆蓋 | 18 |
 | `baseline-75` | 沿用 7.5 基準，尚未對 8.2 核實 | 0 |
 | `table-differs` | 安裝包有值但引擎目前未照做 | 12 |
-| `invented` | 本專案自訂，安裝包未提供 | 13 |
-| `server` | 原生為伺服器變數，安裝包未帶值 | 3 |
+| `invented` | 本專案自訂，安裝包未提供 | 14 |
+| `server` | 原生為伺服器變數，安裝包未帶值 | 4 |
 
 ## 逐條登記
 
@@ -256,6 +256,18 @@ max(1, floor(關卡^1.7 ÷ 100 × PrestigeRelic))，最高關卡到 60 後開放
 | 加法型加成代入 基礎值＋增量 | `default` | `reference/tt2/8.2.0/bonus-defaults-evidence.json`；加法型加成的基礎值就是 SetDefaultBonuses 設的那一個：ShadowCloneSkillAttackRate 為 4，天賦提供 0.1–0.95 的增量，兩者相加。 |
 | 離散到 100ms 模擬步長，單次傷害為每秒總量 ÷ 速率 | `invented` | 引擎以 100ms 為一步推進，攻擊只在步邊界結算，因此單次間隔最多晚 100ms；計時器累加間隔而非改設為當下時間，長期平均頻率與速率一致。另外 buildDamage 是本專案的「每秒總量」近似，所以一次攻擊取其 ÷ 速率——節奏照原生，總量不因節奏改變，但單次數值不是原生的單次傷害。 |
 | 特殊攻擊未實作 | `server` | ShadowCloneSkillSpecialRate 與 SpecialChance 另有節奏與機率，本專案未實作，也未核實其倍率來源。 |
+
+### specialTitans · `lib/engine.ts` 的 `megaBombChance`
+
+特殊泰坦是一疊有期限的效果：生成機率 = 自己那一項 × SpecialTitanSpawnChance × AllProbabilityBoost，打死一隻推一疊 floor(10 × SpecialTitanStackDurationMult) 關，每疊讓該關隻數再乘 0.9，滿層（MegaBombMaxStacks）就不再生成
+
+| 來源條目 | 狀態 | 依據 |
+|---|---|---|
+| 佇列狀態機：推入、老化、層數上限擋在生成端 | `native` | `reference/tt2/8.2.0/special-titan-evidence.json`；SpecialTitanScript 帶一個 Queue<int>，元素是「這一疊還剩幾關」。PushEndEffectToQueue 推入 StageEffectLength；UpdateEffectEnd 每清一關把每個元素減一、小於 1 的不放回；NumOfStacks 就是佇列長度。**上限擋在生成端**：RollSpawnMonster 擲骰後還要 CanSpawnTitan()，而炸彈泰坦的 CanSpawnTitan 是 NumOfStacks < MaxStackCount。擊殺那一側比對的是 StageEffectLength 而不是上限（三次虛擬呼叫都走同一個 vtable 槽），那只是同一關打死多隻時的防護。 |
+| 兩個生成機率是同一個模板 | `native` | `reference/tt2/8.2.0/special-titan-evidence.json`；ChestersonTitanScript 與 MegaBombTitanScript 的 GetSpawnChance 指令序列相同，只差第一個因子：寶箱是 Bonus(ChestChance)，炸彈是 Bonus(MegaBombSpawnChance)，後面都乘 Bonus(SpecialTitanSpawnChance) 與 Bonus(AllProbabilityBoost)。**引擎原本的寶箱機率少了中間那一項**，2.17.0 補上，屬於既有機制的修正。Hayst 與 Kratos 用同一個模板但各多一個加法項，綁在未實作的流派上，沒有接。 |
+| 機率 0.001、上限 1、一疊 10 關、每疊 0.9 四個基礎值 | `default` | `reference/tt2/8.2.0/bonus-defaults-evidence.json`；MegaBombSpawnChance 與 MegaBombMaxStacks 是加法型，基礎值由 BonusModel.SetDefaultBonuses 從 [ServerVar] megaBombMonsterSpawnChance（0.001）與 megaBombBaseStacks（1）設入；一疊的關數與每疊的比例直接讀 megaBombMonsterMaxStageEffectAmount（10）與 megaBombMonsterTitanRemovalPercent（0.9），兩者不是加成所以不在那張表裡。SpecialTitanSpawnChance 與 SpecialTitanStackDurationMult 是乘法型，中性值 1 就是它們的起點，不另外相加。四個都是編譯期預設值，線上可覆蓋。 |
+| 擲骰改在擊殺時，不是生成時 | `invented` | 原生在生成一隻泰坦時就決定它是哪一種，本專案沿用既有的寶箱做法，在擊殺當下擲骰決定剛打死的是不是特殊泰坦。兩者在統計上等價——每隻泰坦各擲一次同樣的骰——差別只在畫面上看不到牠走過來。一隻泰坦只能是一種，所以寶箱與炸彈在本專案是互斥的。 |
+| 寶箱泰坦的跨關金幣效果未實作 | `server` | ChestersonTitanScript 也有 StageEffectLength，形狀是 floor((ChestersonGoldStageAmount + chestersonGoldDuration=5) × SpecialTitanStackDurationMult)，但它的 MaxStackCount 與效果本身還沒解，所以 ChestersonGoldStageAmount 仍然沒有接。本專案的寶箱泰坦目前只在擊殺當下給金幣，沒有跨關效果。 |
 
 ### multiMonsters · `lib/engine.ts` 的 `multiMonsterChance`
 

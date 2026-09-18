@@ -50,15 +50,23 @@ test('機率會被全機率加成放大，就像原生那樣', () => {
   // The engine multiplies rather than ignores it: this is the shape PlayerModel uses.
   const source = readFileSync(new URL('../lib/engine.ts', import.meta.url), 'utf8');
   assert.ok(source.includes(`stateEffect(s,'${boost}')`), '暴擊機率沒有乘上全機率加成');
-  assert.ok(source.match(/chestChance\+stateEffect\(s,'ChestChance'\)\)\*stateEffect\(s,'AllProbabilityBoost'\)/),
-    '寶箱機率沒有乘上全機率加成');
+  // The two special-titan rolls share one template: own factor x SpecialTitanSpawnChance x boost.
+  for (const [fn, own] of [['chestChance', 'ChestChance'], ['megaBombChance', 'MegaBombSpawnChance']]) {
+    const at = source.indexOf(`export function ${fn}(s:State,resolve=stateResolver(s)){`);
+    assert.ok(at > 0, `${fn} 不見了`);
+    const body = source.slice(at, source.indexOf('}', at) + 1);
+    for (const factor of [own, 'SpecialTitanSpawnChance', boost]) {
+      assert.ok(body.includes(`resolve('${factor}')`), `${fn} 少乘了 ${factor}`);
+    }
+  }
 });
 
-test('其餘十一個基礎值先記錄下來，還沒接進引擎', () => {
-  // Recorded so the next mechanic that needs one does not invent it: multi-titan spawns, the mana
-  // titan, the mega bomb, the x10 gold roll, the stage-skip titan and the dual pet burst.
-  for (const [bonus, value] of [['MultiMonsters', 0.01], ['MultiMonstersMaxCount', 4],
-    ['MegaBombSpawnChance', 0.001], ['StageSkipMonsterSpawnChance', 0.001],
+test('尚未接進引擎的基礎值先記錄下來', () => {
+  // Seven of the fourteen are live now: the three original ones, the two multi-titan spawn bonuses
+  // (2.16.0) and the two mega bomb ones (2.17.0). The rest are recorded so the next mechanic that
+  // needs one does not invent it: the mana titan, the x10 gold roll, the stage-skip titan and the
+  // dual pet burst.
+  for (const [bonus, value] of [['StageSkipMonsterSpawnChance', 0.001],
     ['Goldx10Chance', 0.01], ['ManaMonsterAmount', 4], ['DualPetAttackCountToBurst', 5]]) {
     assert.ok(Math.abs(evidence.defaults[bonus].value - value) < 1e-6, bonus);
   }

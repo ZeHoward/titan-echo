@@ -75,11 +75,14 @@ function clampLevels(s:State){
 function normaliseTallies(s:State){
  const t=s.tt2;if(!t)return;
  t.goldCollected=toAmount(t.goldCollected);
- for(const key of ['chestKills','fairyRewards','heavenlyStrikes','crits','cloneAttacks','equipmentCollected','relicsCollected','perksUsed','tutorialStep','tutorialTaps'] as const){
+ for(const key of ['chestKills','bombKills','fairyRewards','heavenlyStrikes','crits','cloneAttacks','equipmentCollected','relicsCollected','perksUsed','tutorialStep','tutorialTaps'] as const){
   if(!Number.isFinite(t[key]))t[key]=0;
  }
  // 這一波的隻數是 2.16.0 才有的欄位，舊存檔沒有；沒有就是一隻，不是零隻。
  if(!Number.isFinite(t.multi)||t.multi<1)t.multi=1;
+ // 炸彈泰坦的堆疊是 2.17.0 才有的：沒有就是沒有堆疊，而且只留得下正整數關數。
+ t.bombStacks=(Array.isArray(t.bombStacks)?t.bombStacks:[])
+  .filter(n=>Number.isFinite(n)&&n>=1).map(n=>Math.trunc(n));
  // Claimed tiers used to be positions in a list this project invented, which was never claimable
  // and never written to. Anything an older build left there names nothing, so it is dropped.
  if(!s.achievements||Array.isArray(s.achievements))s.achievements={};
@@ -125,13 +128,17 @@ export function skillCooldown(s:State,i:number){return SKILLS[i].cooldown*(1-Mat
 // static; live server overrides are unknown. Recorded in
 // reference/tt2/8.2.0/bonus-defaults-evidence.json.
 export const BONUS_DEFAULTS={critChance:Math.fround(.01),chestChance:Math.fround(.01),
- cloneAttackRate:4,multiMonsterChance:Math.fround(.01),multiMonsterMaxCount:4} as const;
+ cloneAttackRate:4,multiMonsterChance:Math.fround(.01),multiMonsterMaxCount:4,
+ megaBombChance:Math.fround(.001),megaBombMaxStacks:1} as const;
 // MultiMonstersGold has a base in that table too, but it is 1.0 and the bonus is multiplicative, so
 // it is already this project's neutral value - adding it here would double-count it. The two above
 // are additive, whose neutral value is 0, so they do need their base.
 // Not a bonus at all, so not in that table: the group's lower bound is read straight off the
 // minMultiMonsterSpawns [ServerVar]. Same evidence file as the two bases above it.
 export const MULTI_MONSTER_MIN=2;
+// 炸彈泰坦（原生 Snap）的兩個 [ServerVar]：一疊的基礎關數，以及每疊讓該關隻數乘上的比例。
+// 兩個都不是加成，所以不在上面那張表裡。見 reference/tt2/8.2.0/special-titan-evidence.json。
+export const MEGA_BOMB={stageLength:10,titanRemoval:Math.fround(.9)} as const;
 /** The crit boost skill's slot in this project's arrays; natively ActiveSkillID 3. */
 const CRIT_BOOST_SKILL=SKILL_DATA.findIndex(k=>k.id==='CritBoost');
 // Native PlayerModel.RefreshCriticalValues: the multiplier is playerCritMult x Bonus(CritDamage).
@@ -200,12 +207,16 @@ function roundHalfEven(value:number){const floor=Math.floor(value),fraction=valu
 // Native StageLogic.GetMonsterCountPerStage takes the rounded raw count and subtracts
 // MonsterCountPerStage from it - the bonus reduces how many titans a stage holds, which is why the
 // stats panel files it under reductions. The cast to int truncates, and the whole thing is floored
-// at 1. The contract reduction and the special-titan stack multiplier in that method belong to
-// systems this project has not built, so they are left out rather than folded in.
+// at 1. The contract reduction belongs to a system this project has not built, so it is left out
+// rather than folded in; the special-titan stack multiplier below it is implemented.
 export function monsterCount(s:State){const stage=Math.max(1,s.stage);
  const ratio=Math.fround(Math.fround(Math.fround(stage)*Math.fround(MONSTER_COUNT.inc))/Math.fround(MONSTER_COUNT.delta+stage));
  const raw=roundHalfEven(Math.fround(ratio+Math.fround(MONSTER_COUNT.base)));
- return Math.max(1,raw-Math.trunc(stateEffect(s,'MonsterCountPerStage')));}
+ let count=raw-Math.trunc(stateEffect(s,'MonsterCountPerStage'));
+ // 炸彈泰坦的堆疊：每疊讓這一關的隻數再乘 0.9，最後才夾到 1——原生的 Math.Max 就在這之後。
+ const stacks=s.tt2?.bombStacks?.length??0;
+ if(stacks>0)count=Math.floor(count*MEGA_BOMB.titanRemoval**stacks);
+ return Math.max(1,count);}
 export function bossDuration(s:State){return 30+stateEffect(s,'BossTimerDuration');}
 // 多重生成的一波是好幾隻各自滿血的泰坦，本專案把它們算成同一個血條：打完一波要花的時間、
 // 拿到的金幣與推進的擊殺數因此都與原生一致。頭目不會多重生成。
@@ -367,6 +378,29 @@ export function achievementReward(s:State,index:number){
 // 而 MonsterModel.GetMonsterGoldDrop 收到那群的隻數，把整群的金幣一次結算。所以「一波幾隻」
 // 同時決定血量、擊殺數與金幣倍率，這三者在本專案裡也就綁在同一個 s.tt2.multi 上。
 // 見 reference/tt2/8.2.0/multi-monster-evidence.json。
+// 特殊泰坦的生成機率是同一個模板：自己那一項 × SpecialTitanSpawnChance × AllProbabilityBoost。
+// 寶箱那一項以前少乘了中間那個因子，這一版補上。見 special-titan-evidence.json。
+export function chestChance(s:State,resolve=stateResolver(s)){
+ return Math.min(1,(BONUS_DEFAULTS.chestChance+resolve('ChestChance'))
+  *resolve('SpecialTitanSpawnChance')*resolve('AllProbabilityBoost'));}
+export function megaBombChance(s:State,resolve=stateResolver(s)){
+ return Math.min(1,(BONUS_DEFAULTS.megaBombChance+resolve('MegaBombSpawnChance'))
+  *resolve('SpecialTitanSpawnChance')*resolve('AllProbabilityBoost'));}
+/** 同時最多幾疊。原生把這個上限擋在生成端：滿層就不再生出炸彈泰坦。 */
+export function megaBombMaxStacks(s:State,resolve=stateResolver(s)){
+ return Math.max(0,Math.trunc(BONUS_DEFAULTS.megaBombMaxStacks+resolve('MegaBombMaxStacks')));}
+/** 一疊維持幾關。 */
+export function megaBombStackLength(s:State,resolve=stateResolver(s)){
+ return Math.floor(MEGA_BOMB.stageLength*resolve('SpecialTitanStackDurationMult'));}
+/** 打死一隻炸彈泰坦：推一疊進佇列。原生推完還會夾住長度，那是同一關打死多隻時的防護。 */
+function pushBombStack(s:State,resolve=stateResolver(s)){
+ const length=megaBombStackLength(s,resolve);if(length<1)return;
+ const stacks=s.tt2!.bombStacks;stacks.push(length);
+ while(stacks.length>length)stacks.shift();}
+/** 清掉一關：每一疊少一關，歸零的移除。 */
+function ageBombStacks(t:TT2State){
+ if(!t.bombStacks.length)return;
+ t.bombStacks=t.bombStacks.map(n=>n-1).filter(n=>n>=1);}
 export function multiMonsterChance(s:State,resolve=stateResolver(s)){
  return Math.min(1,(BONUS_DEFAULTS.multiMonsterChance+resolve('MultiMonsters'))*resolve('AllProbabilityBoost'));}
 export function multiMonsterMaxCount(s:State,resolve=stateResolver(s)){
@@ -401,6 +435,7 @@ export function stageSkip(s:State,source:SkipSource){const k=SKIP_SOURCES[source
 function clearStage(s:State,cleared:number){
  if(cleared>=16&&(cleared-16)%20===0&&cleared>s.tt2!.gearMilestone&&dropGear(s.tt2!,Math.max(s.best,cleared))){
   s.tt2!.gearMilestone=cleared;s.tt2!.equipmentCollected++;s.daily.equipment++;}
+ ageBombStacks(s.tt2!);
  s.stage=Math.min(STAGE_CAP,cleared+1);s.best=Math.max(s.best,s.stage);s.kills=0;
  const points=Math.max(0,Math.floor(s.best/50)-1);
  if(points>s.tt2!.earnedPoints){s.tt2!.points+=points-s.tt2!.earnedPoints;s.tt2!.earnedPoints=points;}}
@@ -429,10 +464,15 @@ function applySkips(s:State,source:SkipSource){
  for(let n=0;n<stages&&s.stage<STAGE_CAP;n++){
   earnGold(s,goldReward(s,'boss'));s.bossKills++;clearStage(s,s.stage);}}
 function damage(s:State,hit:Big,source?:SkipSource){if(compare(hit,{...ZERO})<=0)return;s.hp=subtract(s.hp,hit);if(compare(s.hp,{...ZERO})>0)return;
- const boss=isBoss(s),chest=!boss&&tt2Random(s.tt2!)<Math.min(1,(BONUS_DEFAULTS.chestChance+stateEffect(s,'ChestChance'))*stateEffect(s,'AllProbabilityBoost'));
+ const boss=isBoss(s),resolve=stateResolver(s);
+ const chest=!boss&&tt2Random(s.tt2!)<chestChance(s,resolve);
+ // 一隻泰坦只能是一種，所以寶箱與炸彈互斥。原生的順序是先擲骰再看能不能生成，滿層就不生成。
+ const bomb=!boss&&!chest&&tt2Random(s.tt2!)<megaBombChance(s,resolve)
+  &&s.tt2!.bombStacks.length<megaBombMaxStacks(s,resolve);
  // 原生一次結算整群，不是逐隻給：隻數同時決定金幣倍率與擊殺數。
  const group=boss?1:Math.max(1,s.tt2!.multi||1);
  earnGold(s,scale(goldReward(s,boss?'boss':chest?'chest':'monster'),multiMonsterGold(s,group)));if(chest)s.tt2!.chestKills++;
+ if(bomb){pushBombStack(s);s.tt2!.bombKills++;}
  s.totalKills+=group;s.daily.kills+=group;
  if(boss){s.bossKills++;clearStage(s,s.stage);}else if(!s.farming)s.kills+=group;
  if(source)applySkips(s,source);

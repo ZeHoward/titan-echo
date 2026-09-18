@@ -1,0 +1,761 @@
+{
+  "version": "8.2.0",
+  "role": "特殊泰坦堆疊：佇列狀態機、兩個生成機率、炸彈泰坦的堆疊上限與持續關數，以及它對每關隻數的效果。",
+  "packageSha256": "8d78c9aa877e6c0b291ee2116cab855bd26c59c1d080bc654f88ecf1ff268b5f",
+  "binarySha256": "c13fc44321b1214c71ab0277a134fc3401fd7392c74a0bbb3935671c55a8713a",
+  "scriptSha256": "62c2eeb8472bb107de516e4b6ae69d3dcdf5013fb1caa87223d82a54dd203f8b",
+  "finding": "特殊泰坦不是一種怪，是一疊有期限的效果。SpecialTitanScript 帶一個 Queue<int>，元素是「這一疊還剩幾關」：擊殺時 PushEndEffectToQueue 推入 StageEffectLength，推完若長度超過 StageEffectLength 就 Dequeue 丟掉最舊的；每清掉一關 UpdateEffectEnd 把每個元素減一、減到小於 1 的不再放回；NumOfStacks 就是佇列長度，IsEffectActive 是「長度至少 1 且隊首大於 0」。生成走 RollSpawnMonster：Random.value 小於 GetSpawnChance() 之後還要 CanSpawnTitan() 為真，而炸彈泰坦的 CanSpawnTitan 就是 NumOfStacks < MaxStackCount——滿層就不再生成。**層數上限是擋在生成端的**：擊殺那一側比對的是 StageEffectLength 而不是 MaxStackCount（三次虛擬呼叫都走同一個 vtable 槽），那只是防止同一關打死多隻時佇列無限增長的防護，真正的上限靠 CanSpawnTitan 不讓它生出來。兩個生成機率是同一個模板：炸彈是 MegaBombSpawnChance × SpecialTitanSpawnChance × AllProbabilityBoost，寶箱是把第一項換成 ChestChance。炸彈的 StageEffectLength 是 floor(10 × SpecialTitanStackDurationMult)，MaxStackCount 是 (int)MegaBombMaxStacks（基底 1）。效果在 GetMonsterCountPerStage 結尾：該關隻數乘上 pow(0.8999999761581421, 堆疊層數) 再向下取整。",
+  "consequence": "**引擎目前的寶箱泰坦機率少了 SpecialTitanSpawnChance 這一項**，接上等於修正既有機制。炸彈泰坦則是全新的：未投資的玩家上限 1 層，打死一隻之後的 10 關每關隻數乘 0.8999999761581421。三個基底與兩個靜態欄位都是 [ServerVar] 的編譯期預設值，線上可覆蓋，狀態為 default。",
+  "methods": {
+    "chestersonChance": {
+      "name": "ChestersonTitanScript$$GetSpawnChance",
+      "rva": "0x2537b44",
+      "bytesSha256": "4f8893914d6ad4b26a5a38f2f2e56aabb0c8e5493ecaa6a1bf1cd53d166151fd"
+    },
+    "megaBombChance": {
+      "name": "MegaBombTitanScript$$GetSpawnChance",
+      "rva": "0x253a9e0",
+      "bytesSha256": "f02f40434dcf8bb19ea5a8a7909782c5db12ba55a889c100cb2a68fc7b385e37"
+    },
+    "megaBombStackLength": {
+      "name": "MegaBombTitanScript$$get_StageEffectLength",
+      "rva": "0x253a404",
+      "bytesSha256": "9d2caad7beb951e71f2bf7d1126e5d70f376b4dad973088f9dd6ed3b9bf8456a"
+    },
+    "megaBombStackCap": {
+      "name": "MegaBombTitanScript$$get_MaxStackCount",
+      "rva": "0x253a360",
+      "bytesSha256": "ebf6847a437993d8fff78f2a3a21f092919acffd8492d20a1eb5237c191d95da"
+    },
+    "roll": {
+      "name": "SpecialTitanScript$$RollSpawnMonster",
+      "rva": "0x253c200",
+      "bytesSha256": "ce0fe60fe0ede11e0ebab1ec3baff5ba8bb9af070e58168be8e4624d442396c2"
+    },
+    "defeat": {
+      "name": "SpecialTitanScript$$PerformDefeatAction",
+      "rva": "0x253918c",
+      "bytesSha256": "3abec33c81a662b713635561670e3e3e03e4c186a4d4c65ad156aec4122810f5"
+    },
+    "push": {
+      "name": "SpecialTitanScript$$PushEndEffectToQueue",
+      "rva": "0x253c258",
+      "bytesSha256": "8c2f66489e3097bae036fc327e20136fbb7bcdc616954d01e54b0bd604dd18d1"
+    },
+    "stagePassed": {
+      "name": "SpecialTitanScript$$UpdateEffectEnd",
+      "rva": "0x253c338",
+      "bytesSha256": "94e7167cf2d573c1173db37867da421b4ec6d270c1c7b0be63de013c9c52cefc"
+    },
+    "canSpawn": {
+      "name": "MegaBombTitanScript$$CanSpawnTitan",
+      "rva": "0x253a9a8",
+      "bytesSha256": "e7cdb8ddd12f1b193b253be4f1400d65812a6dbbcd8e083ef861d1225697b63f"
+    },
+    "atMaxStacks": {
+      "name": "SpecialTitanScript$$IsAtMaxStacks",
+      "rva": "0x2537b0c",
+      "bytesSha256": "e5a8cb926d252112039a1f9f9248dd8ddd30c13008df3c7ff888874430609af7"
+    },
+    "effectActive": {
+      "name": "SpecialTitanScript$$IsEffectActive",
+      "rva": "0x2538380",
+      "bytesSha256": "036a61dfe79d8eab6ee1a0b5807441b30cd0eab38eb162c284da52979404969c"
+    },
+    "titanCount": {
+      "name": "StageLogic$$GetMonsterCountPerStage",
+      "rva": "0x2546594",
+      "bytesSha256": "af5101c4a3c46851ba2e6192e618d52380df4dccc396e138742ec4a3679b605f"
+    }
+  },
+  "formulas": {
+    "megaBombChance": "MegaBombSpawnChance × SpecialTitanSpawnChance × AllProbabilityBoost",
+    "chestersonChance": "ChestChance × SpecialTitanSpawnChance × AllProbabilityBoost",
+    "spawnGate": "Random.value < GetSpawnChance() 且 NumOfStacks < MaxStackCount（滿層就不生成）",
+    "stackLength": "floor(megaBombMonsterMaxStageEffectAmount × SpecialTitanStackDurationMult)",
+    "stackCap": "(int)MegaBombMaxStacks",
+    "onDefeat": "推入 StageEffectLength；長度超過 StageEffectLength 就丟掉最舊的一疊",
+    "onStageCleared": "每一疊減一關，減到小於 1 就移除",
+    "titanCount": "floor(該關隻數 × pow(megaBombMonsterTitanRemovalPercent, 堆疊層數))"
+  },
+  "traces": {
+    "chestersonChance": [
+      [
+        "sub",
+        "sp, sp, #0x170",
+        "0x2537b44"
+      ],
+      [
+        "add",
+        "x8, sp, #0xf8",
+        "0x2537ba0"
+      ],
+      [
+        "add",
+        "x20, sp, #0xc8",
+        "0x2537bac"
+      ],
+      [
+        "GetBonus",
+        "AllProbabilityBoost",
+        "0x2537bb0"
+      ],
+      [
+        "add",
+        "x8, sp, #0xe0",
+        "0x2537bd0"
+      ],
+      [
+        "GetBonus",
+        "SpecialTitanSpawnChance",
+        "0x2537bdc"
+      ],
+      [
+        "add",
+        "x8, sp, #0xc8",
+        "0x2537c00"
+      ],
+      [
+        "GetBonus",
+        "ChestChance",
+        "0x2537c10"
+      ],
+      [
+        "add",
+        "x0, sp, #0x90",
+        "0x2537c2c"
+      ],
+      [
+        "add",
+        "x1, sp, #0x70",
+        "0x2537c38"
+      ],
+      [
+        "add",
+        "x8, sp, #0xb0",
+        "0x2537c40"
+      ],
+      [
+        "call",
+        "op_Multiply",
+        "0x2537c54"
+      ],
+      [
+        "add",
+        "x0, sp, #0x40",
+        "0x2537c60"
+      ],
+      [
+        "add",
+        "x1, sp, #0x20",
+        "0x2537c6c"
+      ],
+      [
+        "add",
+        "x8, sp, #0x58",
+        "0x2537c74"
+      ],
+      [
+        "call",
+        "op_Multiply",
+        "0x2537c88"
+      ],
+      [
+        "call",
+        "op_Explicit",
+        "0x2537ca4"
+      ],
+      [
+        "add",
+        "sp, sp, #0x170",
+        "0x2537cb0"
+      ]
+    ],
+    "megaBombChance": [
+      [
+        "sub",
+        "sp, sp, #0x170",
+        "0x253a9e0"
+      ],
+      [
+        "add",
+        "x8, sp, #0xf8",
+        "0x253aa3c"
+      ],
+      [
+        "add",
+        "x20, sp, #0xc8",
+        "0x253aa48"
+      ],
+      [
+        "GetBonus",
+        "AllProbabilityBoost",
+        "0x253aa4c"
+      ],
+      [
+        "add",
+        "x8, sp, #0xe0",
+        "0x253aa6c"
+      ],
+      [
+        "GetBonus",
+        "SpecialTitanSpawnChance",
+        "0x253aa78"
+      ],
+      [
+        "add",
+        "x8, sp, #0xc8",
+        "0x253aa9c"
+      ],
+      [
+        "GetBonus",
+        "MegaBombSpawnChance",
+        "0x253aaac"
+      ],
+      [
+        "add",
+        "x0, sp, #0x90",
+        "0x253aac8"
+      ],
+      [
+        "add",
+        "x1, sp, #0x70",
+        "0x253aad4"
+      ],
+      [
+        "add",
+        "x8, sp, #0xb0",
+        "0x253aadc"
+      ],
+      [
+        "call",
+        "op_Multiply",
+        "0x253aaf0"
+      ],
+      [
+        "add",
+        "x0, sp, #0x40",
+        "0x253aafc"
+      ],
+      [
+        "add",
+        "x1, sp, #0x20",
+        "0x253ab08"
+      ],
+      [
+        "add",
+        "x8, sp, #0x58",
+        "0x253ab10"
+      ],
+      [
+        "call",
+        "op_Multiply",
+        "0x253ab24"
+      ],
+      [
+        "call",
+        "op_Explicit",
+        "0x253ab40"
+      ],
+      [
+        "add",
+        "sp, sp, #0x170",
+        "0x253ab4c"
+      ]
+    ],
+    "megaBombStackLength": [
+      [
+        "sub",
+        "sp, sp, #0x50",
+        "0x253a404"
+      ],
+      [
+        "add",
+        "x8, sp, #0x18",
+        "0x253a468"
+      ],
+      [
+        "GetBonus",
+        "SpecialTitanStackDurationMult",
+        "0x253a47c"
+      ],
+      [
+        "call",
+        "op_Explicit",
+        "0x253a4a8"
+      ],
+      [
+        "static",
+        "megaBombMonsterMaxStageEffectAmount",
+        "0x253a4d0"
+      ],
+      [
+        "scvtf",
+        "s0, s0",
+        "0x253a4d8"
+      ],
+      [
+        "fmul",
+        "s0, s8, s0",
+        "0x253a4dc"
+      ],
+      [
+        "frintm",
+        "s1, s0",
+        "0x253a4e4"
+      ],
+      [
+        "fcvtms",
+        "w9, s0",
+        "0x253a4e8"
+      ],
+      [
+        "fcmp",
+        "s1, s0",
+        "0x253a4f4"
+      ],
+      [
+        "csel",
+        "w0, w8, w9, eq",
+        "0x253a4f8"
+      ],
+      [
+        "add",
+        "sp, sp, #0x50",
+        "0x253a4fc"
+      ]
+    ],
+    "megaBombStackCap": [
+      [
+        "sub",
+        "sp, sp, #0x50",
+        "0x253a360"
+      ],
+      [
+        "add",
+        "x8, sp, #0x18",
+        "0x253a3b0"
+      ],
+      [
+        "GetBonus",
+        "MegaBombMaxStacks",
+        "0x253a3c0"
+      ],
+      [
+        "call",
+        "op_Explicit",
+        "0x253a3ec"
+      ],
+      [
+        "add",
+        "sp, sp, #0x50",
+        "0x253a3f8"
+      ]
+    ],
+    "roll": [
+      [
+        "call",
+        "get_value",
+        "0x253c210"
+      ],
+      [
+        "vcall",
+        "0x1e8",
+        "0x253c224"
+      ],
+      [
+        "fcmp",
+        "s8, s0",
+        "0x253c228"
+      ],
+      [
+        "tail",
+        "virtual",
+        "0x253c244"
+      ]
+    ],
+    "defeat": [
+      [
+        "cmp",
+        "w1, #1",
+        "0x2539194"
+      ],
+      [
+        "call",
+        "PushEndEffectToQueue",
+        "0x25391a8"
+      ],
+      [
+        "subs",
+        "w19, w19, #1",
+        "0x25391ac"
+      ],
+      [
+        "tail",
+        "virtual",
+        "0x25391d0"
+      ]
+    ],
+    "push": [
+      [
+        "vcall",
+        "0x1c8",
+        "0x253c2a8"
+      ],
+      [
+        "cmp",
+        "w0, w1",
+        "0x253c2b0"
+      ],
+      [
+        "vcall",
+        "0x1c8",
+        "0x253c2c4"
+      ],
+      [
+        "call",
+        "Enqueue",
+        "0x253c2e0"
+      ],
+      [
+        "vcall",
+        "0x1c8",
+        "0x253c2fc"
+      ],
+      [
+        "cmp",
+        "w20, w0",
+        "0x253c300"
+      ],
+      [
+        "tail",
+        "Dequeue",
+        "0x253c324"
+      ]
+    ],
+    "stagePassed": [
+      [
+        "call",
+        "Count<int>",
+        "0x253c394"
+      ],
+      [
+        "cmp",
+        "w0, #1",
+        "0x253c398"
+      ],
+      [
+        "add",
+        "w21, w21, #1",
+        "0x253c3bc"
+      ],
+      [
+        "call",
+        "Dequeue",
+        "0x253c3cc"
+      ],
+      [
+        "sub",
+        "w1, w0, #1",
+        "0x253c3d0"
+      ],
+      [
+        "cmp",
+        "w1, #1",
+        "0x253c3d4"
+      ],
+      [
+        "call",
+        "Enqueue",
+        "0x253c3e8"
+      ],
+      [
+        "add",
+        "w21, w21, #1",
+        "0x253c3ec"
+      ],
+      [
+        "add",
+        "w8, w24, w21",
+        "0x253c3f0"
+      ],
+      [
+        "cmp",
+        "w8, #1",
+        "0x253c3f4"
+      ],
+      [
+        "tail",
+        "virtual",
+        "0x253c438"
+      ]
+    ],
+    "canSpawn": [
+      [
+        "call",
+        "get_NumOfStacks",
+        "0x253a9b4"
+      ],
+      [
+        "vcall",
+        "0x1b8",
+        "0x253a9c8"
+      ],
+      [
+        "cmp",
+        "w20, w0",
+        "0x253a9cc"
+      ],
+      [
+        "cset",
+        "w0, lt",
+        "0x253a9d4"
+      ]
+    ],
+    "atMaxStacks": [
+      [
+        "call",
+        "get_NumOfStacks",
+        "0x2537b18"
+      ],
+      [
+        "vcall",
+        "0x1b8",
+        "0x2537b2c"
+      ],
+      [
+        "cmp",
+        "w20, w0",
+        "0x2537b30"
+      ],
+      [
+        "cset",
+        "w0, ge",
+        "0x2537b38"
+      ]
+    ],
+    "effectActive": [
+      [
+        "cmp",
+        "w8, #1",
+        "0x25383c4"
+      ],
+      [
+        "call",
+        "Peek",
+        "0x25383d8"
+      ],
+      [
+        "cmp",
+        "w0, #0",
+        "0x25383dc"
+      ],
+      [
+        "cset",
+        "w0, gt",
+        "0x25383e0"
+      ]
+    ],
+    "titanCount": [
+      [
+        "sub",
+        "sp, sp, #0xc0",
+        "0x2546594"
+      ],
+      [
+        "call",
+        "GetSpecialTitanScript",
+        "0x254664c"
+      ],
+      [
+        "cmp",
+        "w11, w10",
+        "0x254666c"
+      ],
+      [
+        "add",
+        "x9, x9, x10, lsl #3",
+        "0x2546680"
+      ],
+      [
+        "cmp",
+        "x9, x8",
+        "0x2546688"
+      ],
+      [
+        "csel",
+        "x23, x0, xzr, eq",
+        "0x254668c"
+      ],
+      [
+        "call",
+        "IsEffectActive",
+        "0x25466bc"
+      ],
+      [
+        "call",
+        "get_NumOfStacks",
+        "0x25466c8"
+      ],
+      [
+        "scvtf",
+        "s8, w0",
+        "0x25466cc"
+      ],
+      [
+        "call",
+        "GetRawMonsterCountPerStage",
+        "0x25466e8"
+      ],
+      [
+        "add",
+        "x8, sp, #0x58",
+        "0x2546708"
+      ],
+      [
+        "GetBonus",
+        "BonusType#334",
+        "0x254671c"
+      ],
+      [
+        "add",
+        "x0, sp, #0x40",
+        "0x2546738"
+      ],
+      [
+        "call",
+        "op_Explicit",
+        "0x2546748"
+      ],
+      [
+        "sub",
+        "w22, w22, w23",
+        "0x2546764"
+      ],
+      [
+        "call",
+        "IsAnyContractActive",
+        "0x2546768"
+      ],
+      [
+        "add",
+        "x8, sp, #0x58",
+        "0x2546780"
+      ],
+      [
+        "GetBonus",
+        "BonusType#44",
+        "0x254678c"
+      ],
+      [
+        "call",
+        "op_Explicit",
+        "0x25467c8"
+      ],
+      [
+        "sub",
+        "w22, w22, w0",
+        "0x25467cc"
+      ],
+      [
+        "static",
+        "megaBombMonsterTitanRemovalPercent",
+        "0x2546800"
+      ],
+      [
+        "call",
+        "pow",
+        "0x2546804"
+      ],
+      [
+        "scvtf",
+        "s9, w22",
+        "0x2546808"
+      ],
+      [
+        "fmul",
+        "s8, s8, s9",
+        "0x2546834"
+      ],
+      [
+        "frintm",
+        "s0, s8",
+        "0x2546844"
+      ],
+      [
+        "fcvtms",
+        "w9, s8",
+        "0x254684c"
+      ],
+      [
+        "fcmp",
+        "s0, s1",
+        "0x2546858"
+      ],
+      [
+        "csel",
+        "w22, w8, w9, eq",
+        "0x254685c"
+      ],
+      [
+        "sub",
+        "w1, w22, w19",
+        "0x2546870"
+      ],
+      [
+        "call",
+        "Max",
+        "0x254687c"
+      ],
+      [
+        "add",
+        "sp, sp, #0xc0",
+        "0x2546894"
+      ]
+    ]
+  },
+  "bases": {
+    "MegaBombSpawnChance": {
+      "field": "megaBombMonsterSpawnChance",
+      "value": 0.0010000000474974513
+    },
+    "MegaBombMaxStacks": {
+      "field": "megaBombBaseStacks",
+      "value": 1
+    }
+  },
+  "statics": {
+    "megaBombMonsterMaxStageEffectAmount": {
+      "offset": "0xa00",
+      "value": 10
+    },
+    "megaBombMonsterTitanRemovalPercent": {
+      "offset": "0x9f8",
+      "value": 0.8999999761581421
+    }
+  },
+  "bonusIds": {
+    "MegaBombSpawnChance": 330,
+    "MegaBombMaxStacks": 331,
+    "SpecialTitanSpawnChance": 424,
+    "SpecialTitanStackDurationMult": 425,
+    "ChestChance": 100,
+    "AllProbabilityBoost": 27
+  },
+  "powThunk": {
+    "rva": "0x49df500",
+    "identifiedBy": [
+      "TMPro.TMPro_ExtensionMethods$$GammaToLinear",
+      "UnityEngine.Purchasing.ExponentialBackOffRetryPolicy$$AdjustDelay"
+    ],
+    "callers": 24
+  },
+  "limits": [
+    "pow 的那個 thunk 在這份 binary 裡沒有符號，是靠呼叫者認出來的：GammaToLinear 與指數退避策略都經過它，兩者都只可能是 pow。認法寫在 powThunk 欄位裡，哪天它們不再呼叫同一個位址，這支工具就會停下來。",
+    "Hayst 與 Kratos 的 GetSpawnChance 用同一個模板，但各自多一個 op_Addition，而且綁在本專案未實作的流派上，因此不在本文件範圍內。",
+    "寶箱泰坦的跨關金幣效果（ChestersonGoldStageAmount 與它的 StageEffectLength）不在本文件範圍內：它的 MaxStackCount 與效果本身還沒解。",
+    "StageEffectLength 的推入端有一個 int.MaxValue 的防護分支，兩次呼叫同一個 getter；等價於推入 StageEffectLength 一次。",
+    "虛擬呼叫的目標是 vtable 槽，指令本身無法具名，所以記的是槽位移。0x1b8 是 MaxStackCount——CanSpawnTitan 與 IsAtMaxStacks 都只比對這一個槽，而 dump.cs 說這兩個方法比的就是 NumOfStacks 與 MaxStackCount；0x1c8 是相鄰的下一個槽 StageEffectLength，與 dump.cs 的宣告順序一致。",
+    "GetMonsterCountPerStage 的契約減免（BonusType 44）同樣屬於未實作的系統，形狀記在 trace 裡但不實作。"
+  ]
+}
