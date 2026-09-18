@@ -614,6 +614,44 @@ FORMULAS = [
                     note='那個加成（370）在整個映像沒有取值點，套裝給了它也沒有用。'
                          'PetAttackQTESplashCount 則是既沒有來源也沒有取值點，'
                          '2.14.0 的濺射調查已經確認過。')]),
+    entry(id='helperOrb', module='lib/engine.ts', export='helperOrbDamage',
+          expression='星界覺醒：每點一次，光球撞一次，傷害是 英雄每秒傷害 × HelperQTEDamage × (1 + 0.1 × 威力^2)；能彈幾次由 HelperQTECount 決定',
+          parts=[
+              entry(part='撞擊的傷害', status='native', ref='helper-qte-evidence.json',
+                    note='HelperController.HelperQTEDamageMonster＝'
+                         'GetAllHelperDPS × Bonus(HelperQTEDamage) × '
+                         '(helperQTEDamageOffset + helperQTEDamageMult × 威力^helperQTEDamageExpo)，'
+                         '以 DamageType.HelperQTE（8）送進 QueueMonsterAttack。'
+                         '整個方法只有一次 fmul 與一次 fadd，形狀是逐指令比對釘住的。'),
+              entry(part='三個係數', status='default', ref='helper-qte-evidence.json',
+                    note='helperQTEDamageOffset = 1、helperQTEDamageMult = 0.1、'
+                         'helperQTEDamageExpo = 2，三個都是 [ServerVar] 的編譯期預設值，線上可覆蓋。'),
+              entry(part='一次點擊加一次威力', status='native', ref='helper-qte-evidence.json',
+                    note='HelperQTETapped 用一道 NEON 加法把 HelperQTEPower 與 '
+                         'HelperQTEBounceCount 同時各加 1，再呼叫 QTEController.RefreshExpire '
+                         '重設過期計時——所以只要一直點，這一輪就一直延續。'),
+              entry(part='彈幾次由 HelperQTECount 決定', status='table-differs',
+                    ref='helper-qte-evidence.json',
+                    note='HelperQTEAnim 以 isLastOrbShot = (HelperQTEBounceCount >= '
+                         '(int)Bonus(HelperQTECount)) 判斷是不是最後一發。'
+                         '**本專案沒有任何來源給 HelperQTECount**（加法型，中性值 0），'
+                         '所以第一發就是最後一發，整套彈跳退化成一次撞擊。'
+                         '引擎照原生以「威力 > 上限」判斷而不是寫死一次，'
+                         '哪天那個加成有了來源就會自然彈更多次。'),
+              entry(part='持續期間的英雄傷害加成沒有做', status='table-differs',
+                    ref='helper-qte-evidence.json',
+                    note='**做了也不會生效。**HelperQTEModifyDamage 把 AllHelperDamage 乘上 '
+                         'Pow(Bonus(HelperQTEDamage), Min(HelperQTEPower, Bonus(HelperQTECount)))。'
+                         '同一個沒有來源的 HelperQTECount 讓 Min 恆為 0、Pow 恆為 1，'
+                         '所以那個乘數永遠是中性值。天賦「星界覺醒」給的是 HelperQTEDamage。'),
+              entry(part='威力與彈跳數合併成一個欄位', status='invented',
+                    note='原生是兩個欄位：點擊時同時加一，但 ReduceHelperQTEPower（動畫逾時用）'
+                         '只減威力。本專案沒有那個逾時觸發，兩者恆等，所以只存一個 qteHelperPower。'),
+              entry(part='光球併進戰鬥區的點擊', status='invented',
+                    note='原生的光球是場上實體，在兩側英雄之間飛，撞到怪才結算。'
+                         '本專案沒有實體，所以點一下就立即結算一次撞擊。'
+                         '另外「兩側各要有一個已解鎖英雄」那個開場條件沒有實作——'
+                         '本專案的英雄沒有左右之分，而學得到這個天賦的存檔一定早就解鎖大量英雄。')]),
     entry(id='chesterson', module='lib/engine.ts', export='chestersonStackLength',
           expression='寶箱泰坦用同一套佇列但效果完全不同：打死一隻（要蛻變過）開啟 floor((ChestersonGoldStageAmount + 5) × SpecialTitanStackDurationMult) 關的效果，那幾關的每一隻普通泰坦都是寶箱泰坦，金幣倍率 treasureGold(15) × ChestAmount',
           parts=[
@@ -850,7 +888,7 @@ NOT_FORMULAS = {
         'multiMonsterMaxCount', 'multiMonsterGold',
         'chestChance', 'megaBombMaxStacks', 'megaBombStackLength', 'chestersonActive',
         'fairiesUnlocked', 'loginStreakIntact', 'loginStreakDays',
-        'qteReady', 'advanceQTE', 'qteUnlocked', 'freshQTESlots', 'petBurstTaps',
+        'qteReady', 'advanceQTE', 'qteUnlocked', 'freshQTESlots', 'petBurstTaps', 'helperOrbBounces',
         'monsterCount', 'unlockedSkills', 'skillStep', 'discoveryCost', 'craftPrice', 'buildMultiplier', 'manaRegen', 'achievementTier',
         'advanceEggs', 'playerUpgradeCost', 'playerBaseDamage', 'themeIndex', 'goldReward', 'health', 'heroDps',
         'cost', 'critChance', 'manaMax', 'bossDuration', 'relicGain', 'evolveCost', 'buildDamage', 'skillPower',

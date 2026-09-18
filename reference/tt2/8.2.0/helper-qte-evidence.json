@@ -1,0 +1,637 @@
+{
+  "version": "8.2.0",
+  "role": "星界覺醒（Helper QTE）：光球撞擊可以做，持續期間的英雄傷害加成做了不會生效。",
+  "packageSha256": "8d78c9aa877e6c0b291ee2116cab855bd26c59c1d080bc654f88ecf1ff268b5f",
+  "binarySha256": "c13fc44321b1214c71ab0277a134fc3401fd7392c74a0bbb3935671c55a8713a",
+  "scriptSha256": "62c2eeb8472bb107de516e4b6ae69d3dcdf5013fb1caa87223d82a54dd203f8b",
+  "finding": "QTEReadyHandler 只處理 QTEType 5，而且 activeQTE 已經開著就不再開一次；InitHelperQTE 要求**兩側各至少有一個已解鎖的英雄**，把 HelperQTEBounceCount 歸零、activeQTE 設為 true，再隨機挑一側的一位英雄起手。玩家每點一次，HelperQTETapped 用一道 NEON 加法把 HelperQTEPower 與 HelperQTEBounceCount **同時各加 1**，並呼叫 QTEController.RefreshExpire 重設過期。光球撞到怪的那一擊是 GetAllHelperDPS × Bonus(HelperQTEDamage) × (helperQTEDamageOffset(1.0) + helperQTEDamageMult(0.10000000149011612) × 威力^helperQTEDamageExpo(2.0))，以 DamageType.HelperQTE（8）送進 QueueMonsterAttack。**彈跳次數的上限是 Bonus(HelperQTECount)**：HelperQTEAnim 以 isLastOrbShot = (HelperQTEBounceCount >= (int)Bonus(HelperQTECount)) 決定是不是最後一發。另一半 HelperQTEModifyDamage 則把 AllHelperDamage 乘上 Pow(Bonus(HelperQTEDamage), Min(HelperQTEPower, Bonus(HelperQTECount)))。",
+  "consequence": "本專案接上光球那一半：學了天賦「星界覺醒」之後，QTE 冷卻結束就能點，每點一次造成一次撞擊傷害。**但 HelperQTECount 在本專案沒有任何來源**（加法型，中性值 0），所以 isLastOrbShot 從第一發就成立，整套彈跳退化成一次撞擊；同樣的 0 也讓 Min(威力, 0) = 0、Pow(加成, 0) = 1，**持續期間的英雄傷害加成那一半做了也不會生效**。兩邊都照原生寫，哪天那個加成有了來源就會自然運作。",
+  "methods": {
+    "ready": {
+      "name": "HelperController$$QTEReadyHandler",
+      "rva": "0x222c848",
+      "bytesSha256": "b554197c5f5e491cdcc4d04789047d10040706e028edc4fa861bc28997be6d4f"
+    },
+    "init": {
+      "name": "HelperController$$InitHelperQTE",
+      "rva": "0x222c860",
+      "bytesSha256": "7204f1ca694f09669ffc3bdce3e450ab00e3cabd152a3168672f238b8adf6861"
+    },
+    "tapped": {
+      "name": "HelperController$$HelperQTETapped",
+      "rva": "0x222d770",
+      "bytesSha256": "597896ed5ce312cdb70e327a0a5c908049df20424e926eae59cc06a65db2f108"
+    },
+    "anim": {
+      "name": "HelperController$$HelperQTEAnim",
+      "rva": "0x222cee4",
+      "bytesSha256": "84f248c853854cbf02274cd4fb3180301e8c02d2f3ce1c3bd8531a8971468ba5"
+    },
+    "orbDamage": {
+      "name": "HelperController$$HelperQTEDamageMonster",
+      "rva": "0x222d574",
+      "bytesSha256": "45452a83c8537fd95adce69c04bee1a8e68c844257b1f32461f50444a4ba2ac5"
+    },
+    "buff": {
+      "name": "HelperController$$HelperQTEModifyDamage",
+      "rva": "0x222d32c",
+      "bytesSha256": "f6c8c4fb6942742c149ca5fd9d3c2618f90c86160c412ef9c5fe00d778892ff3"
+    },
+    "reduce": {
+      "name": "HelperController$$ReduceHelperQTEPower",
+      "rva": "0x222d560",
+      "bytesSha256": "154720f89ec335b2a99123f3465add7da79f3075cd837e30ee4dfb3abbdde6da"
+    }
+  },
+  "qteType": 5,
+  "damageType": {
+    "HelperQTE": 8
+  },
+  "fields": {
+    "HelperQTEPower": {
+      "offset": "0x88",
+      "type": "int"
+    },
+    "HelperQTEBounceCount": {
+      "offset": "0x8c",
+      "type": "int"
+    },
+    "HelperQTEActiveDuration": {
+      "offset": "0x90",
+      "type": "float"
+    },
+    "activeQTE": {
+      "offset": "0x94",
+      "type": "bool"
+    },
+    "isLeftSide": {
+      "offset": "0xc0",
+      "type": "bool"
+    },
+    "isLastOrbShot": {
+      "offset": "0xc1",
+      "type": "bool"
+    }
+  },
+  "formulas": {
+    "orbHit": "GetAllHelperDPS × Bonus(HelperQTEDamage) × (helperQTEDamageOffset + helperQTEDamageMult × 威力^helperQTEDamageExpo)",
+    "tap": "一次點擊讓 HelperQTEPower 與 HelperQTEBounceCount 各加 1，並重設過期計時",
+    "lastOrb": "HelperQTEBounceCount >= (int)Bonus(HelperQTECount)",
+    "buff": "AllHelperDamage ×= Pow(Bonus(HelperQTEDamage), Min(HelperQTEPower, Bonus(HelperQTECount)))",
+    "reducePower": "HelperQTEPower = max(0, HelperQTEPower − 1)，然後重算上面那個加成",
+    "sides": "兩側各要有至少一個已解鎖的英雄，否則這一輪不開始"
+  },
+  "traces": {
+    "ready": [
+      [
+        "cmp",
+        "w1, #5",
+        "0x222c848"
+      ],
+      [
+        "read",
+        "activeQTE",
+        "0x222c850"
+      ],
+      [
+        "call",
+        "InitHelperQTE",
+        "0x222c85c"
+      ]
+    ],
+    "init": [
+      [
+        "write",
+        "isLastOrbShot",
+        "0x222c8b0"
+      ],
+      [
+        "call",
+        "get_value",
+        "0x222c8b4"
+      ],
+      [
+        "cset",
+        "w8, mi",
+        "0x222c8c4"
+      ],
+      [
+        "write",
+        "isLeftSide",
+        "0x222c8c8"
+      ],
+      [
+        "read",
+        "isLeftSide",
+        "0x222c8d4"
+      ],
+      [
+        "call",
+        "GetUnlockedHelpersOnSide",
+        "0x222c8dc"
+      ],
+      [
+        "read",
+        "isLeftSide",
+        "0x222c8f4"
+      ],
+      [
+        "cmp",
+        "w8, #0",
+        "0x222c8fc"
+      ],
+      [
+        "cset",
+        "w1, eq",
+        "0x222c900"
+      ],
+      [
+        "call",
+        "GetUnlockedHelpersOnSide",
+        "0x222c904"
+      ],
+      [
+        "cmp",
+        "w1, #1",
+        "0x222c910"
+      ],
+      [
+        "cmp",
+        "w8, #1",
+        "0x222c920"
+      ],
+      [
+        "write",
+        "HelperQTEBounceCount",
+        "0x222c93c"
+      ],
+      [
+        "write",
+        "activeQTE",
+        "0x222c940"
+      ],
+      [
+        "call",
+        "Range",
+        "0x222c948"
+      ],
+      [
+        "call",
+        "get_Item",
+        "0x222c960"
+      ],
+      [
+        "call",
+        "HelperQTEInitExpireAnim",
+        "0x222c97c"
+      ]
+    ],
+    "tapped": [
+      [
+        "read",
+        "HelperQTEPower",
+        "0x222d7b4"
+      ],
+      [
+        "add",
+        "v0.2s, v1.2s, v0.2s",
+        "0x222d7bc"
+      ],
+      [
+        "write",
+        "HelperQTEPower",
+        "0x222d7c0"
+      ],
+      [
+        "call",
+        "SetActive",
+        "0x222d7d8"
+      ],
+      [
+        "call",
+        "RefreshExpire",
+        "0x222d7f0"
+      ],
+      [
+        "call",
+        "HelperQTEAnim",
+        "0x222d814"
+      ]
+    ],
+    "anim": [
+      [
+        "call",
+        "HelperQTEModifyDamage",
+        "0x222cfc8"
+      ],
+      [
+        "call",
+        "HelperQTEExplosionAnim",
+        "0x222cfd0"
+      ],
+      [
+        "read",
+        "HelperQTEActiveDuration",
+        "0x222cfd4"
+      ],
+      [
+        "call",
+        "Invoke",
+        "0x222cfe4"
+      ],
+      [
+        "read",
+        "HelperQTEBounceCount",
+        "0x222cfec"
+      ],
+      [
+        "GetBonus",
+        "HelperQTECount",
+        "0x222d014"
+      ],
+      [
+        "call",
+        "op_Explicit->int",
+        "0x222d040"
+      ],
+      [
+        "read",
+        "isLeftSide",
+        "0x222d044"
+      ],
+      [
+        "cmp",
+        "w21, w0",
+        "0x222d048"
+      ],
+      [
+        "cset",
+        "w9, ge",
+        "0x222d050"
+      ],
+      [
+        "eor",
+        "w8, w8, #1",
+        "0x222d054"
+      ],
+      [
+        "write",
+        "isLastOrbShot",
+        "0x222d058"
+      ],
+      [
+        "write",
+        "isLeftSide",
+        "0x222d05c"
+      ],
+      [
+        "read",
+        "isLeftSide",
+        "0x222d068"
+      ],
+      [
+        "call",
+        "GetUnlockedHelpersOnSide",
+        "0x222d070"
+      ],
+      [
+        "call",
+        "Range",
+        "0x222d094"
+      ],
+      [
+        "call",
+        "get_Item",
+        "0x222d0a4"
+      ],
+      [
+        "call",
+        "ContainsKey",
+        "0x222d0c8"
+      ],
+      [
+        "call",
+        "get_Item",
+        "0x222d0e8"
+      ],
+      [
+        "call",
+        "op_Equality",
+        "0x222d11c"
+      ],
+      [
+        "call",
+        "StopHelperQTE",
+        "0x222d128"
+      ],
+      [
+        "call",
+        "get_transform",
+        "0x222d140"
+      ],
+      [
+        "call",
+        "get_position",
+        "0x222d14c"
+      ],
+      [
+        "call",
+        "get_transform",
+        "0x222d1a0"
+      ],
+      [
+        "call",
+        "set_position",
+        "0x222d1b8"
+      ],
+      [
+        "call",
+        "SetActive",
+        "0x222d1cc"
+      ],
+      [
+        "call",
+        "SetActive",
+        "0x222d1e0"
+      ],
+      [
+        "call",
+        "get_transform",
+        "0x222d1f0"
+      ],
+      [
+        "fmul",
+        "s1, s13, s0",
+        "0x222d204"
+      ],
+      [
+        "fmul",
+        "s2, s14, s0",
+        "0x222d208"
+      ],
+      [
+        "fmul",
+        "s0, s15, s0",
+        "0x222d20c"
+      ],
+      [
+        "fadd",
+        "s10, s10, s1",
+        "0x222d210"
+      ],
+      [
+        "fadd",
+        "s11, s11, s2",
+        "0x222d214"
+      ],
+      [
+        "fadd",
+        "s0, s12, s0",
+        "0x222d21c"
+      ],
+      [
+        "fadd",
+        "s2, s0, s1",
+        "0x222d220"
+      ],
+      [
+        "call",
+        "set_up",
+        "0x222d22c"
+      ],
+      [
+        "read",
+        "isLastOrbShot",
+        "0x222d230"
+      ],
+      [
+        "fadd",
+        "s0, s0, s0",
+        "0x222d23c"
+      ],
+      [
+        "read",
+        "isLeftSide",
+        "0x222d244"
+      ],
+      [
+        "cmp",
+        "w8, #0",
+        "0x222d254"
+      ],
+      [
+        "call",
+        "Range",
+        "0x222d260"
+      ],
+      [
+        "read",
+        "isLastOrbShot",
+        "0x222d270"
+      ],
+      [
+        "cmp",
+        "w8, #0",
+        "0x222d27c"
+      ],
+      [
+        "fadd",
+        "s0, s0, s1",
+        "0x222d284"
+      ],
+      [
+        "call",
+        "move",
+        "0x222d2b8"
+      ],
+      [
+        "call",
+        ".ctor",
+        "0x222d2ec"
+      ],
+      [
+        "call",
+        "setOnComplete",
+        "0x222d300"
+      ]
+    ],
+    "orbDamage": [
+      [
+        "read",
+        "HelperQTEPower",
+        "0x222d60c"
+      ],
+      [
+        "scvtf",
+        "s0, s0",
+        "0x222d614"
+      ],
+      [
+        "static",
+        "helperQTEDamageExpo",
+        "0x222d618"
+      ],
+      [
+        "static",
+        "helperQTEDamageMult",
+        "0x222d61c"
+      ],
+      [
+        "static",
+        "helperQTEDamageOffset",
+        "0x222d628"
+      ],
+      [
+        "call",
+        "GetAllHelperDPS",
+        "0x222d664"
+      ],
+      [
+        "fmul",
+        "s0, s9, s8",
+        "0x222d674"
+      ],
+      [
+        "fadd",
+        "s8, s10, s0",
+        "0x222d690"
+      ],
+      [
+        "GetBonus",
+        "HelperQTEDamage",
+        "0x222d694"
+      ],
+      [
+        "call",
+        "op_Multiply",
+        "0x222d6d8"
+      ],
+      [
+        "call",
+        "op_Implicit",
+        "0x222d6e8"
+      ],
+      [
+        "call",
+        "op_Multiply",
+        "0x222d71c"
+      ],
+      [
+        "call",
+        "QueueMonsterAttack",
+        "0x222d74c"
+      ]
+    ],
+    "buff": [
+      [
+        "GetBonus",
+        "HelperQTEDamage",
+        "0x222d3a8"
+      ],
+      [
+        "GetBonus",
+        "HelperQTECount",
+        "0x222d3f4"
+      ],
+      [
+        "read",
+        "HelperQTEPower",
+        "0x222d3fc"
+      ],
+      [
+        "call",
+        "op_Implicit",
+        "0x222d418"
+      ],
+      [
+        "call",
+        "Min",
+        "0x222d44c"
+      ],
+      [
+        "call",
+        "op_Explicit",
+        "0x222d468"
+      ],
+      [
+        "call",
+        "Pow",
+        "0x222d488"
+      ],
+      [
+        "ModifyBonus",
+        "AllHelperDamage",
+        "0x222d4d0"
+      ]
+    ],
+    "reduce": [
+      [
+        "read",
+        "HelperQTEPower",
+        "0x222d560"
+      ],
+      [
+        "sub",
+        "w8, w8, #1",
+        "0x222d564"
+      ],
+      [
+        "bic",
+        "w8, w8, w8, asr #31",
+        "0x222d568"
+      ],
+      [
+        "write",
+        "HelperQTEPower",
+        "0x222d56c"
+      ],
+      [
+        "call",
+        "HelperQTEModifyDamage",
+        "0x222d570"
+      ]
+    ]
+  },
+  "statics": {
+    "helperQTEDamageMult": {
+      "offset": "0xf0",
+      "value": 0.10000000149011612
+    },
+    "helperQTEDamageOffset": {
+      "offset": "0xf4",
+      "value": 1.0
+    },
+    "helperQTEDamageExpo": {
+      "offset": "0xf8",
+      "value": 2.0
+    }
+  },
+  "bonusIds": {
+    "HelperQTEDamage": 279,
+    "HelperQTECount": 278,
+    "HelperQTEDuration": 280,
+    "HelperQTECooldown": 277,
+    "AllHelperDamage": 40
+  },
+  "table": {
+    "ActiveTime": "40",
+    "CooldownBonusType": "HelperQTECooldown",
+    "CooldownTime": "30",
+    "ExpireTime": "30",
+    "MinCooldown": "",
+    "QTEType": "Helper",
+    "Randomness": "0.1",
+    "TalentID": "HelperDmgQTE"
+  },
+  "blocked": {
+    "buff": "持續期間的英雄傷害加成在本專案做了也不會生效。HelperQTEModifyDamage 算的是 Pow(HelperQTEDamage, Min(威力, HelperQTECount))，而 HelperQTECount 是加法型、本專案沒有任何來源給它，中性值 0，所以指數恆為 0、整個乘數恆為 1。天賦「星界覺醒」給的是 HelperQTEDamage，不是 HelperQTECount。"
+  },
+  "limits": [
+    "HelperQTECount 沒有來源，所以彈跳上限是 0——**光球只會撞一次**。這是資料決定的，不是本專案簡化的；引擎照原生以 「威力 > 上限就是最後一發」判斷，有來源時會自然彈更多次。",
+    "HelperQTEDuration（280）與 HelperQTECooldown（277）本專案也沒有來源。前者是原生的 HelperQTEActiveDuration，後者是 QTE 冷卻的減秒，兩者缺來源只代表沒有加成，不影響基礎值。",
+    "原生的 HelperQTEPower 與 HelperQTEBounceCount 是兩個欄位：點擊時同時加一，但 ReduceHelperQTEPower（動畫逾時用）只減威力。本專案沒有那個逾時觸發，兩者恆等，所以合併成一個 qteHelperPower。",
+    "原生的光球是場上實體，在兩側英雄之間飛；本專案沒有實體，所以把「點一下讓它再飛一趟」併進戰鬥區的點擊，撞擊傷害立即結算。",
+    "兩側各要有一個已解鎖英雄那個條件沒有實作：本專案的英雄沒有左右之分，而能學到這個天賦的存檔一定早就解鎖了大量英雄，實務上恆為真。",
+    "DamageType.HelperQTE（8）在 GetTitanSkip 與 GetStageSkip 都沒有自己的那一支，所以這一擊不跳泰坦也不跳關——與 skip-evidence.json 的配對表一致。"
+  ]
+}

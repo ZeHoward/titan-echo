@@ -76,11 +76,11 @@
     }
   },
   "counts": {
-    "live": 122,
-    "dead-native-uses-it": 111,
+    "live": 123,
+    "dead-native-uses-it": 110,
     "dead-native-ignores-it": 64,
-    "read-without-source": 18,
-    "not-in-project": 481
+    "read-without-source": 19,
+    "not-in-project": 480
   },
   "verdicts": {
     "live": "專案有來源、引擎有讀：正常運作。",
@@ -3428,9 +3428,9 @@
     },
     {
       "id": "HelperQTECount",
-      "verdict": "not-in-project",
+      "verdict": "read-without-source",
       "sources": null,
-      "engineReads": false,
+      "engineReads": true,
       "nativeReaders": [
         "HelperController",
         "SkillTreeUIModel"
@@ -3440,17 +3440,17 @@
     },
     {
       "id": "HelperQTEDamage",
-      "verdict": "dead-native-uses-it",
+      "verdict": "live",
       "sources": [
         "TT2_TREE"
       ],
-      "engineReads": false,
+      "engineReads": true,
       "nativeReaders": [
         "HelperController",
         "SkillTreeUIModel"
       ],
       "indirect": null,
-      "priority": true
+      "priority": false
     },
     {
       "id": "HelperQTEDuration",

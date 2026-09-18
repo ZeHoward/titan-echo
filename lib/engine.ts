@@ -40,7 +40,7 @@ function newDaily(day:number):State['daily']{return {day,claimed:[],taps:0,kills
 export function fresh(now=Date.now()):State {return {version:2,ruleset:TT2_RULESET,tt2:freshTT2(now),stage:1,best:1,kills:0,hp:fromNumber(18),gold:{...ZERO},level:1,heroes:Array(33).fill(0),relics:0,artifacts:ARTIFACTS.map(()=>0),prestiges:0,taps:0,totalKills:0,cooldowns:SKILLS.map(()=>0),active:SKILLS.map(()=>0),bossEnd:0,farming:false,last:now,lastTap:0,lastFairy:now,diamonds:0,weapons:Array(33).fill(0),evolutions:Array(33).fill(0),wounded:Array(33).fill(0),skillLevels:SKILLS.map(()=>0),gear:[],equipped:[-1,-1,-1,-1,-1],dust:0,lootCounter:0,bossKills:0,bossWounded:false,protection:0,seen:[0],monster:spriteForMonster(stagePool(1)[0]),achievements:{},daily:newDaily(dayAt(now)),loginDay:-1,streak:0,trial:null,weekly:{week:weekAt(now),best:0,claimed:[]},world:0,worldBest:[1,1],artifactSpent:ARTIFACTS.map(()=>0),log:[]};}
 export function hydrate(s:State):State{// A save already on this ruleset is repaired, never re-migrated: the legacy path refunds artifacts
 // and clears skill levels, so falling through with a missing tt2 block would wipe live progress.
-if(s.ruleset===TT2_RULESET){s.tt2??=freshTT2(s.last??Date.now());normaliseAmounts(s);s.monster??=settledMonster(s);const needsQTE=!s.tt2.qteReadyAt;if(!s.tt2.inventory)s.tt2={...freshTT2(s.last),...s.tt2};s.tt2.perkEnds??=[[],[]];s.tt2.rainLast??=s.last;s.tt2.petCharge??=0;s.tt2.petAttacks??=0;s.tt2.cloneAt??=s.last;if(needsQTE){s.tt2.qteReadyAt=freshQTESlots();s.tt2.qteExpireAt=freshQTESlots();migrateFairyQTE(s);}s.tt2.qteTaps??=0;clampLevels(s);return s;}
+if(s.ruleset===TT2_RULESET){s.tt2??=freshTT2(s.last??Date.now());normaliseAmounts(s);s.monster??=settledMonster(s);const needsQTE=!s.tt2.qteReadyAt;if(!s.tt2.inventory)s.tt2={...freshTT2(s.last),...s.tt2};s.tt2.perkEnds??=[[],[]];s.tt2.rainLast??=s.last;s.tt2.petCharge??=0;s.tt2.petAttacks??=0;s.tt2.cloneAt??=s.last;if(needsQTE){s.tt2.qteReadyAt=freshQTESlots();s.tt2.qteExpireAt=freshQTESlots();migrateFairyQTE(s);}s.tt2.qteTaps??=0;s.tt2.qteHelperPower??=0;clampLevels(s);return s;}
 // Talent and skill levels index straight into their own tables. A save holding a level past the
 // table's end reads undefined and every bonus built from it becomes NaN, so the levels are
 // brought back into range on load rather than defended against at each of the dozen read sites.
@@ -428,7 +428,20 @@ export function fairiesUnlocked(s:State){return s.best>=FAIRY.startStage;}
 // 本專案沒有 coroutine，改用兩個時間戳：qteReadyAt 是冷卻結束的時刻，qteExpireAt 是
 // ready 之後消失的時刻，兩者都以 -1 表示「沒有在跑」。ready 的狀態就是 qteExpireAt > 0。
 // 目前只有妖精有消費端；寵物與英雄那幾型的資料與倍率都在，等各自那一段接上去。
-const QTE_SCHEDULED:readonly number[]=[QTE_TYPE.Fairy,QTE_TYPE.PetAttack];
+const QTE_SCHEDULED:readonly number[]=[QTE_TYPE.Fairy,QTE_TYPE.PetAttack,QTE_TYPE.Helper];
+// 星界覺醒（原生的 Helper QTE）：光球在兩側英雄之間彈跳，玩家每點一次就多一次撞擊。
+// 撞擊傷害＝英雄每秒傷害 × HelperQTEDamage × (offset + mult × 威力^expo)，三個係數都是 [ServerVar]。
+// **彈跳次數的上限是 HelperQTECount**，而本專案沒有任何來源給它（加法型，中性值 0），
+// 所以 `彈跳數 >= 上限` 從第一發就成立——整套機制退化成一次撞擊。照原生寫，
+// 哪天那個加成有了來源就會自然彈更多次。見 reference/tt2/8.2.0/helper-qte-evidence.json。
+const HELPER_QTE={damageMult:Math.fround(.1),damageOffset:1,damageExpo:2} as const;
+/** 這一輪的光球還能不能再彈：原生 HelperQTEAnim 的 isLastOrbShot 是它的反面。 */
+export function helperOrbBounces(s:State,resolve=stateResolver(s)){
+ return Math.floor(resolve('HelperQTECount'));}
+/** 原生 HelperController.HelperQTEDamageMonster 的那一擊。 */
+export function helperOrbDamage(s:State,power:number,resolve=stateResolver(s)):Big{
+ const scale2=HELPER_QTE.damageOffset+HELPER_QTE.damageMult*power**HELPER_QTE.damageExpo;
+ return scale(dps(s),resolve('HelperQTEDamage')*scale2);}
 // 雷霆爆發（原生的 Mash QTE）要連打幾下：原生 PetController.BonusUpdatedHandler 在
 // PetTapCountToAttack 變動時重算 max(1, mashQTENumTaps − 該加成)。那個 [ServerVar] 是 30，
 // 與平常寵物攻擊的蓄力次數（本專案的 petRequiredTaps，20）是**兩個不同的數字**，不要混用。
@@ -456,6 +469,7 @@ function scheduleQTECooldown(s:State,type:number){const t=s.tt2!;
  t.qteExpireAt[type]=-1;
  // 連打的進度不跨輪保留：沒打滿就過期的那一輪，下次要從頭來。
  if(type===QTE_TYPE.PetAttack)t.qteTaps=0;
+ if(type===QTE_TYPE.Helper)t.qteHelperPower=0;
  t.qteReadyAt[type]=s.last+qteCooldownSeconds(s,type,tt2Random(t)*2-1)*1000;}
 /** 推進 QTE 的狀態機到 s.last。可在任何時間點呼叫，重複呼叫不會重複轉換。 */
 export function advanceQTE(s:State){const t=s.tt2!;
@@ -606,7 +620,13 @@ export function apply(s:State,a:Action){advance(s,a.at);const i=a.index??0,t=s.t
   if(qteReady(t,QTE_TYPE.PetAttack)&&activeCombatPet(t)>=0){t.qteTaps++;
    if(t.qteTaps>=petBurstTaps(s)){t.qteTaps=0;
     t.lastPetHit=petBurstDamage(s);t.petAttacks++;damage(s,t.lastPetHit,'petBurst');
-    scheduleQTECooldown(s,QTE_TYPE.PetAttack);note(s,'雷霆爆發！');}}}
+    scheduleQTECooldown(s,QTE_TYPE.PetAttack);note(s,'雷霆爆發！');}}
+  // 星界覺醒：原生每點一次就 HelperQTEPower＋1 並讓光球再飛一趟，撞到怪就是一次傷害。
+  // 彈到 HelperQTECount 就是最後一發，打完這一輪結束。
+  if(qteReady(t,QTE_TYPE.Helper)){t.qteHelperPower++;
+   damage(s,helperOrbDamage(s,t.qteHelperPower));
+   if(t.qteHelperPower>helperOrbBounces(s)){note(s,'星界覺醒！');scheduleQTECooldown(s,QTE_TYPE.Helper);}
+   else t.qteExpireAt[QTE_TYPE.Helper]=s.last+TT2_QTE[QTE_TYPE.Helper].expire*1000;}}
  if(a.type==='upgrade'||a.type==='hero'){const id=a.type==='upgrade'?-1:i;if(id<-1||id>=HEROES.length||!Number.isInteger(id))return s;let count=a.amount??1;const cap=id<0?PLAYER_LEVEL_CAP:HERO_LEVEL_CAP;
   if(count===0){while(count<1000&&compare(s.gold,cost(s,id,count+1))>=0&&(id<0?s.level:heroLevel(s,id))+count<cap)count++;}if(![1,10,25,100,1000,0].includes(a.amount??1)||!count)return s;const price=cost(s,id,count);
   if(compare(s.gold,price)>=0&&(id<0?s.level:heroLevel(s,id))+count<=cap){s.gold=atLeastZero(subtract(s.gold,price));if(id<0)s.level+=count;else setHeroLevel(s,id,heroLevel(s,id)+count);}}

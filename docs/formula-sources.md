@@ -2,16 +2,16 @@
 
 每個核心公式的來源登記表：資料表、原生方法、原生預設值，或明確標記為 7.5 基準沿用、專案自訂或伺服器供給。
 
-版本 8.2.0。共 43 條公式、133 項來源條目。
+版本 8.2.0。共 44 條公式、140 項來源條目。
 
 | 狀態 | 意義 | 條目數 |
 |---|---|---|
-| `native` | 由反組譯證據確認 | 49 |
+| `native` | 由反組譯證據確認 | 51 |
 | `table` | 取自安裝包資料表 | 20 |
-| `default` | 原生靜態預設值，線上可覆蓋 | 22 |
+| `default` | 原生靜態預設值，線上可覆蓋 | 23 |
 | `baseline-75` | 沿用 7.5 基準，尚未對 8.2 核實 | 0 |
-| `table-differs` | 安裝包有值但引擎目前未照做 | 15 |
-| `invented` | 本專案自訂，安裝包未提供 | 23 |
+| `table-differs` | 安裝包有值但引擎目前未照做 | 17 |
+| `invented` | 本專案自訂，安裝包未提供 | 25 |
 | `server` | 原生為伺服器變數，安裝包未帶值 | 4 |
 
 ## 逐條登記
@@ -313,6 +313,20 @@ max(1, floor(關卡^1.7 ÷ 100 × PrestigeRelic))，最高關卡到 60 後開放
 | 閃現（PetBoss）沒有做 | `table-differs` | `reference/tt2/8.2.0/pet-qte-evidence.json`；**做了也不會生效。**PetController.ApplyChargedBonus 第一件事就是拿 Bonus(PetBossQTEDuration) 與 0 比大小，不大於 0 就整個返回，連 PetBossQTEDamage 都不會被套用。那個加成是加法型的秒數（中性值 0），而本專案匯入的加成資料表裡沒有任何天賦、神器、套裝或寵物給它——天賦「閃現」給的是 PetBossQTEDamage 與 PetQTECooldownMult，不是 duration。哪天有來源了，tests/pet-qte.test.mjs 會轉紅。 |
 | 米達斯之心（PetGold）沒有做 | `table-differs` | `reference/tt2/8.2.0/pet-qte-evidence.json`；**缺前置，不是做不了。**PetModel.GetPetHomGold 以 MonsterModel.GetAverageBossGoldDrop 起算，再乘 Pow(GetStageScaleGoldAmount, petGoldStageScaleExpo)、Bonus(PetGoldQTEAmount) 與 petHomGoldMult，點石成金開著時還要再乘 Pow(HandOfMidasSkillAmount, petMidasBonusExpo)。前兩條金幣公式本專案都還沒還原，而 GetStageScaleGoldAmount 同時也是妖精金幣缺的四項之一，做掉它會一併改動妖精的金幣，屬於獨立的一段工作。 |
 | PetQTEDamage 沒有接 | `native` | `reference/tt2/8.2.0/pet-qte-evidence.json`；那個加成（370）在整個映像沒有取值點，套裝給了它也沒有用。PetAttackQTESplashCount 則是既沒有來源也沒有取值點，2.14.0 的濺射調查已經確認過。 |
+
+### helperOrb · `lib/engine.ts` 的 `helperOrbDamage`
+
+星界覺醒：每點一次，光球撞一次，傷害是 英雄每秒傷害 × HelperQTEDamage × (1 + 0.1 × 威力^2)；能彈幾次由 HelperQTECount 決定
+
+| 來源條目 | 狀態 | 依據 |
+|---|---|---|
+| 撞擊的傷害 | `native` | `reference/tt2/8.2.0/helper-qte-evidence.json`；HelperController.HelperQTEDamageMonster＝GetAllHelperDPS × Bonus(HelperQTEDamage) × (helperQTEDamageOffset + helperQTEDamageMult × 威力^helperQTEDamageExpo)，以 DamageType.HelperQTE（8）送進 QueueMonsterAttack。整個方法只有一次 fmul 與一次 fadd，形狀是逐指令比對釘住的。 |
+| 三個係數 | `default` | `reference/tt2/8.2.0/helper-qte-evidence.json`；helperQTEDamageOffset = 1、helperQTEDamageMult = 0.1、helperQTEDamageExpo = 2，三個都是 [ServerVar] 的編譯期預設值，線上可覆蓋。 |
+| 一次點擊加一次威力 | `native` | `reference/tt2/8.2.0/helper-qte-evidence.json`；HelperQTETapped 用一道 NEON 加法把 HelperQTEPower 與 HelperQTEBounceCount 同時各加 1，再呼叫 QTEController.RefreshExpire 重設過期計時——所以只要一直點，這一輪就一直延續。 |
+| 彈幾次由 HelperQTECount 決定 | `table-differs` | `reference/tt2/8.2.0/helper-qte-evidence.json`；HelperQTEAnim 以 isLastOrbShot = (HelperQTEBounceCount >= (int)Bonus(HelperQTECount)) 判斷是不是最後一發。**本專案沒有任何來源給 HelperQTECount**（加法型，中性值 0），所以第一發就是最後一發，整套彈跳退化成一次撞擊。引擎照原生以「威力 > 上限」判斷而不是寫死一次，哪天那個加成有了來源就會自然彈更多次。 |
+| 持續期間的英雄傷害加成沒有做 | `table-differs` | `reference/tt2/8.2.0/helper-qte-evidence.json`；**做了也不會生效。**HelperQTEModifyDamage 把 AllHelperDamage 乘上 Pow(Bonus(HelperQTEDamage), Min(HelperQTEPower, Bonus(HelperQTECount)))。同一個沒有來源的 HelperQTECount 讓 Min 恆為 0、Pow 恆為 1，所以那個乘數永遠是中性值。天賦「星界覺醒」給的是 HelperQTEDamage。 |
+| 威力與彈跳數合併成一個欄位 | `invented` | 原生是兩個欄位：點擊時同時加一，但 ReduceHelperQTEPower（動畫逾時用）只減威力。本專案沒有那個逾時觸發，兩者恆等，所以只存一個 qteHelperPower。 |
+| 光球併進戰鬥區的點擊 | `invented` | 原生的光球是場上實體，在兩側英雄之間飛，撞到怪才結算。本專案沒有實體，所以點一下就立即結算一次撞擊。另外「兩側各要有一個已解鎖英雄」那個開場條件沒有實作——本專案的英雄沒有左右之分，而學得到這個天賦的存檔一定早就解鎖大量英雄。 |
 
 ### chesterson · `lib/engine.ts` 的 `chestersonStackLength`
 
