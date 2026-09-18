@@ -1,0 +1,37 @@
+{
+  "version": "8.2.0",
+  "role": "主動技能的等級上限：技能自己的預設上限加上各種 Cap 加成。",
+  "packageSha256": "8d78c9aa877e6c0b291ee2116cab855bd26c59c1d080bc654f88ecf1ff268b5f",
+  "binarySha256": "c13fc44321b1214c71ab0277a134fc3401fd7392c74a0bbb3935671c55a8713a",
+  "scriptSha256": "62c2eeb8472bb107de516e4b6ae69d3dcdf5013fb1caa87223d82a54dd203f8b",
+  "finding": "ActiveSkillModel.GetActiveSkillMaxLevel 由該技能的 defaultSkillCap 起算，加上 AllActiveSkillCap，再加上依職業分的 3 個 Cap 加成。本專案只有 AllActiveSkillCap 有來源（「暗黑天使」神話套裝 +5），職業那幾個沒有任何神器、天賦、寵物或套裝會給，所以不接。",
+  "expression": "技能等級上限 = defaultSkillCap + AllActiveSkillCap + 該職業的 Cap",
+  "methods": {
+    "ActiveSkillModel$$GetActiveSkillMaxLevel": "0x223cac0",
+    "BonusModel$$GetBonus": "0x2714c88"
+  },
+  "bonusesRead": [
+    "AllActiveSkillCap",
+    "KnightActiveSkillCap",
+    "WarlordActiveSkillCap",
+    "SummonerActiveSkillCap",
+    "AlchemistActiveSkillCap",
+    "RogueActiveSkillCap",
+    "SorcererActiveSkillCap"
+  ],
+  "classCapsNotConnected": [
+    "KnightActiveSkillCap",
+    "WarlordActiveSkillCap",
+    "SummonerActiveSkillCap"
+  ],
+  "defaultCapField": {
+    "offset": "0x58",
+    "name": "SkillParsedInfo.defaultSkillCap"
+  },
+  "consequence": "**這不是裝飾性的上限**：技能資料表每個技能有 40 列，預設上限只有 30，被擋住的那幾列是真的內容——影分身 35 級的倍率是 30 級的 243 倍。所以接上它要同時動購買檢查與載入時的夾擠：合法買到 35 級的存檔不能在載入時被夾回 30。本專案另外把上限夾在資料表列數（40），避免超出表格。",
+  "limits": [
+    "方法存在、位址與它讀的加成是事實；以暫存器傳入的參數不會出現在 bonusesRead",
+    "職業專屬的 Cap 在本專案沒有來源，屬於「接了也不會生效」而不是「原生沒有」",
+    "資料表 40 列是本專案匯入的 ActiveSkillInfo 的列數，不是原生的硬上限"
+  ]
+}

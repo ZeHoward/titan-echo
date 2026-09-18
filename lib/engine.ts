@@ -47,7 +47,9 @@ if(s.ruleset===TT2_RULESET){s.tt2??=freshTT2(s.last??Date.now());normaliseAmount
 function clampLevels(s:State){
  const t=s.tt2;if(!t)return;
  if(Array.isArray(t.tree))t.tree=t.tree.map((level,i)=>Math.min(Math.max(0,Number.isFinite(level)?level:0),TT2_TREE[i]?.max??0));
- s.skillLevels=s.skillLevels.map((level,i)=>Math.min(Math.max(0,Number.isFinite(level)?level:0),SKILL_DATA[i]?.max??0));
+ // The cap is no longer fixed: AllActiveSkillCap raises it, so a save made while a set was
+ // equipped must still load at the level it legitimately bought.
+ s.skillLevels=s.skillLevels.map((level,i)=>Math.min(Math.max(0,Number.isFinite(level)?level:0),SKILL_DATA[i]?skillCap(s,i):0));
  // An artifact level does not index a table, but a level the upgrade path cannot reach still drives
  // its bonus into the engine ceiling, which then reads as "1e+240 秒" on a skill button. The cap is
  // the one apply() enforces when buying, so a save can only hold what play could have produced.
@@ -219,6 +221,13 @@ export function relicGain(s:State){
 }
 export function artifactCost(s:State,i:number){return s.tt2!.artifacts[i]?upgradeArtifactCost(s.tt2!,i):discoveryCost(s.tt2!);}
 export function evolveCost(s:State,i:number):Big{return scale(pow(1e4,s.evolutions[i]),HEROES[i].base*1e6);}
+// Native ActiveSkillModel.GetActiveSkillMaxLevel adds AllActiveSkillCap to the skill's own
+// defaultSkillCap, plus a per-class cap; none of those class bonuses has a source in this project.
+// The tables carry 40 rows against a default cap of 30, so the rows above the cap are what this
+// unlocks - level 35 of the shadow clone is 243x level 30, not a rounding difference.
+export function skillCap(s:State,i:number){
+ return Math.min(SKILL_DATA[i].amount.length,SKILL_DATA[i].max+stateEffect(s,'AllActiveSkillCap'));
+}
 export function skillCost(s:State,i:number){return SKILL_DATA[i].cost[Math.min(SKILL_DATA[i].cost.length-1,Math.max(0,s.skillLevels[i]))];}
 // The two the engine cannot count honestly: neither system exists yet, so neither is claimable.
 export const UNMEASURED_ACHIEVEMENTS:Record<string,string>={
@@ -397,7 +406,7 @@ export function apply(s:State,a:Action){advance(s,a.at);const i=a.index??0,t=s.t
   if(i===0)t.cloneAt=s.last;
   if(i===5){t.heavenlyStrikes++;damage(s,buildDamage(s,'heavenly'),'heavenly');s.active[i]=s.last;s.cooldowns[i]=s.last+skillCooldown(s,i)*1000;}
  }
- if(a.type==='skillUp'&&Number.isInteger(i)&&i>=0&&i<6&&s.level>=SKILLS[i].level&&s.skillLevels[i]<SKILL_DATA[i].max&&compare(s.gold,fromNumber(skillCost(s,i)))>=0){s.gold=atLeastZero(subtract(s.gold,fromNumber(skillCost(s,i))));s.skillLevels[i]++;}
+ if(a.type==='skillUp'&&Number.isInteger(i)&&i>=0&&i<6&&s.level>=SKILLS[i].level&&s.skillLevels[i]<skillCap(s,i)&&compare(s.gold,fromNumber(skillCost(s,i)))>=0){s.gold=atLeastZero(subtract(s.gold,fromNumber(skillCost(s,i))));s.skillLevels[i]++;}
  if(a.type==='discover'&&s.best>=PRESTIGE_DEFAULTS.minimumStage){const found=drawArtifact(t,s.relics);if(found){s.relics-=found.cost;note(s,`獲得神器：${TT2_ARTIFACTS[found.index].name}`);}}
  if(a.type==='artifact'&&Number.isInteger(i)&&i>=0&&i<103&&t.artifacts[i]>0){const price=artifactCost(s,i),max=TT2_ARTIFACTS[i].max||1e6;if(s.relics>=price&&t.artifacts[i]<max){s.relics-=price;t.spent[i]+=price;t.artifacts[i]++;}}
  if(a.type==='talent'&&Number.isInteger(i)&&i>=0&&i<TT2_TREE.length&&canBuyTalent(t,i,s.best)){t.points-=TT2_TREE[i].cost[t.tree[i]];t.tree[i]++;}

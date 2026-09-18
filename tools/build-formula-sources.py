@@ -186,6 +186,13 @@ FORMULAS = [
     entry(id='skillValues', module='lib/engine.ts', export='skillPower',
           expression='技能等級對應的倍率 × 對應加成 × 全主動技能加成',
           parts=[entry(part='各級倍率、持續、冷卻與魔力', status='table', ref='ActiveSkillInfo.json'),
+                 entry(part='等級上限', status='native', ref='skill-cap-evidence.json',
+                       note='原生 ActiveSkillModel.GetActiveSkillMaxLevel 由該技能的 defaultSkillCap 起算，'
+                            '加上 AllActiveSkillCap 與依職業分的三個 Cap 加成。'
+                            '本專案只有 AllActiveSkillCap 有來源（「暗黑天使」神話套裝 +5），職業那幾個沒有來源。'
+                            '**這不是裝飾性的上限**：技能表每個技能有 40 列、預設上限 30，'
+                            '被擋住的那幾列是真內容——影分身 35 級的倍率是 30 級的 243 倍。'
+                            '接上它同時動了購買檢查與載入夾擠，並把上限夾在資料表列數。'),
                  entry(part='持續時間的兩個加總', status='native', ref='skill-duration-evidence.json',
                        note='原生 SkillParsedInfo.GetDuration 先建兩個加總再相乘：秒數那組**從 0 起算**，'
                             '收該技能自己的 SkillDuration 與 AllActiveSkillDuration；'
@@ -535,7 +542,7 @@ NOT_FORMULAS = {
         'canDiscover', 'canBuyTalent', 'discoveryPool', 'drawArtifact', 'collectGear', 'dropGear', 'craftSet',
         'awardPet', 'heroPowerBoost', 'heroSkillValue', 'equipmentEffect', 'equipmentValue',
         'artifactCost', 'skillCost', 'skillDuration', 'skillCooldown', 'skillMana', 'critMultiplier',
-        'manaCapDamage', 'helperWeaponDamage', 'maxStageDamage', 'stateResolver', 'effectResolver',
+        'manaCapDamage', 'helperWeaponDamage', 'maxStageDamage', 'skillCap', 'stateResolver', 'effectResolver',
         'monsterCount', 'unlockedSkills', 'skillStep', 'discoveryCost', 'craftPrice', 'buildMultiplier', 'manaRegen', 'achievementTier',
         'advanceEggs', 'playerUpgradeCost', 'playerBaseDamage', 'themeIndex', 'goldReward', 'health', 'heroDps',
         'cost', 'critChance', 'manaMax', 'bossDuration', 'relicGain', 'evolveCost', 'buildDamage', 'skillPower',

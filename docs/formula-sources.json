@@ -278,6 +278,12 @@
           "ref": "ActiveSkillInfo.json"
         },
         {
+          "part": "等級上限",
+          "status": "native",
+          "ref": "skill-cap-evidence.json",
+          "note": "原生 ActiveSkillModel.GetActiveSkillMaxLevel 由該技能的 defaultSkillCap 起算，加上 AllActiveSkillCap 與依職業分的三個 Cap 加成。本專案只有 AllActiveSkillCap 有來源（「暗黑天使」神話套裝 +5），職業那幾個沒有來源。**這不是裝飾性的上限**：技能表每個技能有 40 列、預設上限 30，被擋住的那幾列是真內容——影分身 35 級的倍率是 30 級的 243 倍。接上它同時動了購買檢查與載入夾擠，並把上限夾在資料表列數。"
+        },
+        {
           "part": "持續時間的兩個加總",
           "status": "native",
           "ref": "skill-duration-evidence.json",
@@ -823,6 +829,7 @@
       "manaCapDamage",
       "helperWeaponDamage",
       "maxStageDamage",
+      "skillCap",
       "stateResolver",
       "effectResolver",
       "monsterCount",

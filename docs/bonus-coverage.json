@@ -76,8 +76,8 @@
     }
   },
   "counts": {
-    "live": 99,
-    "dead-native-uses-it": 130,
+    "live": 100,
+    "dead-native-uses-it": 129,
     "dead-native-ignores-it": 68,
     "read-without-source": 13,
     "not-in-project": 486
@@ -230,16 +230,16 @@
     },
     {
       "id": "AllActiveSkillCap",
-      "verdict": "dead-native-uses-it",
+      "verdict": "live",
       "sources": [
         "TT2_SETS"
       ],
-      "engineReads": false,
+      "engineReads": true,
       "nativeReaders": [
         "ActiveSkillModel"
       ],
       "indirect": null,
-      "priority": true
+      "priority": false
     },
     {
       "id": "AllArtifactMultEffect",
