@@ -467,10 +467,10 @@ FORMULAS = [
                     note='LoginStreak 是 currentDayNumber − 1，LoginStreakCapped 再夾到 '
                          '[0, NUMBER_OF_DAYS]，而 NUMBER_OF_DAYS 是 DailyRewardModel 的常數 14——'
                          '和十四天獎勵表用的是同一個常數。加成自己的說明也寫著 max 14。'),
-              entry(part='日界用本專案既有的本地日，不是 UTC', status='invented',
-                    note='原生的日期比較走 GHTime.currentTimeUTC 的 .Date，本專案的每日重置一直'
-                         '用本地日界（dayAt）。這一項沿用既有做法，沒有為了它單獨改成 UTC，'
-                         '差別只在跨日的那一小時落在哪裡。'),
+              entry(part='日界與原生一致，都是 UTC', status='native', ref='login-streak-evidence.json',
+                    note='原生的日期比較走 GHTime.currentTimeUTC 的 .Date；本專案的 dayAt 是 '
+                         'floor(epoch 毫秒 ÷ 86400000)，epoch 本身就以 UTC 為基準，'
+                         '所以兩者切在同一條線上，不需要額外換算。'),
               entry(part='不分 MISSED 與 ERROR', status='invented',
                     note='原生的 ERROR(3) 要上次領取的日期在未來才會出現（改過系統時間或存檔被動過），'
                          '它與 MISSED(2) 一樣讓加成失效，所以本專案只判斷「上次領取是不是今天或昨天」，'

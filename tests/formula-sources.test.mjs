@@ -29,14 +29,14 @@ test('no export in a covered module escapes classification', () => {
 
 test('the counts are recorded, so a source changing status is a visible change', () => {
   assert.deepEqual(report.counts, {
-    'table-differs': 12, invented: 20, table: 19, default: 21, server: 4, native: 39,
+    'table-differs': 12, invented: 19, table: 19, default: 21, server: 4, native: 40,
   });
   // Nothing is left on the 7.5 baseline: every source has been checked against 8.2, and what
   // could not be adopted is recorded as known-but-not-followed rather than as unchecked.
   assert.equal(report.counts['baseline-75'] ?? 0, 0, '沿用 7.5 的條目已經全部查完');
   // Still unverified: this project's own choice, or a server value with no compiled-in default.
   const unverified = (report.counts['baseline-75'] ?? 0) + report.counts.invented + report.counts.server;
-  assert.equal(unverified, 24);
+  assert.equal(unverified, 23);
   assert.equal(report.counts['table-differs'], 12, '已知但未照做的項目要看得見');
 });
 

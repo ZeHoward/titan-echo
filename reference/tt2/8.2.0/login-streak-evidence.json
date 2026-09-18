@@ -281,7 +281,7 @@
     "AllDamage": 37
   },
   "limits": [
-    "日期比較走的是 UTC 的日界（GHTime.currentTimeUTC 取 .Date），本專案的每日重置用的是本地日界，兩者在時區上會差一段。這一項沿用本專案既有的做法，沒有為了這個加成單獨改成 UTC。",
+    "日期比較走的是 UTC 的日界（GHTime.currentTimeUTC 取 .Date），本專案的 dayAt 是 floor(epoch 毫秒 ÷ 86400000)，基準同樣是 UTC，兩者一致。",
     "ERROR(3) 這個狀態要上次領取的日期在未來才會出現（改過系統時間或存檔被動過）。它與 MISSED 一樣讓加成失效，所以本專案不分這兩者。",
     "currentDayNumber 怎麼在領取時前進與重置，不在這個方法裡；本文件只釘住「它減一夾住之後當指數」與「狀態決定要不要用」這兩件事。"
   ]
