@@ -145,6 +145,9 @@ export const MEGA_BOMB={stageLength:10,titanRemoval:Math.fround(.9)} as const;
 // 寶箱泰坦的兩個 [ServerVar]：一疊的基礎關數，以及寶箱金幣的倍率。
 // treasureGold 是 15，引擎以前寫死 10。同一份證據檔。
 export const CHESTERSON={stageLength:5,treasureGold:15} as const;
+// 妖精的三個 [ServerVar]：額外妖精的上限、每多一隻機率乘的懲罰，以及妖精開始出現的關卡。
+// 見 reference/tt2/8.2.0/fairy-evidence.json。
+export const FAIRY={maxExtraSpawns:7,multiSpawnPenalty:Math.fround(.5),startStage:10} as const;
 /** The crit boost skill's slot in this project's arrays; natively ActiveSkillID 3. */
 const CRIT_BOOST_SKILL=SKILL_DATA.findIndex(k=>k.id==='CritBoost');
 // Native PlayerModel.RefreshCriticalValues: the multiplier is playerCritMult x Bonus(CritDamage).
@@ -402,6 +405,18 @@ export function megaBombStackLength(s:State,resolve=stateResolver(s)){
 export function chestersonStackLength(s:State,resolve=stateResolver(s)){
  return Math.floor((resolve('ChestersonGoldStageAmount')+CHESTERSON.stageLength)
   *resolve('SpecialTitanStackDurationMult'));}
+// 多重妖精。原生 FairyController.MultiFairySpawn 先無條件生一隻，再跑一個迴圈擲額外的：
+// 每一輪沒中就結束，中了就多一隻並把機率乘上懲罰，最多七隻。機率**不夾在 1**——
+// 原生就是 Random.value < 機率，天賦滿級是 2.75，前幾輪必中。
+/** 這一次領取的妖精，除了必得的那一隻之外還有幾隻。 */
+export function rollExtraFairies(s:State,resolve=stateResolver(s)){
+ let chance=resolve('FairySpawnChance')*resolve('AllProbabilityBoost'),extra=0;
+ for(let n=1;n<=FAIRY.maxExtraSpawns;n++){
+  if(tt2Random(s.tt2!)>=chance)break;
+  extra++;chance*=FAIRY.multiSpawnPenalty;}
+ return extra;}
+/** 妖精要推到這一關才開始出現。原生看的是最高關卡，不是目前所在的關卡。 */
+export function fairiesUnlocked(s:State){return s.best>=FAIRY.startStage;}
 /** 寶箱效果作用中嗎？作用中的那幾關，每一隻普通泰坦都是寶箱泰坦。 */
 export function chestersonActive(s:State){return (s.tt2?.chestStages??0)>0;}
 // 原生的 CanSpawnTitan 除了「還沒疊」還要求蛻變過一次，所以第一輪不會出現寶箱泰坦。
@@ -551,7 +566,12 @@ export function apply(s:State,a:Action){advance(s,a.at);const i=a.index??0,t=s.t
   note(s,`每日成就完成：${task.description.replace('{0}',String(task.requirement))}`);
  }
  if(a.type==='boss'&&s.farming){s.farming=false;s.kills=monsterCount(s);spawn(s);}
- if(a.type==='fairy'&&s.last-s.lastFairy>=60000){s.lastFairy=s.last;s.daily.fairies++;s.tt2!.fairyRewards++;earnGold(s,goldReward(s,'fairy'));note(s,'已領取妖精金幣。');}
+ if(a.type==='fairy'&&fairiesUnlocked(s)&&s.last-s.lastFairy>=60000){s.lastFairy=s.last;
+  // 一次領取可能來好幾隻：原生排程牠們依序飛進來，本專案沒有場上實體，所以一次結算完。
+  const fairies=1+rollExtraFairies(s);
+  s.daily.fairies+=fairies;s.tt2!.fairyRewards+=fairies;
+  for(let n=0;n<fairies;n++)earnGold(s,goldReward(s,'fairy'));
+  note(s,fairies>1?`已領取妖精金幣，這次來了 ${fairies} 隻。`:'已領取妖精金幣。');}
  if(a.type==='equip'){const item=t.inventory.find(g=>g.id===i);if(item)t.equipped[TT2_GEAR[item.definition].slot]=i;}
  if(a.type==='petEquip'&&Number.isInteger(i)&&TT2_PETS[i]&&t.petLevels[i]>0)t.activePets[TT2_PETS[i].slot==='Damage'?0:1]=i;
  if(a.type==='egg'&&t.eggs>0){const before=t.petLevels.reduce((n,v)=>n+v,0);const pet=awardPet(t,s.best);if(pet>=0){t.eggs--;s.daily.petLevels+=Math.max(0,t.petLevels.reduce((n,v)=>n+v,0)-before);note(s,`獲得 ${PET_NAMES[TT2_PETS[pet].name]}，目前等級 ${t.petLevels[pet]}。`);}}
@@ -673,10 +693,9 @@ export function goldReward(s:State,source:'monster'|'boss'|'fairy'|'chest'|'pet'
  const resolve=stateResolver(s);
  for(const factor of [resolve('GoldAll'),resolve('JackpotGold'),resolve('GoldPerRunningActiveSkill')**running,1+resolve('GoldPerOwnedCardLevel')*t.cards,1+resolve('GoldPerSwordMasterLevel')*s.level,gearBonus(s,2)])n=scale(n,factor);
  if(source==='boss'||source==='pet')n=scale(n,10*resolve('GoldBoss'));
- // 寶箱是 treasureGold × ChestAmount。妖精那條共用了同一個 10，但原生的妖精金幣走別的表，
- // 還沒查，所以先各走各的而不是一起改掉。
- if(source==='chest')n=scale(n,CHESTERSON.treasureGold*resolve('ChestAmount'));
- if(source==='fairy')n=scale(n,10*resolve('ChestAmount'));
+ // 寶箱與妖精走同一個倍率：原生的 GetFairyGoldAmount 以 GetChestersonGold 起算，而那就是
+ // GetMonsterGoldDrop 帶 MonsterClass.Chesterson，所以兩者都是 treasureGold × ChestAmount。
+ if(source==='chest'||source==='fairy')n=scale(n,CHESTERSON.treasureGold*resolve('ChestAmount'));
  if(source==='fairy'||source==='pet')n=scale(n,resolve('GoldSpecialty'));
  if(source==='fairy')n=scale(n,resolve('FairyGold'));if(source==='pet')n=scale(n,resolve('PetGoldQTEAmount'));
  if(s.active[4]>s.last)n=scale(n,skillPower(s,4)**(['fairy','pet'].includes(source)?.7:1));

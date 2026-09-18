@@ -9,8 +9,8 @@ const readable = readFileSync(new URL('../docs/formula-sources.md', import.meta.
 
 test('every core formula names a source, and every source it names exists', () => {
   assert.deepEqual(report.problems, []);
-  assert.equal(report.formulas, 39);
-  assert.equal(report.parts, 104);
+  assert.equal(report.formulas, 40);
+  assert.equal(report.parts, 109);
 });
 
 test('no export in a covered module escapes classification', () => {
@@ -29,14 +29,14 @@ test('no export in a covered module escapes classification', () => {
 
 test('the counts are recorded, so a source changing status is a visible change', () => {
   assert.deepEqual(report.counts, {
-    'table-differs': 12, invented: 15, table: 19, default: 20, server: 4, native: 34,
+    'table-differs': 12, invented: 17, table: 19, default: 21, server: 4, native: 36,
   });
   // Nothing is left on the 7.5 baseline: every source has been checked against 8.2, and what
   // could not be adopted is recorded as known-but-not-followed rather than as unchecked.
   assert.equal(report.counts['baseline-75'] ?? 0, 0, '沿用 7.5 的條目已經全部查完');
   // Still unverified: this project's own choice, or a server value with no compiled-in default.
   const unverified = (report.counts['baseline-75'] ?? 0) + report.counts.invented + report.counts.server;
-  assert.equal(unverified, 19);
+  assert.equal(unverified, 21);
   assert.equal(report.counts['table-differs'], 12, '已知但未照做的項目要看得見');
 });
 
@@ -56,7 +56,7 @@ test('每一處與安裝包不一致的地方都寫下來了', () => {
 });
 
 test('the readable copy matches the register it was rendered from', () => {
-  assert.match(readable, /共 39 條公式、104 項來源條目/);
+  assert.match(readable, /共 40 條公式、109 項來源條目/);
   for (const formula of register.formulas) assert.ok(readable.includes(formula.id), formula.id);
   for (const status of Object.keys(register.statuses)) assert.ok(readable.includes(`\`${status}\``), status);
 });

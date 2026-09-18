@@ -1,0 +1,307 @@
+{
+  "version": "8.2.0",
+  "role": "多重妖精：一隻必定出現，之後的每一隻各擲一次骰、機率逐次減半；以及妖精的關卡門檻與金幣來源。",
+  "packageSha256": "8d78c9aa877e6c0b291ee2116cab855bd26c59c1d080bc654f88ecf1ff268b5f",
+  "binarySha256": "c13fc44321b1214c71ab0277a134fc3401fd7392c74a0bbb3935671c55a8713a",
+  "scriptSha256": "62c2eeb8472bb107de516e4b6ae69d3dcdf5013fb1caa87223d82a54dd203f8b",
+  "finding": "FairyController.MultiFairySpawn 先無條件 SpawnFairy 一隻，再以 FairySpawnChance × AllProbabilityBoost 為機率跑一個迴圈：每一輪擲一次 Random.value，沒中就結束，中了就排一隻額外的妖精（延遲 n ÷ 2 秒），然後把機率乘上 multiFairySpawnPenalty（0.5）再繼續，最多 maxExtraMultiFairySpawns（7）隻。所以這個加成是「額外幾隻」，不是「多久出現一隻」——FairySpawnChance 在 SetDefaultBonuses 裡沒有條目，基礎值就是 0，沒有來源的玩家永遠只有一隻。什麼時候出現由 QTE 冷卻決定，本專案沒有那套系統；唯一不需要它的原生條件記在這裡：OnQTEReady 對妖精那一型（QTEType 6）要求 GetMaxStageReached() ≥ fairyStartStage（10）。妖精的金幣以 MonsterModel.GetChestersonGold 起算，而那個方法就是 GetMonsterGoldDrop(關卡, MonsterClass.Chesterson, 1 隻, 變異)——也就是說一隻妖精給的是一隻寶箱泰坦的金幣，走同一個 treasureGold × ChestAmount。",
+  "consequence": "引擎的妖精金幣把寶箱那條的倍率寫死成 10，但兩者在原生是同一條，所以 2.18.0 把寶箱改成 treasureGold=15 之後，妖精這條也要跟著改。多重妖精則是全新的：未投資的人完全沒有變化（基礎值 0），有來源的人一次領取會拿到好幾份。",
+  "methods": {
+    "multiSpawn": {
+      "name": "FairyController$$MultiFairySpawn",
+      "rva": "0x21bdfd4",
+      "bytesSha256": "0da50bd886834381a21be5e592bd88c442545f1faf56123f149ebf8a787f70bd"
+    },
+    "gate": {
+      "name": "FairyController$$OnQTEReady",
+      "rva": "0x21be368",
+      "bytesSha256": "6cdd6a01bb51ab667ef03b003fb9462d75de90a350351408f24908245d9d76bb"
+    },
+    "gold": {
+      "name": "FairyController$$GetFairyGoldAmount",
+      "rva": "0x21c11e8",
+      "bytesSha256": "4c65a4aa32ea9f27d5b896b27f8bcbda60c2d4fb25c37906ddce11e95af6dbec"
+    },
+    "chestersonGold": {
+      "name": "MonsterModel$$GetChestersonGold",
+      "rva": "0x2327ad0",
+      "bytesSha256": "863e2640b5aec3f68611b9822f0711d7c87608d4ec87c114da87b0f9f7c7b47f"
+    }
+  },
+  "formulas": {
+    "firstFairy": "無條件生成一隻",
+    "extraFairies": "重複最多 maxExtraMultiFairySpawns 次：Random.value < 機率就再生一隻，然後機率 ×= multiFairySpawnPenalty；沒中就結束",
+    "extraChance": "FairySpawnChance × AllProbabilityBoost（基礎值 0）",
+    "stageGate": "GetMaxStageReached() ≥ fairyStartStage",
+    "fairyGold": "一隻寶箱泰坦的金幣（GetMonsterGoldDrop 帶 MonsterClass.Chesterson、1 隻） × 關卡縮放 × 十倍金幣期望值 × 寶箱十倍金幣期望值 × 累積金幣期望值 × FairyGold × 點石成金加成（技能開著時）× 隨機變異"
+  },
+  "traces": {
+    "multiSpawn": [
+      [
+        "call",
+        "SpawnFairy",
+        "0x21be048"
+      ],
+      [
+        "GetBonus",
+        "FairySpawnChance",
+        "0x21be064"
+      ],
+      [
+        "GetBonus",
+        "AllProbabilityBoost",
+        "0x21be08c"
+      ],
+      [
+        "call",
+        "op_Multiply",
+        "0x21be0e0"
+      ],
+      [
+        "static",
+        "maxExtraMultiFairySpawns",
+        "0x21be100"
+      ],
+      [
+        "cmp",
+        "w24, w8",
+        "0x21be104"
+      ],
+      [
+        "call",
+        "get_value",
+        "0x21be110"
+      ],
+      [
+        "call",
+        "op_Implicit",
+        "0x21be134"
+      ],
+      [
+        "call",
+        "op_LessThan",
+        "0x21be164"
+      ],
+      [
+        "scvtf",
+        "s0, w24, #1",
+        "0x21be16c"
+      ],
+      [
+        "call",
+        "Invoke",
+        "0x21be17c"
+      ],
+      [
+        "static",
+        "multiFairySpawnPenalty",
+        "0x21be1b0"
+      ],
+      [
+        "call",
+        "op_Implicit",
+        "0x21be1cc"
+      ],
+      [
+        "call",
+        "op_Multiply",
+        "0x21be200"
+      ],
+      [
+        "add",
+        "w24, w24, #1",
+        "0x21be20c"
+      ]
+    ],
+    "gate": [
+      [
+        "cmp",
+        "w20, #6",
+        "0x21be3b0"
+      ],
+      [
+        "call",
+        "GetMaxStageReached",
+        "0x21be3d0"
+      ],
+      [
+        "static",
+        "fairyStartStage",
+        "0x21be3fc"
+      ],
+      [
+        "cmp",
+        "w20, w8",
+        "0x21be400"
+      ],
+      [
+        "call",
+        "MultiFairySpawn",
+        "0x21be418"
+      ]
+    ],
+    "gold": [
+      [
+        "call",
+        "GetChestersonGold",
+        "0x21c12dc"
+      ],
+      [
+        "call",
+        "GetStageScaleGoldAmount",
+        "0x21c1304"
+      ],
+      [
+        "call",
+        "Pow",
+        "0x21c1364"
+      ],
+      [
+        "call",
+        "op_Multiply",
+        "0x21c1398"
+      ],
+      [
+        "call",
+        "GetAverage10xGold",
+        "0x21c13b0"
+      ],
+      [
+        "call",
+        "op_Implicit",
+        "0x21c13bc"
+      ],
+      [
+        "call",
+        "op_Multiply",
+        "0x21c13f0"
+      ],
+      [
+        "call",
+        "GetAverage10xGold",
+        "0x21c1408"
+      ],
+      [
+        "call",
+        "op_Implicit",
+        "0x21c1414"
+      ],
+      [
+        "call",
+        "op_Multiply",
+        "0x21c1448"
+      ],
+      [
+        "call",
+        "GetAverageJackpotGold",
+        "0x21c1460"
+      ],
+      [
+        "call",
+        "op_Multiply",
+        "0x21c1494"
+      ],
+      [
+        "GetBonus",
+        "FairyGold",
+        "0x21c14b0"
+      ],
+      [
+        "call",
+        "op_Multiply",
+        "0x21c14e4"
+      ],
+      [
+        "call",
+        "IsSkillActive",
+        "0x21c1514"
+      ],
+      [
+        "call",
+        "get_Value",
+        "0x21c156c"
+      ],
+      [
+        "call",
+        "GetMaxHandOfMidasBonus",
+        "0x21c1590"
+      ],
+      [
+        "GetBonus",
+        "HandOfMidasSkillAmount",
+        "0x21c15b0"
+      ],
+      [
+        "call",
+        "Pow",
+        "0x21c1624"
+      ],
+      [
+        "call",
+        "op_Multiply",
+        "0x21c1658"
+      ],
+      [
+        "call",
+        "Range",
+        "0x21c16a4"
+      ],
+      [
+        "call",
+        "op_Implicit",
+        "0x21c16c8"
+      ],
+      [
+        "call",
+        "op_Multiply",
+        "0x21c16fc"
+      ]
+    ],
+    "chestersonGold": [
+      [
+        "arg",
+        "w2=3",
+        "0x2327ae4"
+      ],
+      [
+        "arg",
+        "w3=1",
+        "0x2327ae8"
+      ],
+      [
+        "call",
+        "GetMonsterGoldDrop",
+        "0x2327aec"
+      ]
+    ]
+  },
+  "statics": {
+    "maxExtraMultiFairySpawns": {
+      "offset": "0x5c4",
+      "value": 7
+    },
+    "multiFairySpawnPenalty": {
+      "offset": "0x5c8",
+      "value": 0.5
+    },
+    "fairyStartStage": {
+      "offset": "0x5b4",
+      "value": 10
+    }
+  },
+  "bonusIds": {
+    "FairySpawnChance": 198,
+    "AllProbabilityBoost": 27,
+    "FairyGold": 200,
+    "Goldx10Chance": 248,
+    "ChestGoldx10Chance": 98,
+    "HandOfMidasSkillAmount": 255
+  },
+  "limits": [
+    "機率沒有被夾在 1：原生就是 op_LessThan(Random.value, 機率)，機率大於 1 時那一輪必中（天賦「妖精魅力」滿級是 2.75），之後才被 0.5 拉下來。",
+    "額外妖精的 n ÷ 2 秒延遲是畫面上的出場間隔，本專案沒有場上實體，因此不實作。",
+    "妖精什麼時候出現由 QTEController 的冷卻決定，那是一個 334 條指令、八個以上加成、依 QTE 類型分支的方法，加上整套 ready／expire 狀態機與點擊互動，不在本文件範圍內。本專案的妖精仍然是玩家自己按、60 秒冷卻。",
+    "妖精金幣的完整鏈記在 traces.gold 裡，本專案只實作了「以寶箱泰坦的金幣起算」與 FairyGold、GoldSpecialty 這幾項。沒有實作的有四項：GetStageScaleGoldAmount 的關卡縮放（fairyGoldStageScaleExpo = 1.6）、兩個十倍金幣與一個累積金幣的期望值（本專案沒有 Goldx10Chance 的來源，而 JackpotGold 目前是無條件套用）、點石成金開著時的額外加成，以及 fairyMinGoldVariance（0.2）到 fairyMaxGoldVariance（1.8）之間的隨機變異——那個變異的期望值是 1.0，所以略過它不會讓長期收益偏移，但單次金額會比原生穩定。",
+    "妖精的獎勵不只金幣（鑽石、裝備、魔力藥水、增益等各有 CanSpawn 條件與每日上限），本專案目前只有金幣，那些不在本文件範圍內。"
+  ]
+}

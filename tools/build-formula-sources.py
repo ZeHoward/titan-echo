@@ -450,6 +450,36 @@ FORMULAS = [
               entry(part='特殊攻擊未實作', status='server',
                     note='ShadowCloneSkillSpecialRate 與 SpecialChance 另有節奏與機率，'
                          '本專案未實作，也未核實其倍率來源。')]),
+    entry(id='fairies', module='lib/engine.ts', export='rollExtraFairies',
+          expression='領一次妖精必得一隻，之後最多七隻額外的：每一隻各擲一次 Random < FairySpawnChance × AllProbabilityBoost，中了就多一隻並把機率乘 0.5，沒中就結束；最高關卡要先到第 10 關才有妖精',
+          parts=[
+              entry(part='迴圈的形狀與兩個上限', status='native', ref='fairy-evidence.json',
+                    note='FairyController.MultiFairySpawn 先無條件 SpawnFairy 一隻'
+                         '（呼叫點在第一次擲骰之前，這一點另外釘住），'
+                         '再以 Bonus(FairySpawnChance) × Bonus(AllProbabilityBoost) 為機率跑迴圈：'
+                         '每一輪 op_LessThan(Random.value, 機率)，沒中就 break，'
+                         '中了就 Invoke(SpawnFairy, n ÷ 2) 並把機率乘上 multiFairySpawnPenalty，'
+                         '迴圈上限是 maxExtraMultiFairySpawns。'
+                         '**機率沒有被夾在 1**：天賦「妖精魅力」滿級是 2.75，前兩輪必中。'),
+              entry(part='上限 7、懲罰 0.5、起始關卡 10', status='default', ref='fairy-evidence.json',
+                    note='三個都是 [ServerVar] 的編譯期預設值：maxExtraMultiFairySpawns = 7、'
+                         'multiFairySpawnPenalty = 0.5、fairyStartStage = 10，線上可覆蓋。'
+                         'FairySpawnChance 在 SetDefaultBonuses 裡**沒有條目**，'
+                         '所以它的基礎值就是 0——沒有來源的玩家永遠只有一隻妖精。'),
+              entry(part='關卡門檻', status='native', ref='fairy-evidence.json',
+                    note='FairyController.OnQTEReady 對妖精那一型（QTEType 6）先比對 '
+                         'GetMaxStageReached() 與 fairyStartStage，過了才呼叫 MultiFairySpawn。'
+                         '看的是**最高關卡**，不是目前所在的關卡，所以蛻變之後不會又鎖回去。'),
+              entry(part='什麼時候出現仍然是本專案自訂', status='invented',
+                    note='原生的妖精由 QTEController 的冷卻排程，玩家再去點那個 QTE。'
+                         'QTEController.GetCooldownDuration 是一個 334 條指令、八個以上加成、'
+                         '依 QTE 類型分支的方法，還要配整套 ready／expire 狀態機與點擊互動，'
+                         '本專案沒有做。妖精仍然是玩家自己按、60 秒冷卻——'
+                         '那個 60 秒是本專案自訂的，不是原生的冷卻。'),
+              entry(part='額外妖精一次結算，不排隊飛進來', status='invented',
+                    note='原生把額外的妖精排在 n ÷ 2 秒後依序出場，各自是場上的一個實體。'
+                         '本專案沒有場上實體，所以一次領取把所有中的妖精一起結算成金幣。'
+                         '總金額相同，差別只在畫面上看不到牠們陸續飛進來。')]),
     entry(id='chesterson', module='lib/engine.ts', export='chestersonStackLength',
           expression='寶箱泰坦用同一套佇列但效果完全不同：打死一隻（要蛻變過）開啟 floor((ChestersonGoldStageAmount + 5) × SpecialTitanStackDurationMult) 關的效果，那幾關的每一隻普通泰坦都是寶箱泰坦，金幣倍率 treasureGold(15) × ChestAmount',
           parts=[
@@ -474,8 +504,9 @@ FORMULAS = [
                     note='BonusModel.GetChestersonMultiplier 是 [ServerVar] treasureGold 乘上 '
                          'Bonus(ChestAmount)，而 treasureGold 的編譯期預設值是 **15**。'
                          '引擎以前寫死 10，這一版改成 15。'
-                         '**妖精金幣沿用了同一個 10**：原生的妖精走 FairyRewardTableInfo，'
-                         '還沒查，所以先各走各的常數而不是一起改掉。'),
+                         '**妖精金幣走的是同一條**（2.19.0 查證）：GetFairyGoldAmount 以 '
+                         'MonsterModel.GetChestersonGold 起算，而那就是 GetMonsterGoldDrop 帶 '
+                         'MonsterClass.Chesterson、一隻，所以兩者共用同一個倍率。'),
               entry(part='關數 5 的基礎值', status='default', ref='special-titan-evidence.json',
                     note='[ServerVar] chestersonGoldDuration 的編譯期預設值是 5，線上可覆蓋。'
                          'ChestersonGoldStageAmount 是加法型，中性值 0，所以未投資時一疊就是 5 關；'
@@ -684,6 +715,7 @@ NOT_FORMULAS = {
         'manaCapDamage', 'helperWeaponDamage', 'maxStageDamage', 'skillCap', 'cloakedStageSkip', 'stateResolver', 'effectResolver',
         'multiMonsterMaxCount', 'multiMonsterGold',
         'chestChance', 'megaBombMaxStacks', 'megaBombStackLength', 'chestersonActive',
+        'fairiesUnlocked',
         'monsterCount', 'unlockedSkills', 'skillStep', 'discoveryCost', 'craftPrice', 'buildMultiplier', 'manaRegen', 'achievementTier',
         'advanceEggs', 'playerUpgradeCost', 'playerBaseDamage', 'themeIndex', 'goldReward', 'health', 'heroDps',
         'cost', 'critChance', 'manaMax', 'bossDuration', 'relicGain', 'evolveCost', 'buildDamage', 'skillPower',
@@ -694,7 +726,7 @@ NOT_FORMULAS = {
         'HEROES', 'SKILLS', 'SKILL_DATA', 'SKILL_ORDER', 'TT2_RULESET', 'bonusDefinitions',
         'EFFECT_LABELS', 'effectLabel', 'BUILD_COEFFICIENTS', 'PLAYER_DEFAULTS', 'RESOURCE_PERKS',
         'EGG_INTERVAL', 'PENDING_HERO_EFFECTS', 'heroSkills', 'THEME_STAGES', 'TT2_THEMES', 'HELPER_DEFAULTS',
-        'BONUS_DEFAULTS', 'MANA_DEFAULTS', 'PRESTIGE_DEFAULTS', 'MULTI_MONSTER_MIN', 'MEGA_BOMB', 'CHESTERSON',
+        'BONUS_DEFAULTS', 'MANA_DEFAULTS', 'PRESTIGE_DEFAULTS', 'MULTI_MONSTER_MIN', 'MEGA_BOMB', 'CHESTERSON', 'FAIRY',
         'HERO_LEVEL_CAP', 'PLAYER_LEVEL_CAP', 'UNMEASURED_ACHIEVEMENTS', 'UNMEASURED_DAILY_TASKS',
         'DAILY_TASK_PAID', 'cap'],
     'arithmetic': [
