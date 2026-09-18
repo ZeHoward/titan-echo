@@ -149,6 +149,49 @@ test('實際遊玩時每一波都落在 1 與上限之間，而且真的會出�
   assert.ok([...seen].every(n => n === 1 || n >= MULTI_MONSTER_MIN), '中骰後不會生出比下限少的隻數');
 });
 
+test('每一波的隻數分布：命中率接近擲骰，隻數在下限與上限之間大致均勻', () => {
+  const s = fresh(1000);
+  // Same loadout as the browser run that made this look wrong, so the numbers are comparable.
+  s.tt2.tree[LOVE_POTION] = 9;
+  s.tt2.tree[AMBUSH] = 1;
+  s.tt2.artifacts[KITSUNE] = 40;
+  s.heroes = s.heroes.map(() => 400);
+  const chance = multiMonsterChance(s);
+  const limit = multiMonsterMaxCount(s);
+
+  // Count each wave once, as it spawns. Sampling "whatever is on screen" instead would be biased
+  // towards the big waves, which live longer precisely because they have more health - that is
+  // what made a browser run look like it was almost always rolling the maximum.
+  const counts = new Map();
+  let waves = 0, now = s.last, kills = s.totalKills;
+  for (let n = 0; n < 30000 && waves < 6000; n++) {
+    now += 120;
+    apply(s, { type: 'tap', at: now });
+    if (s.totalKills === kills) continue;
+    kills = s.totalKills;
+    waves++;
+    counts.set(s.tt2.multi, (counts.get(s.tt2.multi) ?? 0) + 1);
+  }
+  assert.ok(waves > 1000, `樣本不足：只有 ${waves} 波`);
+
+  const singles = counts.get(1) ?? 0;
+  const hitRate = 1 - singles / waves;
+  assert.ok(Math.abs(hitRate - chance) < 0.05,
+    `命中率 ${hitRate.toFixed(3)} 與擲骰 ${chance.toFixed(3)} 差太多`);
+
+  // Each size from the lower bound to the limit should take a roughly equal share of the hits.
+  const sizes = limit + 1 - MULTI_MONSTER_MIN;
+  const share = (waves - singles) / sizes;
+  for (let size = MULTI_MONSTER_MIN; size <= limit; size++) {
+    const got = counts.get(size) ?? 0;
+    assert.ok(got > share * 0.6 && got < share * 1.4,
+      `${size} 隻出現 ${got} 次，均勻的話應該在 ${share.toFixed(0)} 附近`);
+  }
+  for (const size of counts.keys()) {
+    assert.ok(size === 1 || (size >= MULTI_MONSTER_MIN && size <= limit), `不該出現 ${size} 隻`);
+  }
+});
+
 test('沒有投資的存檔，一波幾乎都是一隻', () => {
   const s = fresh(1000);
   s.heroes = s.heroes.map(() => 400);
