@@ -1,0 +1,73 @@
+{
+  "version": "8.2.0",
+  "role": "兩個把玩家狀態換算成加成的刷新方法：劍術大師等級對金幣、魔力上限對傷害。",
+  "packageSha256": "8d78c9aa877e6c0b291ee2116cab855bd26c59c1d080bc654f88ecf1ff268b5f",
+  "binarySha256": "c13fc44321b1214c71ab0277a134fc3401fd7392c74a0bbb3935671c55a8713a",
+  "scriptSha256": "62c2eeb8472bb107de516e4b6ae69d3dcdf5013fb1caa87223d82a54dd203f8b",
+  "finding": "PlayerModel.RefreshGoldPerPlayerLevelBonus 讀 GoldPerSwordMasterLevel，乘上劍術大師等級、加 1，寫進 GoldAll。PlayerModel.RefreshDamageBonusPerManaCap 讀 DamagePerManaCap，**沒有加 1**——直接把夾在 0 與 maximumManaCapBonusAmount（5000）之間的 currentManaCap 乘上該加成，寫進 AllDamage；而且先用 GetBonusIdentity 比對，相等時改成 RemoveBonus 移除修飾、不套用。那個 identity 比對是必要的：DamagePerManaCap 是乘法型加成，沒有來源時讀到的是 1 而不是 0，把 1 當成「有加成」會讓每個人的傷害乘上自己的整個魔力上限。",
+  "expressions": {
+    "gold": "GoldAll ×= 1 + 劍術大師等級 × GoldPerSwordMasterLevel",
+    "damage": "AllDamage ×= clamp(currentManaCap, 0, maximumManaCapBonusAmount) × DamagePerManaCap（加成等於它的中性值時整個不套用）"
+  },
+  "methods": {
+    "PlayerModel$$RefreshGoldPerPlayerLevelBonus": "0x23de4c8",
+    "PlayerModel$$RefreshDamageBonusPerManaCap": "0x23de6fc",
+    "BonusModel$$GetBonus": "0x2714c88",
+    "BonusModel$$ModifyBonus": "0x27152ac",
+    "BonusModel$$RemoveBonus": "0x27159e0",
+    "BonusModel$$GetBonusIdentity": "0x2715858"
+  },
+  "calls": {
+    "gold": [
+      {
+        "call": "GetBonus",
+        "at": "0x23de554",
+        "bonus": 243
+      },
+      {
+        "call": "ModifyBonus",
+        "at": "0x23de6e0",
+        "bonus": 214
+      }
+    ],
+    "manaCap": [
+      {
+        "call": "GetBonus",
+        "at": "0x23de78c",
+        "bonus": 144
+      },
+      {
+        "call": "GetBonusIdentity",
+        "at": "0x23de7c8",
+        "bonus": 144
+      },
+      {
+        "call": "RemoveBonus",
+        "at": "0x23de854",
+        "bonus": null
+      },
+      {
+        "call": "ModifyBonus",
+        "at": "0x23de94c",
+        "bonus": 37
+      }
+    ]
+  },
+  "manaCapSource": {
+    "field": "currentManaCap",
+    "offset": "0x474",
+    "type": "float"
+  },
+  "manaCapLimit": {
+    "serverVar": "maximumManaCapBonusAmount",
+    "offset": "0x524",
+    "defaultValue": 5000.0,
+    "status": "default"
+  },
+  "consequence": "本專案兩條都接上了。金幣那條的來源是「鑽石」傳說套裝（每級 +0.1%，劍術大師滿級 12500 時是 13.5 倍）；傷害那條是「腐化」傳說套裝（每點魔力上限 ×0.05，六個技能全解鎖、魔力上限 210 時是 10.5 倍）。兩者都可製作。**刻意偏離一處**：原生在魔力上限為 0 時會讓 AllDamage 乘以 0。原生的節奏走不到那個狀態，但本專案可以——「腐化」套裝沒有關卡需求，存檔可能在劍術大師 100 級（解鎖第一個技能）之前就湊齊它，而傷害歸零之後金幣只能靠擊殺取得，等於無法恢復。所以魔力上限還是 0 的時候這一項不套用。",
+  "limits": [
+    "方法存在、位址、呼叫序列與參數是事實；ModifyBonus 與 RemoveBonus 的目標以「從呼叫往回找 w1 的立即數」判定，RemoveBonus 那個以暫存器傳入，故記為 null",
+    "夾擠上限 5000 是編譯期預設值，線上可覆蓋；本專案魔力上限最高 210，夾不到",
+    "魔力上限為 0 時不套用是本專案的刻意偏離，不是原生行為"
+  ]
+}

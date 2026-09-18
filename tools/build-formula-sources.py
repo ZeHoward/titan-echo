@@ -61,7 +61,11 @@ FORMULAS = [
               entry(part='寶箱泰坦基礎機率 0.01', status='default', ref='bonus-defaults-evidence.json',
                     note='BonusModel.SetDefaultBonuses 把 ChestChance 的基礎值設為 chestersonChance（0.01）；'
                          '引擎原本是 0.02，2.13.0 起改用原生值並與暴擊同樣乘上 AllProbabilityBoost。'
-                         '線上可覆蓋，故為 default。')]),
+                         '線上可覆蓋，故為 default。'),
+              entry(part='劍術大師等級的金幣乘數', status='native', ref='derived-bonus-evidence.json',
+                    note='原生 PlayerModel.RefreshGoldPerPlayerLevelBonus 把它算成 GoldAll 的乘數再寫回：'
+                         '1 ＋ 劍術大師等級 × GoldPerSwordMasterLevel。'
+                         '唯一來源是「鑽石」傳說套裝（每級 +0.1%），滿級 12500 時為 13.5 倍。')]),
     entry(id='monsterCount', module='lib/engine.ts', export='monsterCount',
           expression='round(8 + 關卡 × 148 ÷ (32000 + 關卡))',
           parts=[entry(part='算式與 base 8、inc 148、delta 32000', status='default',
@@ -155,6 +159,14 @@ FORMULAS = [
                          '本專案只接加法項：次方項在 8.2 沒有任何來源會給，而查一個不在加成表裡的加成'
                          '會拿到乘法中性值 1。加法項目前唯一拿得到的來源是「小丑女王」傳說套裝（每點 +10%）；'
                          '「復仇者」武器是 Unique 稀有度，還沒有取得途徑。'),
+              entry(part='魔力上限的傷害乘數', status='native', ref='derived-bonus-evidence.json',
+                    note='原生 PlayerModel.RefreshDamageBonusPerManaCap 把它算成 AllDamage 的乘數再寫回，'
+                         '**沒有加 1**：clamp(currentManaCap, 0, maximumManaCapBonusAmount 5000) × DamagePerManaCap，'
+                         '而且先用 GetBonusIdentity 比對，等於中性值就移除修飾不套用——'
+                         '這個比對是必要的，該加成是乘法型、沒有來源時讀到 1 而不是 0。'
+                         '唯一來源是「腐化」傳說套裝（每點魔力上限 ×0.05），六個技能全解鎖時為 10.5 倍。'
+                         '**刻意偏離一處**：原生在魔力上限為 0 時會讓傷害歸零，本專案改為不套用，'
+                         '因為本專案的存檔可能在劍術大師 100 級之前就湊齊那套套裝，而傷害歸零救不回來。'),
               entry(part='主動技能倍率', status='table', ref='ActiveSkillInfo.json')]),
     entry(id='skillValues', module='lib/engine.ts', export='skillPower',
           expression='技能等級對應的倍率 × 對應加成 × 全主動技能加成',
@@ -501,6 +513,7 @@ NOT_FORMULAS = {
         'canDiscover', 'canBuyTalent', 'discoveryPool', 'drawArtifact', 'collectGear', 'dropGear', 'craftSet',
         'awardPet', 'heroPowerBoost', 'heroSkillValue', 'equipmentEffect', 'equipmentValue',
         'artifactCost', 'skillCost', 'skillDuration', 'skillCooldown', 'skillMana', 'critMultiplier',
+        'manaCapDamage',
         'monsterCount', 'unlockedSkills', 'skillStep', 'discoveryCost', 'craftPrice', 'buildMultiplier', 'manaRegen', 'achievementTier',
         'advanceEggs', 'playerUpgradeCost', 'playerBaseDamage', 'themeIndex', 'goldReward', 'health', 'heroDps',
         'cost', 'critChance', 'manaMax', 'bossDuration', 'relicGain', 'evolveCost', 'buildDamage', 'skillPower',

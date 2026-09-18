@@ -2,11 +2,11 @@
 
 每個核心公式的來源登記表：資料表、原生方法、原生預設值，或明確標記為 7.5 基準沿用、專案自訂或伺服器供給。
 
-版本 8.2.0。共 34 條公式、77 項來源條目。
+版本 8.2.0。共 34 條公式、79 項來源條目。
 
 | 狀態 | 意義 | 條目數 |
 |---|---|---|
-| `native` | 由反組譯證據確認 | 18 |
+| `native` | 由反組譯證據確認 | 20 |
 | `table` | 取自安裝包資料表 | 18 |
 | `default` | 原生靜態預設值，線上可覆蓋 | 16 |
 | `baseline-75` | 沿用 7.5 基準，尚未對 8.2 核實 | 0 |
@@ -35,6 +35,7 @@
 | 基礎值 5 與成長率 1.27 | `table-differs` | `reference/tt2/8.2.0/monster-curve-evidence.json`；原生 MonsterModel.GetMonsterBaseGold 走的是與血量同一條 GetMonsterBase，參數為 monsterGoldLevelOff、monsterTransendenceGoldLevelOff、monsterGoldMult、monsterGoldBase1–3 與 monsterGoldExpo1–4 共十個具名 [ServerVar]；兩張變數表都沒帶值，但編譯期預設值已解出：mult 17.5、base1 1.38、base2／base3 10、expo1 0.04、expo2 1.036、expo3 1、expo4 1.098、levelOff 100、transcendenceLevelOff 180000。目前的 5 與 1.27 是 7.5 基準的近似，**尚未採用**原生曲線——它必須與血量曲線一起換，取捨記在「待決定的取捨」。 |
 | 加成代號（GoldAll、JackpotGold、ChestAmount…） | `table` | `reference/tt2/8.2.0/native-bonus-types.json`；代號對照原生 BonusType 列舉，數值來自神器與天賦資料表。 |
 | 寶箱泰坦基礎機率 0.01 | `default` | `reference/tt2/8.2.0/bonus-defaults-evidence.json`；BonusModel.SetDefaultBonuses 把 ChestChance 的基礎值設為 chestersonChance（0.01）；引擎原本是 0.02，2.13.0 起改用原生值並與暴擊同樣乘上 AllProbabilityBoost。線上可覆蓋，故為 default。 |
+| 劍術大師等級的金幣乘數 | `native` | `reference/tt2/8.2.0/derived-bonus-evidence.json`；原生 PlayerModel.RefreshGoldPerPlayerLevelBonus 把它算成 GoldAll 的乘數再寫回：1 ＋ 劍術大師等級 × GoldPerSwordMasterLevel。唯一來源是「鑽石」傳說套裝（每級 +0.1%），滿級 12500 時為 13.5 倍。 |
 
 ### monsterCount · `lib/engine.ts` 的 `monsterCount`
 
@@ -122,6 +123,7 @@ round(8 + 關卡 × 148 ÷ (32000 + 關卡))
 |---|---|---|
 | 流派折減係數 | `invented` | 程式內已註明為暫用係數，公會飛船、匕首與金槍的完整戰鬥尚未還原。 |
 | 技能點的傷害乘數 | `native` | `reference/tt2/8.2.0/skill-point-damage-evidence.json`；原生 PlayerModel.RefreshSkillPointBonuses 不是直接套用加成，而是算成兩個值再 ModifyBonus 寫回 AllDamage：加法項 1 ＋ 累計技能點 × DamagePerSkillPoint，次方項 DamagePerSkillPointMult ^ 累計技能點。點數取 skillPointsReceivedServer，是**累計收到的**、不是未花費的，對應本專案的「持有中 ＋ 已投入天賦」。本專案只接加法項：次方項在 8.2 沒有任何來源會給，而查一個不在加成表裡的加成會拿到乘法中性值 1。加法項目前唯一拿得到的來源是「小丑女王」傳說套裝（每點 +10%）；「復仇者」武器是 Unique 稀有度，還沒有取得途徑。 |
+| 魔力上限的傷害乘數 | `native` | `reference/tt2/8.2.0/derived-bonus-evidence.json`；原生 PlayerModel.RefreshDamageBonusPerManaCap 把它算成 AllDamage 的乘數再寫回，**沒有加 1**：clamp(currentManaCap, 0, maximumManaCapBonusAmount 5000) × DamagePerManaCap，而且先用 GetBonusIdentity 比對，等於中性值就移除修飾不套用——這個比對是必要的，該加成是乘法型、沒有來源時讀到 1 而不是 0。唯一來源是「腐化」傳說套裝（每點魔力上限 ×0.05），六個技能全解鎖時為 10.5 倍。**刻意偏離一處**：原生在魔力上限為 0 時會讓傷害歸零，本專案改為不套用，因為本專案的存檔可能在劍術大師 100 級之前就湊齊那套套裝，而傷害歸零救不回來。 |
 | 主動技能倍率 | `table` | `reference/tt2/8.2.0/ActiveSkillInfo.json` |
 
 ### skillValues · `lib/engine.ts` 的 `skillPower`

@@ -452,7 +452,9 @@ function rawHeroDps(s:State):Big{const shared=heroEffects(s);return sum(HEROES.m
 // skill, then the two pool bonuses apply. APK 8.2.0 defaults are 0 and 35, so a player with every
 // skill unlocked sits at 210 and one with none has no mana bar at all — which is also when there is
 // nothing to spend it on. Recorded in reference/tt2/8.2.0/servervar-defaults.json.
-export const MANA_DEFAULTS={capInitial:0,capPerSkill:35,regenPerMinute:2} as const;
+// capBonusMax is maximumManaCapBonusAmount: the ceiling the mana cap is clamped to before it is
+// used as a damage multiplier. Six skills put this project's cap at 210, so it never binds here.
+export const MANA_DEFAULTS={capInitial:0,capPerSkill:35,regenPerMinute:2,capBonusMax:5000} as const;
 export function unlockedSkills(s:State){return SKILLS.filter(k=>s.level>=k.level).length;}
 export function manaMax(s:State){
  const base=MANA_DEFAULTS.capInitial+MANA_DEFAULTS.capPerSkill*unlockedSkills(s);
@@ -468,13 +470,32 @@ export function skillMana(s:State,i:number){return Math.max(0,SKILL_DATA[i].mana
 // is 1. The chance bonus is additive on top of the base, the probability boost is a multiplier.
 export function critChance(s:State){
  return Math.min(1,(BONUS_DEFAULTS.critChance+stateEffect(s,'CritChance'))*stateEffect(s,'AllProbabilityBoost'));}
+// Native RefreshDamageBonusPerManaCap: when Bonus(DamagePerManaCap) is not the bonus's identity,
+// AllDamage x= clamp(currentManaCap, 0, maximumManaCapBonusAmount) x that bonus - no leading 1, so
+// the mana cap itself is the multiplier. When the bonus is at its identity the modifier is removed
+// instead of applied.
+//
+// Deliberate departure: natively a mana cap of 0 would multiply all damage by 0. Native pacing
+// never reaches that state, but this project can - the Corrupted set has no stage requirement, so
+// a save can own it before the Sword Master hits 100 and unlocks the first skill, and a damage of
+// zero is unrecoverable because gold only comes from kills. With no cap yet, the term is skipped.
+export function manaCapDamage(s:State){
+ // The native check is against GetBonusIdentity, not zero, and that distinction matters here:
+ // DamagePerManaCap is a multiplicative bonus, so with no source it reads 1, and treating 1 as
+ // "present" would multiply everyone's damage by their whole mana cap.
+ const identity=bonusDefinitions['DamagePerManaCap']?.additive?0:1;
+ const perManaCap=stateEffect(s,'DamagePerManaCap');
+ if(perManaCap===identity)return 1;
+ const cap=Math.min(MANA_DEFAULTS.capBonusMax,Math.max(0,manaMax(s)));
+ return cap?cap*perManaCap:1;
+}
 export function buildDamage(s:State,build:Build):Big{const t=s.tt2!,active=s.active.filter(n=>n>s.last).length,c={tap:0,pet:.5,ship:1,clone:.5,dagger:.5,heavenly:.5,goldGun:.9}[build];
  // The intrinsic Sword Master curve is native-verified. Other build models
  // still use the existing reduction coefficients pending full reconstruction.
  const tapCoefficient={tap:1,pet:1,ship:0,clone:.6,dagger:1,heavenly:1,goldGun:.45}[build];
  let n=power(swordMasterBaseDamage(s),tapCoefficient);
  if(c)n=multiply(n,power(bigMax({...ONE},rawHeroDps(s)),c));
- n=scale(n,buildMultiplier(t,build,active,isBoss(s),id=>stateEffect(s,id))*gearBonus(s,0));
+ n=scale(n,buildMultiplier(t,build,active,isBoss(s),id=>stateEffect(s,id))*gearBonus(s,0)*manaCapDamage(s));
  if(s.active[3]>s.last)n=scale(n,skillPower(s,3)**({tap:1,pet:1,ship:0,clone:.6,dagger:1,heavenly:1,goldGun:.45}[build]));
  if(s.active[2]>s.last)n=scale(n,skillPower(s,2)**c);
  if(build==='clone')n=scale(n,SKILL_DATA[0].amount[skillStep(0,s.skillLevels[0])]);
@@ -484,7 +505,9 @@ export function buildDamage(s:State,build:Build):Big{const t=s.tt2!,active=s.act
 export function goldReward(s:State,source:'monster'|'boss'|'fairy'|'chest'|'pet'|'multi'):Big{
  const t=s.tt2!,running=Math.min(4,s.active.filter(n=>n>s.last).length);
  let n=scale(pow(1.27,s.stage-1),5);
- for(const factor of [stateEffect(s,'GoldAll'),stateEffect(s,'JackpotGold'),stateEffect(s,'GoldPerRunningActiveSkill')**running,1+stateEffect(s,'GoldPerOwnedCardLevel')*t.cards,gearBonus(s,2)])n=scale(n,factor);
+ // Native RefreshGoldPerPlayerLevelBonus: GoldAll x= 1 + Sword Master level x GoldPerSwordMasterLevel,
+ // applied only when the bonus is above zero. Shaped like the card-level term just below it.
+ for(const factor of [stateEffect(s,'GoldAll'),stateEffect(s,'JackpotGold'),stateEffect(s,'GoldPerRunningActiveSkill')**running,1+stateEffect(s,'GoldPerOwnedCardLevel')*t.cards,1+stateEffect(s,'GoldPerSwordMasterLevel')*s.level,gearBonus(s,2)])n=scale(n,factor);
  if(source==='boss'||source==='pet')n=scale(n,10*stateEffect(s,'GoldBoss'));
  if(source==='chest'||source==='fairy'||source==='multi')n=scale(n,10*stateEffect(s,'ChestAmount'));
  if(source==='fairy'||source==='pet')n=scale(n,stateEffect(s,'GoldSpecialty'));
