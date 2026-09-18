@@ -8,7 +8,8 @@
 - **改動「引擎怎麼查加成」的程式碼後要跑 `node tools/bonus-coverage.mjs`**。它把 796 個加成做三方對照（本專案有沒有來源會給、引擎有沒有讀、原生有沒有取值點），產出 [docs/bonus-coverage.md](docs/bonus-coverage.md) 與 `docs/bonus-coverage.json`；`tests/bonus-coverage.test.mjs` 擋下計數漂移，數字寫死同樣是刻意的。判斷「引擎有沒有讀」靠原始碼掃描，所以**遇到沒見過的查詢參數形式會直接中止**——寫出 `stateEffect(s, 某個變數)` 這種形式時，要同時在該工具的 `KNOWN_ARGUMENTS` 登記它怎麼展開，否則那些加成會被誤判成沒人讀。原生那一欄來自 `python tools/audit-bonus-readers.py`，只有換安裝包才需要重跑。
 - **查一個不在 `bonusDefinitions` 裡的加成會拿到乘法中性值 1**，不是 0。用在乘法沒事，用在加總秒數或魔力就會憑空多一點——天堂聖擊的持續時間就是這樣變成 3＋1＝4 秒的（原生根本沒有 `BurstDamageSkillDuration`，它是瞬發技能）。凡是把加成「加上去」的地方都要先確認該加成存在，見 `lib/engine.ts` 的 `skillBonus`。
 - **工作區的檔案是 CRLF**（repo 沒有 `.gitattributes`）。用腳本改檔時要先偵測或正規化換行，否則跨行的字串比對會失配，或寫出混合換行的檔案；`git checkout --` 還原之後也會是 CRLF。Python 的 `write_text` 在 Windows 會把整檔轉成 CRLF，不要用它改 repo 檔案。
-- **把一個「尚未實作」的加成接上時，記得找既有的守衛測試**。專案用 `PENDING_HERO_EFFECTS` 這類清單與「未實作的效果不得生效」的測試把未完成的加成擋在外面；實作之後那些測試會轉紅，那是刻意更新而不是壞掉。寫這種守衛時注意**乘法型加成未生效的中性值是 1 不是 0**，要依 `TT2_BONUSES` 的 `additive` 判斷。
+- **接一個加成上去的完整收尾**（2.14.4–2.15.4 走了九次，漏一步就有測試轉紅）：① 改引擎，熱路徑用 `stateResolver(s)`／`effectResolver(t)` 取一次共用，不要逐次 `stateEffect`；② 寫 `tools/audit-*.py` 產出 `reference/tt2/8.2.0/*-evidence.json`；③ 寫讀那份 JSON 的測試；④ 做變異驗證；⑤ 跑上面兩條說的那三支產表工具並同步它們寫死的數字（`bonus-coverage` 的 `counts` 與 `priority.length` 也一樣要改）；⑥ 升版號與 `lib/releases.ts`；⑦ 更新 ROADMAP；⑧ commit-push → 等部署 → 線上加 `?v=` 實測。**既有的守衛測試會轉紅是刻意的**：專案用 `PENDING_HERO_EFFECTS` 這類清單與「未實作的效果不得生效」的測試把未完成的加成擋在外面，實作之後跟著更新即可。
+- **`stateResolver`／`effectResolver` 回傳的是取得當下的快照**（2.14.7 為效能引入，一次計算只做一次快取戳記檢查）。熱路徑在一次計算內不改狀態所以安全，但**不要把 resolver 存起來跨計算重用**，狀態變了它不會跟著變；`tests/bonus-resolver.test.mjs` 釘住這件事。零星呼叫仍用 `stateEffect`／`effect`，它們內部就是取一次 resolver。
 - 不把 APK、原始資源、完整反組譯輸出、玩家存檔或憑證提交到 Git；它們留在既有忽略目錄。提交自己實作的程式、必要數值事實、來源索引與測試。
 - 玩家進度與雲端相容性是每項驗收條件。現行 Sheets 外層格式為 version 2、heroes[33]、artifacts[30]；如需變更，必須先實作並測試相容遷移，不能直接換欄位。
 - 完成實作後更新 `ROADMAP.md` 的狀態、完成證據及下一項，並更新應用版本與更新紀錄；純規劃或文件更新不虛增遊戲版本。
