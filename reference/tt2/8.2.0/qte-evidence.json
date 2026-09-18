@@ -1,0 +1,878 @@
+{
+  "version": "8.2.0",
+  "role": "QTE 的冷卻與過期排程：九種 QTE 共用一條公式，冷卻加成是「減秒」不是倍率，依類型再乘上各自的倍率加成。",
+  "packageSha256": "8d78c9aa877e6c0b291ee2116cab855bd26c59c1d080bc654f88ecf1ff268b5f",
+  "binarySha256": "c13fc44321b1214c71ab0277a134fc3401fd7392c74a0bbb3935671c55a8713a",
+  "scriptSha256": "62c2eeb8472bb107de516e4b6ae69d3dcdf5013fb1caa87223d82a54dd203f8b",
+  "finding": "QTEController.GetCooldownDuration 先用 QTEType 查 QTEInfo，查不到直接回 0；查得到就以 (cooldownTime − Bonus(CooldownBonusType)) × (1 + randomness × Random.Range(−1, 1)) 為基礎值，再依類型乘上額外的倍率加成，最後夾在 MIN_COOLDOWN_SECONDS（1.0）以上。冷卻加成走的是 fsub 不是 fmul——它從秒數裡扣掉，這一點與加成資料表把 FairyCooldown 標成 additive／subtract／seconds 一致。排程本身是 ScheduleCooldown → QTECooldownTimer → HandleQTECooldownFinished：冷卻結束就取消冷卻、用 expireTime 排一個過期計時器，然後才送出 OnQTEReady；沒人點的話過期計時器到期，重新排冷卻。ScheduleCooldown 只對 IsQTEUnlocked 的類型排程，而 IsQTEUnlocked 在 TalentId 為 0 時直接回 true——所以資料表裡沒有天賦的妖精對所有人都是解鎖的。",
+  "consequence": "本專案的妖精冷卻原本是自訂的 60 秒，接上之後改為資料表的 120 秒起算、扣掉 FairyCooldown（天賦「妖精魅力」與套裝寵物都有來源）、再套用 ±10% 的隨機變異；沒點的話 150 秒後消失並重排冷卻。寵物與英雄那幾型的倍率加成一併記在這裡，但它們的消費端還沒實作。",
+  "methods": {
+    "cooldown": {
+      "name": "QTEController$$GetCooldownDuration",
+      "rva": "0x241066c",
+      "bytesSha256": "4507656b3fa92204492b153599634b39968e169863146ef4986ac56197fab2ef"
+    },
+    "expiration": {
+      "name": "QTEController$$GetExpirationDuration",
+      "rva": "0x2410cc4",
+      "bytesSha256": "c056005fb5bb5e3f0b72ac62ef2592d345ad6d354ff4cc2c0c690433e14c2019"
+    },
+    "active": {
+      "name": "QTEController$$GetActiveDuration",
+      "rva": "0x2410d80",
+      "bytesSha256": "8515d15d6ba3c94dd6c0e1596e185f808e1f477122b2f3c8f98c9c2a52030821"
+    },
+    "scheduleCooldown": {
+      "name": "QTEController$$ScheduleCooldown",
+      "rva": "0x240feb8",
+      "bytesSha256": "1e27d3d81acb5d6157fd4dcf0b5f2f189d1340a470fc00046105bf2516ffbf66"
+    },
+    "scheduleExpire": {
+      "name": "QTEController$$ScheduleExpire",
+      "rva": "0x24102e4",
+      "bytesSha256": "f59788d37d0ac78508efdb2553a1f0e24ab7ba30aea802d5765ed664769f0815"
+    },
+    "cooldownFinished": {
+      "name": "QTEController$$HandleQTECooldownFinished",
+      "rva": "0x2410244",
+      "bytesSha256": "69a4c9f94e8922268ab1ce9ebe35ac88451621e761b1ceb0fa4afc260135c549"
+    },
+    "unlocked": {
+      "name": "QTEModel$$IsQTEUnlocked",
+      "rva": "0x240fde0",
+      "bytesSha256": "553e7eb76b8d2017ad2ec561fbfcc0c0b45f0ba00c859badbc1b3f3f0802425b"
+    },
+    "bonusType": {
+      "name": "QTEModel$$GetCooldownBonusType",
+      "rva": "0x2410ba0",
+      "bytesSha256": "135820433ebde2b2cc7550ffa0a0c961c6de943fc5836fbf17a7756eb4066908"
+    },
+    "staticInit": {
+      "name": "QTEController$$.cctor",
+      "rva": "0x2411008",
+      "bytesSha256": "2e9d151b05932bfd354fe4be6a53e7854516c9e2cf527d88dfe0134838112d21"
+    }
+  },
+  "qteTypes": {
+    "None": 0,
+    "PetAttack": 1,
+    "PetGold": 2,
+    "PetBoss": 3,
+    "ClanShip": 4,
+    "Helper": 5,
+    "Fairy": 6,
+    "UltraDagger": 7,
+    "ForbiddenContract": 8,
+    "RoyalContract": 9,
+    "Goblin": -1
+  },
+  "qteStates": {
+    "Locked": 0,
+    "CoolDown": 1,
+    "Active": 2
+  },
+  "fields": {
+    "TalentId": {
+      "offset": "0x14",
+      "type": "TalentID"
+    },
+    "CooldownBonusType": {
+      "offset": "0x18",
+      "type": "BonusType"
+    },
+    "cooldownTime": {
+      "offset": "0x1c",
+      "type": "float"
+    },
+    "expireTime": {
+      "offset": "0x20",
+      "type": "float"
+    },
+    "activeTime": {
+      "offset": "0x24",
+      "type": "float"
+    },
+    "randomness": {
+      "offset": "0x28",
+      "type": "float"
+    }
+  },
+  "minCooldownSeconds": 1.0,
+  "formulas": {
+    "base": "(cooldownTime − Bonus(CooldownBonusType)) × (1 + randomness × Random.Range(−1, 1))",
+    "clamp": "max(MIN_COOLDOWN_SECONDS = 1.0, 上式)",
+    "tableMiss": "資料表沒有這一型時直接回 0，而且不套用下限",
+    "expire": "expireTime（查不到回 0）",
+    "active": "activeTime（查不到回 0）",
+    "unlocked": "TalentId 為 0 時恆為解鎖，否則看 SkillTreeModel.IsTalentUnlocked",
+    "schedule": "ScheduleCooldown（僅限已解鎖，且尚未排程）→ 冷卻 → CancelCooldown → ScheduleExpire(expireTime) → OnQTEReady；過期則重排冷卻"
+  },
+  "typeBranches": {
+    "ClanShip": {
+      "value": 4,
+      "landsAt": "0x24108c8",
+      "multipliers": [
+        "CompanionQTECooldownMult"
+      ]
+    },
+    "Fairy": {
+      "value": 6,
+      "landsAt": "0x2410b50",
+      "multipliers": []
+    },
+    "ForbiddenContract": {
+      "value": 8,
+      "landsAt": "0x2410b50",
+      "multipliers": []
+    },
+    "Helper": {
+      "value": 5,
+      "landsAt": "0x24108c8",
+      "multipliers": [
+        "CompanionQTECooldownMult"
+      ]
+    },
+    "None": {
+      "value": 0,
+      "landsAt": "0x2410b50",
+      "multipliers": []
+    },
+    "PetAttack": {
+      "value": 1,
+      "landsAt": "0x2410838",
+      "multipliers": [
+        "PetQTECooldownMult",
+        "CompanionQTECooldownMult"
+      ]
+    },
+    "PetBoss": {
+      "value": 3,
+      "landsAt": "0x2410838",
+      "multipliers": [
+        "PetQTECooldownMult",
+        "CompanionQTECooldownMult"
+      ]
+    },
+    "PetGold": {
+      "value": 2,
+      "landsAt": "0x2410a84",
+      "multipliers": [
+        "PetQTECooldownMult",
+        "CompanionQTECooldownMult",
+        "PetGoldQTECooldownMult"
+      ]
+    },
+    "RoyalContract": {
+      "value": 9,
+      "landsAt": "0x2410b50",
+      "multipliers": []
+    },
+    "UltraDagger": {
+      "value": 7,
+      "landsAt": "0x2410920",
+      "multipliers": [
+        "StreamOfBladesCooldownReduction",
+        "UltraDaggerCount",
+        "UltraDaggerCooldownMult",
+        "daggerCooldownAutoThrowMult"
+      ]
+    }
+  },
+  "ultraDaggerArm": "先在幻影刃執行中時扣掉 StreamOfBladesCooldownReduction，再乘 UltraDaggerCooldownMult；幻影刃沒在跑、UltraDaggerCount ≥ 1 且待命匕首數 ≥ 該值時，再乘 daggerCooldownAutoThrowMult（1.100000023841858）。",
+  "traces": {
+    "cooldown": [
+      [
+        "sub",
+        "sp, sp, #0x1d0",
+        "0x241066c"
+      ],
+      [
+        "tbnz",
+        "w8, #0, #0x2410708",
+        "0x241069c"
+      ],
+      [
+        "call",
+        "ContainsKey",
+        "0x241072c"
+      ],
+      [
+        "tbz",
+        "w0, #0, #0x2410b7c",
+        "0x2410734"
+      ],
+      [
+        "call",
+        "get_Item",
+        "0x241075c"
+      ],
+      [
+        "call",
+        "GetCooldownBonusType",
+        "0x2410790"
+      ],
+      [
+        "GetBonus",
+        "via GetCooldownBonusType",
+        "0x24107ac"
+      ],
+      [
+        "call",
+        "op_Explicit->float",
+        "0x24107e0"
+      ],
+      [
+        "fmov",
+        "s0, #-1.00000000",
+        "0x24107ec"
+      ],
+      [
+        "field",
+        "cooldownTime",
+        "0x24107f0"
+      ],
+      [
+        "fmov",
+        "s1, #1.00000000",
+        "0x24107f4"
+      ],
+      [
+        "field",
+        "randomness",
+        "0x24107f8"
+      ],
+      [
+        "fmov",
+        "s11, #1.00000000",
+        "0x2410800"
+      ],
+      [
+        "call",
+        "Range",
+        "0x2410804"
+      ],
+      [
+        "fmul",
+        "s0, s10, s0",
+        "0x2410808"
+      ],
+      [
+        "fsub",
+        "s1, s9, s8",
+        "0x241080c"
+      ],
+      [
+        "cmp",
+        "w19, #3",
+        "0x2410810"
+      ],
+      [
+        "fadd",
+        "s0, s0, s11",
+        "0x2410814"
+      ],
+      [
+        "fmul",
+        "s10, s1, s0",
+        "0x2410818"
+      ],
+      [
+        "b.gt",
+        "#0x24108bc",
+        "0x241081c"
+      ],
+      [
+        "cmp",
+        "w19, #1",
+        "0x2410820"
+      ],
+      [
+        "b.eq",
+        "#0x2410838",
+        "0x2410824"
+      ],
+      [
+        "cmp",
+        "w19, #2",
+        "0x2410828"
+      ],
+      [
+        "b.eq",
+        "#0x2410a84",
+        "0x241082c"
+      ],
+      [
+        "cmp",
+        "w19, #3",
+        "0x2410830"
+      ],
+      [
+        "b.ne",
+        "#0x2410b50",
+        "0x2410834"
+      ],
+      [
+        "GetBonus",
+        "PetQTECooldownMult",
+        "0x2410850"
+      ],
+      [
+        "call",
+        "op_Explicit->float",
+        "0x241087c"
+      ],
+      [
+        "fmul",
+        "s8, s10, s8",
+        "0x241089c"
+      ],
+      [
+        "GetBonus",
+        "CompanionQTECooldownMult",
+        "0x24108a0"
+      ],
+      [
+        "b",
+        "#0x2410b44",
+        "0x24108b8"
+      ],
+      [
+        "sub",
+        "w8, w19, #4",
+        "0x24108bc"
+      ],
+      [
+        "cmp",
+        "w8, #2",
+        "0x24108c0"
+      ],
+      [
+        "b.hs",
+        "#0x2410918",
+        "0x24108c4"
+      ],
+      [
+        "GetBonus",
+        "CompanionQTECooldownMult",
+        "0x24108e0"
+      ],
+      [
+        "call",
+        "op_Explicit->float",
+        "0x241090c"
+      ],
+      [
+        "fmul",
+        "s10, s10, s0",
+        "0x2410910"
+      ],
+      [
+        "b",
+        "#0x2410b50",
+        "0x2410914"
+      ],
+      [
+        "cmp",
+        "w19, #7",
+        "0x2410918"
+      ],
+      [
+        "b.ne",
+        "#0x2410b50",
+        "0x241091c"
+      ],
+      [
+        "call",
+        "get_IsPhantomBladeUnlockedAndRunning",
+        "0x2410940"
+      ],
+      [
+        "tbz",
+        "w0, #0, #0x2410998",
+        "0x2410948"
+      ],
+      [
+        "GetBonus",
+        "StreamOfBladesCooldownReduction",
+        "0x2410964"
+      ],
+      [
+        "call",
+        "op_Explicit->float",
+        "0x2410990"
+      ],
+      [
+        "fsub",
+        "s10, s10, s0",
+        "0x2410994"
+      ],
+      [
+        "GetBonus",
+        "UltraDaggerCount",
+        "0x24109b0"
+      ],
+      [
+        "call",
+        "op_Explicit->int",
+        "0x24109dc"
+      ],
+      [
+        "call",
+        "get_NumberOfReadyDaggers",
+        "0x2410a00"
+      ],
+      [
+        "GetBonus",
+        "UltraDaggerCooldownMult",
+        "0x2410a24"
+      ],
+      [
+        "call",
+        "op_Explicit->float",
+        "0x2410a40"
+      ],
+      [
+        "cmp",
+        "w20, #1",
+        "0x2410a44"
+      ],
+      [
+        "fmul",
+        "s10, s10, s0",
+        "0x2410a48"
+      ],
+      [
+        "ccmp",
+        "w21, w20, #8, ge",
+        "0x2410a4c"
+      ],
+      [
+        "cset",
+        "w8, lt",
+        "0x2410a50"
+      ],
+      [
+        "orr",
+        "w8, w19, w8",
+        "0x2410a54"
+      ],
+      [
+        "tbnz",
+        "w8, #0, #0x2410b50",
+        "0x2410a58"
+      ],
+      [
+        "static",
+        "daggerCooldownAutoThrowMult",
+        "0x2410a7c"
+      ],
+      [
+        "b",
+        "#0x2410910",
+        "0x2410a80"
+      ],
+      [
+        "GetBonus",
+        "PetQTECooldownMult",
+        "0x2410a9c"
+      ],
+      [
+        "call",
+        "op_Explicit->float",
+        "0x2410ac8"
+      ],
+      [
+        "GetBonus",
+        "CompanionQTECooldownMult",
+        "0x2410ae8"
+      ],
+      [
+        "call",
+        "op_Explicit->float",
+        "0x2410b04"
+      ],
+      [
+        "fmul",
+        "s0, s10, s8",
+        "0x2410b18"
+      ],
+      [
+        "fmul",
+        "s8, s0, s9",
+        "0x2410b28"
+      ],
+      [
+        "GetBonus",
+        "PetGoldQTECooldownMult",
+        "0x2410b2c"
+      ],
+      [
+        "call",
+        "op_Explicit->float",
+        "0x2410b48"
+      ],
+      [
+        "fmul",
+        "s10, s8, s0",
+        "0x2410b4c"
+      ],
+      [
+        "static",
+        "MIN_COOLDOWN_SECONDS",
+        "0x2410b70"
+      ],
+      [
+        "fcmp",
+        "s0, s10",
+        "0x2410b74"
+      ],
+      [
+        "fcsel",
+        "s0, s0, s10, gt",
+        "0x2410b78"
+      ]
+    ],
+    "expiration": [
+      [
+        "tbnz",
+        "w8, #0, #0x2410d10",
+        "0x2410ce0"
+      ],
+      [
+        "call",
+        "ContainsKey",
+        "0x2410d34"
+      ],
+      [
+        "tbz",
+        "w0, #0, #0x2410d70",
+        "0x2410d3c"
+      ],
+      [
+        "call",
+        "get_Item",
+        "0x2410d64"
+      ],
+      [
+        "field",
+        "expireTime",
+        "0x2410d6c"
+      ]
+    ],
+    "active": [
+      [
+        "tbnz",
+        "w8, #0, #0x2410dcc",
+        "0x2410d9c"
+      ],
+      [
+        "call",
+        "ContainsKey",
+        "0x2410df0"
+      ],
+      [
+        "tbz",
+        "w0, #0, #0x2410e2c",
+        "0x2410df8"
+      ],
+      [
+        "call",
+        "get_Item",
+        "0x2410e20"
+      ],
+      [
+        "field",
+        "activeTime",
+        "0x2410e28"
+      ]
+    ],
+    "scheduleCooldown": [
+      [
+        "tbnz",
+        "w8, #0, #0x240ff08",
+        "0x240fed8"
+      ],
+      [
+        "call",
+        "ContainsKey",
+        "0x240ff20"
+      ],
+      [
+        "tbnz",
+        "w0, #0, #0x240ffb0",
+        "0x240ff24"
+      ],
+      [
+        "call",
+        "IsQTEUnlocked",
+        "0x240ff40"
+      ],
+      [
+        "tbz",
+        "w0, #0, #0x240ffb0",
+        "0x240ff44"
+      ],
+      [
+        "fcmp",
+        "s8, #0.0",
+        "0x240ff48"
+      ],
+      [
+        "b.gt",
+        "#0x240ff5c",
+        "0x240ff4c"
+      ],
+      [
+        "call",
+        "GetCooldownDuration",
+        "0x240ff54"
+      ],
+      [
+        "call",
+        "QTECooldownTimer",
+        "0x240ff68"
+      ],
+      [
+        "call",
+        "Add",
+        "0x240ff90"
+      ],
+      [
+        "call",
+        "StartCoroutine",
+        "0x240ffac"
+      ]
+    ],
+    "scheduleExpire": [
+      [
+        "tbnz",
+        "w8, #0, #0x241034c",
+        "0x2410304"
+      ],
+      [
+        "call",
+        "ContainsKey",
+        "0x2410364"
+      ],
+      [
+        "tbnz",
+        "w0, #0, #0x241042c",
+        "0x2410368"
+      ],
+      [
+        "call",
+        "ContainsKey",
+        "0x2410398"
+      ],
+      [
+        "tbz",
+        "w0, #0, #0x241042c",
+        "0x241039c"
+      ],
+      [
+        "fcmp",
+        "s8, #0.0",
+        "0x24103a0"
+      ],
+      [
+        "b.gt",
+        "#0x24103d8",
+        "0x24103a4"
+      ],
+      [
+        "call",
+        "get_Item",
+        "0x24103cc"
+      ],
+      [
+        "field",
+        "expireTime",
+        "0x24103d4"
+      ],
+      [
+        "call",
+        "QTEExpireTimer",
+        "0x24103e4"
+      ],
+      [
+        "call",
+        "Add",
+        "0x241040c"
+      ],
+      [
+        "call",
+        "StartCoroutine",
+        "0x2410428"
+      ]
+    ],
+    "cooldownFinished": [
+      [
+        "tbnz",
+        "w8, #0, #0x2410274",
+        "0x241025c"
+      ],
+      [
+        "call",
+        "ContainsKey",
+        "0x241028c"
+      ],
+      [
+        "tbz",
+        "w0, #0, #0x24102d4",
+        "0x2410290"
+      ],
+      [
+        "call",
+        "CancelCooldown",
+        "0x241029c"
+      ],
+      [
+        "fmov",
+        "s0, #-1.00000000",
+        "0x24102a0"
+      ],
+      [
+        "call",
+        "ScheduleExpire",
+        "0x24102ac"
+      ]
+    ],
+    "unlocked": [
+      [
+        "tbnz",
+        "w8, #0, #0x240fe28",
+        "0x240fdf8"
+      ],
+      [
+        "call",
+        "ContainsKey",
+        "0x240fe40"
+      ],
+      [
+        "tbz",
+        "w0, #0, #0x240fe9c",
+        "0x240fe44"
+      ],
+      [
+        "call",
+        "get_Item",
+        "0x240fe60"
+      ],
+      [
+        "field",
+        "TalentId",
+        "0x240fe68"
+      ],
+      [
+        "field",
+        "TalentId",
+        "0x240fe88"
+      ],
+      [
+        "call",
+        "IsTalentUnlocked",
+        "0x240fe98"
+      ],
+      [
+        "b",
+        "#0x240fea8",
+        "0x240fea0"
+      ]
+    ],
+    "bonusType": [
+      [
+        "tbnz",
+        "w8, #0, #0x2410bdc",
+        "0x2410bb8"
+      ],
+      [
+        "call",
+        "ContainsKey",
+        "0x2410bf4"
+      ],
+      [
+        "tbz",
+        "w0, #0, #0x2410c24",
+        "0x2410bf8"
+      ],
+      [
+        "call",
+        "get_Item",
+        "0x2410c14"
+      ],
+      [
+        "field",
+        "CooldownBonusType",
+        "0x2410c1c"
+      ],
+      [
+        "b",
+        "#0x2410c28",
+        "0x2410c20"
+      ]
+    ],
+    "staticInit": [
+      [
+        "tbnz",
+        "w8, #0, #0x2411038",
+        "0x2411020"
+      ]
+    ]
+  },
+  "statics": {
+    "daggerCooldownAutoThrowMult": {
+      "offset": "0x774",
+      "value": 1.100000023841858
+    }
+  },
+  "bonusIds": {
+    "PetQTECooldownMult": 369,
+    "CompanionQTECooldownMult": 121,
+    "PetGoldQTECooldownMult": 365,
+    "StreamOfBladesCooldownReduction": 436,
+    "UltraDaggerCooldownMult": 508,
+    "UltraDaggerCount": 509,
+    "FairyCooldown": 199,
+    "PetAttackQTECooldown": 360,
+    "PetGoldQTECooldown": 364,
+    "PetBossQTECooldown": 356,
+    "ClanQTECooldown": 105,
+    "HelperQTECooldown": 277,
+    "ForbiddenContractQTECooldown": 206,
+    "UltraDaggerCooldown": 507
+  },
+  "table": {
+    "rows": 9,
+    "cooldownBonusTypes": {
+      "ClanShip": "ClanQTECooldown",
+      "Fairy": "FairyCooldown",
+      "ForbiddenContract": "ForbiddenContractQTECooldown",
+      "Helper": "HelperQTECooldown",
+      "PetAttack": "PetAttackQTECooldown",
+      "PetBoss": "PetBossQTECooldown",
+      "PetGold": "PetGoldQTECooldown",
+      "RoyalContract": "ForbiddenContractQTECooldown",
+      "UltraDagger": "UltraDaggerCooldown"
+    },
+    "talents": {
+      "ClanShip": "ClanQTE",
+      "Fairy": "",
+      "ForbiddenContract": "ForbiddenContract",
+      "Helper": "HelperDmgQTE",
+      "PetAttack": "PetQTE",
+      "PetBoss": "BossDmgQTE",
+      "PetGold": "PetGoldQTE",
+      "RoyalContract": "RoyalContract",
+      "UltraDagger": "UltraDagger"
+    }
+  },
+  "limits": [
+    "資料表有 MinCooldown 一欄（PetAttack 5.852、PetGold 8.778、UltraDagger −2.926 等），但 QTEInfo 類別沒有對應欄位，ProcessAllQTEs 也沒有讀它——客戶端的下限只有一個編譯期常數 MIN_COOLDOWN_SECONDS。那一欄在包內是死的。",
+    "隨機變異用 UnityEngine.Random，本專案改用自己的確定性亂數；期望值同樣是 1，但同一個存檔在原生與本專案不會擲出相同的序列。",
+    "原生的計時器是 Unity coroutine，App 切到背景時不走；本專案的冷卻是時間戳，離線時間會算進去。離線跨過整個 ready 到 expire 的視窗時，本專案從當下重排冷卻，不補發錯過的那幾次。",
+    "ClanShip、UltraDagger 與兩種契約的倍率分支已經解出來並記在 typeBranches，但本專案沒有對應的流派，所以只有資料、沒有消費端。",
+    "PetGoldQTECooldownMult 不在本專案匯入的加成資料表裡，沒有任何天賦、神器、套裝或寵物給它，因此米達斯之心那一支的第三個乘數恆為 1。",
+    "QTE 的 activeTime 是「按下去之後效果持續多久」，第一段只用到 cooldownTime 與 expireTime；activeTime 等寵物與英雄那兩段。",
+    "妖精的 expireTime 與 activeTime 都是 150，所以狀態機誤用 activeTime 在妖精身上**驗不出來**——這是這份資料下無法區分，不是測試的漏洞。另外八型的兩欄不同，接上消費端之後用錯欄位就會被抓到；tests/qte.test.mjs 把這個前提釘住了。"
+  ]
+}

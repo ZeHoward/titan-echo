@@ -499,16 +499,75 @@ FORMULAS = [
                     note='FairyController.OnQTEReady 對妖精那一型（QTEType 6）先比對 '
                          'GetMaxStageReached() 與 fairyStartStage，過了才呼叫 MultiFairySpawn。'
                          '看的是**最高關卡**，不是目前所在的關卡，所以蛻變之後不會又鎖回去。'),
-              entry(part='什麼時候出現仍然是本專案自訂', status='invented',
-                    note='原生的妖精由 QTEController 的冷卻排程，玩家再去點那個 QTE。'
-                         'QTEController.GetCooldownDuration 是一個 334 條指令、八個以上加成、'
-                         '依 QTE 類型分支的方法，還要配整套 ready／expire 狀態機與點擊互動，'
-                         '本專案沒有做。妖精仍然是玩家自己按、60 秒冷卻——'
-                         '那個 60 秒是本專案自訂的，不是原生的冷卻。'),
+              entry(part='什麼時候出現由 QTE 排程決定', status='native', ref='qte-evidence.json',
+                    note='妖精是 QTEType 6，冷卻、ready 與過期都由 QTEController 排。'
+                         '本專案原本自訂的 60 秒冷卻已經換成資料表的 120 秒起算、'
+                         '扣掉 FairyCooldown、再套上 ±10% 的隨機變異；'
+                         '沒點的話 150 秒（expireTime）後飛走並重排冷卻。'
+                         '公式本身登記在 qteCooldown。'),
               entry(part='額外妖精一次結算，不排隊飛進來', status='invented',
                     note='原生把額外的妖精排在 n ÷ 2 秒後依序出場，各自是場上的一個實體。'
                          '本專案沒有場上實體，所以一次領取把所有中的妖精一起結算成金幣。'
                          '總金額相同，差別只在畫面上看不到牠們陸續飛進來。')]),
+    entry(id='qteCooldown', module='lib/engine.ts', export='qteCooldownSeconds',
+          expression='(資料表的 cooldownTime − Bonus(該型的 CooldownBonusType)) × (1 + randomness × Random(−1, 1))，'
+                     '再依 QTE 類型乘上各自的倍率加成，最後夾在 MIN_COOLDOWN_SECONDS(1) 秒以上',
+          parts=[
+              entry(part='公式的形狀與下限', status='native', ref='qte-evidence.json',
+                    note='QTEController.GetCooldownDuration 先用 QTEType 查 QTEInfo，'
+                         '查不到就回 0，**而且不套用下限**——夾擠在分支之後，'
+                         '查不到的那條路直接跳過它。查得到就以 '
+                         '(cooldownTime − Bonus(CooldownBonusType)) × (1 + randomness × Range(−1, 1)) '
+                         '為基礎值。冷卻加成走的是 **fsub 不是 fmul**——它從秒數裡扣掉，'
+                         '與加成資料表把 FairyCooldown 標成 additive／subtract／seconds 一致。'
+                         '下限 MIN_COOLDOWN_SECONDS 是靜態建構式裡的 1.0f，不是資料表的值。'),
+              entry(part='九型的秒數、隨機幅度、冷卻加成與天賦', status='table', ref='QTEInfo.json',
+                    note='QTEInfo 表的九列供給 CooldownTime、ExpireTime、ActiveTime、Randomness、'
+                         'CooldownBonusType 與 TalentID。'
+                         '表裡還有一欄 MinCooldown（PetAttack 5.852、UltraDagger −2.926 等），'
+                         '但 QTEInfo 類別沒有對應欄位、ProcessAllQTEs 也沒有讀它，'
+                         '**那一欄在包內是死的**，客戶端的下限只有上面那個編譯期常數。'),
+              entry(part='依類型多乘的倍率', status='native', ref='qte-evidence.json',
+                    note='switch 的每一支都是從二進位抽象執行出來的，不是手抄：'
+                         '寵物攻擊與閃現乘 PetQTECooldownMult × CompanionQTECooldownMult，'
+                         '米達斯之心再多乘一個 PetGoldQTECooldownMult，'
+                         '飛船與英雄只乘 CompanionQTECooldownMult，'
+                         '妖精與兩種契約完全不乘。'
+                         'PetGoldQTECooldownMult 不在本專案匯入的加成資料表裡，'
+                         '沒有任何來源給它，所以米達斯之心那個乘數實際上恆為 1。'),
+              entry(part='解鎖條件', status='native', ref='qte-evidence.json',
+                    note='QTEModel.IsQTEUnlocked 在 TalentId 為 0 時直接回 true，'
+                         '否則問 SkillTreeModel.IsTalentUnlocked。'
+                         '資料表裡妖精的 TalentID 是空的，所以妖精對所有人都是解鎖的；'
+                         '其餘八型各自綁一個天賦。'
+                         'ScheduleCooldown 只對已解鎖的類型排程。'),
+              entry(part='ready 與過期的狀態機', status='native', ref='qte-evidence.json',
+                    note='HandleQTECooldownFinished 先 CancelCooldown、再用 expireTime '
+                         'ScheduleExpire，然後才送出 OnQTEReady；'
+                         '沒人點的話過期計時器到期就重排冷卻，點了就走 HandleQTEFinished 重排。'
+                         '本專案沒有 coroutine，改用 qteReadyAt／qteExpireAt 兩個時間戳，'
+                         'ready 的狀態就是 qteExpireAt 大於 0。'),
+              entry(part='離線期間不推進', status='invented',
+                    note='原生的計時器是 Unity coroutine，App 切到背景時不走。'
+                         '本專案的離線推進把兩個時間戳整個往後平移 gap，'
+                         '等於「離線那段時間不算」，而不是補發錯過的每一次 ready。'
+                         '已經 ready 的妖精離線回來還在，不會在背景飛走。'),
+              entry(part='隨機來源', status='invented',
+                    note='原生用 UnityEngine.Random.Range(−1, 1)，'
+                         '本專案改用自己的確定性亂數 tt2Random。'
+                         '期望值同樣是 1，但同一個存檔在原生與本專案不會擲出相同的序列。'),
+              entry(part='匕首那一支沒有照做', status='table-differs', ref='qte-evidence.json',
+                    note='QTEType 7 原生還有條件分支：幻影刃在跑時先扣 '
+                         'StreamOfBladesCooldownReduction，接著乘 UltraDaggerCooldownMult，'
+                         '幻影刃沒在跑且待命匕首數達到 UltraDaggerCount 時再乘 '
+                         'daggerCooldownAutoThrowMult(1.1)。'
+                         '本專案沒有匕首流派，而且 UltraDaggerCount 是**數量不是倍率**，'
+                         '照抄成一串乘法會把數量乘進冷卻裡，所以刻意留空。'
+                         '飛船與兩種契約同理：分支已經解出來並記在證據檔，但沒有消費端。'),
+              entry(part='只有妖精接上消費端', status='invented',
+                    note='原生的 QTEController 對每個已解鎖的類型都排程，'
+                         '本專案目前只排妖精那一型——寵物的三種與英雄那一種'
+                         '各自需要自己的傷害、金幣與跳關規則，留給後續的段落。')]),
     entry(id='chesterson', module='lib/engine.ts', export='chestersonStackLength',
           expression='寶箱泰坦用同一套佇列但效果完全不同：打死一隻（要蛻變過）開啟 floor((ChestersonGoldStageAmount + 5) × SpecialTitanStackDurationMult) 關的效果，那幾關的每一隻普通泰坦都是寶箱泰坦，金幣倍率 treasureGold(15) × ChestAmount',
           parts=[
@@ -745,6 +804,7 @@ NOT_FORMULAS = {
         'multiMonsterMaxCount', 'multiMonsterGold',
         'chestChance', 'megaBombMaxStacks', 'megaBombStackLength', 'chestersonActive',
         'fairiesUnlocked', 'loginStreakIntact', 'loginStreakDays',
+        'qteReady', 'advanceQTE', 'qteUnlocked', 'freshQTESlots',
         'monsterCount', 'unlockedSkills', 'skillStep', 'discoveryCost', 'craftPrice', 'buildMultiplier', 'manaRegen', 'achievementTier',
         'advanceEggs', 'playerUpgradeCost', 'playerBaseDamage', 'themeIndex', 'goldReward', 'health', 'heroDps',
         'cost', 'critChance', 'manaMax', 'bossDuration', 'relicGain', 'evolveCost', 'buildDamage', 'skillPower',
@@ -756,6 +816,7 @@ NOT_FORMULAS = {
         'EFFECT_LABELS', 'effectLabel', 'BUILD_COEFFICIENTS', 'PLAYER_DEFAULTS', 'RESOURCE_PERKS',
         'EGG_INTERVAL', 'PENDING_HERO_EFFECTS', 'heroSkills', 'THEME_STAGES', 'TT2_THEMES', 'HELPER_DEFAULTS',
         'BONUS_DEFAULTS', 'MANA_DEFAULTS', 'PRESTIGE_DEFAULTS', 'MULTI_MONSTER_MIN', 'MEGA_BOMB', 'CHESTERSON', 'FAIRY', 'LOGIN_STREAK_DAYS',
+        'TT2_QTE', 'QTE_TYPE', 'QTE_MIN_COOLDOWN', 'QTE_COOLDOWN_MULTIPLIERS',
         'HERO_LEVEL_CAP', 'PLAYER_LEVEL_CAP', 'UNMEASURED_ACHIEVEMENTS', 'UNMEASURED_DAILY_TASKS',
         'DAILY_TASK_PAID', 'cap'],
     'arithmetic': [

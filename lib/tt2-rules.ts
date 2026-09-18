@@ -5,8 +5,8 @@ export {TT2_ARTIFACTS,TT2_ACTIVE,TT2_TREE,TT2_SETS};
 export const TT2_RULESET='tt2-7.5.0';
 export type Build='tap'|'pet'|'ship'|'clone'|'dagger'|'heavenly'|'goldGun';
 export type EquipmentItem={id:number;definition:number;level:number};
-export type TT2State={petCharge:number;petAttacks:number;lastPetHit:Big;cloneAt:number;cloneAttacks:number;lastCloneHit:Big;perkEnds:number[][];rainLast:number;inventory:EquipmentItem[];equipped:number[];nextGearId:number;activePets:number[];eggAt:number;eggs:number;gearMilestone:number;loginIndex:number;loginAt:number;eventCurrency:number;perkTokens:number;extraWeapons:number[];artifacts:number[];spent:number[];enchanted:number[];tree:number[];points:number;earnedPoints:number;sets:number[];pieces:{set:number;slot:number}[];shards:number;build:Build;mana:number;rng:number;extraHeroes:number[];petLevels:number[];cards:number;scrolls:number[];clan:boolean;lastCrit:boolean;lastHit:Big;bossRelics:number[];legacyArtifacts:number[];legacySpent:number[];goldCollected:Big;chestKills:number;fairyRewards:number;heavenlyStrikes:number;crits:number;equipmentCollected:number;relicsCollected:number;perksUsed:number;tutorialStep:number;tutorialTaps:number;multi:number;bombStacks:number[];bombKills:number;chestStages:number;loginStreak:number};
-export function freshTT2(seed:number):TT2State{return {petCharge:0,petAttacks:0,lastPetHit:{...ZERO},cloneAt:seed,cloneAttacks:0,lastCloneHit:{...ZERO},perkEnds:[[],[]],rainLast:seed,inventory:[],equipped:[-1,-1,-1,-1,-1],nextGearId:1,activePets:[-1,-1],eggAt:seed,eggs:0,gearMilestone:0,loginIndex:0,loginAt:-1,eventCurrency:0,perkTokens:0,extraWeapons:Array(4).fill(0),artifacts:Array(103).fill(0),spent:Array(103).fill(0),enchanted:[],tree:Array(TT2_TREE.length).fill(0),points:0,earnedPoints:0,sets:[],pieces:[],shards:0,build:'tap',mana:200,rng:(seed>>>0)||1,extraHeroes:Array(4).fill(0),petLevels:Array(30).fill(0),cards:0,scrolls:Array(37).fill(0),clan:false,lastCrit:false,lastHit:{...ZERO},bossRelics:[],legacyArtifacts:[],legacySpent:[],goldCollected:{...ZERO},chestKills:0,fairyRewards:0,heavenlyStrikes:0,crits:0,equipmentCollected:0,relicsCollected:0,perksUsed:0,tutorialStep:0,tutorialTaps:0,multi:1,bombStacks:[],bombKills:0,chestStages:0,loginStreak:0};}
+export type TT2State={petCharge:number;petAttacks:number;lastPetHit:Big;cloneAt:number;cloneAttacks:number;lastCloneHit:Big;perkEnds:number[][];rainLast:number;inventory:EquipmentItem[];equipped:number[];nextGearId:number;activePets:number[];eggAt:number;eggs:number;gearMilestone:number;loginIndex:number;loginAt:number;eventCurrency:number;perkTokens:number;extraWeapons:number[];artifacts:number[];spent:number[];enchanted:number[];tree:number[];points:number;earnedPoints:number;sets:number[];pieces:{set:number;slot:number}[];shards:number;build:Build;mana:number;rng:number;extraHeroes:number[];petLevels:number[];cards:number;scrolls:number[];clan:boolean;lastCrit:boolean;lastHit:Big;bossRelics:number[];legacyArtifacts:number[];legacySpent:number[];goldCollected:Big;chestKills:number;fairyRewards:number;heavenlyStrikes:number;crits:number;equipmentCollected:number;relicsCollected:number;perksUsed:number;tutorialStep:number;tutorialTaps:number;multi:number;bombStacks:number[];bombKills:number;chestStages:number;loginStreak:number;qteReadyAt:number[];qteExpireAt:number[]};
+export function freshTT2(seed:number):TT2State{return {petCharge:0,petAttacks:0,lastPetHit:{...ZERO},cloneAt:seed,cloneAttacks:0,lastCloneHit:{...ZERO},perkEnds:[[],[]],rainLast:seed,inventory:[],equipped:[-1,-1,-1,-1,-1],nextGearId:1,activePets:[-1,-1],eggAt:seed,eggs:0,gearMilestone:0,loginIndex:0,loginAt:-1,eventCurrency:0,perkTokens:0,extraWeapons:Array(4).fill(0),artifacts:Array(103).fill(0),spent:Array(103).fill(0),enchanted:[],tree:Array(TT2_TREE.length).fill(0),points:0,earnedPoints:0,sets:[],pieces:[],shards:0,build:'tap',mana:200,rng:(seed>>>0)||1,extraHeroes:Array(4).fill(0),petLevels:Array(30).fill(0),cards:0,scrolls:Array(37).fill(0),clan:false,lastCrit:false,lastHit:{...ZERO},bossRelics:[],legacyArtifacts:[],legacySpent:[],goldCollected:{...ZERO},chestKills:0,fairyRewards:0,heavenlyStrikes:0,crits:0,equipmentCollected:0,relicsCollected:0,perksUsed:0,tutorialStep:0,tutorialTaps:0,multi:1,bombStacks:[],bombKills:0,chestStages:0,loginStreak:0,qteReadyAt:freshQTESlots(),qteExpireAt:freshQTESlots()};}
 export function tt2Random(t:TT2State){t.rng=(Math.imul(t.rng,1664525)+1013904223)>>>0;return t.rng/4294967296;}
 export const cap=(v:number)=>Math.max(0,Math.min(1e240,Number.isFinite(v)?v:1e240));
 type BonusDefinition={description:string;group:string;combos:string[];additive:boolean;subtract:boolean;seconds:boolean;percent:boolean};
@@ -125,6 +125,43 @@ export function discoveryPool(t:TT2State){const missing=TT2_ARTIFACTS.map((a,i)=
 export function drawArtifact(t:TT2State,relics:number){const cost=discoveryCost(t),pool=discoveryPool(t);if(!pool.length||relics<cost)return null;const i=pool[Math.floor(tt2Random(t)*pool.length)];t.artifacts[i]=1;t.spent[i]=cost;return {index:i,cost};}
 export function spentPoints(t:TT2State,branch?:string){return TT2_TREE.reduce((n,k,i)=>n+(!branch||k.branch===branch?k.cost.slice(0,t.tree[i]||0).reduce((a,b)=>a+b,0):0),0);}
 export function canBuyTalent(t:TT2State,i:number,best:number){const k=TT2_TREE[i],level=t.tree[i]||0;if(!k||level>=k.max||t.points<k.cost[level]||best<k.stage[level]||spentPoints(t,k.branch)<k.required)return false;const prerequisite=TT2_TREE.findIndex(n=>n.id===k.prerequisite);return prerequisite<0||t.tree[prerequisite]>0;}
+// QTE：九種「現在點我」的提示共用一套排程——冷卻、ready、沒人點就過期並重排冷卻。
+// 資料是安裝包的 QTEInfo 表，分支與下限來自 QTEController.GetCooldownDuration。
+// 冷卻加成是**減秒**不是倍率（原生走 fsub），這一點與加成資料表把 FairyCooldown
+// 標成 additive／subtract／seconds 一致。見 reference/tt2/8.2.0/qte-evidence.json。
+export const QTE_TYPE={PetAttack:1,PetGold:2,PetBoss:3,ClanShip:4,Helper:5,Fairy:6,UltraDagger:7,ForbiddenContract:8,RoyalContract:9} as const;
+export type QTEInfo={talent:string;cooldownBonus:string;cooldown:number;expire:number;active:number;randomness:number};
+export const TT2_QTE:Record<number,QTEInfo>={
+ [QTE_TYPE.PetAttack]:{talent:'PetQTE',cooldownBonus:'PetAttackQTECooldown',cooldown:20,expire:10,active:5,randomness:.1},
+ [QTE_TYPE.PetGold]:{talent:'PetGoldQTE',cooldownBonus:'PetGoldQTECooldown',cooldown:60,expire:65,active:15,randomness:.1},
+ [QTE_TYPE.PetBoss]:{talent:'BossDmgQTE',cooldownBonus:'PetBossQTECooldown',cooldown:15,expire:7,active:3,randomness:.1},
+ [QTE_TYPE.ClanShip]:{talent:'ClanQTE',cooldownBonus:'ClanQTECooldown',cooldown:45,expire:150,active:30,randomness:.1},
+ [QTE_TYPE.Helper]:{talent:'HelperDmgQTE',cooldownBonus:'HelperQTECooldown',cooldown:30,expire:30,active:40,randomness:.1},
+ [QTE_TYPE.Fairy]:{talent:'',cooldownBonus:'FairyCooldown',cooldown:120,expire:150,active:150,randomness:.1},
+ [QTE_TYPE.UltraDagger]:{talent:'UltraDagger',cooldownBonus:'UltraDaggerCooldown',cooldown:5,expire:0,active:3,randomness:0},
+ [QTE_TYPE.ForbiddenContract]:{talent:'ForbiddenContract',cooldownBonus:'ForbiddenContractQTECooldown',cooldown:60,expire:20,active:60,randomness:0},
+ [QTE_TYPE.RoyalContract]:{talent:'RoyalContract',cooldownBonus:'ForbiddenContractQTECooldown',cooldown:60,expire:20,active:60,randomness:0},
+};
+/** QTEType 用得到的槽位：0 是 None，實際的九型是 1–9。 */
+const QTE_SLOTS=10;
+export function freshQTESlots(){return Array(QTE_SLOTS).fill(-1);}
+/** 原生的 QTEController.MIN_COOLDOWN_SECONDS，編譯期常數。 */
+export const QTE_MIN_COOLDOWN=1;
+// 依 QTE 類型多乘的倍率加成，順序就是原生相乘的順序。
+// 匕首那一支（QTEType 7）原生還有條件分支——幻影刃在跑時先扣 StreamOfBladesCooldownReduction、
+// 待命匕首數達標時再乘 daggerCooldownAutoThrowMult，而 UltraDaggerCount 是數量不是倍率——
+// 本專案沒有匕首流派，所以**刻意不列在這裡**，免得把數量當成倍率乘進去。
+export const QTE_COOLDOWN_MULTIPLIERS:Record<number,readonly string[]>={
+ [QTE_TYPE.PetAttack]:['PetQTECooldownMult','CompanionQTECooldownMult'],
+ [QTE_TYPE.PetGold]:['PetQTECooldownMult','CompanionQTECooldownMult','PetGoldQTECooldownMult'],
+ [QTE_TYPE.PetBoss]:['PetQTECooldownMult','CompanionQTECooldownMult'],
+ [QTE_TYPE.ClanShip]:['CompanionQTECooldownMult'],
+ [QTE_TYPE.Helper]:['CompanionQTECooldownMult'],
+};
+/** 原生 QTEModel.IsQTEUnlocked：沒有天賦欄位的（妖精）對所有人都是解鎖的。 */
+export function qteUnlocked(t:TT2State,type:number){
+ const info=TT2_QTE[type];if(!info)return false;if(!info.talent)return true;
+ const i=TT2_TREE.findIndex(k=>k.id===info.talent);return i>=0&&(t.tree[i]||0)>0;}
 // Exponents are damage-reduction coefficients, not a linear percentage discount.
 export const BUILD_COEFFICIENTS:Record<Build,{tap:number;hero:number}>={tap:{tap:1,hero:0},pet:{tap:1,hero:.5},ship:{tap:0,hero:1},clone:{tap:.6,hero:.5},dagger:{tap:1,hero:.5},heavenly:{tap:1,hero:.5},goldGun:{tap:.45,hero:.9}};
 // CritDamage is deliberately absent. Natively it has exactly one GetBonus call site in the whole

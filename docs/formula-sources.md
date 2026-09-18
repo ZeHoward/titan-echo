@@ -2,16 +2,16 @@
 
 每個核心公式的來源登記表：資料表、原生方法、原生預設值，或明確標記為 7.5 基準沿用、專案自訂或伺服器供給。
 
-版本 8.2.0。共 41 條公式、115 項來源條目。
+版本 8.2.0。共 42 條公式、124 項來源條目。
 
 | 狀態 | 意義 | 條目數 |
 |---|---|---|
-| `native` | 由反組譯證據確認 | 40 |
-| `table` | 取自安裝包資料表 | 19 |
+| `native` | 由反組譯證據確認 | 45 |
+| `table` | 取自安裝包資料表 | 20 |
 | `default` | 原生靜態預設值，線上可覆蓋 | 21 |
 | `baseline-75` | 沿用 7.5 基準，尚未對 8.2 核實 | 0 |
-| `table-differs` | 安裝包有值但引擎目前未照做 | 12 |
-| `invented` | 本專案自訂，安裝包未提供 | 19 |
+| `table-differs` | 安裝包有值但引擎目前未照做 | 13 |
+| `invented` | 本專案自訂，安裝包未提供 | 21 |
 | `server` | 原生為伺服器變數，安裝包未帶值 | 4 |
 
 ## 逐條登記
@@ -279,8 +279,24 @@ max(1, floor(關卡^1.7 ÷ 100 × PrestigeRelic))，最高關卡到 60 後開放
 | 迴圈的形狀與兩個上限 | `native` | `reference/tt2/8.2.0/fairy-evidence.json`；FairyController.MultiFairySpawn 先無條件 SpawnFairy 一隻（呼叫點在第一次擲骰之前，這一點另外釘住），再以 Bonus(FairySpawnChance) × Bonus(AllProbabilityBoost) 為機率跑迴圈：每一輪 op_LessThan(Random.value, 機率)，沒中就 break，中了就 Invoke(SpawnFairy, n ÷ 2) 並把機率乘上 multiFairySpawnPenalty，迴圈上限是 maxExtraMultiFairySpawns。**機率沒有被夾在 1**：天賦「妖精魅力」滿級是 2.75，前兩輪必中。 |
 | 上限 7、懲罰 0.5、起始關卡 10 | `default` | `reference/tt2/8.2.0/fairy-evidence.json`；三個都是 [ServerVar] 的編譯期預設值：maxExtraMultiFairySpawns = 7、multiFairySpawnPenalty = 0.5、fairyStartStage = 10，線上可覆蓋。FairySpawnChance 在 SetDefaultBonuses 裡**沒有條目**，所以它的基礎值就是 0——沒有來源的玩家永遠只有一隻妖精。 |
 | 關卡門檻 | `native` | `reference/tt2/8.2.0/fairy-evidence.json`；FairyController.OnQTEReady 對妖精那一型（QTEType 6）先比對 GetMaxStageReached() 與 fairyStartStage，過了才呼叫 MultiFairySpawn。看的是**最高關卡**，不是目前所在的關卡，所以蛻變之後不會又鎖回去。 |
-| 什麼時候出現仍然是本專案自訂 | `invented` | 原生的妖精由 QTEController 的冷卻排程，玩家再去點那個 QTE。QTEController.GetCooldownDuration 是一個 334 條指令、八個以上加成、依 QTE 類型分支的方法，還要配整套 ready／expire 狀態機與點擊互動，本專案沒有做。妖精仍然是玩家自己按、60 秒冷卻——那個 60 秒是本專案自訂的，不是原生的冷卻。 |
+| 什麼時候出現由 QTE 排程決定 | `native` | `reference/tt2/8.2.0/qte-evidence.json`；妖精是 QTEType 6，冷卻、ready 與過期都由 QTEController 排。本專案原本自訂的 60 秒冷卻已經換成資料表的 120 秒起算、扣掉 FairyCooldown、再套上 ±10% 的隨機變異；沒點的話 150 秒（expireTime）後飛走並重排冷卻。公式本身登記在 qteCooldown。 |
 | 額外妖精一次結算，不排隊飛進來 | `invented` | 原生把額外的妖精排在 n ÷ 2 秒後依序出場，各自是場上的一個實體。本專案沒有場上實體，所以一次領取把所有中的妖精一起結算成金幣。總金額相同，差別只在畫面上看不到牠們陸續飛進來。 |
+
+### qteCooldown · `lib/engine.ts` 的 `qteCooldownSeconds`
+
+(資料表的 cooldownTime − Bonus(該型的 CooldownBonusType)) × (1 + randomness × Random(−1, 1))，再依 QTE 類型乘上各自的倍率加成，最後夾在 MIN_COOLDOWN_SECONDS(1) 秒以上
+
+| 來源條目 | 狀態 | 依據 |
+|---|---|---|
+| 公式的形狀與下限 | `native` | `reference/tt2/8.2.0/qte-evidence.json`；QTEController.GetCooldownDuration 先用 QTEType 查 QTEInfo，查不到就回 0，**而且不套用下限**——夾擠在分支之後，查不到的那條路直接跳過它。查得到就以 (cooldownTime − Bonus(CooldownBonusType)) × (1 + randomness × Range(−1, 1)) 為基礎值。冷卻加成走的是 **fsub 不是 fmul**——它從秒數裡扣掉，與加成資料表把 FairyCooldown 標成 additive／subtract／seconds 一致。下限 MIN_COOLDOWN_SECONDS 是靜態建構式裡的 1.0f，不是資料表的值。 |
+| 九型的秒數、隨機幅度、冷卻加成與天賦 | `table` | `reference/tt2/8.2.0/QTEInfo.json`；QTEInfo 表的九列供給 CooldownTime、ExpireTime、ActiveTime、Randomness、CooldownBonusType 與 TalentID。表裡還有一欄 MinCooldown（PetAttack 5.852、UltraDagger −2.926 等），但 QTEInfo 類別沒有對應欄位、ProcessAllQTEs 也沒有讀它，**那一欄在包內是死的**，客戶端的下限只有上面那個編譯期常數。 |
+| 依類型多乘的倍率 | `native` | `reference/tt2/8.2.0/qte-evidence.json`；switch 的每一支都是從二進位抽象執行出來的，不是手抄：寵物攻擊與閃現乘 PetQTECooldownMult × CompanionQTECooldownMult，米達斯之心再多乘一個 PetGoldQTECooldownMult，飛船與英雄只乘 CompanionQTECooldownMult，妖精與兩種契約完全不乘。PetGoldQTECooldownMult 不在本專案匯入的加成資料表裡，沒有任何來源給它，所以米達斯之心那個乘數實際上恆為 1。 |
+| 解鎖條件 | `native` | `reference/tt2/8.2.0/qte-evidence.json`；QTEModel.IsQTEUnlocked 在 TalentId 為 0 時直接回 true，否則問 SkillTreeModel.IsTalentUnlocked。資料表裡妖精的 TalentID 是空的，所以妖精對所有人都是解鎖的；其餘八型各自綁一個天賦。ScheduleCooldown 只對已解鎖的類型排程。 |
+| ready 與過期的狀態機 | `native` | `reference/tt2/8.2.0/qte-evidence.json`；HandleQTECooldownFinished 先 CancelCooldown、再用 expireTime ScheduleExpire，然後才送出 OnQTEReady；沒人點的話過期計時器到期就重排冷卻，點了就走 HandleQTEFinished 重排。本專案沒有 coroutine，改用 qteReadyAt／qteExpireAt 兩個時間戳，ready 的狀態就是 qteExpireAt 大於 0。 |
+| 離線期間不推進 | `invented` | 原生的計時器是 Unity coroutine，App 切到背景時不走。本專案的離線推進把兩個時間戳整個往後平移 gap，等於「離線那段時間不算」，而不是補發錯過的每一次 ready。已經 ready 的妖精離線回來還在，不會在背景飛走。 |
+| 隨機來源 | `invented` | 原生用 UnityEngine.Random.Range(−1, 1)，本專案改用自己的確定性亂數 tt2Random。期望值同樣是 1，但同一個存檔在原生與本專案不會擲出相同的序列。 |
+| 匕首那一支沒有照做 | `table-differs` | `reference/tt2/8.2.0/qte-evidence.json`；QTEType 7 原生還有條件分支：幻影刃在跑時先扣 StreamOfBladesCooldownReduction，接著乘 UltraDaggerCooldownMult，幻影刃沒在跑且待命匕首數達到 UltraDaggerCount 時再乘 daggerCooldownAutoThrowMult(1.1)。本專案沒有匕首流派，而且 UltraDaggerCount 是**數量不是倍率**，照抄成一串乘法會把數量乘進冷卻裡，所以刻意留空。飛船與兩種契約同理：分支已經解出來並記在證據檔，但沒有消費端。 |
+| 只有妖精接上消費端 | `invented` | 原生的 QTEController 對每個已解鎖的類型都排程，本專案目前只排妖精那一型——寵物的三種與英雄那一種各自需要自己的傷害、金幣與跳關規則，留給後續的段落。 |
 
 ### chesterson · `lib/engine.ts` 的 `chestersonStackLength`
 

@@ -11,7 +11,7 @@ import {RESOURCE_PERKS,perkValue,perkLevel,perkLimit,activatePerk,manaSeconds} f
 import {HERO_NAMES,PET_NAMES} from './zh-tw.ts';
 import {advanceEggs,awardPet,dropGear,craftSet} from './tt2-collection.ts';
 import {TT2_PETS,TT2_GEAR,TT2_DAILY,TT2_HEROES,TT2_HERO_MILESTONES} from './tt2-data.ts';
-import {freshTT2,TT2_RULESET,TT2_ARTIFACTS,TT2_ACTIVE,TT2_TREE,effect,effectResolver,artifactAllDamage,buildMultiplier,upgradeArtifactCost,discoveryCost,drawArtifact,canBuyTalent,spentPoints,tt2Random,bonusDefinitions, type TT2State, type Build} from './tt2-rules.ts';
+import {freshTT2,TT2_RULESET,TT2_ARTIFACTS,TT2_ACTIVE,TT2_TREE,effect,effectResolver,artifactAllDamage,buildMultiplier,upgradeArtifactCost,discoveryCost,drawArtifact,canBuyTalent,spentPoints,tt2Random,bonusDefinitions,TT2_QTE,QTE_TYPE,QTE_MIN_COOLDOWN,QTE_COOLDOWN_MULTIPLIERS,qteUnlocked,freshQTESlots, type TT2State, type Build} from './tt2-rules.ts';
 export {TT2_ARTIFACTS,TT2_TREE,discoveryCost};
 import { EXTRA_HEROES, ARTIFACTS, MONSTERS, PERKS, ACTION_TYPES, type Effect } from './content.ts';
 import { bossSprite, pickMonsterSprite, spriteForMonster, stagePool } from './tt2-stages.ts';
@@ -40,7 +40,7 @@ function newDaily(day:number):State['daily']{return {day,claimed:[],taps:0,kills
 export function fresh(now=Date.now()):State {return {version:2,ruleset:TT2_RULESET,tt2:freshTT2(now),stage:1,best:1,kills:0,hp:fromNumber(18),gold:{...ZERO},level:1,heroes:Array(33).fill(0),relics:0,artifacts:ARTIFACTS.map(()=>0),prestiges:0,taps:0,totalKills:0,cooldowns:SKILLS.map(()=>0),active:SKILLS.map(()=>0),bossEnd:0,farming:false,last:now,lastTap:0,lastFairy:now,diamonds:0,weapons:Array(33).fill(0),evolutions:Array(33).fill(0),wounded:Array(33).fill(0),skillLevels:SKILLS.map(()=>0),gear:[],equipped:[-1,-1,-1,-1,-1],dust:0,lootCounter:0,bossKills:0,bossWounded:false,protection:0,seen:[0],monster:spriteForMonster(stagePool(1)[0]),achievements:{},daily:newDaily(dayAt(now)),loginDay:-1,streak:0,trial:null,weekly:{week:weekAt(now),best:0,claimed:[]},world:0,worldBest:[1,1],artifactSpent:ARTIFACTS.map(()=>0),log:[]};}
 export function hydrate(s:State):State{// A save already on this ruleset is repaired, never re-migrated: the legacy path refunds artifacts
 // and clears skill levels, so falling through with a missing tt2 block would wipe live progress.
-if(s.ruleset===TT2_RULESET){s.tt2??=freshTT2(s.last??Date.now());normaliseAmounts(s);s.monster??=settledMonster(s);if(!s.tt2.inventory)s.tt2={...freshTT2(s.last),...s.tt2};s.tt2.perkEnds??=[[],[]];s.tt2.rainLast??=s.last;s.tt2.petCharge??=0;s.tt2.petAttacks??=0;s.tt2.cloneAt??=s.last;clampLevels(s);return s;}
+if(s.ruleset===TT2_RULESET){s.tt2??=freshTT2(s.last??Date.now());normaliseAmounts(s);s.monster??=settledMonster(s);const needsQTE=!s.tt2.qteReadyAt;if(!s.tt2.inventory)s.tt2={...freshTT2(s.last),...s.tt2};s.tt2.perkEnds??=[[],[]];s.tt2.rainLast??=s.last;s.tt2.petCharge??=0;s.tt2.petAttacks??=0;s.tt2.cloneAt??=s.last;if(needsQTE){s.tt2.qteReadyAt=freshQTESlots();s.tt2.qteExpireAt=freshQTESlots();migrateFairyQTE(s);}clampLevels(s);return s;}
 // Talent and skill levels index straight into their own tables. A save holding a level past the
 // table's end reads undefined and every bonus built from it becomes NaN, so the levels are
 // brought back into range on load rather than defended against at each of the dozen read sites.
@@ -423,6 +423,47 @@ export function rollExtraFairies(s:State,resolve=stateResolver(s)){
  return extra;}
 /** 妖精要推到這一關才開始出現。原生看的是最高關卡，不是目前所在的關卡。 */
 export function fairiesUnlocked(s:State){return s.best>=FAIRY.startStage;}
+// QTE 排程。原生 QTEController 對每個已解鎖的類型跑一個冷卻 coroutine，冷卻結束就取消冷卻、
+// 依 expireTime 排一個過期 coroutine，然後送出 OnQTEReady；沒人點的話過期後重排冷卻。
+// 本專案沒有 coroutine，改用兩個時間戳：qteReadyAt 是冷卻結束的時刻，qteExpireAt 是
+// ready 之後消失的時刻，兩者都以 -1 表示「沒有在跑」。ready 的狀態就是 qteExpireAt > 0。
+// 目前只有妖精有消費端；寵物與英雄那幾型的資料與倍率都在，等各自那一段接上去。
+const QTE_SCHEDULED:readonly number[]=[QTE_TYPE.Fairy];
+/**
+ * 原生 QTEController.GetCooldownDuration。資料表沒有這一型時回 0，**而且不套用下限**——
+ * 原生的夾擠在分支之後，查不到的那條路直接跳過它。
+ * @param roll 對應原生的 Random.Range(−1, 1)。
+ */
+export function qteCooldownSeconds(s:State,type:number,roll:number,resolve=stateResolver(s)){
+ const info=TT2_QTE[type];if(!info)return 0;
+ // 冷卻加成扣的是秒數，不是倍率：原生走 fsub，加成資料表也把它標成 additive／subtract／seconds。
+ let n=(info.cooldown-resolve(info.cooldownBonus))*(1+info.randomness*roll);
+ for(const id of QTE_COOLDOWN_MULTIPLIERS[type]||[])n*=resolve(id);
+ return Math.max(QTE_MIN_COOLDOWN,n);}
+/** 這一型現在是不是 ready（原生的 expire coroutine 正在跑）。 */
+export function qteReady(t:TT2State,type:number){return t.qteExpireAt[type]>0;}
+function scheduleQTECooldown(s:State,type:number){const t=s.tt2!;
+ t.qteExpireAt[type]=-1;
+ t.qteReadyAt[type]=s.last+qteCooldownSeconds(s,type,tt2Random(t)*2-1)*1000;}
+/** 推進 QTE 的狀態機到 s.last。可在任何時間點呼叫，重複呼叫不會重複轉換。 */
+export function advanceQTE(s:State){const t=s.tt2!;
+ for(const type of QTE_SCHEDULED){
+  // 原生的 ScheduleCooldown 只對已解鎖的類型排程；鎖著就什麼都不跑。
+  if(!qteUnlocked(t,type)){t.qteReadyAt[type]=-1;t.qteExpireAt[type]=-1;continue;}
+  if(qteReady(t,type)){if(s.last>=t.qteExpireAt[type])scheduleQTECooldown(s,type);continue;}
+  if(t.qteReadyAt[type]<0){scheduleQTECooldown(s,type);continue;}
+  if(s.last>=t.qteReadyAt[type]){t.qteReadyAt[type]=-1;t.qteExpireAt[type]=s.last+TT2_QTE[type].expire*1000;}}}
+// 原生的計時器是 Unity coroutine，App 切到背景時不走。離線推進把時間戳整個往後平移，
+// 等於「離線那段時間不算」，而不是補發錯過的每一次 ready。
+function shiftQTE(t:TT2State,gap:number){
+ for(const slots of [t.qteReadyAt,t.qteExpireAt])
+  for(let i=0;i<slots.length;i++)if(slots[i]>0)slots[i]+=gap;}
+// 舊存檔只有 lastFairy（本專案自訂的 60 秒冷卻）。已經可以領的直接進 ready，
+// 還在冷卻的從上次領取的時刻起算一次新的冷卻，已經等過的時間照算。
+function migrateFairyQTE(s:State){const t=s.tt2!,type=QTE_TYPE.Fairy;
+ if(s.last-s.lastFairy>=60000){t.qteReadyAt[type]=-1;t.qteExpireAt[type]=s.last+TT2_QTE[type].expire*1000;return;}
+ t.qteExpireAt[type]=-1;
+ t.qteReadyAt[type]=s.lastFairy+qteCooldownSeconds(s,type,tt2Random(t)*2-1)*1000;}
 /** 寶箱效果作用中嗎？作用中的那幾關，每一隻普通泰坦都是寶箱泰坦。 */
 export function chestersonActive(s:State){return (s.tt2?.chestStages??0)>0;}
 // 原生的 CanSpawnTitan 除了「還沒疊」還要求蛻變過一次，所以第一輪不會出現寶箱泰坦。
@@ -522,10 +563,11 @@ function damage(s:State,hit:Big,source?:SkipSource){if(compare(hit,{...ZERO})<=0
 }
 export function advance(s:State,to:number){hydrate(s);if(!Number.isFinite(to))return s;to=Math.max(s.last,to);const gap=to-s.last;advanceEggs(s.tt2!,to);
  if(dayAt(to)>s.daily.day)s.daily=newDaily(dayAt(to));
- if(gap>30000){const seconds=Math.min(gap/1000,8*3600);s.tt2!.mana=Math.min(manaMax(s),s.tt2!.mana+baseManaRegen(s)*manaSeconds(s.tt2!,s.last,s.last+seconds*1000));const offline={...s,last:to,active:Array(6).fill(0)};earnGold(s,scale(reward(offline),Math.min(ratio(dps(offline),bigMax({...ONE},health({...offline,farming:true}))),2)*seconds*.5));s.last=to;s.active.fill(0);if(isBoss(s)){s.farming=true;s.kills=0;spawn(s);}return s;}
+ if(gap>30000){const seconds=Math.min(gap/1000,8*3600);s.tt2!.mana=Math.min(manaMax(s),s.tt2!.mana+baseManaRegen(s)*manaSeconds(s.tt2!,s.last,s.last+seconds*1000));const offline={...s,last:to,active:Array(6).fill(0)};earnGold(s,scale(reward(offline),Math.min(ratio(dps(offline),bigMax({...ONE},health({...offline,farming:true}))),2)*seconds*.5));s.last=to;s.active.fill(0);shiftQTE(s.tt2!,gap);advanceQTE(s);if(isBoss(s)){s.farming=true;s.kills=0;spawn(s);}return s;}
  while(s.last<to){const boundary=(Math.floor(s.last/100)+1)*100;const step=Math.min(boundary-s.last,to-s.last);s.last+=step;s.tt2!.mana=Math.min(manaMax(s),s.tt2!.mana+baseManaRegen(s)*manaSeconds(s.tt2!,s.last-step,s.last));
  if(isBoss(s)&&s.bossEnd&&s.last>=s.bossEnd){s.farming=true;s.kills=0;spawn(s);note(s,'頭目時間結束，切換金幣農場。');}
  if(s.last===boundary)autoBuyHeroes(s);
+ if(s.last===boundary)advanceQTE(s);
  if(s.last===boundary)damage(s,scale(dps(s),.1));
  // The clone used to be folded into that tick, which made it invisible and threw away its attack
  // rate: the same damage per second arrived in ten silent instalments. It is its own attack now,
@@ -572,7 +614,8 @@ export function apply(s:State,a:Action){advance(s,a.at);const i=a.index??0,t=s.t
   note(s,`每日成就完成：${task.description.replace('{0}',String(task.requirement))}`);
  }
  if(a.type==='boss'&&s.farming){s.farming=false;s.kills=monsterCount(s);spawn(s);}
- if(a.type==='fairy'&&fairiesUnlocked(s)&&s.last-s.lastFairy>=60000){s.lastFairy=s.last;
+ // 原生 HandleQTEFinished：點下去就結束這一輪、重排冷卻。沒點的話由 advanceQTE 讓它過期。
+ if(a.type==='fairy'&&fairiesUnlocked(s)&&qteReady(t,QTE_TYPE.Fairy)){s.lastFairy=s.last;scheduleQTECooldown(s,QTE_TYPE.Fairy);
   // 一次領取可能來好幾隻：原生排程牠們依序飛進來，本專案沒有場上實體，所以一次結算完。
   const fairies=1+rollExtraFairies(s);
   s.daily.fairies+=fairies;s.tt2!.fairyRewards+=fairies;

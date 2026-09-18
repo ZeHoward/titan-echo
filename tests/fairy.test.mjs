@@ -3,9 +3,9 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { referenceRoot } from '../tools/reference-validation.mjs';
 import {
-  fresh, apply, goldReward, rollExtraFairies, fairiesUnlocked, FAIRY, CHESTERSON,
+  fresh, advance, apply, goldReward, rollExtraFairies, fairiesUnlocked, qteReady, FAIRY, CHESTERSON,
 } from '../lib/engine.ts';
-import { effect } from '../lib/tt2-rules.ts';
+import { effect, QTE_TYPE, TT2_QTE } from '../lib/tt2-rules.ts';
 import { toNumber } from '../lib/big-number.ts';
 
 const evidence = JSON.parse(readFileSync(new URL('fairy-evidence.json', referenceRoot), 'utf8'));
@@ -20,6 +20,17 @@ const SET_SPAWN = 80; // 套裝: FairySpawnChance +1.0
 const ready = () => {
   const s = fresh(1000);
   s.best = FAIRY.startStage;
+  return s;
+};
+
+/**
+ * Walk the clock in steps small enough to stay on the tick path - the offline path deliberately
+ * shifts the QTE timers by the gap instead of running them, so one big jump never lands a fairy.
+ */
+const waitForFairy = s => {
+  const limit = s.last + TT2_QTE[QTE_TYPE.Fairy].cooldown * 2000;
+  while (!qteReady(s.tt2, QTE_TYPE.Fairy) && s.last < limit) advance(s, s.last + 10000);
+  assert.ok(qteReady(s.tt2, QTE_TYPE.Fairy), '妖精應該在兩倍冷卻之內出現');
   return s;
 };
 
@@ -104,9 +115,11 @@ test('推到第十關才有妖精', () => {
   at.best = FAIRY.startStage;
   assert.equal(fairiesUnlocked(at), true);
 
-  // The action itself is gated, not just the helper.
+  // The action itself is gated, not just the helper. The QTE still runs - natively OnQTEReady is
+  // raised either way and the fairy simply is not spawned - so a ready fairy must still pay nothing.
   const before = toNumber(early.gold);
-  apply(early, { type: 'fairy', at: early.last + 120000 });
+  waitForFairy(early);
+  apply(early, { type: 'fairy', at: early.last });
   assert.equal(toNumber(early.gold), before, '還沒到第十關就不該領得到');
   assert.equal(early.tt2.fairyRewards, 0);
 });
@@ -115,7 +128,8 @@ test('領一次妖精至少給一份，有來源時給好幾份', () => {
   const plain = ready();
   plain.stage = 50;
   plain.best = 50;
-  apply(plain, { type: 'fairy', at: plain.last + 120000 });
+  waitForFairy(plain);
+  apply(plain, { type: 'fairy', at: plain.last });
   assert.equal(plain.tt2.fairyRewards, 1, '沒有來源就是一隻');
   assert.equal(plain.daily.fairies, 1);
   const one = toNumber(plain.gold);
@@ -125,7 +139,8 @@ test('領一次妖精至少給一份，有來源時給好幾份', () => {
   charmed.stage = 50;
   charmed.best = 50;
   charmed.tt2.tree[CHARM] = 9;
-  apply(charmed, { type: 'fairy', at: charmed.last + 120000 });
+  waitForFairy(charmed);
+  apply(charmed, { type: 'fairy', at: charmed.last });
   assert.ok(charmed.tt2.fairyRewards > 1, '滿級妖精魅力應該一次來好幾隻');
   assert.equal(charmed.daily.fairies, charmed.tt2.fairyRewards, '每日計數要跟著一起走');
   // The gold has to scale with the count, not stay at one fairy's worth.
@@ -145,16 +160,18 @@ test('妖精金幣與寶箱走同一個倍率，都是 15', () => {
     '乾淨存檔的妖精與寶箱應該一樣多');
 });
 
-test('六十秒的冷卻還在，而且不會因為多重妖精被繞過', () => {
+test('領完就進冷卻，而且不會因為多重妖精被繞過', () => {
   const s = ready();
   s.stage = 50;
   s.best = 50;
-  const at = s.last + 120000;
-  apply(s, { type: 'fairy', at });
+  waitForFairy(s);
+  apply(s, { type: 'fairy', at: s.last });
   const after = s.tt2.fairyRewards;
   assert.ok(after >= 1);
-  apply(s, { type: 'fairy', at: at + 1000 });
+  assert.equal(qteReady(s.tt2, QTE_TYPE.Fairy), false, '領完就該回到冷卻');
+  apply(s, { type: 'fairy', at: s.last + 1000 });
   assert.equal(s.tt2.fairyRewards, after, '冷卻內再按不該再給');
-  apply(s, { type: 'fairy', at: at + 60000 });
+  waitForFairy(s);
+  apply(s, { type: 'fairy', at: s.last });
   assert.ok(s.tt2.fairyRewards > after, '冷卻過了才能再領');
 });

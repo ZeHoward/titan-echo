@@ -76,11 +76,11 @@
     }
   },
   "counts": {
-    "live": 114,
-    "dead-native-uses-it": 115,
-    "dead-native-ignores-it": 68,
-    "read-without-source": 13,
-    "not-in-project": 486
+    "live": 120,
+    "dead-native-uses-it": 113,
+    "dead-native-ignores-it": 64,
+    "read-without-source": 18,
+    "not-in-project": 481
   },
   "verdicts": {
     "live": "專案有來源、引擎有讀：正常運作。",
@@ -1379,11 +1379,11 @@
     },
     {
       "id": "ClanQTECooldown",
-      "verdict": "dead-native-ignores-it",
+      "verdict": "live",
       "sources": [
         "TT2_TREE"
       ],
-      "engineReads": false,
+      "engineReads": true,
       "nativeReaders": null,
       "indirect": null,
       "priority": false
@@ -1580,17 +1580,17 @@
     },
     {
       "id": "CompanionQTECooldownMult",
-      "verdict": "dead-native-uses-it",
+      "verdict": "live",
       "sources": [
         "TT2_SETS"
       ],
-      "engineReads": false,
+      "engineReads": true,
       "nativeReaders": [
         "QTEController",
         "StatsPanelScript"
       ],
       "indirect": null,
-      "priority": true
+      "priority": false
     },
     {
       "id": "ContractActivationBonusTime",
@@ -2505,12 +2505,12 @@
     },
     {
       "id": "FairyCooldown",
-      "verdict": "dead-native-ignores-it",
+      "verdict": "live",
       "sources": [
         "TT2_SETS",
         "TT2_TREE"
       ],
-      "engineReads": false,
+      "engineReads": true,
       "nativeReaders": null,
       "indirect": null,
       "priority": false
@@ -2598,9 +2598,9 @@
     },
     {
       "id": "ForbiddenContractQTECooldown",
-      "verdict": "not-in-project",
+      "verdict": "read-without-source",
       "sources": null,
-      "engineReads": false,
+      "engineReads": true,
       "nativeReaders": null,
       "indirect": null,
       "priority": false
@@ -3419,9 +3419,9 @@
     },
     {
       "id": "HelperQTECooldown",
-      "verdict": "not-in-project",
+      "verdict": "read-without-source",
       "sources": null,
-      "engineReads": false,
+      "engineReads": true,
       "nativeReaders": null,
       "indirect": null,
       "priority": false
@@ -4406,9 +4406,9 @@
     },
     {
       "id": "PetBossQTECooldown",
-      "verdict": "not-in-project",
+      "verdict": "read-without-source",
       "sources": null,
-      "engineReads": false,
+      "engineReads": true,
       "nativeReaders": null,
       "indirect": null,
       "priority": false
@@ -4452,9 +4452,9 @@
     },
     {
       "id": "PetAttackQTECooldown",
-      "verdict": "not-in-project",
+      "verdict": "read-without-source",
       "sources": null,
-      "engineReads": false,
+      "engineReads": true,
       "nativeReaders": null,
       "indirect": null,
       "priority": false
@@ -4496,20 +4496,20 @@
     },
     {
       "id": "PetGoldQTECooldown",
-      "verdict": "dead-native-ignores-it",
+      "verdict": "live",
       "sources": [
         "TT2_TREE"
       ],
-      "engineReads": false,
+      "engineReads": true,
       "nativeReaders": null,
       "indirect": null,
       "priority": false
     },
     {
       "id": "PetGoldQTECooldownMult",
-      "verdict": "not-in-project",
+      "verdict": "read-without-source",
       "sources": null,
-      "engineReads": false,
+      "engineReads": true,
       "nativeReaders": [
         "QTEController"
       ],
@@ -4555,18 +4555,18 @@
     },
     {
       "id": "PetQTECooldownMult",
-      "verdict": "dead-native-uses-it",
+      "verdict": "live",
       "sources": [
         "TT2_SETS",
         "TT2_TREE"
       ],
-      "engineReads": false,
+      "engineReads": true,
       "nativeReaders": [
         "QTEController",
         "StatsPanelScript"
       ],
       "indirect": null,
-      "priority": true
+      "priority": false
     },
     {
       "id": "PetQTEDamage",
@@ -6154,11 +6154,11 @@
     },
     {
       "id": "UltraDaggerCooldown",
-      "verdict": "dead-native-ignores-it",
+      "verdict": "live",
       "sources": [
         "TT2_TREE"
       ],
-      "engineReads": false,
+      "engineReads": true,
       "nativeReaders": null,
       "indirect": null,
       "priority": false
