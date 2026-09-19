@@ -2,12 +2,20 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { referenceRoot } from '../tools/reference-validation.mjs';
-import { fresh, goldReward, stageScaleGold, STAGE_SCALE_GOLD } from '../lib/engine.ts';
+import {
+  fresh, goldReward, stageScaleGold, average10xGold, STAGE_SCALE_GOLD, BONUS_DEFAULTS,
+} from '../lib/engine.ts';
 import { ratio } from '../lib/big-number.ts';
 
 const evidence = JSON.parse(readFileSync(new URL('stage-scale-gold-evidence.json', referenceRoot), 'utf8'));
 const statics = JSON.parse(readFileSync(new URL('servervar-defaults.json', referenceRoot), 'utf8'));
 const baseline = JSON.parse(readFileSync(new URL('../docs/reference-baseline.json', import.meta.url), 'utf8'));
+
+/**
+ * 妖精與寶箱之間除了關卡縮放還差一個十倍金幣的期望值：`Goldx10Chance` 有編譯期基礎值
+ * 0.01，而寶箱那一端走的是擲骰那條路（本專案還沒有），所以只有妖精吃得到這 1.09。
+ */
+const TENX = average10xGold(BONUS_DEFAULTS.goldx10Chance);
 
 /** A save with no sources at all, parked at one stage. */
 const at = stage => {
@@ -67,7 +75,7 @@ test('妖精金幣多出來的那一項，就是關卡縮放的 1.6 次方', () 
   // 沒有任何來源時，妖精與寶箱只差 GoldSpecialty、FairyGold（都是 1）與這一項。
   for (const stage of [1, 100, 1000, 10000]) {
     const s = at(stage);
-    const scaled = stageScaleGold(stage)**STAGE_SCALE_GOLD.fairyExpo;
+    const scaled = stageScaleGold(stage)**STAGE_SCALE_GOLD.fairyExpo*TENX;
     assert.ok(Math.abs(ratio(goldReward(s, 'fairy'), goldReward(s, 'chest'))/scaled-1) < 1e-9,
       `第 ${stage} 關的妖精金幣應該是寶箱的 ${scaled} 倍`);
   }
@@ -76,7 +84,7 @@ test('妖精金幣多出來的那一項，就是關卡縮放的 1.6 次方', () 
 test('低關卡拿到的是常數倍，高關卡才真的拉開', () => {
   const early = at(100), late = at(10000);
   assert.ok(Math.abs(ratio(goldReward(early, 'fairy'), goldReward(early, 'chest'))
-    -STAGE_SCALE_GOLD.minAmount**STAGE_SCALE_GOLD.fairyExpo) < 1e-9);
+    -STAGE_SCALE_GOLD.minAmount**STAGE_SCALE_GOLD.fairyExpo*TENX) < 1e-9);
   assert.ok(ratio(goldReward(late, 'fairy'), goldReward(late, 'chest')) > 1000,
     '第一萬關的縮放要三位數以上，否則等於沒接');
 });

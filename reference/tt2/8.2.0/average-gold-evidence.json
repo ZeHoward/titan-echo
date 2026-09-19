@@ -1,0 +1,70 @@
+{
+ "version": "8.2.0",
+ "role": "兩個期望值方法的形狀，以及它們與實際擲骰那條路的差別。",
+ "packageSha256": "8d78c9aa877e6c0b291ee2116cab855bd26c59c1d080bc654f88ecf1ff268b5f",
+ "binarySha256": "c13fc44321b1214c71ab0277a134fc3401fd7392c74a0bbb3935671c55a8713a",
+ "scriptSha256": "62c2eeb8472bb107de516e4b6ae69d3dcdf5013fb1caa87223d82a54dd203f8b",
+ "finding": "兩個方法都是課本上的期望值。`GetAverage10xGold(型)` ＝ `1 + 9 × Bonus(型)`，而且**只認三個加成**（Goldx10Chance、BossGoldx10Chance、ChestGoldx10Chance），其他型別會 LogError 並回中性值 1。`GetAverageJackpotGold()` ＝ `1 + Bonus(JackpotGoldChance) × (Bonus(JackpotGold)^jackpotGoldBonusExpo − 1)`，指數的預設值是 1.0。**十倍金幣那個期望值是原生自己取的近似**：實際掉落走 `StageLogic.CalculateMonsterGoldDrop`，先問 `MonsterModel.Try10xGold` 中了幾次再乘 `10^次數`，所以一次掉落可以中兩次；`1 + 9p` 只算得到中一次。照原生保留，不自行修正。",
+ "consequence": "`Goldx10Chance` 有編譯期基礎值 0.01（加法型，中性值 0，一定要加），所以接上期望值之後**每個人的妖精與寵物金幣都會乘 1.09**。另外兩個 x10 加成本專案沒有來源，期望值是 1。**JackpotGold 的位置要改**：`GetMonsterGoldDrop` 從頭到尾沒有問過它，整個映像只有兩處讀它——期望值這裡，以及擲骰那條路 （`RollGoldBonus(JackpotGoldChance)` 中了才乘）。所以把 JackpotGold 無條件套在每一種金幣上，等於把機率當成 100%。",
+ "methods": {
+  "average10x": {
+   "name": "BonusModel$$GetAverage10xGold",
+   "rva": "0x2718224",
+   "bytesSha256": "6b2dd8d838c3d8256556b107d99816620cc7e42a59f9dacd6ef2cc78cc5cfacc"
+  },
+  "averageJackpot": {
+   "name": "BonusModel$$GetAverageJackpotGold",
+   "rva": "0x2718388",
+   "bytesSha256": "8cf486f3930f912492fcf877cee9e370ecb9854309303570f004a82c3a9d5474"
+  },
+  "rollPath": {
+   "name": "StageLogic$$CalculateMonsterGoldDrop",
+   "rva": "0x25439c4",
+   "bytesSha256": "d32aabdfbe96830fb41948fe14b715222ca317a90c2cbaf85a69944c5362ea4b"
+  }
+ },
+ "formulas": {
+  "average10x": "1 + 9 × Bonus(型)，只認三型，其餘 LogError 回 1",
+  "averageJackpot": "1 + Bonus(JackpotGoldChance) × (Bonus(JackpotGold)^jackpotGoldBonusExpo − 1)",
+  "rollPath": "Try10xGold() 回中了幾次 → × 10^次數；RollGoldBonus(JackpotGoldChance) 中了 → × Bonus(JackpotGold)"
+ },
+ "allowedX10Bonuses": [
+  "BossGoldx10Chance",
+  "ChestGoldx10Chance",
+  "Goldx10Chance"
+ ],
+ "consumers": {
+  "MonsterModel$$GetAverageBossGoldDrop": {
+   "rva": "0x232742c",
+   "x10Bonuses": [
+    "Goldx10Chance",
+    "BossGoldx10Chance"
+   ],
+   "jackpot": true
+  },
+  "FairyController$$GetFairyGoldAmount": {
+   "rva": "0x21c11e8",
+   "x10Bonuses": [
+    "Goldx10Chance",
+    "ChestGoldx10Chance"
+   ],
+   "jackpot": true
+  }
+ },
+ "coefficients": {
+  "jackpotGoldBonusExpo": {
+   "offset": "0xbc0",
+   "value": 1.0
+  },
+  "Goldx10Chance": {
+   "field": "goldx10Chance",
+   "offset": "0xbbc",
+   "value": 0.009999999776482582
+  }
+ },
+ "jackpotReaders": [
+  "BonusModel$$GetAverageJackpotGold",
+  "StageLogic$$CalculateMonsterGoldDrop"
+ ],
+ "limits": "只讀了兩個期望值方法的完整形狀、擲骰那條路的兩個呼叫與它們問的加成，以及兩個消費端各問哪一對 x10。沒有走進 Try10xGold 與 RollGoldBonus 內部，所以「一次掉落最多能中幾次十倍」與擲骰用的亂數來源都還沒解。jackpotGoldBonusExpo 與 Goldx10Chance 的基礎值都是編譯期預設值，線上可覆蓋。"
+}

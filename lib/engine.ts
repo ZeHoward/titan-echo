@@ -138,7 +138,7 @@ export function skillCooldown(s:State,i:number){return SKILLS[i].cooldown*(1-Mat
 // reference/tt2/8.2.0/bonus-defaults-evidence.json.
 export const BONUS_DEFAULTS={critChance:Math.fround(.01),chestChance:Math.fround(.01),
  cloneAttackRate:4,multiMonsterChance:Math.fround(.01),multiMonsterMaxCount:4,
- megaBombChance:Math.fround(.001),megaBombMaxStacks:1} as const;
+ megaBombChance:Math.fround(.001),megaBombMaxStacks:1,goldx10Chance:Math.fround(.01)} as const;
 // MultiMonstersGold has a base in that table too, but it is 1.0 and the bonus is multiplicative, so
 // it is already this project's neutral value - adding it here would double-count it. The two above
 // are additive, whose neutral value is 0, so they do need their base.
@@ -165,6 +165,21 @@ export const STAGE_SCALE_GOLD={minAmount:2,slope:Math.fround(.001),expo:Math.fro
 /** 原生 PlayerModel.GetStageScaleGoldAmount(關卡)。 */
 export function stageScaleGold(stage:number){
  return Math.max(STAGE_SCALE_GOLD.minAmount,STAGE_SCALE_GOLD.slope*stage**STAGE_SCALE_GOLD.expo);}
+// 十倍金幣與累積金幣的期望值。原生**同一件事有兩條形狀不同的路**：實際掉落走
+// StageLogic.CalculateMonsterGoldDrop 的擲骰（Try10xGold 回中了幾次就乘 10^次數、
+// RollGoldBonus 中了才乘 JackpotGold），「平均」的場合則走下面這兩個期望值。
+// 妖精與寵物金幣在原生就是直接乘期望值，所以本專案照期望值算。
+// 見 reference/tt2/8.2.0/average-gold-evidence.json。
+/**
+ * 原生 BonusModel.GetAverage10xGold：`1 + 9 × 機率`。
+ * **這是原生自己取的近似**——擲骰那條路一次可以中好幾次（10^次數），這裡只算得到中一次。
+ * 原生只認 Goldx10Chance、BossGoldx10Chance、ChestGoldx10Chance 三個，其餘 LogError 回 1。
+ */
+export function average10xGold(chance:number){return 1+9*chance;}
+/** 原生 BonusModel.GetAverageJackpotGold：`1 + 機率 × (倍率^jackpotGoldBonusExpo − 1)`。 */
+export const JACKPOT_GOLD_EXPO=1;
+export function averageJackpotGold(amount:number,chance:number){
+ return 1+chance*(amount**JACKPOT_GOLD_EXPO-1);}
 /** The crit boost skill's slot in this project's arrays; natively ActiveSkillID 3. */
 const CRIT_BOOST_SKILL=SKILL_DATA.findIndex(k=>k.id==='CritBoost');
 // Native PlayerModel.RefreshCriticalValues: the multiplier is playerCritMult x Bonus(CritDamage).
@@ -813,7 +828,18 @@ export function goldReward(s:State,source:'monster'|'boss'|'fairy'|'chest'|'pet'
  // Native RefreshGoldPerPlayerLevelBonus: GoldAll x= 1 + Sword Master level x GoldPerSwordMasterLevel,
  // applied only when the bonus is above zero. Shaped like the card-level term just below it.
  const resolve=stateResolver(s);
- for(const factor of [resolve('GoldAll'),resolve('JackpotGold'),resolve('GoldPerRunningActiveSkill')**running,1+resolve('GoldPerOwnedCardLevel')*t.cards,1+resolve('GoldPerSwordMasterLevel')*s.level,gearBonus(s,2)])n=scale(n,factor);
+ for(const factor of [resolve('GoldAll'),resolve('GoldPerRunningActiveSkill')**running,1+resolve('GoldPerOwnedCardLevel')*t.cards,1+resolve('GoldPerSwordMasterLevel')*s.level,gearBonus(s,2)])n=scale(n,factor);
+ // 累積金幣與十倍金幣分兩條路，原生也是分兩條：妖精與寵物那一端直接乘期望值，
+ // 小怪、頭目與寶箱那一端要在掉落時擲骰。本專案還沒有擲骰那條，所以仍然無條件套用
+ // JackpotGold——等於把機率當成 100%，這一項登記為偏差。原生的 GetMonsterGoldDrop
+ // **從頭到尾沒有問過 JackpotGold**，它只出現在期望值與擲骰這兩處。
+ if(source==='fairy'||source==='pet')n=scale(n,
+  averageJackpotGold(resolve('JackpotGold'),resolve('JackpotGoldChance'))
+  *average10xGold(BONUS_DEFAULTS.goldx10Chance+resolve('Goldx10Chance')));
+ else n=scale(n,resolve('JackpotGold'));
+ // 第二個十倍金幣兩端問的不是同一個加成：妖精問寶箱那個，寵物問頭目那個。
+ if(source==='fairy')n=scale(n,average10xGold(resolve('ChestGoldx10Chance')));
+ if(source==='pet')n=scale(n,average10xGold(resolve('BossGoldx10Chance')));
  if(source==='boss'||source==='pet')n=scale(n,10*resolve('GoldBoss'));
  // 寶箱與妖精走同一個倍率：原生的 GetFairyGoldAmount 以 GetChestersonGold 起算，而那就是
  // GetMonsterGoldDrop 帶 MonsterClass.Chesterson，所以兩者都是 treasureGold × ChestAmount。

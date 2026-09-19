@@ -81,8 +81,8 @@ test('這個差異登記為 table-differs，理由與影響寫在登記表裡', 
   const differs = register.formulas.flatMap(formula =>
     formula.parts.filter(part => part.status === 'table-differs').map(() => formula.id));
   assert.deepEqual(differs.sort(),
-    ['bossHealthMod', 'helperOrb', 'helperOrb', 'heroDamage', 'monsterGold',
-      'monsterHealth', 'monsterHealth', 'perks', 'perks', 'petBonus', 'petBurst',
+    ['averageGold', 'bossHealthMod', 'helperOrb', 'helperOrb', 'heroDamage', 'monsterGold',
+      'monsterGold', 'monsterHealth', 'monsterHealth', 'perks', 'perks', 'petBonus', 'petBurst',
       'petBurst', 'prestigeRelics', 'prestigeRelics', 'prestigeRelics',
       'qteCooldown', 'skillPoints', 'stageScaleGold', 'stageScaleGold']);
 });

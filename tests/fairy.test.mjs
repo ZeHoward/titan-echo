@@ -4,7 +4,7 @@ import { readFileSync } from 'node:fs';
 import { referenceRoot } from '../tools/reference-validation.mjs';
 import {
   fresh, advance, apply, goldReward, rollExtraFairies, fairiesUnlocked, qteReady, FAIRY, CHESTERSON,
-  stageScaleGold, STAGE_SCALE_GOLD,
+  stageScaleGold, STAGE_SCALE_GOLD, average10xGold, BONUS_DEFAULTS,
 } from '../lib/engine.ts';
 import { effect, QTE_TYPE, TT2_QTE } from '../lib/tt2-rules.ts';
 import { toNumber } from '../lib/big-number.ts';
@@ -159,10 +159,13 @@ test('妖精金幣起算於寶箱那個 15，再乘上關卡縮放', () => {
   assert.equal(effect(s.tt2, 'FairyGold'), 1);
   // 兩者之間剩下的就是原生 GetFairyGoldAmount 在 GetChestersonGold 之後乘的那一項：
   // 關卡縮放的 fairyGoldStageScaleExpo 次方。這一關還落在下限上，所以是個常數倍。
-  const scaled = stageScaleGold(s.stage) ** STAGE_SCALE_GOLD.fairyExpo;
+  // 再加一個十倍金幣的期望值：Goldx10Chance 的編譯期基礎值 0.01 讓妖精多乘 1.09，
+  // 寶箱那一端走擲骰、本專案還沒有，所以吃不到。
+  const scaled = stageScaleGold(s.stage) ** STAGE_SCALE_GOLD.fairyExpo
+    * average10xGold(BONUS_DEFAULTS.goldx10Chance);
   assert.equal(stageScaleGold(s.stage), STAGE_SCALE_GOLD.minAmount);
   assert.ok(Math.abs(fairy / monster - CHESTERSON.treasureGold * scaled) < 1e-6,
-    '乾淨存檔的妖精應該是寶箱的關卡縮放倍');
+    '乾淨存檔的妖精應該是寶箱的關卡縮放倍，再乘十倍金幣的期望值');
 });
 
 test('領完就進冷卻，而且不會因為多重妖精被繞過', () => {

@@ -7,13 +7,13 @@
 
 | 判定 | 意義 | 個數 |
 |---|---|---|
-| `live` | 專案有來源、引擎有讀：正常運作。 | 123 |
-| `dead-native-uses-it` | 專案有來源、引擎沒讀，而且原生有取值點：**這些是可以接上的**。 | 110 |
+| `live` | 專案有來源、引擎有讀：正常運作。 | 124 |
+| `dead-native-uses-it` | 專案有來源、引擎沒讀，而且原生有取值點：**這些是可以接上的**。 | 109 |
 | `dead-native-ignores-it` | 專案有來源、引擎沒讀，原生也掃不到取值點：接了大概也沒有依據。 | 64 |
-| `read-without-source` | 引擎有讀，但專案沒有任何來源會給：恆為中性值，等來源出現才會生效。 | 19 |
-| `not-in-project` | 專案沒有來源，引擎也沒讀。 | 480 |
+| `read-without-source` | 引擎有讀，但專案沒有任何來源會給：恆為中性值，等來源出現才會生效。 | 21 |
+| `not-in-project` | 專案沒有來源，引擎也沒讀。 | 478 |
 
-## 優先：落在已實作系統的（46）
+## 優先：落在已實作系統的（45）
 
 原生有取值點、我們沒讀，而且**不屬於尚未實作的流派**——這些是可以直接接上的。
 依**原生讀取它的類別**分組，類別名就說明了它屬於哪個系統。
@@ -95,10 +95,6 @@
 ### BasePetObject / ClanPlayerScript.<ClanPlayerLoop>d__19 / PlayerController.<ShadowCloneAttackLoop>d__132 / PlayerModel（1）
 
 - `DeadlyChance` ← TT2_ACTIVE
-
-### BonusModel（1）
-
-- `JackpotGoldChance` ← TT2_ARTIFACTS、TT2_TREE
 
 ### BossTimerScript（1）
 
@@ -233,7 +229,7 @@
 
 這些已經接好了，只是還沒有任何神器、天賦、寵物或套裝會給，所以恆為中性值。
 
-`AllUpgradeCostFairy`、`BurstSkillStageSkipMult`、`CompanionAttackRate`、`CritBoostSkillDurationMult`、`ForbiddenContractQTECooldown`、`Goldx10Chance`、`HelperBoostSkillDurationMult`、`HelperQTECooldown`、`HelperQTECount`、`ManaPoolCapPercent`、`ManaRegenMult`、`PetBossQTECooldown`、`PetAttackQTECooldown`、`PetGoldQTECooldownMult`、`OnlyPrestigeRelic`、`ShadowCloneSkillDurationMult`、`SwordMasterDamage`、`SwordMasterUpgradeCost`、`TapBoostSkillDurationMult`
+`AllUpgradeCostFairy`、`BossGoldx10Chance`、`BurstSkillStageSkipMult`、`ChestGoldx10Chance`、`CompanionAttackRate`、`CritBoostSkillDurationMult`、`ForbiddenContractQTECooldown`、`Goldx10Chance`、`HelperBoostSkillDurationMult`、`HelperQTECooldown`、`HelperQTECount`、`ManaPoolCapPercent`、`ManaRegenMult`、`PetBossQTECooldown`、`PetAttackQTECooldown`、`PetGoldQTECooldownMult`、`OnlyPrestigeRelic`、`ShadowCloneSkillDurationMult`、`SwordMasterDamage`、`SwordMasterUpgradeCost`、`TapBoostSkillDurationMult`
 
 ## 限制
 

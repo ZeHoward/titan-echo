@@ -38,11 +38,14 @@ test('multipliers combine independently and pending consumers stay inactive',()=
  const levels=Array(37).fill(0);levels[0]=1000;levels[1]=100;
  const totals=heroPassiveTotals(levels);
  assert.ok(Math.abs(totals.CritDamage-1.21)<1e-12);
- // 英雄轉點擊已於 2.14.1 接上，所以這個被動現在會累計；其餘三個仍在 PENDING_HERO_EFFECTS。
+ // 英雄轉點擊已於 2.14.1 接上、十倍金幣的期望值於 2.25.0 接上，所以這兩個被動現在會累計；
+ // 其餘兩個仍在 PENDING_HERO_EFFECTS。這裡只點了前兩位英雄，給 Goldx10Chance 的是 H16／H34，
+ // 所以它的總和還是空的——換句話說這則測試看的是「沒被擋掉」而不是「有沒有數字」。
  assert.equal(totals.TapDamageFromHelpers,0.0001);
- assert.equal(totals.Goldx10Chance,undefined);
  assert.equal(totals.MultiMonstersGold,undefined);
  assert.equal(totals.PetGoldQTEAmount,undefined);
+ const goldLevels=Array(37).fill(0);goldLevels[TT2_HEROES.findIndex(h=>h.id==='H16')]=500;
+ assert.ok(heroPassiveTotals(goldLevels).Goldx10Chance>0,'H16 的十倍金幣現在要累計得到');
 });
 
 test('passives derive on load and reset on prestige without leaking between players',()=>{

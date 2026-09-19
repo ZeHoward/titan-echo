@@ -76,11 +76,11 @@
     }
   },
   "counts": {
-    "live": 123,
-    "dead-native-uses-it": 110,
+    "live": 124,
+    "dead-native-uses-it": 109,
     "dead-native-ignores-it": 64,
-    "read-without-source": 19,
-    "not-in-project": 480
+    "read-without-source": 21,
+    "not-in-project": 478
   },
   "verdicts": {
     "live": "專案有來源、引擎有讀：正常運作。",
@@ -1061,9 +1061,9 @@
     },
     {
       "id": "BossGoldx10Chance",
-      "verdict": "not-in-project",
+      "verdict": "read-without-source",
       "sources": null,
-      "engineReads": false,
+      "engineReads": true,
       "nativeReaders": null,
       "indirect": null,
       "priority": false
@@ -1292,9 +1292,9 @@
     },
     {
       "id": "ChestGoldx10Chance",
-      "verdict": "not-in-project",
+      "verdict": "read-without-source",
       "sources": null,
-      "engineReads": false,
+      "engineReads": true,
       "nativeReaders": null,
       "indirect": null,
       "priority": false
@@ -3659,17 +3659,17 @@
     },
     {
       "id": "JackpotGoldChance",
-      "verdict": "dead-native-uses-it",
+      "verdict": "live",
       "sources": [
         "TT2_ARTIFACTS",
         "TT2_TREE"
       ],
-      "engineReads": false,
+      "engineReads": true,
       "nativeReaders": [
         "BonusModel"
       ],
       "indirect": null,
-      "priority": true
+      "priority": false
     },
     {
       "id": "JackpotGoldPerPrestigeFairy",

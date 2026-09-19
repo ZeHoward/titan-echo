@@ -62,8 +62,15 @@ FORMULAS = [
                          'expo1 0.04、expo2 1.036、expo3 1、expo4 1.098、levelOff 100、'
                          'transcendenceLevelOff 180000。目前的 5 與 1.27 是 7.5 基準的近似，'
                          '**尚未採用**原生曲線——它必須與血量曲線一起換，取捨記在「待決定的取捨」。'),
-              entry(part='加成代號（GoldAll、JackpotGold、ChestAmount…）', status='table', ref='native-bonus-types.json',
+              entry(part='加成代號（GoldAll、ChestAmount…）', status='table', ref='native-bonus-types.json',
                     note='代號對照原生 BonusType 列舉，數值來自神器與天賦資料表。'),
+              entry(part='JackpotGold 在這一端仍是無條件的', status='table-differs',
+                    ref='average-gold-evidence.json',
+                    note='原生把它擺在兩個地方：妖精與寵物那種「平均」場合用 '
+                         'GetAverageJackpotGold 的期望值（本專案已照做，見 averageGold），'
+                         '小怪／頭目／寶箱這種實際掉落則在 CalculateMonsterGoldDrop 擲骰。'
+                         '本專案還沒有擲骰那條，這一端仍然無條件乘上 JackpotGold，'
+                         '等於把 JackpotGoldChance 當成 100%。'),
               entry(part='寶箱泰坦基礎機率 0.01', status='default', ref='bonus-defaults-evidence.json',
                     note='BonusModel.SetDefaultBonuses 把 ChestChance 的基礎值設為 chestersonChance（0.01）；'
                          '引擎原本是 0.02，2.13.0 起改用原生值並與暴擊同樣乘上 AllProbabilityBoost。'
@@ -539,6 +546,37 @@ FORMULAS = [
                          '累積金幣的期望值、點石成金開著時的 Pow(HandOfMidasSkillAmount, '
                          'fairyMidasBonusExpo)，以及 Random.Range(0.2, 1.8) 的變異（期望值 1）。'
                          '這一輪只接關卡縮放那一項，其餘照舊沒有。')]),
+    entry(id='averageGold', module='lib/engine.ts', export='averageJackpotGold',
+          expression='累積金幣的期望值 1 + 機率 × (倍率^jackpotGoldBonusExpo − 1)；'
+                     '十倍金幣的期望值 1 + 9 × 機率',
+          parts=[
+              entry(part='兩個期望值的形狀', status='native', ref='average-gold-evidence.json',
+                    note='BonusModel.GetAverageJackpotGold 依序取 Bonus(JackpotGold)、'
+                         'Bonus(JackpotGoldChance)，做 Pow → 乘 → 減 → 加一；'
+                         'BonusModel.GetAverage10xGold 是 1 + 9 × Bonus(型)，'
+                         '而且**只認 Goldx10Chance、BossGoldx10Chance、ChestGoldx10Chance 三個**，'
+                         '其他型別會 LogError 並回中性值 1。'),
+              entry(part='jackpotGoldBonusExpo 與 Goldx10Chance 的基礎值',
+                    status='default', ref='average-gold-evidence.json',
+                    note='指數是 [ServerVar] 的編譯期預設值 1.0（等於沒有作用，有來源才看得出來）；'
+                         'Goldx10Chance 在 BonusModel.SetDefaultBonuses 有基礎值 0.01，'
+                         '加法型、中性值 0，所以一定要加——每個人的妖精與寵物金幣因此乘 1.09。'
+                         '兩者線上都可覆蓋。'),
+              entry(part='十倍金幣的期望值是原生自己取的近似',
+                    status='native', ref='average-gold-evidence.json',
+                    note='實際掉落走 StageLogic.CalculateMonsterGoldDrop，先問 '
+                         'MonsterModel.Try10xGold 中了幾次再乘 10^次數，'
+                         '所以一次掉落可以中兩次；1 + 9p 只算得到中一次。'
+                         '本專案照原生保留這個近似，沒有自行改成完整的期望值。'),
+              entry(part='實際掉落的擲骰沒有做', status='table-differs',
+                    ref='average-gold-evidence.json',
+                    note='**JackpotGold 在原生只有兩個取值點**：上面那個期望值，以及 '
+                         'CalculateMonsterGoldDrop 裡 RollGoldBonus(JackpotGoldChance) '
+                         '中了才乘的那一次；GetMonsterGoldDrop 從頭到尾沒有問過它。'
+                         '本專案的妖精與寵物金幣已改用期望值，'
+                         '但小怪、頭目與寶箱仍然無條件套用 JackpotGold——**等於把機率當成 100%**。'
+                         '要修正得先有擲骰那條路（含 Try10xGold 的次數分布與亂數來源），'
+                         '那會改動每個人的金幣收入，屬於獨立的一段。')]),
     entry(id='qteCooldown', module='lib/engine.ts', export='qteCooldownSeconds',
           expression='(資料表的 cooldownTime − Bonus(該型的 CooldownBonusType)) × (1 + randomness × Random(−1, 1))，'
                      '再依 QTE 類型乘上各自的倍率加成，最後夾在 MIN_COOLDOWN_SECONDS(1) 秒以上',
@@ -918,7 +956,7 @@ NOT_FORMULAS = {
         'awardPet', 'heroPowerBoost', 'heroSkillValue', 'equipmentEffect', 'equipmentValue',
         'artifactCost', 'skillCost', 'skillDuration', 'skillCooldown', 'skillMana', 'critMultiplier',
         'manaCapDamage', 'helperWeaponDamage', 'maxStageDamage', 'skillCap', 'cloakedStageSkip', 'stateResolver', 'effectResolver',
-        'multiMonsterMaxCount', 'multiMonsterGold',
+        'multiMonsterMaxCount', 'multiMonsterGold', 'average10xGold',
         'chestChance', 'megaBombMaxStacks', 'megaBombStackLength', 'chestersonActive',
         'fairiesUnlocked', 'loginStreakIntact', 'loginStreakDays',
         'qteReady', 'advanceQTE', 'qteUnlocked', 'freshQTESlots', 'petBurstTaps', 'helperOrbBounces',
@@ -932,7 +970,8 @@ NOT_FORMULAS = {
         'HEROES', 'SKILLS', 'SKILL_DATA', 'SKILL_ORDER', 'TT2_RULESET', 'bonusDefinitions',
         'EFFECT_LABELS', 'effectLabel', 'BUILD_COEFFICIENTS', 'PLAYER_DEFAULTS', 'RESOURCE_PERKS',
         'EGG_INTERVAL', 'PENDING_HERO_EFFECTS', 'heroSkills', 'THEME_STAGES', 'TT2_THEMES', 'HELPER_DEFAULTS',
-        'BONUS_DEFAULTS', 'MANA_DEFAULTS', 'PRESTIGE_DEFAULTS', 'MULTI_MONSTER_MIN', 'MEGA_BOMB', 'CHESTERSON', 'FAIRY', 'STAGE_SCALE_GOLD', 'LOGIN_STREAK_DAYS',
+        'BONUS_DEFAULTS', 'MANA_DEFAULTS', 'PRESTIGE_DEFAULTS', 'MULTI_MONSTER_MIN', 'MEGA_BOMB', 'CHESTERSON', 'FAIRY', 'STAGE_SCALE_GOLD',
+        'JACKPOT_GOLD_EXPO', 'LOGIN_STREAK_DAYS',
         'TT2_QTE', 'QTE_TYPE', 'QTE_MIN_COOLDOWN', 'QTE_COOLDOWN_MULTIPLIERS',
         'HERO_LEVEL_CAP', 'PLAYER_LEVEL_CAP', 'UNMEASURED_ACHIEVEMENTS', 'UNMEASURED_DAILY_TASKS',
         'DAILY_TASK_PAID', 'cap'],

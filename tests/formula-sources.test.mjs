@@ -9,8 +9,8 @@ const readable = readFileSync(new URL('../docs/formula-sources.md', import.meta.
 
 test('every core formula names a source, and every source it names exists', () => {
   assert.deepEqual(report.problems, []);
-  assert.equal(report.formulas, 45);
-  assert.equal(report.parts, 144);
+  assert.equal(report.formulas, 46);
+  assert.equal(report.parts, 149);
 });
 
 test('no export in a covered module escapes classification', () => {
@@ -29,7 +29,7 @@ test('no export in a covered module escapes classification', () => {
 
 test('the counts are recorded, so a source changing status is a visible change', () => {
   assert.deepEqual(report.counts, {
-    'table-differs': 19, invented: 25, table: 20, default: 24, server: 4, native: 52,
+    'table-differs': 21, invented: 25, table: 20, default: 25, server: 4, native: 54,
   });
   // Nothing is left on the 7.5 baseline: every source has been checked against 8.2, and what
   // could not be adopted is recorded as known-but-not-followed rather than as unchecked.
@@ -37,13 +37,13 @@ test('the counts are recorded, so a source changing status is a visible change',
   // Still unverified: this project's own choice, or a server value with no compiled-in default.
   const unverified = (report.counts['baseline-75'] ?? 0) + report.counts.invented + report.counts.server;
   assert.equal(unverified, 29);
-  assert.equal(report.counts['table-differs'], 19, '已知但未照做的項目要看得見');
+  assert.equal(report.counts['table-differs'], 21, '已知但未照做的項目要看得見');
 });
 
 test('每一處與安裝包不一致的地方都寫下來了', () => {
   const differs = register.formulas.flatMap(formula =>
     formula.parts.filter(part => part.status === 'table-differs').map(part => ({ formula, part })));
-  assert.equal(differs.length, 19);
+  assert.equal(differs.length, 21);
   const boss = differs.find(entry => entry.formula.id === 'monsterHealth');
   // The boss multiplier sequence is banded by stage in the package; the engine uses one band.
   assert.match(boss.part.note, /4,6,8,15,24/);
@@ -56,7 +56,7 @@ test('每一處與安裝包不一致的地方都寫下來了', () => {
 });
 
 test('the readable copy matches the register it was rendered from', () => {
-  assert.match(readable, /共 45 條公式、144 項來源條目/);
+  assert.match(readable, /共 46 條公式、149 項來源條目/);
   for (const formula of register.formulas) assert.ok(readable.includes(formula.id), formula.id);
   for (const status of Object.keys(register.statuses)) assert.ok(readable.includes(`\`${status}\``), status);
 });
