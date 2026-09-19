@@ -154,6 +154,17 @@ export const CHESTERSON={stageLength:5,treasureGold:15} as const;
 // 妖精的三個 [ServerVar]：額外妖精的上限、每多一隻機率乘的懲罰，以及妖精開始出現的關卡。
 // 見 reference/tt2/8.2.0/fairy-evidence.json。
 export const FAIRY={maxExtraSpawns:7,multiSpawnPenalty:Math.fround(.5),startStage:10} as const;
+// 金幣的關卡縮放。原生 PlayerModel.GetStageScaleGoldAmount 只有一行：
+// max(stageScaleMinAmount, stageScaleSlope × 關卡^stageScaleExpo)。
+// **它不是一條獨立的金幣曲線**，是疊在既有掉落上的第二個關卡項——每個消費端各拿自己的指數
+// 把它次方一次再乘進去。乘積要到第 459 關左右才追過下限 2，在那之前等於只多一個常數倍，
+// 越往後才越拉開。fairyExpo 是妖精那一端的指數；寵物的 petGoldStageScaleExpo（1.8）要等
+// 頭目平均金幣還原了才用得上。見 reference/tt2/8.2.0/stage-scale-gold-evidence.json。
+export const STAGE_SCALE_GOLD={minAmount:2,slope:Math.fround(.001),expo:Math.fround(1.24),
+ fairyExpo:Math.fround(1.6)} as const;
+/** 原生 PlayerModel.GetStageScaleGoldAmount(關卡)。 */
+export function stageScaleGold(stage:number){
+ return Math.max(STAGE_SCALE_GOLD.minAmount,STAGE_SCALE_GOLD.slope*stage**STAGE_SCALE_GOLD.expo);}
 /** The crit boost skill's slot in this project's arrays; natively ActiveSkillID 3. */
 const CRIT_BOOST_SKILL=SKILL_DATA.findIndex(k=>k.id==='CritBoost');
 // Native PlayerModel.RefreshCriticalValues: the multiplier is playerCritMult x Bonus(CritDamage).
@@ -808,7 +819,11 @@ export function goldReward(s:State,source:'monster'|'boss'|'fairy'|'chest'|'pet'
  // GetMonsterGoldDrop 帶 MonsterClass.Chesterson，所以兩者都是 treasureGold × ChestAmount。
  if(source==='chest'||source==='fairy')n=scale(n,CHESTERSON.treasureGold*resolve('ChestAmount'));
  if(source==='fairy'||source==='pet')n=scale(n,resolve('GoldSpecialty'));
- if(source==='fairy')n=scale(n,resolve('FairyGold'));if(source==='pet')n=scale(n,resolve('PetGoldQTEAmount'));
+ // 妖精在寶箱泰坦的掉落之後，馬上乘上關卡縮放的 fairyGoldStageScaleExpo 次方——原生
+ // GetFairyGoldAmount 的第二步。寵物的米達斯之心也走同一條縮放，但它的底是頭目平均金幣，
+ // 那條還沒還原，所以 'pet' 這一端先不接。
+ if(source==='fairy')n=scale(n,resolve('FairyGold')*stageScaleGold(s.stage)**STAGE_SCALE_GOLD.fairyExpo);
+ if(source==='pet')n=scale(n,resolve('PetGoldQTEAmount'));
  if(s.active[4]>s.last)n=scale(n,skillPower(s,4)**(['fairy','pet'].includes(source)?.7:1));
  return n;
 }

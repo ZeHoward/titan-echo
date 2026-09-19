@@ -1,0 +1,104 @@
+{
+ "version": "8.2.0",
+ "role": "金幣的關卡縮放：那條曲線長什麼樣、誰把它拿去次方，以及頭目平均金幣的形狀。",
+ "packageSha256": "8d78c9aa877e6c0b291ee2116cab855bd26c59c1d080bc654f88ecf1ff268b5f",
+ "binarySha256": "c13fc44321b1214c71ab0277a134fc3401fd7392c74a0bbb3935671c55a8713a",
+ "scriptSha256": "62c2eeb8472bb107de516e4b6ae69d3dcdf5013fb1caa87223d82a54dd203f8b",
+ "finding": "`GetStageScaleGoldAmount(關卡)` 只有一行：`max(stageScaleMinAmount, stageScaleSlope × 關卡^stageScaleExpo)`，三個係數分別是 2.0、0.001 與 1.24。**它不是一條獨立的金幣曲線，是疊在既有掉落上的第二個關卡項**：妖精把寶箱泰坦的掉落乘上它的 fairyGoldStageScaleExpo（1.6）次方，寵物的米達斯之心把頭目平均掉落乘上 petGoldStageScaleExpo（1.8）次方。乘積要到第 459 關左右才追過下限，所以在那之前整段只是個常數倍，越往後才越拉開。兩個無參數多載讀的都是 StageLogicController.currentStage，**看的是目前所在的關卡，不是歷史最高**。",
+ "consequence": "沒有這一項，妖精的金幣等於一路停在最前面那幾百關的係數上，關卡越高差越多——接上去會讓所有人的妖精金幣變多，這是原生行為。米達斯之心還缺另一半：頭目平均金幣要乘兩個十倍金幣的期望值與累積金幣的期望值，那三個是各自獨立的一段。",
+ "methods": {
+  "stageScale": {
+   "name": "PlayerModel$$GetStageScaleGoldAmount",
+   "rva": "0x23dc644",
+   "bytesSha256": "669f98e0e9cdae2b5f84ec2cc64bb889258897e5b60897bd2e581559377ceb52"
+  },
+  "currentStageScale": {
+   "name": "PlayerModel$$GetStageScaleGoldAmount",
+   "rva": "0x23dc7c8",
+   "bytesSha256": "4e5c8102d9ea9018a9f510686b468ce888b4277faeb1dbd21f09b2363b385a2a"
+  },
+  "currentFairyGold": {
+   "name": "FairyController$$GetFairyGoldAmount",
+   "rva": "0x21c1748",
+   "bytesSha256": "e92af2a92f3f2a8edf3ab386f7ae9d8b9d0f741428a63d9fde1740c23d9dcb61"
+  },
+  "averageBossGold": {
+   "name": "MonsterModel$$GetAverageBossGoldDrop",
+   "rva": "0x232742c",
+   "bytesSha256": "af809a21c34f308591e9d544d2e0928a146156d626843eb302228493e52a5a05"
+  },
+  "fairyGold": {
+   "name": "FairyController$$GetFairyGoldAmount",
+   "rva": "0x21c11e8",
+   "bytesSha256": "4c65a4aa32ea9f27d5b896b27f8bcbda60c2d4fb25c37906ddce11e95af6dbec"
+  },
+  "petHomGold": {
+   "name": "PetModel$$GetPetHomGold",
+   "rva": "0x239ed20",
+   "bytesSha256": "a2bb376aefacf5c1958490e20e497e20fc45d52624bc8ad517810c0dace26a55"
+  }
+ },
+ "formulas": {
+  "stageScale": "max(stageScaleMinAmount, stageScaleSlope × 關卡^stageScaleExpo)",
+  "fairyGold": "GetChestersonGold(關卡) × 關卡縮放^fairyGoldStageScaleExpo × …",
+  "petHomGold": "GetAverageBossGoldDrop(關卡) × 關卡縮放^petGoldStageScaleExpo × …",
+  "averageBossGold": "GetMonsterGoldDrop(關卡, MonsterClass.Boss, 1 隻, 變異) × GetAverage10xGold(Goldx10Chance) × GetAverage10xGold(BossGoldx10Chance) × GetAverageJackpotGold()"
+ },
+ "coefficients": {
+  "stageScaleMinAmount": {
+   "offset": "0x660",
+   "value": 2.0
+  },
+  "stageScaleSlope": {
+   "offset": "0x664",
+   "value": 0.0010000000474974513
+  },
+  "stageScaleExpo": {
+   "offset": "0x668",
+   "value": 1.2400000095367432
+  },
+  "petGoldStageScaleExpo": {
+   "offset": "0x66c",
+   "value": 1.7999999523162842
+  },
+  "fairyGoldStageScaleExpo": {
+   "offset": "0x670",
+   "value": 1.600000023841858
+  },
+  "petHomGoldMult": {
+   "offset": "0xb48",
+   "value": 10.0
+  }
+ },
+ "consumers": {
+  "FairyController$$GetFairyGoldAmount": {
+   "rva": "0x21c11e8",
+   "base": "MonsterModel$$GetChestersonGold",
+   "exponent": "fairyGoldStageScaleExpo"
+  },
+  "PetModel$$GetPetHomGold": {
+   "rva": "0x239ed20",
+   "base": "MonsterModel$$GetAverageBossGoldDrop",
+   "exponent": "petGoldStageScaleExpo"
+  }
+ },
+ "stageSource": "StageLogicController.currentStage",
+ "callers": [
+  "FairyController$$GetFairyGoldAmount",
+  "PetModel$$GetPetHomGold",
+  "PlayerModel$$GetStageScaleGoldAmount"
+ ],
+ "averageBossGold": {
+  "monsterClass": "Boss",
+  "averages": [
+   "Goldx10Chance",
+   "BossGoldx10Chance"
+  ],
+  "jackpot": "BonusModel$$GetAverageJackpotGold",
+  "missingHere": [
+   "GetAverage10xGold（兩次）",
+   "GetAverageJackpotGold"
+  ]
+ },
+ "limits": "只讀了這六個方法的呼叫順序、三個 [ServerVar] 的載入位置、兩個指數各是哪一個變數，以及兩個無參數多載讀的是哪一個欄位；沒有逐條判定 Max 的條件碼，也沒有走進 GetMonsterGoldDrop。三個係數是編譯期預設值（狀態 default），線上可被伺服器覆蓋。"
+}

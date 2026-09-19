@@ -674,6 +674,38 @@
       ]
     },
     {
+      "id": "stageScaleGold",
+      "module": "lib/engine.ts",
+      "export": "stageScaleGold",
+      "expression": "max(stageScaleMinAmount, stageScaleSlope × 關卡^stageScaleExpo)，妖精金幣再把它取 fairyGoldStageScaleExpo 次方乘進去",
+      "parts": [
+        {
+          "part": "曲線的形狀",
+          "status": "native",
+          "ref": "stage-scale-gold-evidence.json",
+          "note": "PlayerModel.GetStageScaleGoldAmount 只有一行：Pow(關卡, stageScaleExpo) 乘 stageScaleSlope，再與 stageScaleMinAmount 取 GHDouble.Max。**它不是一條獨立的金幣曲線**，是疊在既有掉落上的第二個關卡項——三個呼叫者裡有兩個是消費端，各自把它取自己的指數次方再乘進金額：妖精用 fairyGoldStageScaleExpo 乘在 GetChestersonGold 上，寵物的米達斯之心用 petGoldStageScaleExpo 乘在 GetAverageBossGoldDrop 上。"
+        },
+        {
+          "part": "三個係數與妖精的指數",
+          "status": "default",
+          "ref": "stage-scale-gold-evidence.json",
+          "note": "四個都是 [ServerVar] 的編譯期預設值：stageScaleMinAmount = 2、stageScaleSlope = 0.001、stageScaleExpo = 1.24、fairyGoldStageScaleExpo = 1.6，線上可覆蓋。乘積要到第 459 關左右才追過下限，所以在那之前整段只是個常數倍 2^1.6。"
+        },
+        {
+          "part": "米達斯之心那一端沒有接",
+          "status": "table-differs",
+          "ref": "stage-scale-gold-evidence.json",
+          "note": "同一條縮放在 PetModel.GetPetHomGold 也用得到，但它的底是 MonsterModel.GetAverageBossGoldDrop——GetMonsterGoldDrop(關卡, MonsterClass.Boss, 1 隻, 變異) 再乘上 GetAverage10xGold(Goldx10Chance)、GetAverage10xGold(BossGoldx10Chance) 與 GetAverageJackpotGold()。那三個期望值本專案都還沒還原，所以 petGoldStageScaleExpo（1.8）先沒有登記進引擎。"
+        },
+        {
+          "part": "妖精金幣鏈剩下的三項還是缺的",
+          "status": "table-differs",
+          "ref": "stage-scale-gold-evidence.json",
+          "note": "GetFairyGoldAmount 在關卡縮放之後還有兩個十倍金幣的期望值、累積金幣的期望值、點石成金開著時的 Pow(HandOfMidasSkillAmount, fairyMidasBonusExpo)，以及 Random.Range(0.2, 1.8) 的變異（期望值 1）。這一輪只接關卡縮放那一項，其餘照舊沒有。"
+        }
+      ]
+    },
+    {
       "id": "qteCooldown",
       "module": "lib/engine.ts",
       "export": "qteCooldownSeconds",
@@ -782,7 +814,7 @@
           "part": "米達斯之心（PetGold）沒有做",
           "status": "table-differs",
           "ref": "pet-qte-evidence.json",
-          "note": "**缺前置，不是做不了。**PetModel.GetPetHomGold 以 MonsterModel.GetAverageBossGoldDrop 起算，再乘 Pow(GetStageScaleGoldAmount, petGoldStageScaleExpo)、Bonus(PetGoldQTEAmount) 與 petHomGoldMult，點石成金開著時還要再乘 Pow(HandOfMidasSkillAmount, petMidasBonusExpo)。前兩條金幣公式本專案都還沒還原，而 GetStageScaleGoldAmount 同時也是妖精金幣缺的四項之一，做掉它會一併改動妖精的金幣，屬於獨立的一段工作。"
+          "note": "**缺前置，不是做不了。**PetModel.GetPetHomGold 以 MonsterModel.GetAverageBossGoldDrop 起算，再乘 Pow(GetStageScaleGoldAmount, petGoldStageScaleExpo)、Bonus(PetGoldQTEAmount) 與 petHomGoldMult，點石成金開著時還要再乘 Pow(HandOfMidasSkillAmount, petMidasBonusExpo)。GetStageScaleGoldAmount 已經在 2.24.0 還原（見 stageScaleGold），**現在缺的只剩 GetAverageBossGoldDrop 那一半**：頭目掉落本身要再乘 GetAverage10xGold(Goldx10Chance)、GetAverage10xGold(BossGoldx10Chance) 與 GetAverageJackpotGold() 三個期望值，三個都還沒還原。petMidasBonusExpo 連編譯期預設值都沒有。"
         },
         {
           "part": "PetQTEDamage 沒有接",
@@ -1315,6 +1347,7 @@
       "MEGA_BOMB",
       "CHESTERSON",
       "FAIRY",
+      "STAGE_SCALE_GOLD",
       "LOGIN_STREAK_DAYS",
       "TT2_QTE",
       "QTE_TYPE",

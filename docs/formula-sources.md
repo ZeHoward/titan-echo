@@ -2,15 +2,15 @@
 
 每個核心公式的來源登記表：資料表、原生方法、原生預設值，或明確標記為 7.5 基準沿用、專案自訂或伺服器供給。
 
-版本 8.2.0。共 44 條公式、140 項來源條目。
+版本 8.2.0。共 45 條公式、144 項來源條目。
 
 | 狀態 | 意義 | 條目數 |
 |---|---|---|
-| `native` | 由反組譯證據確認 | 51 |
+| `native` | 由反組譯證據確認 | 52 |
 | `table` | 取自安裝包資料表 | 20 |
-| `default` | 原生靜態預設值，線上可覆蓋 | 23 |
+| `default` | 原生靜態預設值，線上可覆蓋 | 24 |
 | `baseline-75` | 沿用 7.5 基準，尚未對 8.2 核實 | 0 |
-| `table-differs` | 安裝包有值但引擎目前未照做 | 17 |
+| `table-differs` | 安裝包有值但引擎目前未照做 | 19 |
 | `invented` | 本專案自訂，安裝包未提供 | 25 |
 | `server` | 原生為伺服器變數，安裝包未帶值 | 4 |
 
@@ -282,6 +282,17 @@ max(1, floor(關卡^1.7 ÷ 100 × PrestigeRelic))，最高關卡到 60 後開放
 | 什麼時候出現由 QTE 排程決定 | `native` | `reference/tt2/8.2.0/qte-evidence.json`；妖精是 QTEType 6，冷卻、ready 與過期都由 QTEController 排。本專案原本自訂的 60 秒冷卻已經換成資料表的 120 秒起算、扣掉 FairyCooldown、再套上 ±10% 的隨機變異；沒點的話 150 秒（expireTime）後飛走並重排冷卻。公式本身登記在 qteCooldown。 |
 | 額外妖精一次結算，不排隊飛進來 | `invented` | 原生把額外的妖精排在 n ÷ 2 秒後依序出場，各自是場上的一個實體。本專案沒有場上實體，所以一次領取把所有中的妖精一起結算成金幣。總金額相同，差別只在畫面上看不到牠們陸續飛進來。 |
 
+### stageScaleGold · `lib/engine.ts` 的 `stageScaleGold`
+
+max(stageScaleMinAmount, stageScaleSlope × 關卡^stageScaleExpo)，妖精金幣再把它取 fairyGoldStageScaleExpo 次方乘進去
+
+| 來源條目 | 狀態 | 依據 |
+|---|---|---|
+| 曲線的形狀 | `native` | `reference/tt2/8.2.0/stage-scale-gold-evidence.json`；PlayerModel.GetStageScaleGoldAmount 只有一行：Pow(關卡, stageScaleExpo) 乘 stageScaleSlope，再與 stageScaleMinAmount 取 GHDouble.Max。**它不是一條獨立的金幣曲線**，是疊在既有掉落上的第二個關卡項——三個呼叫者裡有兩個是消費端，各自把它取自己的指數次方再乘進金額：妖精用 fairyGoldStageScaleExpo 乘在 GetChestersonGold 上，寵物的米達斯之心用 petGoldStageScaleExpo 乘在 GetAverageBossGoldDrop 上。 |
+| 三個係數與妖精的指數 | `default` | `reference/tt2/8.2.0/stage-scale-gold-evidence.json`；四個都是 [ServerVar] 的編譯期預設值：stageScaleMinAmount = 2、stageScaleSlope = 0.001、stageScaleExpo = 1.24、fairyGoldStageScaleExpo = 1.6，線上可覆蓋。乘積要到第 459 關左右才追過下限，所以在那之前整段只是個常數倍 2^1.6。 |
+| 米達斯之心那一端沒有接 | `table-differs` | `reference/tt2/8.2.0/stage-scale-gold-evidence.json`；同一條縮放在 PetModel.GetPetHomGold 也用得到，但它的底是 MonsterModel.GetAverageBossGoldDrop——GetMonsterGoldDrop(關卡, MonsterClass.Boss, 1 隻, 變異) 再乘上 GetAverage10xGold(Goldx10Chance)、GetAverage10xGold(BossGoldx10Chance) 與 GetAverageJackpotGold()。那三個期望值本專案都還沒還原，所以 petGoldStageScaleExpo（1.8）先沒有登記進引擎。 |
+| 妖精金幣鏈剩下的三項還是缺的 | `table-differs` | `reference/tt2/8.2.0/stage-scale-gold-evidence.json`；GetFairyGoldAmount 在關卡縮放之後還有兩個十倍金幣的期望值、累積金幣的期望值、點石成金開著時的 Pow(HandOfMidasSkillAmount, fairyMidasBonusExpo)，以及 Random.Range(0.2, 1.8) 的變異（期望值 1）。這一輪只接關卡縮放那一項，其餘照舊沒有。 |
+
 ### qteCooldown · `lib/engine.ts` 的 `qteCooldownSeconds`
 
 (資料表的 cooldownTime − Bonus(該型的 CooldownBonusType)) × (1 + randomness × Random(−1, 1))，再依 QTE 類型乘上各自的倍率加成，最後夾在 MIN_COOLDOWN_SECONDS(1) 秒以上
@@ -311,7 +322,7 @@ max(1, floor(關卡^1.7 ÷ 100 × PrestigeRelic))，最高關卡到 60 後開放
 | 連打併進戰鬥區的點擊 | `invented` | 原生的連打是寵物身上獨立的按鈕，本專案沒有場上的寵物實體，所以同一下點擊既打泰坦也算進連打。次數與傷害都與原生一致，差別只在按的是哪一個按鈕。 |
 | ready 的條件簡化 | `invented` | 原生 PetController.OnQTEReady 對這一型還看寵物目前的 PetState，以及這隻怪是不是在 petMashQTEStartOfBattleSeconds（1 秒）內剛生成。本專案沒有 PetState 與場上實體，只要求「有出戰中的傷害寵物」。 |
 | 閃現（PetBoss）沒有做 | `table-differs` | `reference/tt2/8.2.0/pet-qte-evidence.json`；**做了也不會生效。**PetController.ApplyChargedBonus 第一件事就是拿 Bonus(PetBossQTEDuration) 與 0 比大小，不大於 0 就整個返回，連 PetBossQTEDamage 都不會被套用。那個加成是加法型的秒數（中性值 0），而本專案匯入的加成資料表裡沒有任何天賦、神器、套裝或寵物給它——天賦「閃現」給的是 PetBossQTEDamage 與 PetQTECooldownMult，不是 duration。哪天有來源了，tests/pet-qte.test.mjs 會轉紅。 |
-| 米達斯之心（PetGold）沒有做 | `table-differs` | `reference/tt2/8.2.0/pet-qte-evidence.json`；**缺前置，不是做不了。**PetModel.GetPetHomGold 以 MonsterModel.GetAverageBossGoldDrop 起算，再乘 Pow(GetStageScaleGoldAmount, petGoldStageScaleExpo)、Bonus(PetGoldQTEAmount) 與 petHomGoldMult，點石成金開著時還要再乘 Pow(HandOfMidasSkillAmount, petMidasBonusExpo)。前兩條金幣公式本專案都還沒還原，而 GetStageScaleGoldAmount 同時也是妖精金幣缺的四項之一，做掉它會一併改動妖精的金幣，屬於獨立的一段工作。 |
+| 米達斯之心（PetGold）沒有做 | `table-differs` | `reference/tt2/8.2.0/pet-qte-evidence.json`；**缺前置，不是做不了。**PetModel.GetPetHomGold 以 MonsterModel.GetAverageBossGoldDrop 起算，再乘 Pow(GetStageScaleGoldAmount, petGoldStageScaleExpo)、Bonus(PetGoldQTEAmount) 與 petHomGoldMult，點石成金開著時還要再乘 Pow(HandOfMidasSkillAmount, petMidasBonusExpo)。GetStageScaleGoldAmount 已經在 2.24.0 還原（見 stageScaleGold），**現在缺的只剩 GetAverageBossGoldDrop 那一半**：頭目掉落本身要再乘 GetAverage10xGold(Goldx10Chance)、GetAverage10xGold(BossGoldx10Chance) 與 GetAverageJackpotGold() 三個期望值，三個都還沒還原。petMidasBonusExpo 連編譯期預設值都沒有。 |
 | PetQTEDamage 沒有接 | `native` | `reference/tt2/8.2.0/pet-qte-evidence.json`；那個加成（370）在整個映像沒有取值點，套裝給了它也沒有用。PetAttackQTESplashCount 則是既沒有來源也沒有取值點，2.14.0 的濺射調查已經確認過。 |
 
 ### helperOrb · `lib/engine.ts` 的 `helperOrbDamage`

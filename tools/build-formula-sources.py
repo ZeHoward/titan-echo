@@ -509,6 +509,36 @@ FORMULAS = [
                     note='原生把額外的妖精排在 n ÷ 2 秒後依序出場，各自是場上的一個實體。'
                          '本專案沒有場上實體，所以一次領取把所有中的妖精一起結算成金幣。'
                          '總金額相同，差別只在畫面上看不到牠們陸續飛進來。')]),
+    entry(id='stageScaleGold', module='lib/engine.ts', export='stageScaleGold',
+          expression='max(stageScaleMinAmount, stageScaleSlope × 關卡^stageScaleExpo)，'
+                     '妖精金幣再把它取 fairyGoldStageScaleExpo 次方乘進去',
+          parts=[
+              entry(part='曲線的形狀', status='native', ref='stage-scale-gold-evidence.json',
+                    note='PlayerModel.GetStageScaleGoldAmount 只有一行：Pow(關卡, stageScaleExpo) '
+                         '乘 stageScaleSlope，再與 stageScaleMinAmount 取 GHDouble.Max。'
+                         '**它不是一條獨立的金幣曲線**，是疊在既有掉落上的第二個關卡項——'
+                         '三個呼叫者裡有兩個是消費端，各自把它取自己的指數次方再乘進金額：'
+                         '妖精用 fairyGoldStageScaleExpo 乘在 GetChestersonGold 上，'
+                         '寵物的米達斯之心用 petGoldStageScaleExpo 乘在 GetAverageBossGoldDrop 上。'),
+              entry(part='三個係數與妖精的指數', status='default', ref='stage-scale-gold-evidence.json',
+                    note='四個都是 [ServerVar] 的編譯期預設值：stageScaleMinAmount = 2、'
+                         'stageScaleSlope = 0.001、stageScaleExpo = 1.24、'
+                         'fairyGoldStageScaleExpo = 1.6，線上可覆蓋。'
+                         '乘積要到第 459 關左右才追過下限，所以在那之前整段只是個常數倍 2^1.6。'),
+              entry(part='米達斯之心那一端沒有接', status='table-differs',
+                    ref='stage-scale-gold-evidence.json',
+                    note='同一條縮放在 PetModel.GetPetHomGold 也用得到，但它的底是 '
+                         'MonsterModel.GetAverageBossGoldDrop——'
+                         'GetMonsterGoldDrop(關卡, MonsterClass.Boss, 1 隻, 變異) 再乘上 '
+                         'GetAverage10xGold(Goldx10Chance)、GetAverage10xGold(BossGoldx10Chance) '
+                         '與 GetAverageJackpotGold()。那三個期望值本專案都還沒還原，'
+                         '所以 petGoldStageScaleExpo（1.8）先沒有登記進引擎。'),
+              entry(part='妖精金幣鏈剩下的三項還是缺的', status='table-differs',
+                    ref='stage-scale-gold-evidence.json',
+                    note='GetFairyGoldAmount 在關卡縮放之後還有兩個十倍金幣的期望值、'
+                         '累積金幣的期望值、點石成金開著時的 Pow(HandOfMidasSkillAmount, '
+                         'fairyMidasBonusExpo)，以及 Random.Range(0.2, 1.8) 的變異（期望值 1）。'
+                         '這一輪只接關卡縮放那一項，其餘照舊沒有。')]),
     entry(id='qteCooldown', module='lib/engine.ts', export='qteCooldownSeconds',
           expression='(資料表的 cooldownTime − Bonus(該型的 CooldownBonusType)) × (1 + randomness × Random(−1, 1))，'
                      '再依 QTE 類型乘上各自的倍率加成，最後夾在 MIN_COOLDOWN_SECONDS(1) 秒以上',
@@ -608,8 +638,11 @@ FORMULAS = [
                          'Pow(GetStageScaleGoldAmount, petGoldStageScaleExpo)、Bonus(PetGoldQTEAmount) '
                          '與 petHomGoldMult，點石成金開著時還要再乘 '
                          'Pow(HandOfMidasSkillAmount, petMidasBonusExpo)。'
-                         '前兩條金幣公式本專案都還沒還原，而 GetStageScaleGoldAmount 同時也是'
-                         '妖精金幣缺的四項之一，做掉它會一併改動妖精的金幣，屬於獨立的一段工作。'),
+                         'GetStageScaleGoldAmount 已經在 2.24.0 還原（見 stageScaleGold），'
+                         '**現在缺的只剩 GetAverageBossGoldDrop 那一半**：頭目掉落本身要再乘 '
+                         'GetAverage10xGold(Goldx10Chance)、GetAverage10xGold(BossGoldx10Chance) '
+                         '與 GetAverageJackpotGold() 三個期望值，三個都還沒還原。'
+                         'petMidasBonusExpo 連編譯期預設值都沒有。'),
               entry(part='PetQTEDamage 沒有接', status='native', ref='pet-qte-evidence.json',
                     note='那個加成（370）在整個映像沒有取值點，套裝給了它也沒有用。'
                          'PetAttackQTESplashCount 則是既沒有來源也沒有取值點，'
@@ -899,7 +932,7 @@ NOT_FORMULAS = {
         'HEROES', 'SKILLS', 'SKILL_DATA', 'SKILL_ORDER', 'TT2_RULESET', 'bonusDefinitions',
         'EFFECT_LABELS', 'effectLabel', 'BUILD_COEFFICIENTS', 'PLAYER_DEFAULTS', 'RESOURCE_PERKS',
         'EGG_INTERVAL', 'PENDING_HERO_EFFECTS', 'heroSkills', 'THEME_STAGES', 'TT2_THEMES', 'HELPER_DEFAULTS',
-        'BONUS_DEFAULTS', 'MANA_DEFAULTS', 'PRESTIGE_DEFAULTS', 'MULTI_MONSTER_MIN', 'MEGA_BOMB', 'CHESTERSON', 'FAIRY', 'LOGIN_STREAK_DAYS',
+        'BONUS_DEFAULTS', 'MANA_DEFAULTS', 'PRESTIGE_DEFAULTS', 'MULTI_MONSTER_MIN', 'MEGA_BOMB', 'CHESTERSON', 'FAIRY', 'STAGE_SCALE_GOLD', 'LOGIN_STREAK_DAYS',
         'TT2_QTE', 'QTE_TYPE', 'QTE_MIN_COOLDOWN', 'QTE_COOLDOWN_MULTIPLIERS',
         'HERO_LEVEL_CAP', 'PLAYER_LEVEL_CAP', 'UNMEASURED_ACHIEVEMENTS', 'UNMEASURED_DAILY_TASKS',
         'DAILY_TASK_PAID', 'cap'],

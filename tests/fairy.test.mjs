@@ -4,6 +4,7 @@ import { readFileSync } from 'node:fs';
 import { referenceRoot } from '../tools/reference-validation.mjs';
 import {
   fresh, advance, apply, goldReward, rollExtraFairies, fairiesUnlocked, qteReady, FAIRY, CHESTERSON,
+  stageScaleGold, STAGE_SCALE_GOLD,
 } from '../lib/engine.ts';
 import { effect, QTE_TYPE, TT2_QTE } from '../lib/tt2-rules.ts';
 import { toNumber } from '../lib/big-number.ts';
@@ -147,7 +148,7 @@ test('領一次妖精至少給一份，有來源時給好幾份', () => {
   assert.ok(Math.abs(toNumber(charmed.gold) / one - charmed.tt2.fairyRewards) < 1e-6);
 });
 
-test('妖精金幣與寶箱走同一個倍率，都是 15', () => {
+test('妖精金幣起算於寶箱那個 15，再乘上關卡縮放', () => {
   const s = ready();
   const monster = toNumber(goldReward(s, 'monster'));
   const chest = toNumber(goldReward(s, 'chest'));
@@ -156,8 +157,12 @@ test('妖精金幣與寶箱走同一個倍率，都是 15', () => {
   // A fairy also carries GoldSpecialty and FairyGold, both neutral on a clean save.
   assert.equal(effect(s.tt2, 'GoldSpecialty'), 1);
   assert.equal(effect(s.tt2, 'FairyGold'), 1);
-  assert.ok(Math.abs(fairy / monster - CHESTERSON.treasureGold) < 1e-6,
-    '乾淨存檔的妖精與寶箱應該一樣多');
+  // 兩者之間剩下的就是原生 GetFairyGoldAmount 在 GetChestersonGold 之後乘的那一項：
+  // 關卡縮放的 fairyGoldStageScaleExpo 次方。這一關還落在下限上，所以是個常數倍。
+  const scaled = stageScaleGold(s.stage) ** STAGE_SCALE_GOLD.fairyExpo;
+  assert.equal(stageScaleGold(s.stage), STAGE_SCALE_GOLD.minAmount);
+  assert.ok(Math.abs(fairy / monster - CHESTERSON.treasureGold * scaled) < 1e-6,
+    '乾淨存檔的妖精應該是寶箱的關卡縮放倍');
 });
 
 test('領完就進冷卻，而且不會因為多重妖精被繞過', () => {

@@ -84,5 +84,5 @@ test('這個差異登記為 table-differs，理由與影響寫在登記表裡', 
     ['bossHealthMod', 'helperOrb', 'helperOrb', 'heroDamage', 'monsterGold',
       'monsterHealth', 'monsterHealth', 'perks', 'perks', 'petBonus', 'petBurst',
       'petBurst', 'prestigeRelics', 'prestigeRelics', 'prestigeRelics',
-      'qteCooldown', 'skillPoints']);
+      'qteCooldown', 'skillPoints', 'stageScaleGold', 'stageScaleGold']);
 });
